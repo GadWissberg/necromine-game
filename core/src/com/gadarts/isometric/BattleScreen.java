@@ -3,14 +3,22 @@ package com.gadarts.isometric;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Screen;
 import com.gadarts.isometric.systems.SystemsHandler;
+import com.gadarts.isometric.utils.GameAssetsManager;
+import com.gadarts.isometric.utils.MapBuilder;
 
 public class BattleScreen implements Screen {
 	private final PooledEngine engine;
 	private final SystemsHandler systemsHandler;
+	private final GameAssetsManager assetManager;
+	private final MapBuilder mapBuilder;
 
 	public BattleScreen() {
 		this.engine = new PooledEngine();
-		this.systemsHandler = new SystemsHandler(engine);
+		assetManager = new GameAssetsManager();
+		assetManager.loadGameFiles();
+		systemsHandler = new SystemsHandler(engine);
+		mapBuilder = new MapBuilder(assetManager, engine);
+		mapBuilder.createTestMap();
 	}
 
 	@Override
