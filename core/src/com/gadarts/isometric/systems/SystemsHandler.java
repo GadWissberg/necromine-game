@@ -10,7 +10,11 @@ public class SystemsHandler implements Disposable {
 		this.engine = engine;
 		engine.addSystem(new CameraSystem());
 		engine.addSystem(new RenderSystem());
-		engine.addSystem(new InputSystem());
+		InputSystem inputSystem = new InputSystem();
+		engine.addSystem(inputSystem);
+		HudSystem hudSystem = new HudSystem();
+		engine.addSystem(hudSystem);
+		inputSystem.subscribeForEvents(hudSystem);
 	}
 
 	@Override

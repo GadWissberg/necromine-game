@@ -18,6 +18,7 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.ModelInstanceComponent;
 
 public class RenderSystem extends EntitySystem {
+
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private final ModelBatch modelBatch;

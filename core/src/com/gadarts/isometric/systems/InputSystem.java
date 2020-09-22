@@ -2,10 +2,9 @@ package com.gadarts.isometric.systems;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.List;
 
 public class InputSystem extends GameEntitySystem implements
 		Disposable,
-		GestureDetector.GestureListener,
+		InputProcessor,
 		EventsNotifier<InputSystemEventsSubscriber> {
 
 	private CameraInputController debugInput;
@@ -22,11 +21,12 @@ public class InputSystem extends GameEntitySystem implements
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
-		InputProcessor inputProcessor;
+		InputMultiplexer multiplexer = new InputMultiplexer();
 		debugInput = new CameraInputController(getEngine().getSystem(CameraSystem.class).getCamera());
 		debugInput.autoUpdate = true;
-		inputProcessor = debugInput;
-		Gdx.input.setInputProcessor(inputProcessor);
+		multiplexer.addProcessor(debugInput);
+		multiplexer.addProcessor(this);
+		Gdx.input.setInputProcessor(multiplexer);
 	}
 
 	@Override
@@ -47,50 +47,45 @@ public class InputSystem extends GameEntitySystem implements
 	}
 
 	@Override
-	public boolean touchDown(final float x, final float y, final int pointer, final int button) {
+	public boolean keyDown(final int keycode) {
 		return false;
 	}
 
 	@Override
-	public boolean tap(final float x, final float y, final int count, final int button) {
+	public boolean keyUp(final int keycode) {
 		return false;
 	}
 
 	@Override
-	public boolean longPress(final float x, final float y) {
+	public boolean keyTyped(final char character) {
 		return false;
 	}
 
 	@Override
-	public boolean fling(final float velocityX, final float velocityY, final int button) {
+	public boolean touchDown(final int screenX, final int screenY, final int pointer, final int button) {
 		return false;
 	}
 
 	@Override
-	public boolean pan(final float x, final float y, final float deltaX, final float deltaY) {
+	public boolean touchUp(final int screenX, final int screenY, final int pointer, final int button) {
 		return false;
 	}
 
 	@Override
-	public boolean panStop(final float x, final float y, final int pointer, final int button) {
+	public boolean touchDragged(final int screenX, final int screenY, final int pointer) {
 		return false;
 	}
 
 	@Override
-	public boolean zoom(final float initialDistance, final float distance) {
-		return false;
+	public boolean mouseMoved(final int screenX, final int screenY) {
+		for (InputSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.mouseMoved(screenX, screenY);
+		}
+		return true;
 	}
 
 	@Override
-	public boolean pinch(final Vector2 initialPointer1,
-						 final Vector2 initialPointer2,
-						 final Vector2 pointer1,
-						 final Vector2 pointer2) {
+	public boolean scrolled(final int amount) {
 		return false;
 	}
-
-	@Override
-	public void pinchStop() {
-	}
-
 }

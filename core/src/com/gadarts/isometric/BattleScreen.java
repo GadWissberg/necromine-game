@@ -16,9 +16,9 @@ public class BattleScreen implements Screen {
 		this.engine = new PooledEngine();
 		assetManager = new GameAssetsManager();
 		assetManager.loadGameFiles();
-		systemsHandler = new SystemsHandler(engine);
 		mapBuilder = new MapBuilder(assetManager, engine);
-		mapBuilder.createTestMap();
+		mapBuilder.createAndAddTestMap();
+		systemsHandler = new SystemsHandler(engine);
 	}
 
 	@Override
