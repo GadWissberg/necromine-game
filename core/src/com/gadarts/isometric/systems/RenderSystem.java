@@ -7,23 +7,30 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.DecalComponent;
 import com.gadarts.isometric.components.ModelInstanceComponent;
 
-public class RenderSystem extends EntitySystem {
+public class RenderSystem extends EntitySystem implements EntityListener {
 
 	private static final Vector3 auxVector3_1 = new Vector3();
-	private static final Vector3 auxVector3_2 = new Vector3();
+	public static final int DECALS_POOL_SIZE = 200;
 	private final ModelBatch modelBatch;
+	private DecalBatch decalBatch;
 	private Camera camera;
 	private ImmutableArray<Entity> modelInstanceEntities;
+	private ImmutableArray<Entity> decalEntities;
 
 	public RenderSystem() {
 		this.modelBatch = new ModelBatch();
@@ -38,12 +45,15 @@ public class RenderSystem extends EntitySystem {
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
-		ModelBuilder modelBuilder = new ModelBuilder();
 		this.camera = engine.getSystem(CameraSystem.class).getCamera();
+		decalBatch = new DecalBatch(DECALS_POOL_SIZE, new CameraGroupStrategy(camera));
+		engine.addEntityListener(this);
+		ModelBuilder modelBuilder = new ModelBuilder();
 		engine.addEntity(createArrowEntity(modelBuilder, Color.RED, auxVector3_1.set(1, 0, 0)));
 		engine.addEntity(createArrowEntity(modelBuilder, Color.GREEN, auxVector3_1.set(0, 1, 0)));
 		engine.addEntity(createArrowEntity(modelBuilder, Color.BLUE, auxVector3_1.set(0, 0, 1)));
 		modelInstanceEntities = engine.getEntitiesFor(Family.all(ModelInstanceComponent.class).get());
+		decalEntities = engine.getEntitiesFor(Family.all(DecalComponent.class).get());
 	}
 
 	private Entity createArrowEntity(final ModelBuilder modelBuilder,
@@ -64,9 +74,29 @@ public class RenderSystem extends EntitySystem {
 		resetDisplay(Color.BLACK);
 		modelBatch.begin(camera);
 		for (Entity entity : modelInstanceEntities) {
-			ModelInstance modelInstance = ComponentsMapper.modelInstance.get(entity).getModelInstance();
+			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
+			ModelInstance modelInstance = modelInstanceComponent.getModelInstance();
 			modelBatch.render(modelInstance);
 		}
 		modelBatch.end();
+		for (Entity entity : decalEntities) {
+			Decal decal = ComponentsMapper.decal.get(entity).getDecal();
+			if (ComponentsMapper.animation.has(entity)) {
+				TextureAtlas.AtlasRegion currentFrame = ComponentsMapper.animation.get(entity).getCurrentFrame(deltaTime);
+				decal.setTextureRegion(currentFrame);
+			}
+			decal.lookAt(camera.position, camera.up);
+			decalBatch.add(decal);
+		}
+		decalBatch.flush();
+	}
+
+	@Override
+	public void entityAdded(final Entity entity) {
+	}
+
+	@Override
+	public void entityRemoved(final Entity entity) {
+
 	}
 }

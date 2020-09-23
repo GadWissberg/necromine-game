@@ -54,5 +54,6 @@ public class BattleScreen implements Screen {
 	@Override
 	public void dispose() {
 		systemsHandler.dispose();
+		assetManager.dispose();
 	}
 }
