@@ -41,4 +41,19 @@ public class HudSystem extends GameEntitySystem implements InputSystemEventsSubs
 		auxVector.z = MathUtils.round(auxVector.z);
 		cursorModelInstance.transform.setTranslation(auxVector);
 	}
+
+	@Override
+	public void touchDown(int screenX, int screenY, int button) {
+
+	}
+
+	@Override
+	public void touchUp(int screenX, int screenY, int button) {
+
+	}
+
+	@Override
+	public void touchDragged(int screenX, int screenY) {
+
+	}
 }

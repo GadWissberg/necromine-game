@@ -12,7 +12,6 @@ public class DesktopLauncher {
 		config.width = IsometricGame.RESOLUTION_WIDTH;
 		config.height = IsometricGame.RESOLUTION_HEIGHT;
 		new LwjglApplication(new IsometricGame(), config);
-
 	}
 
 }
