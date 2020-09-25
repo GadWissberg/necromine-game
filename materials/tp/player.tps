@@ -169,7 +169,7 @@
             <key>trimMargin</key>
             <uint>1</uint>
             <key>trimMode</key>
-            <enum type="SpriteSettings::TrimMode">Trim</enum>
+            <enum type="SpriteSettings::TrimMode">None</enum>
             <key>tracerTolerance</key>
             <int>200</int>
             <key>heuristicMask</key>
@@ -189,6 +189,8 @@
             <key type="filename">../sprites/player/north_idle_1.png</key>
             <key type="filename">../sprites/player/north_west_idle_0.png</key>
             <key type="filename">../sprites/player/north_west_idle_1.png</key>
+            <key type="filename">../sprites/player/south_east_idle_0.png</key>
+            <key type="filename">../sprites/player/south_east_idle_1.png</key>
             <key type="filename">../sprites/player/south_idle_0.png</key>
             <key type="filename">../sprites/player/south_idle_1.png</key>
             <key type="filename">../sprites/player/south_west_idle_0.png</key>
@@ -226,6 +228,8 @@
             <filename>../sprites/player/south_west_idle_1.png</filename>
             <filename>../sprites/player/west_idle_0.png</filename>
             <filename>../sprites/player/west_idle_1.png</filename>
+            <filename>../sprites/player/south_east_idle_0.png</filename>
+            <filename>../sprites/player/south_east_idle_1.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

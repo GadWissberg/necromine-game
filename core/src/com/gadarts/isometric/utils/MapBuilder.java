@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -17,7 +18,10 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.*;
-import com.gadarts.isometric.utils.Assets.Regions;
+import com.gadarts.isometric.utils.Assets.CharacterDirectionsRegions;
+
+import java.util.Arrays;
+import java.util.HashMap;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
 
@@ -48,13 +52,22 @@ public class MapBuilder {
 		TextureAtlas playerAtlas = assetManager.getAtlas(Assets.Atlases.PLAYER);
 		entity.add(engine.createComponent(PlayerComponent.class));
 		DecalComponent decalComponent = engine.createComponent(DecalComponent.class);
-		decalComponent.init(playerAtlas.findRegion(Regions.SOUTH_IDLE.name().toLowerCase()));
+
+		HashMap<CharacterDirectionsRegions, Animation<TextureAtlas.AtlasRegion>> playerAnimations = new HashMap<>();
+		Arrays.stream(CharacterDirectionsRegions.values()).forEach(dir -> {
+			Animation<TextureAtlas.AtlasRegion> animation = new Animation<>(1, playerAtlas.findRegions(dir.getRegionName()));
+			playerAnimations.put(dir, animation);
+		});
+
+
+		decalComponent.init(playerAnimations, CharacterDirectionsRegions.SOUTH_IDLE);
 		Decal decal = decalComponent.getDecal();
 		decal.setPosition(1, 0.3f, 1);
 		decal.setScale(0.01f);
 		CharacterComponent characterComponent = engine.createComponent(CharacterComponent.class);
+		characterComponent.init(CharacterComponent.Direction.SOUTH);
 		AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
-		animationComponent.init(0.4f, playerAtlas.findRegions(Regions.SOUTH_IDLE.name().toLowerCase()));
+		animationComponent.init(0.4f, decalComponent.getAnimations().get(CharacterDirectionsRegions.SOUTH_IDLE));
 		entity.add(animationComponent);
 		entity.add(characterComponent);
 		entity.add(decalComponent);

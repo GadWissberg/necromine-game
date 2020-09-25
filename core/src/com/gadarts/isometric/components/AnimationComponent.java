@@ -2,7 +2,6 @@ package com.gadarts.isometric.components;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.utils.Array;
 import lombok.Getter;
 
 @Getter
@@ -15,8 +14,9 @@ public class AnimationComponent implements GameComponent {
 
 	}
 
-	public void init(final float frameDuration, final Array<TextureAtlas.AtlasRegion> frames) {
-		animation = new Animation<>(frameDuration, frames);
+	public void init(final float frameDuration, final Animation<TextureAtlas.AtlasRegion> animation) {
+		this.animation = animation;
+		animation.setFrameDuration(frameDuration);
 		animation.setPlayMode(Animation.PlayMode.LOOP);
 	}
 

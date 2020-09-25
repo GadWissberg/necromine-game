@@ -17,14 +17,18 @@ import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.DecalComponent;
-import com.gadarts.isometric.components.ModelInstanceComponent;
+import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.utils.Assets;
 
 public class RenderSystem extends EntitySystem implements EntityListener {
 
+	private static final Vector2 auxVector2_1 = new Vector2();
+	private static final Vector2 auxVector2_2 = new Vector2();
+	private static final Vector2 auxVector2_3 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
+	private static final Vector3 auxVector3_2 = new Vector3();
 	public static final int DECALS_POOL_SIZE = 200;
 	private final ModelBatch modelBatch;
 	private DecalBatch decalBatch;
@@ -80,10 +84,42 @@ public class RenderSystem extends EntitySystem implements EntityListener {
 		}
 		modelBatch.end();
 		for (Entity entity : decalEntities) {
-			Decal decal = ComponentsMapper.decal.get(entity).getDecal();
-			if (ComponentsMapper.animation.has(entity)) {
-				TextureAtlas.AtlasRegion currentFrame = ComponentsMapper.animation.get(entity).getCurrentFrame(deltaTime);
-				decal.setTextureRegion(currentFrame);
+			CharacterComponent characterComponent = ComponentsMapper.character.get(entity);
+			DecalComponent decalComponent = ComponentsMapper.decal.get(entity);
+			Decal decal = decalComponent.getDecal();
+			auxVector2_3.set(1, 0);
+			auxVector2_3.setAngle(characterComponent.getDirection().getDirection(auxVector2_1).angle() - auxVector2_2.set(camera.position.x, camera.position.z).sub(decal.getX(), decal.getZ()).angle());
+			float angleDiff = auxVector2_3.angle();
+			Assets.CharacterDirectionsRegions region;
+			if ((angleDiff >= 0 && angleDiff <= 22.5) || (angleDiff > 337.5 && angleDiff <= 360)) {
+				region = Assets.CharacterDirectionsRegions.SOUTH_IDLE;
+			} else if (angleDiff > 22.5 && angleDiff <= 67.5) {
+				region = Assets.CharacterDirectionsRegions.SOUTH_WEST_IDLE;
+			} else if (angleDiff > 67.5 && angleDiff <= 112.5) {
+				region = Assets.CharacterDirectionsRegions.WEST_IDLE;
+			} else if (angleDiff > 112.5 && angleDiff <= 157.5) {
+				region = Assets.CharacterDirectionsRegions.NORTH_WEST_IDLE;
+			} else if (angleDiff > 157.5 && angleDiff <= 202.5) {
+				region = Assets.CharacterDirectionsRegions.NORTH_IDLE;
+			} else if (angleDiff > 202.5 && angleDiff <= 247.5) {
+				region = Assets.CharacterDirectionsRegions.NORTH_EAST_IDLE;
+			} else if (angleDiff > 247.5 && angleDiff <= 292.5) {
+				region = Assets.CharacterDirectionsRegions.EAST_IDLE;
+			} else {
+				region = Assets.CharacterDirectionsRegions.SOUTH_EAST_IDLE;
+			}
+			if (!decalComponent.getCurrentRegion().getRegionName().equals(region.getRegionName())) {
+				decalComponent.initializeRegion(region);
+				if (ComponentsMapper.animation.has(entity)) {
+					AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
+					animationComponent.init(0.5f, decalComponent.getAnimations().get(region));
+				}
+			} else {
+				if (ComponentsMapper.animation.has(entity)) {
+					AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
+					TextureAtlas.AtlasRegion currentFrame = animationComponent.getCurrentFrame(deltaTime);
+					decal.setTextureRegion(currentFrame);
+				}
 			}
 			decal.lookAt(camera.position, camera.up);
 			decalBatch.add(decal);

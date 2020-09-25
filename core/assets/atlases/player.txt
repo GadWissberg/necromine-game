@@ -1,103 +1,117 @@
 player.png
-size: 224, 253
+size: 787, 394
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 east_idle
   rotate: false
-  xy: 53, 168
-  size: 44, 71
+  xy: 2, 2
+  size: 128, 128
   orig: 128, 128
-  offset: 43, 24
+  offset: 0, 0
   index: 0
 east_idle
   rotate: false
-  xy: 100, 167
-  size: 44, 71
+  xy: 2, 133
+  size: 128, 128
   orig: 128, 128
-  offset: 43, 24
+  offset: 0, 0
   index: 1
 north_east_idle
   rotate: false
-  xy: 93, 82
-  size: 35, 82
+  xy: 133, 2
+  size: 128, 128
   orig: 128, 128
-  offset: 50, 21
+  offset: 0, 0
   index: 0
 north_east_idle
   rotate: false
-  xy: 54, 82
-  size: 36, 82
+  xy: 2, 264
+  size: 128, 128
   orig: 128, 128
-  offset: 49, 21
+  offset: 0, 0
   index: 1
 north_idle
   rotate: false
-  xy: 2, 168
-  size: 48, 83
+  xy: 133, 133
+  size: 128, 128
   orig: 128, 128
-  offset: 37, 24
+  offset: 0, 0
   index: 0
 north_idle
   rotate: false
-  xy: 2, 82
-  size: 49, 83
+  xy: 264, 2
+  size: 128, 128
   orig: 128, 128
-  offset: 36, 24
+  offset: 0, 0
   index: 1
 north_west_idle
   rotate: false
-  xy: 2, 2
-  size: 57, 77
+  xy: 133, 264
+  size: 128, 128
   orig: 128, 128
-  offset: 30, 26
+  offset: 0, 0
   index: 0
 north_west_idle
   rotate: false
-  xy: 62, 2
-  size: 54, 77
+  xy: 264, 133
+  size: 128, 128
   orig: 128, 128
-  offset: 33, 26
+  offset: 0, 0
+  index: 1
+south_east_idle
+  rotate: false
+  xy: 395, 2
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 0
+south_east_idle
+  rotate: false
+  xy: 264, 264
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
   index: 1
 south_idle
   rotate: false
-  xy: 171, 2
-  size: 48, 67
+  xy: 395, 133
+  size: 128, 128
   orig: 128, 128
-  offset: 43, 23
+  offset: 0, 0
   index: 0
 south_idle
   rotate: false
-  xy: 119, 2
-  size: 49, 68
+  xy: 526, 2
+  size: 128, 128
   orig: 128, 128
-  offset: 43, 23
+  offset: 0, 0
   index: 1
 south_west_idle
   rotate: false
-  xy: 186, 148
-  size: 35, 70
+  xy: 395, 264
+  size: 128, 128
   orig: 128, 128
-  offset: 43, 20
+  offset: 0, 0
   index: 0
 south_west_idle
   rotate: false
-  xy: 147, 149
-  size: 36, 71
+  xy: 526, 133
+  size: 128, 128
   orig: 128, 128
-  offset: 43, 20
+  offset: 0, 0
   index: 1
 west_idle
   rotate: false
-  xy: 131, 73
-  size: 44, 73
+  xy: 657, 2
+  size: 128, 128
   orig: 128, 128
-  offset: 41, 22
+  offset: 0, 0
   index: 0
 west_idle
   rotate: false
-  xy: 178, 72
-  size: 44, 73
+  xy: 526, 264
+  size: 128, 128
   orig: 128, 128
-  offset: 41, 22
+  offset: 0, 0
   index: 1
