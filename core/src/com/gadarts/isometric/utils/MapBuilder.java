@@ -18,7 +18,6 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.*;
-import com.gadarts.isometric.utils.Assets.CharacterDirRegions;
 
 import java.util.Arrays;
 
@@ -61,25 +60,21 @@ public final class MapBuilder {
 		Entity entity = engine.createEntity();
 		entity.add(engine.createComponent(PlayerComponent.class));
 		CharacterAnimations playerAnimations = createPlayerAnimations();
-		DecalComponent decalComponent = addPlayerDecalComponent(entity, playerAnimations);
-		AnimationComponent animationComponent = addPlayerCharacterComponent(entity);
-		animationComponent.init(0.4f, decalComponent.getAnimations().get(CharacterDirRegions.SOUTH_IDLE));
+		CharacterComponent characterComponent = engine.createComponent(CharacterComponent.class);
+		characterComponent.init(CharacterComponent.Direction.SOUTH, SpriteType.IDLE);
+		DecalComponent decalComponent = addPlayerDecalComponent(entity, playerAnimations, characterComponent);
+		entity.add(characterComponent);
+		AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
+		animationComponent.init(0.4f, decalComponent.getAnimations().get(characterComponent.getSpriteType(), characterComponent.getDirection()));
 		entity.add(animationComponent);
 		engine.addEntity(entity);
 	}
 
-	private AnimationComponent addPlayerCharacterComponent(final Entity entity) {
-		CharacterComponent characterComponent = engine.createComponent(CharacterComponent.class);
-		characterComponent.init(CharacterComponent.Direction.SOUTH);
-		AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
-		entity.add(characterComponent);
-		return animationComponent;
-	}
-
 	private DecalComponent addPlayerDecalComponent(final Entity entity,
-												   final CharacterAnimations playerAnimations) {
+												   final CharacterAnimations playerAnimations,
+												   final CharacterComponent characterComponent) {
 		DecalComponent decalComponent = engine.createComponent(DecalComponent.class);
-		decalComponent.init(playerAnimations, CharacterDirRegions.SOUTH_IDLE);
+		decalComponent.init(playerAnimations, characterComponent.getSpriteType(), characterComponent.getDirection());
 		Decal decal = decalComponent.getDecal();
 		decal.setPosition(0.5f, 0.3f, 0.5f);
 		decal.setScale(0.01f);
@@ -90,10 +85,13 @@ public final class MapBuilder {
 	private CharacterAnimations createPlayerAnimations() {
 		CharacterAnimations playerAnimations = new CharacterAnimations();
 		TextureAtlas playerAtlas = assetManager.getAtlas(Assets.Atlases.PLAYER);
-		Arrays.stream(CharacterDirRegions.values()).forEach(dir -> {
-			Animation<TextureAtlas.AtlasRegion> a = new Animation<>(1, playerAtlas.findRegions(dir.getRegionName()));
-			playerAnimations.put(dir, a);
-		});
+		Arrays.stream(SpriteType.values()).forEach(spriteType -> Arrays.stream(CharacterComponent.Direction.values())
+				.forEach(dir -> {
+					String name = spriteType.name().toLowerCase() + "_" + dir.name().toLowerCase();
+					Animation<TextureAtlas.AtlasRegion> a = new Animation<>(spriteType.getAnimationDuration(), playerAtlas.findRegions(name));
+					playerAnimations.put(spriteType, dir, a);
+				})
+		);
 		return playerAnimations;
 	}
 

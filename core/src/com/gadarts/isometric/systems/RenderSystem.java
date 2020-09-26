@@ -23,7 +23,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.components.*;
-import com.gadarts.isometric.utils.Assets;
 
 public class RenderSystem extends EntitySystem implements EntityListener {
 
@@ -98,29 +97,30 @@ public class RenderSystem extends EntitySystem implements EntityListener {
 			float cameraAngle = auxVector2_2.set(camera.position.x, camera.position.z).sub(auxVector3_1.x, auxVector3_1.z).angle();
 			auxVector2_3.setAngle(playerAngle - cameraAngle);
 			float angleDiff = auxVector2_3.angle();
-			Assets.CharacterDirRegions region;
+			CharacterComponent.Direction direction;
 			if ((angleDiff >= 0 && angleDiff <= 22.5) || (angleDiff > 337.5f && angleDiff <= 360)) {
-				region = Assets.CharacterDirRegions.SOUTH_IDLE;
+				direction = CharacterComponent.Direction.SOUTH;
 			} else if (angleDiff > 22.5 && angleDiff <= 67.5) {
-				region = Assets.CharacterDirRegions.SOUTH_WEST_IDLE;
+				direction = CharacterComponent.Direction.SOUTH_WEST;
 			} else if (angleDiff > 67.5 && angleDiff <= 112.5) {
-				region = Assets.CharacterDirRegions.WEST_IDLE;
+				direction = CharacterComponent.Direction.WEST;
 			} else if (angleDiff > 112.5 && angleDiff <= 157.5) {
-				region = Assets.CharacterDirRegions.NORTH_WEST_IDLE;
+				direction = CharacterComponent.Direction.NORTH_WEST;
 			} else if (angleDiff > 157.5 && angleDiff <= 202.5) {
-				region = Assets.CharacterDirRegions.NORTH_IDLE;
+				direction = CharacterComponent.Direction.NORTH;
 			} else if (angleDiff > 202.5 && angleDiff <= 247.5) {
-				region = Assets.CharacterDirRegions.NORTH_EAST_IDLE;
+				direction = CharacterComponent.Direction.NORTH_EAST;
 			} else if (angleDiff > 247.5 && angleDiff <= 292.5) {
-				region = Assets.CharacterDirRegions.EAST_IDLE;
+				direction = CharacterComponent.Direction.EAST;
 			} else {
-				region = Assets.CharacterDirRegions.SOUTH_EAST_IDLE;
+				direction = CharacterComponent.Direction.SOUTH_EAST;
 			}
-			if (!decalComponent.getCurrentRegion().getRegionName().equals(region.getRegionName())) {
-				decalComponent.initializeRegion(region);
+			SpriteType spriteType = characterComponent.getSpriteType();
+			if (!characterComponent.getSpriteType().equals(decalComponent.getType()) || !decalComponent.getDirection().equals(direction)) {
+				decalComponent.initializeSprite(spriteType, direction);
 				if (ComponentsMapper.animation.has(entity)) {
 					AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
-					animationComponent.init(0.5f, decalComponent.getAnimations().get(region));
+					animationComponent.init(spriteType.getAnimationDuration(), decalComponent.getAnimations().get(spriteType, direction));
 				}
 			} else {
 				if (ComponentsMapper.animation.has(entity)) {

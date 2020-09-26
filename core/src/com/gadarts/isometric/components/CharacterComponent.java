@@ -3,8 +3,10 @@ package com.gadarts.isometric.components;
 import com.badlogic.gdx.math.Vector2;
 import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.utils.MapGraphNode;
+import com.gadarts.isometric.utils.Utils;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,9 @@ public class CharacterComponent implements GameComponent, EventsNotifier<Charact
 	@Getter(AccessLevel.NONE)
 	private MapGraphNode destinationNode;
 
+	@Setter
+	private SpriteType spriteType;
+	@Setter
 	private Direction direction;
 
 	public MapGraphNode getDestinationNode() {
@@ -32,8 +37,9 @@ public class CharacterComponent implements GameComponent, EventsNotifier<Charact
 		subscribers.clear();
 	}
 
-	public void init(final Direction direction) {
+	public void init(final Direction direction, final SpriteType type) {
 		this.direction = direction;
+		this.spriteType = type;
 	}
 
 	@Override
@@ -55,7 +61,18 @@ public class CharacterComponent implements GameComponent, EventsNotifier<Charact
 		private final Vector2 direction;
 
 		Direction(final int x, final int z) {
-			direction = new Vector2(x, z);
+			direction = new Vector2(x, z).nor();
+		}
+
+		public static Direction findDirection(final Vector2 direction) {
+			Direction[] values = values();
+			Direction result = null;
+			for (Direction dir : values) {
+				if (dir.direction.epsilonEquals(direction, Utils.EPSILON)) {
+					result = dir;
+				}
+			}
+			return result;
 		}
 
 		public Vector2 getDirection(final Vector2 output) {

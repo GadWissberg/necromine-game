@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.collision.Ray;
 
 public class Utils {
 	private static final Plane floorPlane = new Plane(new Vector3(0, 1, 0), 0);
+	public static final float EPSILON = 0.01f;
 
 	public static Vector3 calculateGridPositionFromMouse(final Camera camera,
 														 final float screenX,

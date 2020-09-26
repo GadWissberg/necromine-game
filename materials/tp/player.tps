@@ -181,22 +181,54 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../sprites/player/east_idle_0.png</key>
-            <key type="filename">../sprites/player/east_idle_1.png</key>
-            <key type="filename">../sprites/player/north_east_idle_0.png</key>
-            <key type="filename">../sprites/player/north_east_idle_1.png</key>
-            <key type="filename">../sprites/player/north_idle_0.png</key>
-            <key type="filename">../sprites/player/north_idle_1.png</key>
-            <key type="filename">../sprites/player/north_west_idle_0.png</key>
-            <key type="filename">../sprites/player/north_west_idle_1.png</key>
-            <key type="filename">../sprites/player/south_east_idle_0.png</key>
-            <key type="filename">../sprites/player/south_east_idle_1.png</key>
-            <key type="filename">../sprites/player/south_idle_0.png</key>
-            <key type="filename">../sprites/player/south_idle_1.png</key>
-            <key type="filename">../sprites/player/south_west_idle_0.png</key>
-            <key type="filename">../sprites/player/south_west_idle_1.png</key>
-            <key type="filename">../sprites/player/west_idle_0.png</key>
-            <key type="filename">../sprites/player/west_idle_1.png</key>
+            <key type="filename">../sprites/player/idle_east_0.png</key>
+            <key type="filename">../sprites/player/idle_east_1.png</key>
+            <key type="filename">../sprites/player/idle_north_0.png</key>
+            <key type="filename">../sprites/player/idle_north_1.png</key>
+            <key type="filename">../sprites/player/idle_north_east_0.png</key>
+            <key type="filename">../sprites/player/idle_north_east_1.png</key>
+            <key type="filename">../sprites/player/idle_north_west_0.png</key>
+            <key type="filename">../sprites/player/idle_north_west_1.png</key>
+            <key type="filename">../sprites/player/idle_south_0.png</key>
+            <key type="filename">../sprites/player/idle_south_1.png</key>
+            <key type="filename">../sprites/player/idle_south_east_0.png</key>
+            <key type="filename">../sprites/player/idle_south_east_1.png</key>
+            <key type="filename">../sprites/player/idle_south_west_0.png</key>
+            <key type="filename">../sprites/player/idle_south_west_1.png</key>
+            <key type="filename">../sprites/player/idle_west_0.png</key>
+            <key type="filename">../sprites/player/idle_west_1.png</key>
+            <key type="filename">../sprites/player/run_east_0.png</key>
+            <key type="filename">../sprites/player/run_east_1.png</key>
+            <key type="filename">../sprites/player/run_east_2.png</key>
+            <key type="filename">../sprites/player/run_east_3.png</key>
+            <key type="filename">../sprites/player/run_north_0.png</key>
+            <key type="filename">../sprites/player/run_north_1.png</key>
+            <key type="filename">../sprites/player/run_north_2.png</key>
+            <key type="filename">../sprites/player/run_north_3.png</key>
+            <key type="filename">../sprites/player/run_north_east_0.png</key>
+            <key type="filename">../sprites/player/run_north_east_1.png</key>
+            <key type="filename">../sprites/player/run_north_east_2.png</key>
+            <key type="filename">../sprites/player/run_north_east_3.png</key>
+            <key type="filename">../sprites/player/run_north_west_0.png</key>
+            <key type="filename">../sprites/player/run_north_west_1.png</key>
+            <key type="filename">../sprites/player/run_north_west_2.png</key>
+            <key type="filename">../sprites/player/run_north_west_3.png</key>
+            <key type="filename">../sprites/player/run_south_0.png</key>
+            <key type="filename">../sprites/player/run_south_1.png</key>
+            <key type="filename">../sprites/player/run_south_2.png</key>
+            <key type="filename">../sprites/player/run_south_3.png</key>
+            <key type="filename">../sprites/player/run_south_east_0.png</key>
+            <key type="filename">../sprites/player/run_south_east_1.png</key>
+            <key type="filename">../sprites/player/run_south_east_2.png</key>
+            <key type="filename">../sprites/player/run_south_east_3.png</key>
+            <key type="filename">../sprites/player/run_south_west_0.png</key>
+            <key type="filename">../sprites/player/run_south_west_1.png</key>
+            <key type="filename">../sprites/player/run_south_west_2.png</key>
+            <key type="filename">../sprites/player/run_south_west_3.png</key>
+            <key type="filename">../sprites/player/run_west_0.png</key>
+            <key type="filename">../sprites/player/run_west_1.png</key>
+            <key type="filename">../sprites/player/run_west_2.png</key>
+            <key type="filename">../sprites/player/run_west_3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -214,22 +246,54 @@
         </map>
         <key>fileList</key>
         <array>
-            <filename>../sprites/player/east_idle_0.png</filename>
-            <filename>../sprites/player/east_idle_1.png</filename>
-            <filename>../sprites/player/north_east_idle_0.png</filename>
-            <filename>../sprites/player/north_east_idle_1.png</filename>
-            <filename>../sprites/player/north_idle_0.png</filename>
-            <filename>../sprites/player/north_idle_1.png</filename>
-            <filename>../sprites/player/north_west_idle_0.png</filename>
-            <filename>../sprites/player/north_west_idle_1.png</filename>
-            <filename>../sprites/player/south_idle_0.png</filename>
-            <filename>../sprites/player/south_idle_1.png</filename>
-            <filename>../sprites/player/south_west_idle_0.png</filename>
-            <filename>../sprites/player/south_west_idle_1.png</filename>
-            <filename>../sprites/player/west_idle_0.png</filename>
-            <filename>../sprites/player/west_idle_1.png</filename>
-            <filename>../sprites/player/south_east_idle_0.png</filename>
-            <filename>../sprites/player/south_east_idle_1.png</filename>
+            <filename>../sprites/player/idle_east_0.png</filename>
+            <filename>../sprites/player/idle_east_1.png</filename>
+            <filename>../sprites/player/idle_north_0.png</filename>
+            <filename>../sprites/player/idle_north_1.png</filename>
+            <filename>../sprites/player/idle_north_east_0.png</filename>
+            <filename>../sprites/player/idle_north_east_1.png</filename>
+            <filename>../sprites/player/idle_north_west_0.png</filename>
+            <filename>../sprites/player/idle_north_west_1.png</filename>
+            <filename>../sprites/player/idle_south_0.png</filename>
+            <filename>../sprites/player/idle_south_1.png</filename>
+            <filename>../sprites/player/idle_south_east_0.png</filename>
+            <filename>../sprites/player/idle_south_east_1.png</filename>
+            <filename>../sprites/player/idle_south_west_0.png</filename>
+            <filename>../sprites/player/idle_south_west_1.png</filename>
+            <filename>../sprites/player/idle_west_0.png</filename>
+            <filename>../sprites/player/idle_west_1.png</filename>
+            <filename>../sprites/player/run_east_0.png</filename>
+            <filename>../sprites/player/run_east_1.png</filename>
+            <filename>../sprites/player/run_east_2.png</filename>
+            <filename>../sprites/player/run_east_3.png</filename>
+            <filename>../sprites/player/run_north_0.png</filename>
+            <filename>../sprites/player/run_north_1.png</filename>
+            <filename>../sprites/player/run_north_2.png</filename>
+            <filename>../sprites/player/run_north_3.png</filename>
+            <filename>../sprites/player/run_north_east_0.png</filename>
+            <filename>../sprites/player/run_north_east_1.png</filename>
+            <filename>../sprites/player/run_north_east_2.png</filename>
+            <filename>../sprites/player/run_north_east_3.png</filename>
+            <filename>../sprites/player/run_north_west_0.png</filename>
+            <filename>../sprites/player/run_north_west_1.png</filename>
+            <filename>../sprites/player/run_north_west_2.png</filename>
+            <filename>../sprites/player/run_north_west_3.png</filename>
+            <filename>../sprites/player/run_south_0.png</filename>
+            <filename>../sprites/player/run_south_1.png</filename>
+            <filename>../sprites/player/run_south_2.png</filename>
+            <filename>../sprites/player/run_south_3.png</filename>
+            <filename>../sprites/player/run_south_east_0.png</filename>
+            <filename>../sprites/player/run_south_east_1.png</filename>
+            <filename>../sprites/player/run_south_east_2.png</filename>
+            <filename>../sprites/player/run_south_east_3.png</filename>
+            <filename>../sprites/player/run_south_west_0.png</filename>
+            <filename>../sprites/player/run_south_west_1.png</filename>
+            <filename>../sprites/player/run_south_west_2.png</filename>
+            <filename>../sprites/player/run_south_west_3.png</filename>
+            <filename>../sprites/player/run_west_0.png</filename>
+            <filename>../sprites/player/run_west_1.png</filename>
+            <filename>../sprites/player/run_west_2.png</filename>
+            <filename>../sprites/player/run_west_3.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
