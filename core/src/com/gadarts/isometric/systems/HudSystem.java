@@ -5,17 +5,14 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
+import com.gadarts.isometric.utils.Utils;
 
 public class HudSystem extends GameEntitySystem implements InputSystemEventsSubscriber {
 	private static final Vector3 auxVector = new Vector3();
-	private static final Plane floorPlane = new Plane(new Vector3(0, 1, 0), 0);
+
 	private ModelInstance cursorModelInstance;
 	private OrthographicCamera camera;
 
@@ -34,26 +31,22 @@ public class HudSystem extends GameEntitySystem implements InputSystemEventsSubs
 
 	@Override
 	public void mouseMoved(final int screenX, final int screenY) {
-		Ray ray = camera.getPickRay(screenX, screenY);
-		Intersector.intersectRayPlane(ray, floorPlane, auxVector);
-		auxVector.x = MathUtils.round(auxVector.x);
-		auxVector.y = 0;
-		auxVector.z = MathUtils.round(auxVector.z);
-		cursorModelInstance.transform.setTranslation(auxVector);
+		Vector3 position = Utils.calculateGridPositionFromMouse(camera, screenX, screenY, auxVector);
+		cursorModelInstance.transform.setTranslation(position);
 	}
 
 	@Override
-	public void touchDown(int screenX, int screenY, int button) {
+	public void touchDown(final int screenX, final int screenY, final int button) {
 
 	}
 
 	@Override
-	public void touchUp(int screenX, int screenY, int button) {
+	public void touchUp(final int screenX, final int screenY, final int button) {
 
 	}
 
 	@Override
-	public void touchDragged(int screenX, int screenY) {
+	public void touchDragged(final int screenX, final int screenY) {
 
 	}
 }

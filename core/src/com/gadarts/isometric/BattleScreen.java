@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.gadarts.isometric.systems.SystemsHandler;
 import com.gadarts.isometric.utils.GameAssetsManager;
 import com.gadarts.isometric.utils.MapBuilder;
+import com.gadarts.isometric.utils.MapGraph;
 
 public class BattleScreen implements Screen {
 	private final PooledEngine engine;
@@ -17,8 +18,8 @@ public class BattleScreen implements Screen {
 		assetManager = new GameAssetsManager();
 		assetManager.loadGameFiles();
 		mapBuilder = new MapBuilder(assetManager, engine);
-		mapBuilder.createAndAddTestMap();
-		systemsHandler = new SystemsHandler(engine);
+		MapGraph map = mapBuilder.createAndAddTestMap();
+		systemsHandler = new SystemsHandler(engine, map);
 	}
 
 	@Override

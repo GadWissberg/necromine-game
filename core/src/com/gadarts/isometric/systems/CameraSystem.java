@@ -16,13 +16,15 @@ public class CameraSystem extends GameEntitySystem implements InputSystemEventsS
     public static final int VIEWPORT_HEIGHT = IsometricGame.RESOLUTION_HEIGHT / 100;
     private static final float NEAR = 0.1f;
     private static final float FAR = 100f;
+    private static final Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);
 
     @Getter
     private final OrthographicCamera camera;
     private final Vector2 lastMousePosition = new Vector2();
+    private final Vector3 rotationPoint = new Vector3();
+
+    @Getter
     private boolean rotateCamera;
-    private Vector3 rotationPoint = new Vector3();
-    private Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);
 
     public CameraSystem() {
         camera = createCamera();

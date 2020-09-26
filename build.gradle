@@ -62,5 +62,6 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compileOnly 'org.projectlombok:lombok:1.18.12'
         annotationProcessor 'org.projectlombok:lombok:1.18.12'
+        compile group: 'com.badlogicgames.gdx', name: 'gdx-ai', version: '1.8.1'
     }
 }

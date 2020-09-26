@@ -18,19 +18,22 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.*;
-import com.gadarts.isometric.utils.Assets.CharacterDirectionsRegions;
+import com.gadarts.isometric.utils.Assets.CharacterDirRegions;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
 
-public class MapBuilder {
+/**
+ * Creates the map.
+ */
+public final class MapBuilder {
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final Vector3 auxVector3_3 = new Vector3();
 	private static final Vector3 auxVector3_4 = new Vector3();
 	private static final Vector3 auxVector3_5 = new Vector3();
+
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
 	private final ModelBuilder modelBuilder;
@@ -41,53 +44,57 @@ public class MapBuilder {
 		this.modelBuilder = new ModelBuilder();
 	}
 
-	public void createAndAddTestMap() {
+	/**
+	 * Test map.
+	 *
+	 * @return The map graph.
+	 */
+	public MapGraph createAndAddTestMap() {
+		MapGraph map = new MapGraph();
 		addTestFloor();
 		createAndAdd3dCursor();
 		addPlayer();
+		return map;
 	}
 
 	private void addPlayer() {
 		Entity entity = engine.createEntity();
-		TextureAtlas playerAtlas = assetManager.getAtlas(Assets.Atlases.PLAYER);
 		entity.add(engine.createComponent(PlayerComponent.class));
-		DecalComponent decalComponent = engine.createComponent(DecalComponent.class);
-
-		HashMap<CharacterDirectionsRegions, Animation<TextureAtlas.AtlasRegion>> playerAnimations = new HashMap<>();
-		Arrays.stream(CharacterDirectionsRegions.values()).forEach(dir -> {
-			Animation<TextureAtlas.AtlasRegion> animation = new Animation<>(1, playerAtlas.findRegions(dir.getRegionName()));
-			playerAnimations.put(dir, animation);
-		});
-
-
-		decalComponent.init(playerAnimations, CharacterDirectionsRegions.SOUTH_IDLE);
-		Decal decal = decalComponent.getDecal();
-		decal.setPosition(1, 0.3f, 1);
-		decal.setScale(0.01f);
-		CharacterComponent characterComponent = engine.createComponent(CharacterComponent.class);
-		characterComponent.init(CharacterComponent.Direction.SOUTH);
-		AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
-		animationComponent.init(0.4f, decalComponent.getAnimations().get(CharacterDirectionsRegions.SOUTH_IDLE));
+		CharacterAnimations playerAnimations = createPlayerAnimations();
+		DecalComponent decalComponent = addPlayerDecalComponent(entity, playerAnimations);
+		AnimationComponent animationComponent = addPlayerCharacterComponent(entity);
+		animationComponent.init(0.4f, decalComponent.getAnimations().get(CharacterDirRegions.SOUTH_IDLE));
 		entity.add(animationComponent);
-		entity.add(characterComponent);
-		entity.add(decalComponent);
 		engine.addEntity(entity);
 	}
 
-	private Model createBillboardModel(final TextureAtlas.AtlasRegion region) {
-		modelBuilder.begin();
+	private AnimationComponent addPlayerCharacterComponent(final Entity entity) {
+		CharacterComponent characterComponent = engine.createComponent(CharacterComponent.class);
+		characterComponent.init(CharacterComponent.Direction.SOUTH);
+		AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
+		entity.add(characterComponent);
+		return animationComponent;
+	}
 
-		Material material = new Material(TextureAttribute.createDiffuse(region));
+	private DecalComponent addPlayerDecalComponent(final Entity entity,
+												   final CharacterAnimations playerAnimations) {
+		DecalComponent decalComponent = engine.createComponent(DecalComponent.class);
+		decalComponent.init(playerAnimations, CharacterDirRegions.SOUTH_IDLE);
+		Decal decal = decalComponent.getDecal();
+		decal.setPosition(0.5f, 0.3f, 0.5f);
+		decal.setScale(0.01f);
+		entity.add(decalComponent);
+		return decalComponent;
+	}
 
-		MeshPartBuilder meshPartBuilder = modelBuilder.part(
-				"player",
-				GL20.GL_TRIANGLES,
-				Usage.Position | Usage.Normal | Usage.TextureCoordinates,
-				material);
-
-		createRect(meshPartBuilder, 1, 1, -0.5f, -0.5f);
-
-		return modelBuilder.end();
+	private CharacterAnimations createPlayerAnimations() {
+		CharacterAnimations playerAnimations = new CharacterAnimations();
+		TextureAtlas playerAtlas = assetManager.getAtlas(Assets.Atlases.PLAYER);
+		Arrays.stream(CharacterDirRegions.values()).forEach(dir -> {
+			Animation<TextureAtlas.AtlasRegion> a = new Animation<>(1, playerAtlas.findRegions(dir.getRegionName()));
+			playerAnimations.put(dir, a);
+		});
+		return playerAnimations;
 	}
 
 	private void addTestFloor() {
@@ -191,7 +198,7 @@ public class MapBuilder {
 	}
 
 	private Material createTestFloorMaterial() {
-		Texture floor = assetManager.get("textures/floor.png");
+		Texture floor = assetManager.getTexture(Assets.Textures.FloorTextures.FLOOR_0);
 		floor.setWrap(Repeat, Repeat);
 		Material material = new Material(TextureAttribute.createDiffuse(floor));
 		material.id = "floor_test";

@@ -2,6 +2,7 @@ package com.gadarts.isometric.components;
 
 import com.badlogic.gdx.math.Vector2;
 import com.gadarts.isometric.systems.EventsNotifier;
+import com.gadarts.isometric.utils.MapGraphNode;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -12,7 +13,19 @@ import java.util.List;
 public class CharacterComponent implements GameComponent, EventsNotifier<CharacterComponentEventsSubscriber> {
 	@Getter(AccessLevel.NONE)
 	private final List<CharacterComponentEventsSubscriber> subscribers = new ArrayList<>();
+
+	@Getter(AccessLevel.NONE)
+	private MapGraphNode destinationNode;
+
 	private Direction direction;
+
+	public MapGraphNode getDestinationNode() {
+		return destinationNode;
+	}
+
+	public void setDestinationNode(final MapGraphNode newValue) {
+		this.destinationNode = newValue;
+	}
 
 	@Override
 	public void reset() {

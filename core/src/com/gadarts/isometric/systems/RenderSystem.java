@@ -17,8 +17,11 @@ import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.utils.Assets;
 
@@ -28,13 +31,14 @@ public class RenderSystem extends EntitySystem implements EntityListener {
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector2 auxVector2_3 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
-	private static final Vector3 auxVector3_2 = new Vector3();
 	public static final int DECALS_POOL_SIZE = 200;
+
 	private final ModelBatch modelBatch;
 	private DecalBatch decalBatch;
 	private Camera camera;
 	private ImmutableArray<Entity> modelInstanceEntities;
 	private ImmutableArray<Entity> decalEntities;
+	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
 
 	public RenderSystem() {
 		this.modelBatch = new ModelBatch();
@@ -88,25 +92,29 @@ public class RenderSystem extends EntitySystem implements EntityListener {
 			DecalComponent decalComponent = ComponentsMapper.decal.get(entity);
 			Decal decal = decalComponent.getDecal();
 			auxVector2_3.set(1, 0);
-			auxVector2_3.setAngle(characterComponent.getDirection().getDirection(auxVector2_1).angle() - auxVector2_2.set(camera.position.x, camera.position.z).sub(decal.getX(), decal.getZ()).angle());
+			float playerAngle = characterComponent.getDirection().getDirection(auxVector2_1).angle();
+			Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+			Intersector.intersectRayPlane(ray, auxPlane, auxVector3_1);
+			float cameraAngle = auxVector2_2.set(camera.position.x, camera.position.z).sub(auxVector3_1.x, auxVector3_1.z).angle();
+			auxVector2_3.setAngle(playerAngle - cameraAngle);
 			float angleDiff = auxVector2_3.angle();
-			Assets.CharacterDirectionsRegions region;
-			if ((angleDiff >= 0 && angleDiff <= 22.5) || (angleDiff > 337.5 && angleDiff <= 360)) {
-				region = Assets.CharacterDirectionsRegions.SOUTH_IDLE;
+			Assets.CharacterDirRegions region;
+			if ((angleDiff >= 0 && angleDiff <= 22.5) || (angleDiff > 337.5f && angleDiff <= 360)) {
+				region = Assets.CharacterDirRegions.SOUTH_IDLE;
 			} else if (angleDiff > 22.5 && angleDiff <= 67.5) {
-				region = Assets.CharacterDirectionsRegions.SOUTH_WEST_IDLE;
+				region = Assets.CharacterDirRegions.SOUTH_WEST_IDLE;
 			} else if (angleDiff > 67.5 && angleDiff <= 112.5) {
-				region = Assets.CharacterDirectionsRegions.WEST_IDLE;
+				region = Assets.CharacterDirRegions.WEST_IDLE;
 			} else if (angleDiff > 112.5 && angleDiff <= 157.5) {
-				region = Assets.CharacterDirectionsRegions.NORTH_WEST_IDLE;
+				region = Assets.CharacterDirRegions.NORTH_WEST_IDLE;
 			} else if (angleDiff > 157.5 && angleDiff <= 202.5) {
-				region = Assets.CharacterDirectionsRegions.NORTH_IDLE;
+				region = Assets.CharacterDirRegions.NORTH_IDLE;
 			} else if (angleDiff > 202.5 && angleDiff <= 247.5) {
-				region = Assets.CharacterDirectionsRegions.NORTH_EAST_IDLE;
+				region = Assets.CharacterDirRegions.NORTH_EAST_IDLE;
 			} else if (angleDiff > 247.5 && angleDiff <= 292.5) {
-				region = Assets.CharacterDirectionsRegions.EAST_IDLE;
+				region = Assets.CharacterDirRegions.EAST_IDLE;
 			} else {
-				region = Assets.CharacterDirectionsRegions.SOUTH_EAST_IDLE;
+				region = Assets.CharacterDirRegions.SOUTH_EAST_IDLE;
 			}
 			if (!decalComponent.getCurrentRegion().getRegionName().equals(region.getRegionName())) {
 				decalComponent.initializeRegion(region);

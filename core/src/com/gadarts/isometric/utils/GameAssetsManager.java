@@ -5,18 +5,28 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.gadarts.isometric.utils.Assets.Textures.FloorTextures;
+
+import java.util.Arrays;
 
 public class GameAssetsManager extends AssetManager {
 	private static final String ATLAS_FOLDER = "atlases";
-	private static final String TEXTURES_FOLDER = "textures";
 
 	public void loadGameFiles() {
-		load(Gdx.files.getFileHandle(TEXTURES_FOLDER + "/" + "floor.png", Files.FileType.Internal).path(), Texture.class);
-		load(Gdx.files.getFileHandle(ATLAS_FOLDER + "/" + Assets.Atlases.PLAYER.name().toLowerCase() + ".txt", Files.FileType.Internal).path(), TextureAtlas.class);
+		Arrays.stream(FloorTextures.values()).forEach(floor -> load(
+				Gdx.files.getFileHandle(floor.getFilePath(), Files.FileType.Internal).path(),
+				Texture.class)
+		);
+		String path = ATLAS_FOLDER + "/" + Assets.Atlases.PLAYER.name().toLowerCase() + ".txt";
+		load(Gdx.files.getFileHandle(path, Files.FileType.Internal).path(), TextureAtlas.class);
 		finishLoading();
 	}
 
 	public TextureAtlas getAtlas(final Assets.Atlases atlas) {
 		return get(ATLAS_FOLDER + "/" + atlas.name().toLowerCase() + ".txt", TextureAtlas.class);
+	}
+
+	public Texture getTexture(final TextureDefinition definition) {
+		return get(definition.getFilePath());
 	}
 }
