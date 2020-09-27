@@ -17,10 +17,7 @@ import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Plane;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.components.*;
 
@@ -38,6 +35,7 @@ public class RenderSystem extends EntitySystem implements EntityListener {
 	private ImmutableArray<Entity> modelInstanceEntities;
 	private ImmutableArray<Entity> decalEntities;
 	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
+	private static final Quaternion auxQuat = new Quaternion();
 
 	public RenderSystem() {
 		this.modelBatch = new ModelBatch();
@@ -129,7 +127,7 @@ public class RenderSystem extends EntitySystem implements EntityListener {
 					decal.setTextureRegion(currentFrame);
 				}
 			}
-			decal.lookAt(camera.position, camera.up);
+			decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
 			decalBatch.add(decal);
 		}
 		decalBatch.flush();
