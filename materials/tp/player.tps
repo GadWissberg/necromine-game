@@ -229,6 +229,22 @@
             <key type="filename">../sprites/player/run_west_1.png</key>
             <key type="filename">../sprites/player/run_west_2.png</key>
             <key type="filename">../sprites/player/run_west_3.png</key>
+            <key type="filename">../sprites/player/shoot_east_0.png</key>
+            <key type="filename">../sprites/player/shoot_east_1.png</key>
+            <key type="filename">../sprites/player/shoot_north_0.png</key>
+            <key type="filename">../sprites/player/shoot_north_1.png</key>
+            <key type="filename">../sprites/player/shoot_north_east_0.png</key>
+            <key type="filename">../sprites/player/shoot_north_east_1.png</key>
+            <key type="filename">../sprites/player/shoot_north_west_0.png</key>
+            <key type="filename">../sprites/player/shoot_north_west_1.png</key>
+            <key type="filename">../sprites/player/shoot_south_0.png</key>
+            <key type="filename">../sprites/player/shoot_south_1.png</key>
+            <key type="filename">../sprites/player/shoot_south_east_0.png</key>
+            <key type="filename">../sprites/player/shoot_south_east_1.png</key>
+            <key type="filename">../sprites/player/shoot_south_west_0.png</key>
+            <key type="filename">../sprites/player/shoot_south_west_1.png</key>
+            <key type="filename">../sprites/player/shoot_west_0.png</key>
+            <key type="filename">../sprites/player/shoot_west_1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -294,6 +310,22 @@
             <filename>../sprites/player/run_west_1.png</filename>
             <filename>../sprites/player/run_west_2.png</filename>
             <filename>../sprites/player/run_west_3.png</filename>
+            <filename>../sprites/player/shoot_east_0.png</filename>
+            <filename>../sprites/player/shoot_east_1.png</filename>
+            <filename>../sprites/player/shoot_north_0.png</filename>
+            <filename>../sprites/player/shoot_north_1.png</filename>
+            <filename>../sprites/player/shoot_north_east_0.png</filename>
+            <filename>../sprites/player/shoot_north_east_1.png</filename>
+            <filename>../sprites/player/shoot_north_west_0.png</filename>
+            <filename>../sprites/player/shoot_north_west_1.png</filename>
+            <filename>../sprites/player/shoot_south_0.png</filename>
+            <filename>../sprites/player/shoot_south_1.png</filename>
+            <filename>../sprites/player/shoot_south_east_0.png</filename>
+            <filename>../sprites/player/shoot_south_east_1.png</filename>
+            <filename>../sprites/player/shoot_south_west_0.png</filename>
+            <filename>../sprites/player/shoot_south_west_1.png</filename>
+            <filename>../sprites/player/shoot_west_0.png</filename>
+            <filename>../sprites/player/shoot_west_1.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

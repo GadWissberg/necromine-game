@@ -52,11 +52,11 @@ public class CameraSystem extends GameEntitySystem implements InputSystemEventsS
     }
 
     @Override
-    public void mouseMoved(int screenX, int screenY) {
+    public void mouseMoved(final int screenX, final int screenY) {
     }
 
     @Override
-    public void touchDown(int screenX, int screenY, int button) {
+    public void touchDown(final int screenX, final int screenY, final int button) {
         if (button == Input.Buttons.RIGHT) {
             Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
             Intersector.intersectRayPlane(ray, groundPlane, rotationPoint);
@@ -66,14 +66,14 @@ public class CameraSystem extends GameEntitySystem implements InputSystemEventsS
     }
 
     @Override
-    public void touchUp(int screenX, int screenY, int button) {
+    public void touchUp(final int screenX, final int screenY, final int button) {
         if (button == Input.Buttons.RIGHT) {
             rotateCamera = false;
         }
     }
 
     @Override
-    public void touchDragged(int screenX, int screenY) {
+    public void touchDragged(final int screenX, final int screenY) {
         if (rotateCamera) {
             camera.rotateAround(rotationPoint, Vector3.Y, (lastMousePosition.x - screenX) / 2f);
             lastMousePosition.set(screenX, screenY);

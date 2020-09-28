@@ -12,16 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 public class CharacterComponent implements GameComponent, EventsNotifier<CharacterComponentEventsSubscriber> {
+
 	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
 	private final List<CharacterComponentEventsSubscriber> subscribers = new ArrayList<>();
 
 	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
 	private MapGraphNode destinationNode;
 
-	@Setter
 	private SpriteType spriteType;
-	@Setter
 	private Direction direction;
 
 	public MapGraphNode getDestinationNode() {

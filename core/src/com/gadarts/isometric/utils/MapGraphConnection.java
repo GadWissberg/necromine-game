@@ -3,12 +3,10 @@ package com.gadarts.isometric.utils;
 import com.badlogic.gdx.ai.pfa.Connection;
 
 public class MapGraphConnection<T> implements Connection<T> {
-	private final MapGraph mapGraph;
 	private final T source;
 	private final T dest;
 
-	public MapGraphConnection(final MapGraph mapGraph, final T source, final T target) {
-		this.mapGraph = mapGraph;
+	public MapGraphConnection(final T source, final T target) {
 		this.source = source;
 		this.dest = target;
 	}

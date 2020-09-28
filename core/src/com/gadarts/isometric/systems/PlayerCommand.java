@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class PlayerCommand {
 	private Commands type;
-	private Vector3 destination = new Vector3();
+	private final Vector3 destination = new Vector3();
 
 	public Vector3 getDestination(final Vector3 output) {
 		return output.set(destination);

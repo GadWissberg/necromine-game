@@ -22,12 +22,13 @@ public class PlayerSystem extends GameEntitySystem implements InputSystemEventsS
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final MapGraphPath currentPath = new MapGraphPath();
+
 	private final MapGraph map;
 	private final IndexedAStarPathFinder<MapGraphNode> pathFinder;
+	private final Heuristic<MapGraphNode> heuristic;
 	private CameraSystem cameraSystem;
 	private PlayerCommand currentCommand;
 	private Entity player;
-	private final Heuristic<MapGraphNode> heuristic;
 
 	public PlayerSystem(final MapGraph map) {
 		this.map = map;

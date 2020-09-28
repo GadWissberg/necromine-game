@@ -11,13 +11,12 @@ public class BattleScreen implements Screen {
 	private final PooledEngine engine;
 	private final SystemsHandler systemsHandler;
 	private final GameAssetsManager assetManager;
-	private final MapBuilder mapBuilder;
 
 	public BattleScreen() {
 		this.engine = new PooledEngine();
 		assetManager = new GameAssetsManager();
 		assetManager.loadGameFiles();
-		mapBuilder = new MapBuilder(assetManager, engine);
+		MapBuilder mapBuilder = new MapBuilder(assetManager, engine);
 		MapGraph map = mapBuilder.createAndAddTestMap();
 		systemsHandler = new SystemsHandler(engine, map);
 	}

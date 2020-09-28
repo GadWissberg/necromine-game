@@ -38,7 +38,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode> {
 	private void addConnection(final MapGraphNode n, final int xOffset, final int yOffset) {
 		MapGraphNode target = getNode(n.getX() + xOffset, n.getY() + yOffset);
 		if (target.getType() == 0) {
-			n.getConnections().add(new MapGraphConnection<>(this, n, target));
+			n.getConnections().add(new MapGraphConnection<>(n, target));
 		}
 	}
 

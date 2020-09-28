@@ -17,31 +17,36 @@ import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Plane;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.components.*;
 
+/**
+ * Handles rendering.
+ */
 public class RenderSystem extends EntitySystem implements EntityListener {
 
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector2 auxVector2_3 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
-	public static final int DECALS_POOL_SIZE = 200;
+	private static final int DECALS_POOL_SIZE = 200;
+	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
 
 	private final ModelBatch modelBatch;
 	private DecalBatch decalBatch;
 	private Camera camera;
 	private ImmutableArray<Entity> modelInstanceEntities;
 	private ImmutableArray<Entity> decalEntities;
-	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
-	private static final Quaternion auxQuat = new Quaternion();
 
 	public RenderSystem() {
 		this.modelBatch = new ModelBatch();
 	}
 
-	public static void resetDisplay(final Color color) {
+	private void resetDisplay(final Color color) {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		Gdx.gl.glClearColor(color.r, color.g, color.b, 1);
@@ -51,14 +56,18 @@ public class RenderSystem extends EntitySystem implements EntityListener {
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 		this.camera = engine.getSystem(CameraSystem.class).getCamera();
-		decalBatch = new DecalBatch(DECALS_POOL_SIZE, new CameraGroupStrategy(camera));
+		this.decalBatch = new DecalBatch(DECALS_POOL_SIZE, new CameraGroupStrategy(camera));
 		engine.addEntityListener(this);
+		createAxis(engine);
+		modelInstanceEntities = engine.getEntitiesFor(Family.all(ModelInstanceComponent.class).get());
+		decalEntities = engine.getEntitiesFor(Family.all(DecalComponent.class).get());
+	}
+
+	private void createAxis(final Engine engine) {
 		ModelBuilder modelBuilder = new ModelBuilder();
 		engine.addEntity(createArrowEntity(modelBuilder, Color.RED, auxVector3_1.set(1, 0, 0)));
 		engine.addEntity(createArrowEntity(modelBuilder, Color.GREEN, auxVector3_1.set(0, 1, 0)));
 		engine.addEntity(createArrowEntity(modelBuilder, Color.BLUE, auxVector3_1.set(0, 0, 1)));
-		modelInstanceEntities = engine.getEntitiesFor(Family.all(ModelInstanceComponent.class).get());
-		decalEntities = engine.getEntitiesFor(Family.all(DecalComponent.class).get());
 	}
 
 	private Entity createArrowEntity(final ModelBuilder modelBuilder,
