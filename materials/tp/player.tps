@@ -108,7 +108,7 @@
             <key>sizeConstraints</key>
             <enum type="AlgorithmSettings::SizeConstraints">AnySize</enum>
             <key>forceSquared</key>
-            <false/>
+            <true/>
             <key>maxRects</key>
             <struct type="AlgorithmMaxRectsSettings">
                 <key>heuristic</key>
@@ -181,6 +181,30 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">../sprites/player/attack_east_0.png</key>
+            <key type="filename">../sprites/player/attack_east_1.png</key>
+            <key type="filename">../sprites/player/attack_east_2.png</key>
+            <key type="filename">../sprites/player/attack_north_0.png</key>
+            <key type="filename">../sprites/player/attack_north_1.png</key>
+            <key type="filename">../sprites/player/attack_north_2.png</key>
+            <key type="filename">../sprites/player/attack_north_east_0.png</key>
+            <key type="filename">../sprites/player/attack_north_east_1.png</key>
+            <key type="filename">../sprites/player/attack_north_east_2.png</key>
+            <key type="filename">../sprites/player/attack_north_west_0.png</key>
+            <key type="filename">../sprites/player/attack_north_west_1.png</key>
+            <key type="filename">../sprites/player/attack_north_west_2.png</key>
+            <key type="filename">../sprites/player/attack_south_0.png</key>
+            <key type="filename">../sprites/player/attack_south_1.png</key>
+            <key type="filename">../sprites/player/attack_south_2.png</key>
+            <key type="filename">../sprites/player/attack_south_east_0.png</key>
+            <key type="filename">../sprites/player/attack_south_east_1.png</key>
+            <key type="filename">../sprites/player/attack_south_east_2.png</key>
+            <key type="filename">../sprites/player/attack_south_west_0.png</key>
+            <key type="filename">../sprites/player/attack_south_west_1.png</key>
+            <key type="filename">../sprites/player/attack_south_west_2.png</key>
+            <key type="filename">../sprites/player/attack_west_0.png</key>
+            <key type="filename">../sprites/player/attack_west_1.png</key>
+            <key type="filename">../sprites/player/attack_west_2.png</key>
             <key type="filename">../sprites/player/idle_east_0.png</key>
             <key type="filename">../sprites/player/idle_east_1.png</key>
             <key type="filename">../sprites/player/idle_north_0.png</key>
@@ -229,22 +253,6 @@
             <key type="filename">../sprites/player/run_west_1.png</key>
             <key type="filename">../sprites/player/run_west_2.png</key>
             <key type="filename">../sprites/player/run_west_3.png</key>
-            <key type="filename">../sprites/player/shoot_east_0.png</key>
-            <key type="filename">../sprites/player/shoot_east_1.png</key>
-            <key type="filename">../sprites/player/shoot_north_0.png</key>
-            <key type="filename">../sprites/player/shoot_north_1.png</key>
-            <key type="filename">../sprites/player/shoot_north_east_0.png</key>
-            <key type="filename">../sprites/player/shoot_north_east_1.png</key>
-            <key type="filename">../sprites/player/shoot_north_west_0.png</key>
-            <key type="filename">../sprites/player/shoot_north_west_1.png</key>
-            <key type="filename">../sprites/player/shoot_south_0.png</key>
-            <key type="filename">../sprites/player/shoot_south_1.png</key>
-            <key type="filename">../sprites/player/shoot_south_east_0.png</key>
-            <key type="filename">../sprites/player/shoot_south_east_1.png</key>
-            <key type="filename">../sprites/player/shoot_south_west_0.png</key>
-            <key type="filename">../sprites/player/shoot_south_west_1.png</key>
-            <key type="filename">../sprites/player/shoot_west_0.png</key>
-            <key type="filename">../sprites/player/shoot_west_1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -310,22 +318,30 @@
             <filename>../sprites/player/run_west_1.png</filename>
             <filename>../sprites/player/run_west_2.png</filename>
             <filename>../sprites/player/run_west_3.png</filename>
-            <filename>../sprites/player/shoot_east_0.png</filename>
-            <filename>../sprites/player/shoot_east_1.png</filename>
-            <filename>../sprites/player/shoot_north_0.png</filename>
-            <filename>../sprites/player/shoot_north_1.png</filename>
-            <filename>../sprites/player/shoot_north_east_0.png</filename>
-            <filename>../sprites/player/shoot_north_east_1.png</filename>
-            <filename>../sprites/player/shoot_north_west_0.png</filename>
-            <filename>../sprites/player/shoot_north_west_1.png</filename>
-            <filename>../sprites/player/shoot_south_0.png</filename>
-            <filename>../sprites/player/shoot_south_1.png</filename>
-            <filename>../sprites/player/shoot_south_east_0.png</filename>
-            <filename>../sprites/player/shoot_south_east_1.png</filename>
-            <filename>../sprites/player/shoot_south_west_0.png</filename>
-            <filename>../sprites/player/shoot_south_west_1.png</filename>
-            <filename>../sprites/player/shoot_west_0.png</filename>
-            <filename>../sprites/player/shoot_west_1.png</filename>
+            <filename>../sprites/player/attack_east_0.png</filename>
+            <filename>../sprites/player/attack_east_1.png</filename>
+            <filename>../sprites/player/attack_east_2.png</filename>
+            <filename>../sprites/player/attack_north_0.png</filename>
+            <filename>../sprites/player/attack_north_1.png</filename>
+            <filename>../sprites/player/attack_north_2.png</filename>
+            <filename>../sprites/player/attack_north_east_0.png</filename>
+            <filename>../sprites/player/attack_north_east_1.png</filename>
+            <filename>../sprites/player/attack_north_east_2.png</filename>
+            <filename>../sprites/player/attack_north_west_0.png</filename>
+            <filename>../sprites/player/attack_north_west_1.png</filename>
+            <filename>../sprites/player/attack_north_west_2.png</filename>
+            <filename>../sprites/player/attack_south_0.png</filename>
+            <filename>../sprites/player/attack_south_1.png</filename>
+            <filename>../sprites/player/attack_south_2.png</filename>
+            <filename>../sprites/player/attack_south_east_0.png</filename>
+            <filename>../sprites/player/attack_south_east_1.png</filename>
+            <filename>../sprites/player/attack_south_east_2.png</filename>
+            <filename>../sprites/player/attack_south_west_0.png</filename>
+            <filename>../sprites/player/attack_south_west_1.png</filename>
+            <filename>../sprites/player/attack_south_west_2.png</filename>
+            <filename>../sprites/player/attack_west_0.png</filename>
+            <filename>../sprites/player/attack_west_1.png</filename>
+            <filename>../sprites/player/attack_west_2.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
