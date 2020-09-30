@@ -9,13 +9,22 @@ public class SystemsHandler implements Disposable {
 
 	public SystemsHandler(final PooledEngine engine, final MapGraph map) {
 		this.engine = engine;
-		CharacterSystem characterSystem = new CharacterSystem();
+		CharacterSystem characterSystem = new CharacterSystem(map);
 		engine.addSystem(characterSystem);
 		CameraSystem cameraSystem = new CameraSystem();
 		engine.addSystem(cameraSystem);
-		PlayerSystem playerSystem = new PlayerSystem(map);
+		EnemySystem enemySystem = new EnemySystem();
+		TurnsSystem turnsSystem = new TurnsSystem();
+		engine.addSystem(turnsSystem);
+		turnsSystem.subscribeForEvents(enemySystem);
+		enemySystem.subscribeForEvents(turnsSystem);
+		PlayerSystem playerSystem = new PlayerSystem();
+		characterSystem.subscribeForEvents(playerSystem);
+		characterSystem.subscribeForEvents(enemySystem);
+		playerSystem.subscribeForEvents(turnsSystem);
 		engine.addSystem(playerSystem);
 		engine.addSystem(new RenderSystem());
+		engine.addSystem(enemySystem);
 		InputSystem inputSystem = new InputSystem();
 		engine.addSystem(inputSystem);
 		HudSystem hudSystem = new HudSystem();

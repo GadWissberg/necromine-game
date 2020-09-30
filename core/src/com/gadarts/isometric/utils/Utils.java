@@ -17,9 +17,13 @@ public class Utils {
 														 final Vector3 output) {
 		Ray ray = camera.getPickRay(screenX, screenY);
 		Intersector.intersectRayPlane(ray, floorPlane, output);
-		output.x = MathUtils.round(output.x);
-		output.y = 0;
-		output.z = MathUtils.round(output.z);
-		return output;
+		return alignPositionToGrid(output);
+	}
+
+	public static Vector3 alignPositionToGrid(final Vector3 position) {
+		position.x = MathUtils.round(position.x);
+		position.y = 0;
+		position.z = MathUtils.round(position.z);
+		return position;
 	}
 }
