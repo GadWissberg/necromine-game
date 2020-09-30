@@ -2,9 +2,9 @@ package com.gadarts.isometric.utils;
 
 public final class Assets {
 
-	public static final String PATH_SEPERATOR = "/";
+	public static final String PATH_SEPARATOR = "/";
 
-	public enum Atlases {PLAYER}
+	public enum Atlases {PLAYER, ZEALOT}
 
 	public static final class Textures {
 		public enum FloorTextures implements TextureDefinition {
@@ -15,7 +15,7 @@ public final class Assets {
 			private final String filePath;
 
 			FloorTextures() {
-				filePath = TEXTURES_FOLDER + PATH_SEPERATOR + name().toLowerCase() + "." + TEXTURE_FORMAT;
+				filePath = TEXTURES_FOLDER + PATH_SEPARATOR + name().toLowerCase() + "." + TEXTURE_FORMAT;
 			}
 
 			@Override

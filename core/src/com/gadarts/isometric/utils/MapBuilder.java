@@ -53,46 +53,60 @@ public final class MapBuilder {
 		addTestFloor();
 		createAndAdd3dCursor();
 		addPlayer();
+		addEnemyTest();
 		return map;
 	}
 
 	private void addPlayer() {
 		Entity entity = engine.createEntity();
 		entity.add(engine.createComponent(PlayerComponent.class));
-		CharacterAnimations playerAnimations = createPlayerAnimations();
-		CharacterComponent characterComponent = engine.createComponent(CharacterComponent.class);
-		characterComponent.init(CharacterComponent.Direction.SOUTH, SpriteType.IDLE);
-		DecalComponent decalComponent = addPlayerDecalComponent(entity, playerAnimations, characterComponent);
-		entity.add(characterComponent);
-		AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
-		animationComponent.init(0.4f, decalComponent.getAnimations().get(characterComponent.getSpriteType(), characterComponent.getDirection()));
-		entity.add(animationComponent);
+		addCharacterBaseComponents(entity, Assets.Atlases.PLAYER, auxVector3_1.set(0.5f, 0.3f, 0.5f));
 		engine.addEntity(entity);
 	}
 
-	private DecalComponent addPlayerDecalComponent(final Entity entity,
-												   final CharacterAnimations playerAnimations,
-												   final CharacterComponent characterComponent) {
+	private void addEnemyTest() {
+		Entity entity = engine.createEntity();
+		entity.add(engine.createComponent(EnemyComponent.class));
+		addCharacterBaseComponents(entity, Assets.Atlases.ZEALOT, auxVector3_1.set(2.5f, 0.3f, 2.5f));
+		engine.addEntity(entity);
+	}
+
+	private void addCharacterBaseComponents(final Entity entity, final Assets.Atlases zealot, final Vector3 position) {
+		CharacterAnimations animations = createCharacterAnimations(zealot);
+		CharacterComponent charComponent = engine.createComponent(CharacterComponent.class);
+		charComponent.init(CharacterComponent.Direction.SOUTH, SpriteType.IDLE);
+		addCharacterDecalComponent(entity, animations, charComponent, position);
+		entity.add(charComponent);
+		AnimationComponent animComponent = engine.createComponent(AnimationComponent.class);
+		animComponent.init(0.4f, animations.get(charComponent.getSpriteType(), charComponent.getDirection()));
+		entity.add(animComponent);
+	}
+
+	private DecalComponent addCharacterDecalComponent(final Entity entity,
+													  final CharacterAnimations animations,
+													  final CharacterComponent characterComponent,
+													  final Vector3 position) {
 		DecalComponent decalComponent = engine.createComponent(DecalComponent.class);
-		decalComponent.init(playerAnimations, characterComponent.getSpriteType(), characterComponent.getDirection());
+		decalComponent.init(animations, characterComponent.getSpriteType(), characterComponent.getDirection());
 		Decal decal = decalComponent.getDecal();
-		decal.setPosition(0.5f, 0.3f, 0.5f);
+		decal.setPosition(position);
 		decal.setScale(0.01f);
 		entity.add(decalComponent);
 		return decalComponent;
 	}
 
-	private CharacterAnimations createPlayerAnimations() {
-		CharacterAnimations playerAnimations = new CharacterAnimations();
-		TextureAtlas playerAtlas = assetManager.getAtlas(Assets.Atlases.PLAYER);
+	private CharacterAnimations createCharacterAnimations(final Assets.Atlases zealot) {
+		CharacterAnimations animations = new CharacterAnimations();
+		TextureAtlas atlas = assetManager.getAtlas(zealot);
 		Arrays.stream(SpriteType.values()).forEach(spriteType -> Arrays.stream(CharacterComponent.Direction.values())
 				.forEach(dir -> {
 					String name = spriteType.name().toLowerCase() + "_" + dir.name().toLowerCase();
-					Animation<TextureAtlas.AtlasRegion> a = new Animation<>(spriteType.getAnimationDuration(), playerAtlas.findRegions(name));
-					playerAnimations.put(spriteType, dir, a);
+					float animationDuration = spriteType.getAnimationDuration();
+					Animation<TextureAtlas.AtlasRegion> a = new Animation<>(animationDuration, atlas.findRegions(name));
+					animations.put(spriteType, dir, a);
 				})
 		);
-		return playerAnimations;
+		return animations;
 	}
 
 	private void addTestFloor() {
