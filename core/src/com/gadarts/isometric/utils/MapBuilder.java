@@ -74,10 +74,10 @@ public final class MapBuilder {
 	}
 
 	private void addCharacterBaseComponents(final Entity entity,
-											final Assets.Atlases zealot,
+											final Assets.Atlases atlas,
 											final Vector3 position,
 											final Entity target) {
-		CharacterAnimations animations = createCharacterAnimations(zealot);
+		CharacterAnimations animations = createCharacterAnimations(atlas);
 		CharacterComponent charComponent = addCharacterComponent(entity, target);
 		charComponent.init(CharacterComponent.Direction.SOUTH, SpriteType.IDLE);
 		addCharacterDecalComponent(entity, animations, charComponent, position);
@@ -112,8 +112,12 @@ public final class MapBuilder {
 		Arrays.stream(SpriteType.values()).forEach(spriteType -> Arrays.stream(CharacterComponent.Direction.values())
 				.forEach(dir -> {
 					String name = spriteType.name().toLowerCase() + "_" + dir.name().toLowerCase();
-					float animationDuration = spriteType.getAnimationDuration();
-					Animation<TextureAtlas.AtlasRegion> a = new Animation<>(animationDuration, atlas.findRegions(name));
+					float animaDur = spriteType.getAnimationDuration();
+					Animation<TextureAtlas.AtlasRegion> a = new Animation<>(
+							animaDur,
+							atlas.findRegions(name),
+							spriteType.getPlayMode()
+					);
 					animations.put(spriteType, dir, a);
 				})
 		);

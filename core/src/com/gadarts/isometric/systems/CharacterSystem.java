@@ -6,6 +6,7 @@ import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.gadarts.isometric.components.AnimationComponent;
 import com.gadarts.isometric.components.CharacterComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.SpriteType;
@@ -53,12 +54,16 @@ public class CharacterSystem extends GameEntitySystem implements EventsNotifier<
 		if (currentCommand.getType().getToDoAfterDestinationReached() != null) {
 			executeActionsAfterDestinationReached(character);
 		} else {
-			ComponentsMapper.character.get(character).setSpriteType(SpriteType.IDLE);
-			currentCommand = null;
-			currentPath.clear();
-			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-				subscriber.onCommandDone(character);
-			}
+			commandDone(character);
+		}
+	}
+
+	private void commandDone(final Entity character) {
+		ComponentsMapper.character.get(character).setSpriteType(SpriteType.IDLE);
+		currentCommand = null;
+		currentPath.clear();
+		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onCommandDone(character);
 		}
 	}
 
@@ -84,22 +89,30 @@ public class CharacterSystem extends GameEntitySystem implements EventsNotifier<
 		if (currentCommand != null) {
 			Entity character = currentCommand.getCharacter();
 			CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-			MapGraphNode oldDest = characterComponent.getDestinationNode();
-			Decal decal = ComponentsMapper.decal.get(character).getDecal();
-			float distanceFromDestination = auxVector2_1.set(decal.getX(), decal.getZ()).dst2(oldDest.getCenterPosition(auxVector2_2));
-			if (distanceFromDestination < Utils.EPSILON) {
-				MapGraphNode newDest = currentPath.getNextOf(oldDest);
-				if (newDest != null) {
-					initDestinationNode(characterComponent, newDest, oldDest);
-					characterComponent.setDestinationNode(newDest);
+			SpriteType spriteType = characterComponent.getSpriteType();
+			if (spriteType == SpriteType.RUN) {
+				MapGraphNode oldDest = characterComponent.getDestinationNode();
+				Decal decal = ComponentsMapper.decal.get(character).getDecal();
+				float distanceFromDestination = auxVector2_1.set(decal.getX(), decal.getZ()).dst2(oldDest.getCenterPosition(auxVector2_2));
+				if (distanceFromDestination < Utils.EPSILON) {
+					MapGraphNode newDest = currentPath.getNextOf(oldDest);
+					if (newDest != null) {
+						initDestinationNode(characterComponent, newDest, oldDest);
+						characterComponent.setDestinationNode(newDest);
+					} else {
+						destinationReached(character);
+					}
 				} else {
-					destinationReached(character);
+					auxVector2_2.set(oldDest.getX() + 0.5f, oldDest.getY() + 0.5f);
+					auxVector2_1.set(decal.getX(), decal.getZ());
+					Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(DefaultGameSettings.MULTIPLY_DELTA_TIME ? deltaTime : CONSTANT_DELTA_TIME);
+					decal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));
 				}
-			} else {
-				auxVector2_2.set(oldDest.getX() + 0.5f, oldDest.getY() + 0.5f);
-				auxVector2_1.set(decal.getX(), decal.getZ());
-				Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(DefaultGameSettings.MULTIPLY_DELTA_TIME ? deltaTime : CONSTANT_DELTA_TIME);
-				decal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));
+			} else if (spriteType == SpriteType.ATTACK) {
+				AnimationComponent animationComponent = ComponentsMapper.animation.get(character);
+				if (animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime())) {
+					commandDone(character);
+				}
 			}
 		}
 	}

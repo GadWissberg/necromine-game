@@ -61,6 +61,7 @@ public class EnemySystem extends GameEntitySystem implements
 			Vector3 playerPosition = ComponentsMapper.decal.get(player).getCellPosition(auxVector3_1);
 			MapGraphNode enemyNode = map.getNode((int) enemyPosition.x, (int) enemyPosition.z);
 			MapGraphNode playerNode = map.getNode((int) playerPosition.x, (int) playerPosition.z);
+			auxPath.clear();
 			boolean pathFound = pathFinder.searchNodePath(enemyNode, playerNode, heuristic, auxPath);
 			if (pathFound) {
 				CharacterSystem.auxCommand.init(Commands.GO_TO_MELEE, auxPath.get(auxPath.nodes.size - 2), enemy);

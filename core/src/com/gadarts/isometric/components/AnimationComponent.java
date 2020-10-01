@@ -17,11 +17,11 @@ public class AnimationComponent implements GameComponent {
 	public void init(final float frameDuration, final Animation<TextureAtlas.AtlasRegion> animation) {
 		this.animation = animation;
 		animation.setFrameDuration(frameDuration);
-		animation.setPlayMode(Animation.PlayMode.LOOP);
+		stateTime = 0;
 	}
 
 	public TextureAtlas.AtlasRegion getCurrentFrame(final float deltaTime) {
 		stateTime += deltaTime;
-		return animation.getKeyFrame(stateTime, true);
+		return animation.getKeyFrame(stateTime, animation.getPlayMode() == Animation.PlayMode.LOOP);
 	}
 }
