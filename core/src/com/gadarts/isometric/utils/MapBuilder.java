@@ -1,6 +1,7 @@
 package com.gadarts.isometric.utils;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -60,26 +61,36 @@ public final class MapBuilder {
 	private void addPlayer() {
 		Entity entity = engine.createEntity();
 		entity.add(engine.createComponent(PlayerComponent.class));
-		addCharacterBaseComponents(entity, Assets.Atlases.PLAYER, auxVector3_1.set(0.5f, 0.3f, 0.5f));
+		addCharacterBaseComponents(entity, Assets.Atlases.PLAYER, auxVector3_1.set(0.5f, 0.3f, 0.5f), null);
 		engine.addEntity(entity);
 	}
 
 	private void addEnemyTest() {
 		Entity entity = engine.createEntity();
 		entity.add(engine.createComponent(EnemyComponent.class));
-		addCharacterBaseComponents(entity, Assets.Atlases.ZEALOT, auxVector3_1.set(2.5f, 0.3f, 2.5f));
+		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+		addCharacterBaseComponents(entity, Assets.Atlases.ZEALOT, auxVector3_1.set(2.5f, 0.3f, 2.5f), player);
 		engine.addEntity(entity);
 	}
 
-	private void addCharacterBaseComponents(final Entity entity, final Assets.Atlases zealot, final Vector3 position) {
+	private void addCharacterBaseComponents(final Entity entity,
+											final Assets.Atlases zealot,
+											final Vector3 position,
+											final Entity target) {
 		CharacterAnimations animations = createCharacterAnimations(zealot);
-		CharacterComponent charComponent = engine.createComponent(CharacterComponent.class);
+		CharacterComponent charComponent = addCharacterComponent(entity, target);
 		charComponent.init(CharacterComponent.Direction.SOUTH, SpriteType.IDLE);
 		addCharacterDecalComponent(entity, animations, charComponent, position);
-		entity.add(charComponent);
 		AnimationComponent animComponent = engine.createComponent(AnimationComponent.class);
 		animComponent.init(0.4f, animations.get(charComponent.getSpriteType(), charComponent.getDirection()));
 		entity.add(animComponent);
+	}
+
+	private CharacterComponent addCharacterComponent(final Entity entity, final Entity target) {
+		CharacterComponent charComponent = engine.createComponent(CharacterComponent.class);
+		charComponent.setTarget(target);
+		entity.add(charComponent);
+		return charComponent;
 	}
 
 	private DecalComponent addCharacterDecalComponent(final Entity entity,

@@ -1,23 +1,22 @@
 package com.gadarts.isometric.systems;
 
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.math.Vector3;
+import com.gadarts.isometric.utils.MapGraphNode;
 import lombok.Getter;
 
+@Getter
 public class CharacterCommand {
 	private Commands type;
-	private final Vector3 destination = new Vector3();
-
-	@Getter
+	private MapGraphNode destination;
 	private Entity character;
 
-	public Vector3 getDestination(final Vector3 output) {
-		return output.set(destination);
+	public MapGraphNode getDestination() {
+		return destination;
 	}
 
-	public void init(final Commands type, final Vector3 destination, final Entity character) {
+	public void init(final Commands type, final MapGraphNode destination, final Entity character) {
 		this.type = type;
-		this.destination.set(destination);
+		this.destination = destination;
 		this.character = character;
 	}
 }

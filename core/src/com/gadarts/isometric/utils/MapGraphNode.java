@@ -27,7 +27,7 @@ public class MapGraphNode {
 				'}';
 	}
 
-	public Vector2 getRealPosition(final Vector2 output) {
+	public Vector2 getCenterPosition(final Vector2 output) {
 		return output.set(x + 0.5f, y + 0.5f);
 	}
 

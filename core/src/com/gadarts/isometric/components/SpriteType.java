@@ -4,7 +4,9 @@ import lombok.Getter;
 
 public enum SpriteType {
 	IDLE(0.5f),
-	RUN(0.15f);
+	RUN(0.15f),
+	ATTACK(0.15f);
+
 	@Getter
 	private final float animationDuration;
 

@@ -108,7 +108,7 @@
             <key>sizeConstraints</key>
             <enum type="AlgorithmSettings::SizeConstraints">AnySize</enum>
             <key>forceSquared</key>
-            <false/>
+            <true/>
             <key>maxRects</key>
             <struct type="AlgorithmMaxRectsSettings">
                 <key>heuristic</key>
@@ -132,7 +132,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename></filename>
+                <filename>../../core/assets/atlases/zealot.txt</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -181,6 +181,30 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">../sprites/zealot/attack_east_0.png</key>
+            <key type="filename">../sprites/zealot/attack_east_1.png</key>
+            <key type="filename">../sprites/zealot/attack_east_2.png</key>
+            <key type="filename">../sprites/zealot/attack_north_0.png</key>
+            <key type="filename">../sprites/zealot/attack_north_1.png</key>
+            <key type="filename">../sprites/zealot/attack_north_2.png</key>
+            <key type="filename">../sprites/zealot/attack_north_east_0.png</key>
+            <key type="filename">../sprites/zealot/attack_north_east_1.png</key>
+            <key type="filename">../sprites/zealot/attack_north_east_2.png</key>
+            <key type="filename">../sprites/zealot/attack_north_west_0.png</key>
+            <key type="filename">../sprites/zealot/attack_north_west_1.png</key>
+            <key type="filename">../sprites/zealot/attack_north_west_2.png</key>
+            <key type="filename">../sprites/zealot/attack_south_0.png</key>
+            <key type="filename">../sprites/zealot/attack_south_1.png</key>
+            <key type="filename">../sprites/zealot/attack_south_2.png</key>
+            <key type="filename">../sprites/zealot/attack_south_east_0.png</key>
+            <key type="filename">../sprites/zealot/attack_south_east_1.png</key>
+            <key type="filename">../sprites/zealot/attack_south_east_2.png</key>
+            <key type="filename">../sprites/zealot/attack_south_west_0.png</key>
+            <key type="filename">../sprites/zealot/attack_south_west_1.png</key>
+            <key type="filename">../sprites/zealot/attack_south_west_2.png</key>
+            <key type="filename">../sprites/zealot/attack_west_0.png</key>
+            <key type="filename">../sprites/zealot/attack_west_1.png</key>
+            <key type="filename">../sprites/zealot/attack_west_2.png</key>
             <key type="filename">../sprites/zealot/idle_east_0.png</key>
             <key type="filename">../sprites/zealot/idle_east_1.png</key>
             <key type="filename">../sprites/zealot/idle_north_0.png</key>
@@ -294,6 +318,30 @@
             <filename>../sprites/zealot/run_west_1.png</filename>
             <filename>../sprites/zealot/run_west_2.png</filename>
             <filename>../sprites/zealot/run_west_3.png</filename>
+            <filename>../sprites/zealot/attack_east_0.png</filename>
+            <filename>../sprites/zealot/attack_east_1.png</filename>
+            <filename>../sprites/zealot/attack_east_2.png</filename>
+            <filename>../sprites/zealot/attack_north_0.png</filename>
+            <filename>../sprites/zealot/attack_north_1.png</filename>
+            <filename>../sprites/zealot/attack_north_2.png</filename>
+            <filename>../sprites/zealot/attack_north_east_0.png</filename>
+            <filename>../sprites/zealot/attack_north_east_1.png</filename>
+            <filename>../sprites/zealot/attack_north_east_2.png</filename>
+            <filename>../sprites/zealot/attack_north_west_0.png</filename>
+            <filename>../sprites/zealot/attack_north_west_1.png</filename>
+            <filename>../sprites/zealot/attack_north_west_2.png</filename>
+            <filename>../sprites/zealot/attack_south_0.png</filename>
+            <filename>../sprites/zealot/attack_south_1.png</filename>
+            <filename>../sprites/zealot/attack_south_2.png</filename>
+            <filename>../sprites/zealot/attack_south_east_0.png</filename>
+            <filename>../sprites/zealot/attack_south_east_1.png</filename>
+            <filename>../sprites/zealot/attack_south_east_2.png</filename>
+            <filename>../sprites/zealot/attack_south_west_0.png</filename>
+            <filename>../sprites/zealot/attack_south_west_1.png</filename>
+            <filename>../sprites/zealot/attack_south_west_2.png</filename>
+            <filename>../sprites/zealot/attack_west_0.png</filename>
+            <filename>../sprites/zealot/attack_west_1.png</filename>
+            <filename>../sprites/zealot/attack_west_2.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

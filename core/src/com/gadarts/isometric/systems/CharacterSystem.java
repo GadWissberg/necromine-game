@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.CharacterComponent;
@@ -20,6 +19,7 @@ public class CharacterSystem extends GameEntitySystem implements EventsNotifier<
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
+	private static final float CONSTANT_DELTA_TIME = 0.025f;
 
 	private final MapGraphPath currentPath = new MapGraphPath();
 	private final MapGraph map;
@@ -30,36 +30,49 @@ public class CharacterSystem extends GameEntitySystem implements EventsNotifier<
 
 	public CharacterSystem(final MapGraph map) {
 		this.map = map;
-		pathFinder = new IndexedAStarPathFinder<>(map);
+		this.pathFinder = new IndexedAStarPathFinder<>(map);
 		this.heuristic = new GameHeuristic();
 	}
 
 	void applyCommand(final CharacterCommand command, final Entity character) {
 		currentCommand = command;
-		Vector3 destination = command.getDestination(auxVector3_1);
-		Decal decal = ComponentsMapper.decal.get(character).getDecal();
-		MapGraphNode source = map.getNode(MathUtils.floor(decal.getX()), MathUtils.floor(decal.getZ()));
-		MapGraphNode dest = map.getNode(MathUtils.floor(destination.x), MathUtils.floor(destination.z));
-		if (pathFinder.searchNodePath(source, dest, heuristic, currentPath)) {
-			CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		MapGraphNode sourceNode = map.getNode(ComponentsMapper.decal.get(character).getCellPosition(auxVector3_1));
+		MapGraphNode destNode = command.getDestination();
+		boolean foundPath = pathFinder.searchNodePath(sourceNode, destNode, heuristic, currentPath);
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		if (foundPath && currentPath.nodes.size > 1) {
 			characterComponent.setSpriteType(SpriteType.RUN);
 			initDestinationNode(characterComponent, currentPath.get(1), currentPath.get(0));
 		} else {
-			finishCommand(character);
+			characterComponent.setDestinationNode(sourceNode);
+			destinationReached(character);
 		}
 	}
 
-	public void finishCommand(final Entity character) {
-		currentCommand = null;
-		currentPath.clear();
-		ComponentsMapper.character.get(character).setSpriteType(SpriteType.IDLE);
+	public void destinationReached(final Entity character) {
+		if (currentCommand.getType().getToDoAfterDestinationReached() != null) {
+			executeActionsAfterDestinationReached(character);
+		} else {
+			ComponentsMapper.character.get(character).setSpriteType(SpriteType.IDLE);
+			currentCommand = null;
+			currentPath.clear();
+			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+				subscriber.onCommandDone(character);
+			}
+		}
+	}
+
+	private void executeActionsAfterDestinationReached(final Entity character) {
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onCommandFinished(character);
+			subscriber.onDestinationReached(character);
 		}
+		currentCommand.getType().getToDoAfterDestinationReached().run(character, map);
 	}
 
-	private void initDestinationNode(final CharacterComponent characterComponent, final MapGraphNode destNode, final MapGraphNode srcNode) {
-		Vector2 direction = destNode.getRealPosition(auxVector2_2).sub(srcNode.getRealPosition(auxVector2_1)).nor();
+	private void initDestinationNode(final CharacterComponent characterComponent,
+									 final MapGraphNode destNode,
+									 final MapGraphNode srcNode) {
+		Vector2 direction = destNode.getCenterPosition(auxVector2_2).sub(srcNode.getCenterPosition(auxVector2_1)).nor();
 		CharacterComponent.Direction newDirection = CharacterComponent.Direction.findDirection(direction);
 		characterComponent.setDirection(newDirection);
 		characterComponent.setDestinationNode(destNode);
@@ -73,18 +86,19 @@ public class CharacterSystem extends GameEntitySystem implements EventsNotifier<
 			CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 			MapGraphNode oldDest = characterComponent.getDestinationNode();
 			Decal decal = ComponentsMapper.decal.get(character).getDecal();
-			if (auxVector2_1.set(decal.getX(), decal.getZ()).dst2(oldDest.getRealPosition(auxVector2_2)) < Utils.EPSILON) {
+			float distanceFromDestination = auxVector2_1.set(decal.getX(), decal.getZ()).dst2(oldDest.getCenterPosition(auxVector2_2));
+			if (distanceFromDestination < Utils.EPSILON) {
 				MapGraphNode newDest = currentPath.getNextOf(oldDest);
 				if (newDest != null) {
 					initDestinationNode(characterComponent, newDest, oldDest);
 					characterComponent.setDestinationNode(newDest);
 				} else {
-					finishCommand(character);
+					destinationReached(character);
 				}
 			} else {
-				auxVector2_1.set(decal.getX(), decal.getZ());
 				auxVector2_2.set(oldDest.getX() + 0.5f, oldDest.getY() + 0.5f);
-				Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(deltaTime);
+				auxVector2_1.set(decal.getX(), decal.getZ());
+				Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(DefaultGameSettings.MULTIPLY_DELTA_TIME ? deltaTime : CONSTANT_DELTA_TIME);
 				decal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));
 			}
 		}

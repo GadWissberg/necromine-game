@@ -2,7 +2,10 @@ package com.gadarts.isometric.utils;
 
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+
+import java.util.List;
 
 public class MapGraph implements IndexedGraph<MapGraphNode> {
 	static final int MAP_SIZE = 20;
@@ -55,5 +58,50 @@ public class MapGraph implements IndexedGraph<MapGraphNode> {
 	@Override
 	public Array<Connection<MapGraphNode>> getConnections(final MapGraphNode fromNode) {
 		return fromNode.getConnections();
+	}
+
+	public List<MapGraphNode> getNodesAround(final MapGraphNode node, final List<MapGraphNode> output) {
+		output.clear();
+		getThreeBehind(node, output);
+		getThreeInFront(node, output);
+		if (node.getX() > 0) {
+			output.add(getNode(node.getX() - 1, node.getY()));
+		}
+		if (node.getX() < MAP_SIZE - 1) {
+			output.add(getNode(node.getX() + 1, node.getY()));
+		}
+		return output;
+	}
+
+	private void getThreeBehind(final MapGraphNode node, final List<MapGraphNode> output) {
+		int x = node.getX();
+		int y = node.getY();
+		if (y > 0) {
+			if (x > 0) {
+				output.add(getNode(x - 1, y - 1));
+			}
+			output.add(getNode(x, y - 1));
+			if (x < MAP_SIZE - 1) {
+				output.add(getNode(x + 1, y - 1));
+			}
+		}
+	}
+
+	private void getThreeInFront(final MapGraphNode node, final List<MapGraphNode> output) {
+		int x = node.getX();
+		int y = node.getY();
+		if (y < MAP_SIZE - 1) {
+			if (x > 0) {
+				output.add(getNode(x - 1, y + 1));
+			}
+			output.add(getNode(x, y + 1));
+			if (x < MAP_SIZE - 1) {
+				output.add(getNode(x + 1, y + 1));
+			}
+		}
+	}
+
+	public MapGraphNode getNode(final Vector3 position) {
+		return getNode((int) position.x, (int) position.z);
 	}
 }

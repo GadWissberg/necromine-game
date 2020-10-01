@@ -1,5 +1,6 @@
 package com.gadarts.isometric.components;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.utils.MapGraphNode;
@@ -18,6 +19,8 @@ public class CharacterComponent implements GameComponent, EventsNotifier<Charact
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private final List<CharacterComponentEventsSubscriber> subscribers = new ArrayList<>();
+
+	private Entity target;
 
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)

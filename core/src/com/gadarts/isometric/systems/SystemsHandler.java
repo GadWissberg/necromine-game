@@ -13,12 +13,12 @@ public class SystemsHandler implements Disposable {
 		engine.addSystem(characterSystem);
 		CameraSystem cameraSystem = new CameraSystem();
 		engine.addSystem(cameraSystem);
-		EnemySystem enemySystem = new EnemySystem();
+		EnemySystem enemySystem = new EnemySystem(map);
 		TurnsSystem turnsSystem = new TurnsSystem();
 		engine.addSystem(turnsSystem);
 		turnsSystem.subscribeForEvents(enemySystem);
 		enemySystem.subscribeForEvents(turnsSystem);
-		PlayerSystem playerSystem = new PlayerSystem();
+		PlayerSystem playerSystem = new PlayerSystem(map);
 		characterSystem.subscribeForEvents(playerSystem);
 		characterSystem.subscribeForEvents(enemySystem);
 		playerSystem.subscribeForEvents(turnsSystem);

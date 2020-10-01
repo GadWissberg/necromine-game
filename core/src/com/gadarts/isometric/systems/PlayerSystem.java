@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.PlayerComponent;
+import com.gadarts.isometric.utils.MapGraph;
 import com.gadarts.isometric.utils.Utils;
 
 import java.util.ArrayList;
@@ -20,10 +21,15 @@ public class PlayerSystem extends GameEntitySystem implements
 
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private final List<PlayerSystemEventsSubscriber> subscribers = new ArrayList<>();
+	private final MapGraph map;
 	private CameraSystem cameraSystem;
 	private Entity player;
 	private TurnsSystem turnsSystem;
 	private CharacterSystem characterSystem;
+
+	public PlayerSystem(final MapGraph map) {
+		this.map = map;
+	}
 
 	@Override
 	public void dispose() {
@@ -51,7 +57,7 @@ public class PlayerSystem extends GameEntitySystem implements
 			if (button == Input.Buttons.LEFT && !characterSystem.isProcessingCommand()) {
 				OrthographicCamera camera = cameraSystem.getCamera();
 				Vector3 dest = Utils.calculateGridPositionFromMouse(camera, screenX, screenY, auxVector3_1);
-				CharacterSystem.auxCommand.init(Commands.GO_TO, dest, player);
+				CharacterSystem.auxCommand.init(Commands.GO_TO, map.getNode((int) dest.x, (int) dest.z), player);
 				characterSystem.applyCommand(CharacterSystem.auxCommand, player);
 			}
 		}
@@ -75,7 +81,12 @@ public class PlayerSystem extends GameEntitySystem implements
 	}
 
 	@Override
-	public void onCommandFinished(final Entity character) {
+	public void onDestinationReached(final Entity character) {
+
+	}
+
+	@Override
+	public void onCommandDone(final Entity character) {
 		if (ComponentsMapper.player.has(character)) {
 			for (PlayerSystemEventsSubscriber subscriber : subscribers) {
 				subscriber.onPlayerFinishedTurn();

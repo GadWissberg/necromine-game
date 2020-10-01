@@ -1,15 +1,15 @@
 package com.gadarts.isometric.utils;
 
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Plane;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
+import com.gadarts.isometric.components.CharacterComponent;
 
 public class Utils {
 	private static final Plane floorPlane = new Plane(new Vector3(0, 1, 0), 0);
 	public static final float EPSILON = 0.01f;
+	private final static Vector2 auxVector2_1 = new Vector2();
+	private final static Vector2 auxVector2_2 = new Vector2();
 
 	public static Vector3 calculateGridPositionFromMouse(final Camera camera,
 														 final float screenX,
@@ -25,5 +25,11 @@ public class Utils {
 		position.y = 0;
 		position.z = MathUtils.round(position.z);
 		return position;
+	}
+
+	public static CharacterComponent.Direction getDirectionBetweenNodes(final MapGraphNode myNode,
+																		final MapGraphNode targetNode) {
+		Vector2 vector2 = auxVector2_1.set(targetNode.getX(), targetNode.getY()).sub(myNode.getX(), myNode.getY()).nor();
+		return CharacterComponent.Direction.findDirection(vector2);
 	}
 }
