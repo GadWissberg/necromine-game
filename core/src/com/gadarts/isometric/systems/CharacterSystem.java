@@ -23,8 +23,7 @@ public class CharacterSystem extends GameEntitySystem implements
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
-	private static final float CONSTANT_DELTA_TIME = 0.025f;
-	private static final float CHARACTER_SPEED = 8f;
+	private static final float CHARACTER_SPEED = 0.2f;
 
 	private final MapGraphPath currentPath = new MapGraphPath();
 	private final MapGraph map;
@@ -137,7 +136,6 @@ public class CharacterSystem extends GameEntitySystem implements
 		MapGraphNode newDest = currentPath.getNextOf(oldDest);
 		if (newDest != null) {
 			initDestinationNode(characterComponent, newDest, oldDest);
-			characterComponent.setDestinationNode(newDest);
 		} else {
 			destinationReached(character);
 		}
@@ -148,8 +146,7 @@ public class CharacterSystem extends GameEntitySystem implements
 		oldDest.getCenterPosition(auxVector2_2);
 		Decal decal = ComponentsMapper.decal.get(entity).getDecal();
 		auxVector2_1.set(decal.getX(), decal.getZ());
-		float scale = DefaultGameSettings.MULTIPLY_DELTA_TIME ? deltaTime : CONSTANT_DELTA_TIME;
-		Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(CHARACTER_SPEED).scl(scale);
+		Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(CHARACTER_SPEED);
 		decal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));
 	}
 }

@@ -24,6 +24,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode> {
 			for (int y = 0; y < MAP_SIZE; y++) {
 				MapGraphNode n = nodes.get(idx + y);
 				if (x > 0) addConnection(n, -1, 0);
+				if (x > 0 && y < MAP_SIZE - 1) addConnection(n, -1, 1);
 				if (x > 0 && y > 0) addConnection(n, -1, -1);
 				if (y > 0) addConnection(n, 0, -1);
 				if (y > 0 && x < MAP_SIZE - 1) addConnection(n, 1, -1);
