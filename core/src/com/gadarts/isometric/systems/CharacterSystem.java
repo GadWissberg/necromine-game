@@ -45,8 +45,7 @@ public class CharacterSystem extends GameEntitySystem implements EventsNotifier<
 			characterComponent.setSpriteType(SpriteType.RUN);
 			initDestinationNode(characterComponent, currentPath.get(1), currentPath.get(0));
 		} else {
-			characterComponent.setDestinationNode(sourceNode);
-			destinationReached(character);
+			currentCommand = null;
 		}
 	}
 
