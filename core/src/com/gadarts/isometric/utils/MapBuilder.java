@@ -52,7 +52,7 @@ public final class MapBuilder {
 	 * @return The map graph.
 	 */
 	public MapGraph createAndAddTestMap() {
-		MapGraph map = new MapGraph();
+		MapGraph map = new MapGraph(engine);
 		addTestFloor();
 		createAndAdd3dCursor();
 		addPlayer();
