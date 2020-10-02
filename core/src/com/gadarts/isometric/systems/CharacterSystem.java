@@ -15,12 +15,16 @@ import com.gadarts.isometric.utils.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CharacterSystem extends GameEntitySystem implements EventsNotifier<CharacterSystemEventsSubscriber> {
+public class CharacterSystem extends GameEntitySystem implements
+		EventsNotifier<CharacterSystemEventsSubscriber>,
+		RenderSystemEventsSubscriber {
+
 	static final CharacterCommand auxCommand = new CharacterCommand();
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final float CONSTANT_DELTA_TIME = 0.025f;
+	private static final float CHARACTER_SPEED = 8f;
 
 	private final MapGraphPath currentPath = new MapGraphPath();
 	private final MapGraph map;
@@ -89,25 +93,7 @@ public class CharacterSystem extends GameEntitySystem implements EventsNotifier<
 			Entity character = currentCommand.getCharacter();
 			CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 			SpriteType spriteType = characterComponent.getSpriteType();
-			if (spriteType == SpriteType.RUN) {
-				MapGraphNode oldDest = characterComponent.getDestinationNode();
-				Decal decal = ComponentsMapper.decal.get(character).getDecal();
-				float distanceFromDestination = auxVector2_1.set(decal.getX(), decal.getZ()).dst2(oldDest.getCenterPosition(auxVector2_2));
-				if (distanceFromDestination < Utils.EPSILON) {
-					MapGraphNode newDest = currentPath.getNextOf(oldDest);
-					if (newDest != null) {
-						initDestinationNode(characterComponent, newDest, oldDest);
-						characterComponent.setDestinationNode(newDest);
-					} else {
-						destinationReached(character);
-					}
-				} else {
-					auxVector2_2.set(oldDest.getX() + 0.5f, oldDest.getY() + 0.5f);
-					auxVector2_1.set(decal.getX(), decal.getZ());
-					Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(DefaultGameSettings.MULTIPLY_DELTA_TIME ? deltaTime : CONSTANT_DELTA_TIME);
-					decal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));
-				}
-			} else if (spriteType == SpriteType.ATTACK) {
+			if (spriteType == SpriteType.ATTACK) {
 				AnimationComponent animationComponent = ComponentsMapper.animation.get(character);
 				if (animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime())) {
 					commandDone(character);
@@ -131,5 +117,39 @@ public class CharacterSystem extends GameEntitySystem implements EventsNotifier<
 
 	public boolean isProcessingCommand() {
 		return currentCommand != null;
+	}
+
+	@Override
+	public void onRunFrameChanged(final Entity character, final float deltaTime) {
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		MapGraphNode oldDest = characterComponent.getDestinationNode();
+		Decal decal = ComponentsMapper.decal.get(character).getDecal();
+		if (auxVector2_1.set(decal.getX(), decal.getZ()).dst2(oldDest.getCenterPosition(auxVector2_2)) < Utils.EPSILON) {
+			reachedNodeOfPath(character, characterComponent, oldDest);
+		} else {
+			takeStep(character, deltaTime);
+		}
+	}
+
+	private void reachedNodeOfPath(final Entity character,
+								   final CharacterComponent characterComponent,
+								   final MapGraphNode oldDest) {
+		MapGraphNode newDest = currentPath.getNextOf(oldDest);
+		if (newDest != null) {
+			initDestinationNode(characterComponent, newDest, oldDest);
+			characterComponent.setDestinationNode(newDest);
+		} else {
+			destinationReached(character);
+		}
+	}
+
+	private void takeStep(final Entity entity, final float deltaTime) {
+		MapGraphNode oldDest = ComponentsMapper.character.get(entity).getDestinationNode();
+		oldDest.getCenterPosition(auxVector2_2);
+		Decal decal = ComponentsMapper.decal.get(entity).getDecal();
+		auxVector2_1.set(decal.getX(), decal.getZ());
+		float scale = DefaultGameSettings.MULTIPLY_DELTA_TIME ? deltaTime : CONSTANT_DELTA_TIME;
+		Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(CHARACTER_SPEED).scl(scale);
+		decal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));
 	}
 }

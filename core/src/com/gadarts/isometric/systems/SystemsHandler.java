@@ -23,7 +23,9 @@ public class SystemsHandler implements Disposable {
 		characterSystem.subscribeForEvents(enemySystem);
 		playerSystem.subscribeForEvents(turnsSystem);
 		engine.addSystem(playerSystem);
-		engine.addSystem(new RenderSystem());
+		RenderSystem renderSystem = new RenderSystem();
+		renderSystem.subscribeForEvents(characterSystem);
+		engine.addSystem(renderSystem);
 		engine.addSystem(enemySystem);
 		InputSystem inputSystem = new InputSystem();
 		engine.addSystem(inputSystem);

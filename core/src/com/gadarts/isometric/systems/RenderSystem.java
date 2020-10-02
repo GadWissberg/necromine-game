@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -24,10 +25,13 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.components.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Handles rendering.
  */
-public class RenderSystem extends EntitySystem implements EntityListener {
+public class RenderSystem extends EntitySystem implements EntityListener, EventsNotifier<RenderSystemEventsSubscriber> {
 
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
@@ -41,6 +45,7 @@ public class RenderSystem extends EntitySystem implements EntityListener {
 	private Camera camera;
 	private ImmutableArray<Entity> modelInstanceEntities;
 	private ImmutableArray<Entity> decalEntities;
+	private List<RenderSystemEventsSubscriber> subscribers = new ArrayList<>();
 
 	public RenderSystem() {
 		this.modelBatch = new ModelBatch();
@@ -132,8 +137,14 @@ public class RenderSystem extends EntitySystem implements EntityListener {
 			} else {
 				if (ComponentsMapper.animation.has(entity)) {
 					AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
-					TextureAtlas.AtlasRegion currentFrame = animationComponent.getCurrentFrame(deltaTime);
-					decal.setTextureRegion(currentFrame);
+					TextureRegion currentFrame = decal.getTextureRegion();
+					TextureAtlas.AtlasRegion newFrame = animationComponent.calculateFrame(deltaTime);
+					if (spriteType == SpriteType.RUN && currentFrame != newFrame) {
+						for (RenderSystemEventsSubscriber subscriber : subscribers) {
+							subscriber.onRunFrameChanged(entity, deltaTime);
+						}
+					}
+					decal.setTextureRegion(newFrame);
 				}
 			}
 			decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
@@ -149,5 +160,11 @@ public class RenderSystem extends EntitySystem implements EntityListener {
 	@Override
 	public void entityRemoved(final Entity entity) {
 
+	}
+
+	@Override
+	public void subscribeForEvents(RenderSystemEventsSubscriber sub) {
+		if (subscribers.contains(sub)) return;
+		subscribers.add(sub);
 	}
 }

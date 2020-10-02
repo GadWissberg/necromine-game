@@ -20,7 +20,7 @@ public class AnimationComponent implements GameComponent {
 		stateTime = 0;
 	}
 
-	public TextureAtlas.AtlasRegion getCurrentFrame(final float deltaTime) {
+	public TextureAtlas.AtlasRegion calculateFrame(final float deltaTime) {
 		stateTime += deltaTime;
 		return animation.getKeyFrame(stateTime, animation.getPlayMode() == Animation.PlayMode.LOOP);
 	}
