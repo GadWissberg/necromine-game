@@ -26,6 +26,8 @@ public class CharacterComponent implements GameComponent, EventsNotifier<Charact
 	@Setter(AccessLevel.NONE)
 	private MapGraphNode destinationNode;
 
+	private boolean rotating;
+	private long lastRotation;
 	private SpriteType spriteType;
 	private Direction direction;
 
