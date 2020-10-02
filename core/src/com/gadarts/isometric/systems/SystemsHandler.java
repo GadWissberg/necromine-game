@@ -18,6 +18,8 @@ public class SystemsHandler implements Disposable {
 		engine.addSystem(turnsSystem);
 		turnsSystem.subscribeForEvents(enemySystem);
 		enemySystem.subscribeForEvents(turnsSystem);
+		HudSystem hudSystem = new HudSystem();
+		engine.addSystem(hudSystem);
 		PlayerSystem playerSystem = new PlayerSystem(map);
 		characterSystem.subscribeForEvents(playerSystem);
 		characterSystem.subscribeForEvents(enemySystem);
@@ -29,8 +31,6 @@ public class SystemsHandler implements Disposable {
 		engine.addSystem(enemySystem);
 		InputSystem inputSystem = new InputSystem();
 		engine.addSystem(inputSystem);
-		HudSystem hudSystem = new HudSystem();
-		engine.addSystem(hudSystem);
 		inputSystem.subscribeForEvents(hudSystem);
 		inputSystem.subscribeForEvents(cameraSystem);
 		inputSystem.subscribeForEvents(playerSystem);

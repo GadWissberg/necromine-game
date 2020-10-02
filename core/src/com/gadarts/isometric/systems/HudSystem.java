@@ -9,10 +9,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
 import com.gadarts.isometric.utils.Utils;
+import lombok.Getter;
 
 public class HudSystem extends GameEntitySystem implements InputSystemEventsSubscriber {
 	private static final Vector3 auxVector = new Vector3();
 
+	@Getter
 	private ModelInstance cursorModelInstance;
 	private OrthographicCamera camera;
 
@@ -32,6 +34,7 @@ public class HudSystem extends GameEntitySystem implements InputSystemEventsSubs
 	@Override
 	public void mouseMoved(final int screenX, final int screenY) {
 		Vector3 position = Utils.calculateGridPositionFromMouse(camera, screenX, screenY, auxVector);
+		position.set(Math.max(position.x, 0), Math.max(position.y, 0), Math.max(position.z, 0));
 		cursorModelInstance.transform.setTranslation(position);
 	}
 

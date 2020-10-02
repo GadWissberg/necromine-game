@@ -4,12 +4,10 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.PlayerComponent;
 import com.gadarts.isometric.utils.MapGraph;
-import com.gadarts.isometric.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +24,7 @@ public class PlayerSystem extends GameEntitySystem implements
 	private Entity player;
 	private TurnsSystem turnsSystem;
 	private CharacterSystem characterSystem;
+	private HudSystem hudSystem;
 
 	public PlayerSystem(final MapGraph map) {
 		this.map = map;
@@ -43,6 +42,7 @@ public class PlayerSystem extends GameEntitySystem implements
 		player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		turnsSystem = engine.getSystem(TurnsSystem.class);
 		characterSystem = engine.getSystem(CharacterSystem.class);
+		hudSystem = engine.getSystem(HudSystem.class);
 	}
 
 	@Override
@@ -55,8 +55,7 @@ public class PlayerSystem extends GameEntitySystem implements
 		if (cameraSystem.isRotateCamera()) return;
 		if (turnsSystem.getCurrentTurn() == Turns.PLAYER) {
 			if (button == Input.Buttons.LEFT && !characterSystem.isProcessingCommand()) {
-				OrthographicCamera camera = cameraSystem.getCamera();
-				Vector3 dest = Utils.calculateGridPositionFromMouse(camera, screenX, screenY, auxVector3_1);
+				Vector3 dest = hudSystem.getCursorModelInstance().transform.getTranslation(auxVector3_1);
 				CharacterSystem.auxCommand.init(Commands.GO_TO, map.getNode((int) dest.x, (int) dest.z), player);
 				characterSystem.applyCommand(CharacterSystem.auxCommand, player);
 			}
