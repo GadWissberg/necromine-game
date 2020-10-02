@@ -33,6 +33,8 @@ public final class MapBuilder {
 	private static final Vector3 auxVector3_3 = new Vector3();
 	private static final Vector3 auxVector3_4 = new Vector3();
 	private static final Vector3 auxVector3_5 = new Vector3();
+	public static final float BILLBOARD_Y = 0.6f;
+	public static final float BILLBOARD_SCALE = 0.015f;
 
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
@@ -61,7 +63,7 @@ public final class MapBuilder {
 	private void addPlayer() {
 		Entity entity = engine.createEntity();
 		entity.add(engine.createComponent(PlayerComponent.class));
-		addCharacterBaseComponents(entity, Assets.Atlases.PLAYER, auxVector3_1.set(0.5f, 0.3f, 0.5f), null);
+		addCharacterBaseComponents(entity, Assets.Atlases.PLAYER, auxVector3_1.set(0.5f, BILLBOARD_Y, 0.5f), null);
 		engine.addEntity(entity);
 	}
 
@@ -69,7 +71,7 @@ public final class MapBuilder {
 		Entity entity = engine.createEntity();
 		entity.add(engine.createComponent(EnemyComponent.class));
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		addCharacterBaseComponents(entity, Assets.Atlases.ZEALOT, auxVector3_1.set(2.5f, 0.3f, 2.5f), player);
+		addCharacterBaseComponents(entity, Assets.Atlases.ZEALOT, auxVector3_1.set(2.5f, BILLBOARD_Y, 2.5f), player);
 		engine.addEntity(entity);
 	}
 
@@ -101,7 +103,7 @@ public final class MapBuilder {
 		decalComponent.init(animations, characterComponent.getSpriteType(), characterComponent.getDirection());
 		Decal decal = decalComponent.getDecal();
 		decal.setPosition(position);
-		decal.setScale(0.01f);
+		decal.setScale(BILLBOARD_SCALE);
 		entity.add(decalComponent);
 		return decalComponent;
 	}

@@ -26,7 +26,7 @@ public class CharacterSystem extends GameEntitySystem implements
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector2 auxVector2_3 = new Vector2();
-	private static final float CHARACTER_SPEED = 0.2f;
+	private static final float CHARACTER_STEP_SIZE = 0.3f;
 	private static final int ROT_INTERVAL = 125;
 
 	private final MapGraphPath currentPath = new MapGraphPath();
@@ -164,7 +164,7 @@ public class CharacterSystem extends GameEntitySystem implements
 		if (auxVector2_1.set(decal.getX(), decal.getZ()).dst2(oldDest.getCenterPosition(auxVector2_2)) < Utils.EPSILON) {
 			reachedNodeOfPath(character, characterComponent, oldDest);
 		} else {
-			takeStep(character, deltaTime);
+			takeStep(character);
 		}
 	}
 
@@ -179,12 +179,12 @@ public class CharacterSystem extends GameEntitySystem implements
 		}
 	}
 
-	private void takeStep(final Entity entity, final float deltaTime) {
+	private void takeStep(final Entity entity) {
 		MapGraphNode oldDest = ComponentsMapper.character.get(entity).getDestinationNode();
 		oldDest.getCenterPosition(auxVector2_2);
 		Decal decal = ComponentsMapper.decal.get(entity).getDecal();
 		auxVector2_1.set(decal.getX(), decal.getZ());
-		Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(CHARACTER_SPEED);
+		Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(CHARACTER_STEP_SIZE);
 		decal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));
 	}
 }

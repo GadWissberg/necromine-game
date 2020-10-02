@@ -12,8 +12,8 @@ import com.gadarts.isometric.IsometricGame;
 import lombok.Getter;
 
 public class CameraSystem extends GameEntitySystem implements InputSystemEventsSubscriber {
-    public static final int VIEWPORT_WIDTH = IsometricGame.RESOLUTION_WIDTH / 100;
-    public static final int VIEWPORT_HEIGHT = IsometricGame.RESOLUTION_HEIGHT / 100;
+    public static final int VIEWPORT_WIDTH = IsometricGame.RESOLUTION_WIDTH / 75;
+    public static final int VIEWPORT_HEIGHT = IsometricGame.RESOLUTION_HEIGHT / 75;
     private static final float NEAR = 0.1f;
     private static final float FAR = 100f;
     private static final Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);

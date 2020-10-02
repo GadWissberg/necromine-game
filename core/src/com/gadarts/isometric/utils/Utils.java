@@ -7,9 +7,8 @@ import com.gadarts.isometric.components.CharacterComponent;
 
 public class Utils {
 	private static final Plane floorPlane = new Plane(new Vector3(0, 1, 0), 0);
-	public static final float EPSILON = 0.01f;
+	public static final float EPSILON = 0.025f;
 	private final static Vector2 auxVector2_1 = new Vector2();
-	private final static Vector2 auxVector2_2 = new Vector2();
 
 	public static Vector3 calculateGridPositionFromMouse(final Camera camera,
 														 final float screenX,
