@@ -44,6 +44,9 @@ public class CharacterSystem extends GameEntitySystem implements
 
 	void applyCommand(final CharacterCommand command, final Entity character) {
 		currentCommand = command;
+		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onNewCommandSet(command);
+		}
 		MapGraphNode sourceNode = map.getNode(ComponentsMapper.decal.get(character).getCellPosition(auxVector3_1));
 		MapGraphNode destNode = command.getDestination();
 		boolean foundPath = pathFinder.searchNodePath(sourceNode, destNode, heuristic, currentPath);

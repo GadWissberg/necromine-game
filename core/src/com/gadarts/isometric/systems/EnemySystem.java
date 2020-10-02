@@ -90,6 +90,11 @@ public class EnemySystem extends GameEntitySystem implements
 	}
 
 	@Override
+	public void onNewCommandSet(final CharacterCommand command) {
+
+	}
+
+	@Override
 	public void subscribeForEvents(final EnemySystemEventsSubscriber sub) {
 		if (subscribers.contains(sub)) return;
 		subscribers.add(sub);

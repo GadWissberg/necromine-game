@@ -21,6 +21,7 @@ public class SystemsHandler implements Disposable {
 		HudSystem hudSystem = new HudSystem();
 		engine.addSystem(hudSystem);
 		PlayerSystem playerSystem = new PlayerSystem(map);
+		characterSystem.subscribeForEvents(map);
 		characterSystem.subscribeForEvents(playerSystem);
 		characterSystem.subscribeForEvents(enemySystem);
 		playerSystem.subscribeForEvents(turnsSystem);

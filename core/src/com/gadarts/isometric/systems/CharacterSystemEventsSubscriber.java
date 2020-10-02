@@ -6,4 +6,6 @@ public interface CharacterSystemEventsSubscriber {
 	void onDestinationReached(Entity character);
 
 	void onCommandDone(Entity character);
+
+	void onNewCommandSet(CharacterCommand command);
 }

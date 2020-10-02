@@ -10,16 +10,19 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.CharacterComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.systems.CharacterCommand;
+import com.gadarts.isometric.systems.CharacterSystemEventsSubscriber;
 
 import java.util.List;
 
-public class MapGraph implements IndexedGraph<MapGraphNode> {
+public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEventsSubscriber {
 	static final int MAP_SIZE = 20;
 	private final static Array<Connection<MapGraphNode>> auxConnectionsList = new Array<>();
 	private static final Vector3 auxVector = new Vector3();
 	private final Array<MapGraphNode> nodes;
 	private final PooledEngine engine;
 	private final ImmutableArray<Entity> characterEntities;
+	private CharacterCommand currentCommand;
 
 	public MapGraph(final PooledEngine engine) {
 		this.engine = engine;
@@ -83,15 +86,16 @@ public class MapGraph implements IndexedGraph<MapGraphNode> {
 	}
 
 	private boolean checkIfNodeIsAvailable(final Connection<MapGraphNode> connection) {
-		boolean result = true;
 		for (Entity character : characterEntities) {
 			MapGraphNode node = getNode(ComponentsMapper.decal.get(character).getCellPosition(auxVector));
+			if (currentCommand != null && currentCommand.getDestination() == node) {
+				continue;
+			}
 			if (node.equals(connection.getToNode())) {
-				result = false;
-				break;
+				return false;
 			}
 		}
-		return result;
+		return true;
 	}
 
 	public List<MapGraphNode> getNodesAround(final MapGraphNode node, final List<MapGraphNode> output) {
@@ -137,5 +141,20 @@ public class MapGraph implements IndexedGraph<MapGraphNode> {
 
 	public MapGraphNode getNode(final Vector3 position) {
 		return getNode((int) position.x, (int) position.z);
+	}
+
+	@Override
+	public void onDestinationReached(Entity character) {
+
+	}
+
+	@Override
+	public void onCommandDone(Entity character) {
+
+	}
+
+	@Override
+	public void onNewCommandSet(CharacterCommand command) {
+		currentCommand = command;
 	}
 }

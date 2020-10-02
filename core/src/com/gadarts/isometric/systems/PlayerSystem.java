@@ -92,4 +92,9 @@ public class PlayerSystem extends GameEntitySystem implements
 			}
 		}
 	}
+
+	@Override
+	public void onNewCommandSet(final CharacterCommand command) {
+
+	}
 }
