@@ -54,7 +54,7 @@ public class CharacterSystem extends GameEntitySystem implements
 		if (foundPath && currentPath.nodes.size > 1) {
 			initDestinationNode(characterComponent, currentPath.get(1));
 		} else {
-			currentCommand = null;
+			destinationReached(character);
 		}
 	}
 

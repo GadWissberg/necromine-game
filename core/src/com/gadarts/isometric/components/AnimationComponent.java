@@ -24,4 +24,8 @@ public class AnimationComponent implements GameComponent {
 		stateTime += deltaTime;
 		return animation.getKeyFrame(stateTime, animation.getPlayMode() == Animation.PlayMode.LOOP);
 	}
+
+	public void resetStateTime() {
+		stateTime = 0;
+	}
 }

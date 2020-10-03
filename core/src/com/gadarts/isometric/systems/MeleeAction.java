@@ -30,6 +30,10 @@ public class MeleeAction implements ToDoAfterDestinationReached {
 					CharacterComponent.Direction direction = Utils.getDirectionBetweenNodes(myNode, targetNode);
 					characterComponent.setDirection(direction);
 					characterComponent.setSpriteType(SpriteType.ATTACK);
+					if (ComponentsMapper.animation.has(character)) {
+						ComponentsMapper.animation.get(character).resetStateTime();
+					}
+					break;
 				}
 			}
 		}
