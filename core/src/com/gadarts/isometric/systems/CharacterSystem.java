@@ -177,6 +177,7 @@ public class CharacterSystem extends GameEntitySystem implements
 		MapGraphNode newDest = currentPath.getNextOf(oldDest);
 		if (newDest != null) {
 			initDestinationNode(characterComponent, newDest);
+			takeStep(character);
 		} else {
 			destinationReached(character);
 		}
