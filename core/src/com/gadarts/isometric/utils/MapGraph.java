@@ -1,14 +1,11 @@
 package com.gadarts.isometric.utils;
 
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.gadarts.isometric.components.CharacterComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.systems.CharacterCommand;
 import com.gadarts.isometric.systems.CharacterSystemEventsSubscriber;
@@ -20,13 +17,11 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private final static Array<Connection<MapGraphNode>> auxConnectionsList = new Array<>();
 	private static final Vector3 auxVector = new Vector3();
 	private final Array<MapGraphNode> nodes;
-	private final PooledEngine engine;
 	private final ImmutableArray<Entity> characterEntities;
 	private CharacterCommand currentCommand;
 
-	public MapGraph(final PooledEngine engine) {
-		this.engine = engine;
-		characterEntities = engine.getEntitiesFor(Family.all(CharacterComponent.class).get());
+	public MapGraph(final ImmutableArray<Entity> characterEntities) {
+		this.characterEntities = characterEntities;
 		this.nodes = new Array<>(MAP_SIZE * MAP_SIZE);
 		int[][] map = new int[MAP_SIZE][MAP_SIZE];
 		for (int x = 0; x < MAP_SIZE; x++) {
@@ -144,17 +139,17 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	@Override
-	public void onDestinationReached(Entity character) {
+	public void onDestinationReached(final Entity character) {
 
 	}
 
 	@Override
-	public void onCommandDone(Entity character) {
+	public void onCommandDone(final Entity character) {
 
 	}
 
 	@Override
-	public void onNewCommandSet(CharacterCommand command) {
+	public void onNewCommandSet(final CharacterCommand command) {
 		currentCommand = command;
 	}
 }

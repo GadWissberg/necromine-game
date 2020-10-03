@@ -45,7 +45,7 @@ public class RenderSystem extends EntitySystem implements EntityListener, Events
 	private Camera camera;
 	private ImmutableArray<Entity> modelInstanceEntities;
 	private ImmutableArray<Entity> decalEntities;
-	private List<RenderSystemEventsSubscriber> subscribers = new ArrayList<>();
+	private final List<RenderSystemEventsSubscriber> subscribers = new ArrayList<>();
 
 	public RenderSystem() {
 		this.modelBatch = new ModelBatch();

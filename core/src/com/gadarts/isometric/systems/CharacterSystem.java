@@ -17,6 +17,9 @@ import com.gadarts.isometric.utils.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles characters behaviour.
+ */
 public class CharacterSystem extends GameEntitySystem implements
 		EventsNotifier<CharacterSystemEventsSubscriber>,
 		RenderSystemEventsSubscriber {
@@ -42,20 +45,30 @@ public class CharacterSystem extends GameEntitySystem implements
 		this.heuristic = new GameHeuristic();
 	}
 
+	/**
+	 * Applies a given command on the given character.
+	 *
+	 * @param command
+	 * @param character
+	 */
+	@SuppressWarnings("JavaDoc")
 	void applyCommand(final CharacterCommand command, final Entity character) {
 		currentCommand = command;
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onNewCommandSet(command);
 		}
-		MapGraphNode sourceNode = map.getNode(ComponentsMapper.decal.get(character).getCellPosition(auxVector3_1));
-		MapGraphNode destNode = command.getDestination();
-		boolean foundPath = pathFinder.searchNodePath(sourceNode, destNode, heuristic, currentPath);
-		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		boolean foundPath = calculatePathForCommand(command, character);
 		if (foundPath && currentPath.nodes.size > 1) {
-			initDestinationNode(characterComponent, currentPath.get(1));
+			initDestinationNode(ComponentsMapper.character.get(character), currentPath.get(1));
 		} else {
 			destinationReached(character);
 		}
+	}
+
+	private boolean calculatePathForCommand(final CharacterCommand command, final Entity character) {
+		MapGraphNode sourceNode = map.getNode(ComponentsMapper.decal.get(character).getCellPosition(auxVector3_1));
+		MapGraphNode destNode = command.getDestination();
+		return pathFinder.searchNodePath(sourceNode, destNode, heuristic, currentPath);
 	}
 
 	public void destinationReached(final Entity character) {
@@ -155,6 +168,9 @@ public class CharacterSystem extends GameEntitySystem implements
 
 	}
 
+	/**
+	 * @return Whether a command is being processed.
+	 */
 	public boolean isProcessingCommand() {
 		return currentCommand != null;
 	}

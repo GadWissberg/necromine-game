@@ -71,7 +71,8 @@ public final class EntityBuilder {
 
 	public EntityBuilder addDecalComponent(final CharacterAnimations animations,
 										   final SpriteType spriteType,
-										   final CharacterComponent.Direction direction, Vector3 position) {
+										   final CharacterComponent.Direction direction,
+										   final Vector3 position) {
 		DecalComponent decalComponent = engine.createComponent(DecalComponent.class);
 		decalComponent.init(animations, spriteType, direction);
 		Decal decal = decalComponent.getDecal();

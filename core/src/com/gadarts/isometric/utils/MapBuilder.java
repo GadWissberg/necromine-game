@@ -54,7 +54,7 @@ public final class MapBuilder {
 	 * @return The map graph.
 	 */
 	public MapGraph createAndAddTestMap() {
-		MapGraph map = new MapGraph(engine);
+		MapGraph map = new MapGraph(engine.getEntitiesFor(Family.all(CharacterComponent.class).get()));
 		addTestFloor();
 		createAndAdd3dCursor();
 		addPlayer();
@@ -91,15 +91,16 @@ public final class MapBuilder {
 		TextureAtlas atlas = assetManager.getAtlas(zealot);
 		Arrays.stream(SpriteType.values()).forEach(spriteType -> Arrays.stream(CharacterComponent.Direction.values())
 				.forEach(dir -> {
-					String name = spriteType.name().toLowerCase() + "_" + dir.name().toLowerCase();
-					float animaDur = spriteType.getAnimationDuration();
-					Animation<TextureAtlas.AtlasRegion> a = new Animation<>(
-							animaDur,
-							atlas.findRegions(name),
-							spriteType.getPlayMode()
-					);
-					animations.put(spriteType, dir, a);
-				})
+							String name = spriteType.name().toLowerCase() + "_" + dir.name().toLowerCase();
+							float animaDur = spriteType.getAnimationDuration();
+							Animation<TextureAtlas.AtlasRegion> a = new Animation<>(
+									animaDur,
+									atlas.findRegions(name),
+									spriteType.getPlayMode()
+							);
+							animations.put(spriteType, dir, a);
+						}
+				)
 		);
 		return animations;
 	}
@@ -205,6 +206,5 @@ public final class MapBuilder {
 		Material material = new Material(TextureAttribute.createDiffuse(floor));
 		material.id = "floor_test";
 		return material;
-
 	}
 }
