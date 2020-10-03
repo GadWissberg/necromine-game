@@ -14,11 +14,14 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
-import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.CharacterAnimations;
+import com.gadarts.isometric.components.CharacterComponent;
+import com.gadarts.isometric.components.PlayerComponent;
+import com.gadarts.isometric.components.SpriteType;
+import com.gadarts.isometric.utils.Assets.Atlases;
 
 import java.util.Arrays;
 
@@ -34,7 +37,6 @@ public final class MapBuilder {
 	private static final Vector3 auxVector3_4 = new Vector3();
 	private static final Vector3 auxVector3_5 = new Vector3();
 	public static final float BILLBOARD_Y = 0.6f;
-	public static final float BILLBOARD_SCALE = 0.015f;
 
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
@@ -61,54 +63,30 @@ public final class MapBuilder {
 	}
 
 	private void addPlayer() {
-		Entity entity = engine.createEntity();
-		entity.add(engine.createComponent(PlayerComponent.class));
-		addCharacterBaseComponents(entity, Assets.Atlases.PLAYER, auxVector3_1.set(0.5f, BILLBOARD_Y, 0.5f), null);
-		engine.addEntity(entity);
+		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent();
+		addCharBaseComponents(entityBuilder, Atlases.PLAYER, auxVector3_1.set(0.5f, BILLBOARD_Y, 0.5f), null);
+		entityBuilder.finishAndAddToEngine();
 	}
 
 	private void addEnemyTest() {
-		Entity entity = engine.createEntity();
-		entity.add(engine.createComponent(EnemyComponent.class));
+		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent();
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		addCharacterBaseComponents(entity, Assets.Atlases.ZEALOT, auxVector3_1.set(2.5f, BILLBOARD_Y, 2.5f), player);
-		engine.addEntity(entity);
+		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, auxVector3_1.set(2.5f, BILLBOARD_Y, 2.5f), player);
+		entityBuilder.finishAndAddToEngine();
 	}
 
-	private void addCharacterBaseComponents(final Entity entity,
-											final Assets.Atlases atlas,
-											final Vector3 position,
-											final Entity target) {
+	private void addCharBaseComponents(final EntityBuilder entityBuilder,
+									   final Atlases atlas,
+									   final Vector3 position,
+									   final Entity target) {
 		CharacterAnimations animations = createCharacterAnimations(atlas);
-		CharacterComponent charComponent = addCharacterComponent(entity, target);
-		charComponent.init(CharacterComponent.Direction.SOUTH, SpriteType.IDLE);
-		addCharacterDecalComponent(entity, animations, charComponent, position);
-		AnimationComponent animComponent = engine.createComponent(AnimationComponent.class);
-		animComponent.init(0.4f, animations.get(charComponent.getSpriteType(), charComponent.getDirection()));
-		entity.add(animComponent);
+		entityBuilder.addCharacterComponent(CharacterComponent.Direction.SOUTH, SpriteType.IDLE, target)
+				.addDecalComponent(animations, SpriteType.IDLE, CharacterComponent.Direction.SOUTH, position)
+				.addAnimationComponent();
 	}
 
-	private CharacterComponent addCharacterComponent(final Entity entity, final Entity target) {
-		CharacterComponent charComponent = engine.createComponent(CharacterComponent.class);
-		charComponent.setTarget(target);
-		entity.add(charComponent);
-		return charComponent;
-	}
 
-	private DecalComponent addCharacterDecalComponent(final Entity entity,
-													  final CharacterAnimations animations,
-													  final CharacterComponent characterComponent,
-													  final Vector3 position) {
-		DecalComponent decalComponent = engine.createComponent(DecalComponent.class);
-		decalComponent.init(animations, characterComponent.getSpriteType(), characterComponent.getDirection());
-		Decal decal = decalComponent.getDecal();
-		decal.setPosition(position);
-		decal.setScale(BILLBOARD_SCALE);
-		entity.add(decalComponent);
-		return decalComponent;
-	}
-
-	private CharacterAnimations createCharacterAnimations(final Assets.Atlases zealot) {
+	private CharacterAnimations createCharacterAnimations(final Atlases zealot) {
 		CharacterAnimations animations = new CharacterAnimations();
 		TextureAtlas atlas = assetManager.getAtlas(zealot);
 		Arrays.stream(SpriteType.values()).forEach(spriteType -> Arrays.stream(CharacterComponent.Direction.values())
@@ -127,22 +105,17 @@ public final class MapBuilder {
 	}
 
 	private void addTestFloor() {
-		Entity testFloor = engine.createEntity();
-		ModelInstanceComponent component = engine.createComponent(ModelInstanceComponent.class);
-		component.init(createTestFloorModelInstance(modelBuilder));
-		testFloor.add(component);
-		engine.addEntity(testFloor);
+		EntityBuilder.beginBuildingEntity(engine)
+				.addModelInstanceComponent(createTestFloorModelInstance(modelBuilder))
+				.finishAndAddToEngine();
 	}
 
 	private void createAndAdd3dCursor() {
 		Model model = modelTestCursor();
-		ModelInstanceComponent modelInstanceComponent = engine.createComponent(ModelInstanceComponent.class);
-		modelInstanceComponent.init(new ModelInstance(model));
-		CursorComponent cursorComponent = engine.createComponent(CursorComponent.class);
-		Entity entity = engine.createEntity();
-		entity.add(modelInstanceComponent);
-		entity.add(cursorComponent);
-		engine.addEntity(entity);
+		EntityBuilder.beginBuildingEntity(engine)
+				.addModelInstanceComponent(new ModelInstance(model))
+				.addCursorComponent()
+				.finishAndAddToEngine();
 	}
 
 	private Model modelTestCursor() {
