@@ -3,9 +3,11 @@ package com.gadarts.isometric.systems.player;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.PlayerComponent;
 import com.gadarts.isometric.systems.CameraSystem;
 import com.gadarts.isometric.systems.EventsNotifier;
@@ -19,6 +21,7 @@ import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.Turns;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.isometric.utils.map.MapGraphNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,16 +30,17 @@ public class PlayerSystem extends GameEntitySystem implements
 		InputSystemEventsSubscriber,
 		EventsNotifier<PlayerSystemEventsSubscriber>,
 		CharacterSystemEventsSubscriber {
-
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final CharacterCommand auxCommand = new CharacterCommand();
 	private final List<PlayerSystemEventsSubscriber> subscribers = new ArrayList<>();
 	private final MapGraph map;
+	private MapGraphNode selectedAttackNode;
 	private CameraSystem cameraSystem;
 	private Entity player;
 	private TurnsSystem turnsSystem;
 	private CharacterSystem characterSystem;
 	private HudSystem hudSystem;
+	private ImmutableArray<Entity> enemiesEntities;
 
 	public PlayerSystem(final MapGraph map) {
 		this.map = map;
@@ -55,6 +59,7 @@ public class PlayerSystem extends GameEntitySystem implements
 		turnsSystem = engine.getSystem(TurnsSystem.class);
 		characterSystem = engine.getSystem(CharacterSystem.class);
 		hudSystem = engine.getSystem(HudSystem.class);
+		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 	}
 
 	@Override
@@ -67,11 +72,48 @@ public class PlayerSystem extends GameEntitySystem implements
 		if (cameraSystem.isRotateCamera()) return;
 		if (turnsSystem.getCurrentTurn() == Turns.PLAYER) {
 			if (button == Input.Buttons.LEFT && !characterSystem.isProcessingCommand()) {
-				Vector3 dest = hudSystem.getCursorModelInstance().transform.getTranslation(auxVector3_1);
-				auxCommand.init(Commands.GO_TO, map.getNode((int) dest.x, (int) dest.z), player);
-				characterSystem.applyCommand(auxCommand, player);
+				MapGraphNode node = map.getRayNode(screenX, screenY, cameraSystem.getCamera());
+				if (selectedAttackNode == null) {
+					Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, node);
+					if (enemyAtNode != null) {
+						List<MapGraphNode> availableNodes = map.getAvailableNodesAroundNode(enemiesEntities, node);
+						if (availableNodes.size() > 0) {
+							selectedAttackNode = node;
+							ComponentsMapper.character.get(player).setTarget(enemyAtNode);
+							for (PlayerSystemEventsSubscriber subscriber : subscribers) {
+								subscriber.onAttackModeActivated(availableNodes);
+							}
+						}
+					} else {
+						MapGraphNode selectedNode = getCursorNode();
+						characterSystem.applyCommand(auxCommand.init(Commands.GO_TO, selectedNode, player), player);
+					}
+				} else {
+					List<MapGraphNode> availableNodes = map.getAvailableNodesAroundNode(enemiesEntities, selectedAttackNode);
+					MapGraphNode selectedNode = getCursorNode();
+					boolean result = false;
+					for (MapGraphNode availableNode : availableNodes) {
+						if (availableNode.equals(selectedNode)) {
+							result = true;
+							break;
+						}
+					}
+					if (result) {
+						characterSystem.applyCommand(auxCommand.init(Commands.GO_TO_MELEE, selectedNode, player), player);
+					}
+					selectedAttackNode = null;
+					for (PlayerSystemEventsSubscriber subscriber : subscribers) {
+						subscriber.onAttackModeDeactivated();
+					}
+				}
 			}
 		}
+	}
+
+	private MapGraphNode getCursorNode() {
+		Vector3 dest = hudSystem.getCursorModelInstance().transform.getTranslation(auxVector3_1);
+		MapGraphNode selectedNode = map.getNode((int) dest.x, (int) dest.z);
+		return selectedNode;
 	}
 
 

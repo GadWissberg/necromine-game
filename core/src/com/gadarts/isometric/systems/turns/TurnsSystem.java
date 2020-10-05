@@ -5,6 +5,7 @@ import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
+import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -32,6 +33,16 @@ public class TurnsSystem extends GameEntitySystem implements
 				subscriber.onEnemyTurn();
 			}
 		}
+	}
+
+	@Override
+	public void onAttackModeActivated(final List<MapGraphNode> availableNodes) {
+
+	}
+
+	@Override
+	public void onAttackModeDeactivated() {
+
 	}
 
 	@Override

@@ -4,18 +4,23 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.systems.character.CharacterCommand;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
+import com.gadarts.isometric.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEventsSubscriber {
 	static final int MAP_SIZE = 20;
 	private final static Array<Connection<MapGraphNode>> auxConnectionsList = new Array<>();
 	private static final Vector3 auxVector = new Vector3();
+	private static final List<MapGraphNode> auxNodesList_1 = new ArrayList<>();
+	private static final List<MapGraphNode> auxNodesList_2 = new ArrayList<>();
 	private final Array<MapGraphNode> nodes;
 	private final ImmutableArray<Entity> characterEntities;
 	private CharacterCommand currentCommand;
@@ -43,6 +48,38 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 				if (y < MAP_SIZE - 1) addConnection(n, 0, 1);
 			}
 		}
+	}
+
+	public List<MapGraphNode> getAvailableNodesAroundNode(final ImmutableArray<Entity> enemiesEntities,
+														  final MapGraphNode node) {
+		auxNodesList_1.clear();
+		auxNodesList_2.clear();
+		List<MapGraphNode> nodesAround = getNodesAround(node, auxNodesList_1);
+		List<MapGraphNode> availableNodes = auxNodesList_2;
+		for (MapGraphNode nearbyNode : nodesAround) {
+			if (nearbyNode.getType() == 0 && getEnemyFromNode(enemiesEntities, nearbyNode) == null) {
+				availableNodes.add(nearbyNode);
+			}
+		}
+		return availableNodes;
+	}
+
+	public Entity getEnemyFromNode(final ImmutableArray<Entity> enemiesEntities, final MapGraphNode node) {
+		Entity result = null;
+		for (Entity enemy : enemiesEntities) {
+			MapGraphNode enemyNode = getNode(ComponentsMapper.decal.get(enemy).getDecal().getPosition());
+			if (enemyNode.equals(node)) {
+				result = enemy;
+				break;
+			}
+		}
+		return result;
+	}
+
+	public MapGraphNode getRayNode(final int screenX, final int screenY, final OrthographicCamera camera) {
+		Vector3 output = Utils.calculateGridPositionFromMouse(camera, screenX, screenY, auxVector);
+		output.set(Math.max(output.x, 0), Math.max(output.y, 0), Math.max(output.z, 0));
+		return getNode(output);
 	}
 
 	public MapGraphNode getNode(final int x, final int y) {

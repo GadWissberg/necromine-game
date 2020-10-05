@@ -14,9 +14,10 @@ public class CharacterCommand {
 		return destination;
 	}
 
-	public void init(final Commands type, final MapGraphNode destination, final Entity character) {
+	public CharacterCommand init(final Commands type, final MapGraphNode destination, final Entity character) {
 		this.type = type;
 		this.destination = destination;
 		this.character = character;
+		return this;
 	}
 }

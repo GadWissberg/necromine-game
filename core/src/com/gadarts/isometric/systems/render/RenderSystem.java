@@ -90,7 +90,7 @@ public class RenderSystem extends EntitySystem implements EntityListener, Events
 		Model model = modelBuilder.createArrow(Vector3.Zero, direction, material, attributes);
 		PooledEngine engine = (PooledEngine) getEngine();
 		ModelInstanceComponent modelInsComp = engine.createComponent(ModelInstanceComponent.class);
-		modelInsComp.init(new ModelInstance(model));
+		modelInsComp.init(new ModelInstance(model), true);
 		return engine.createEntity().add(modelInsComp);
 	}
 
@@ -101,8 +101,10 @@ public class RenderSystem extends EntitySystem implements EntityListener, Events
 		modelBatch.begin(camera);
 		for (Entity entity : modelInstanceEntities) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
-			ModelInstance modelInstance = modelInstanceComponent.getModelInstance();
-			modelBatch.render(modelInstance);
+			if (modelInstanceComponent.isVisible()) {
+				ModelInstance modelInstance = modelInstanceComponent.getModelInstance();
+				modelBatch.render(modelInstance);
+			}
 		}
 		modelBatch.end();
 		for (Entity entity : decalEntities) {

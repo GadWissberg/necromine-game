@@ -32,15 +32,19 @@ public final class EntityBuilder {
 		this.currentEntity = engine.createEntity();
 	}
 
-	public EntityBuilder addModelInstanceComponent(final ModelInstance modelInstance) {
+	public EntityBuilder addModelInstanceComponent(final ModelInstance modelInstance, final boolean visible) {
 		ModelInstanceComponent component = engine.createComponent(ModelInstanceComponent.class);
-		component.init(modelInstance);
+		component.init(modelInstance, visible);
 		currentEntity.add(component);
 		return instance;
 	}
 
 	public Entity finishAndAddToEngine() {
 		engine.addEntity(currentEntity);
+		return finish();
+	}
+
+	public Entity finish() {
 		Entity result = currentEntity;
 		instance.reset();
 		return result;

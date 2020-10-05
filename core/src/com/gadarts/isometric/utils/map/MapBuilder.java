@@ -3,7 +3,6 @@ package com.gadarts.isometric.utils.map;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
@@ -21,6 +20,7 @@ import com.gadarts.isometric.components.PlayerComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.systems.HudSystem;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.Assets.Atlases;
@@ -110,14 +110,14 @@ public final class MapBuilder {
 
 	private void addTestFloor() {
 		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(createTestFloorModelInstance(modelBuilder))
+				.addModelInstanceComponent(createTestFloorModelInstance(modelBuilder), true)
 				.finishAndAddToEngine();
 	}
 
 	private void createAndAdd3dCursor() {
 		Model model = modelTestCursor();
 		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(new ModelInstance(model))
+				.addModelInstanceComponent(new ModelInstance(model), true)
 				.addCursorComponent()
 				.finishAndAddToEngine();
 	}
@@ -125,7 +125,7 @@ public final class MapBuilder {
 	private Model modelTestCursor() {
 		modelBuilder.begin();
 
-		Material material = new Material(ColorAttribute.createDiffuse(Color.YELLOW));
+		Material material = new Material(ColorAttribute.createDiffuse(HudSystem.CURSOR_REGULAR));
 
 		MeshPartBuilder meshPartBuilder = modelBuilder.part(
 				"test_cursor",
