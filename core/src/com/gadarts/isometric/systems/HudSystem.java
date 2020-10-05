@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
+import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.utils.Utils;
 import lombok.Getter;
 

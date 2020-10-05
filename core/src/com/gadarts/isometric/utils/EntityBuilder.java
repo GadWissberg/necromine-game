@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.character.CharacterAnimations;
+import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.SpriteType;
 import lombok.AccessLevel;
 import lombok.Setter;
 

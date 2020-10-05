@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.IsometricGame;
+import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import lombok.Getter;
 
 public class CameraSystem extends GameEntitySystem implements InputSystemEventsSubscriber {

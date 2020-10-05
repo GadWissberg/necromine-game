@@ -1,6 +1,7 @@
 package com.gadarts.isometric.components;
 
 import com.badlogic.ashley.core.ComponentMapper;
+import com.gadarts.isometric.components.character.CharacterComponent;
 
 public class ComponentsMapper {
 	public static final ComponentMapper<ModelInstanceComponent> modelInstance = ComponentMapper.getFor(ModelInstanceComponent.class);

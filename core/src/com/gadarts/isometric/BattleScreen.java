@@ -3,9 +3,9 @@ package com.gadarts.isometric;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Screen;
 import com.gadarts.isometric.systems.SystemsHandler;
-import com.gadarts.isometric.utils.GameAssetsManager;
-import com.gadarts.isometric.utils.MapBuilder;
-import com.gadarts.isometric.utils.MapGraph;
+import com.gadarts.isometric.utils.assets.GameAssetsManager;
+import com.gadarts.isometric.utils.map.MapBuilder;
+import com.gadarts.isometric.utils.map.MapGraph;
 
 public class BattleScreen implements Screen {
 	private final PooledEngine engine;

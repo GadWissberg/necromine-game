@@ -2,7 +2,13 @@ package com.gadarts.isometric.systems;
 
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.utils.Disposable;
-import com.gadarts.isometric.utils.MapGraph;
+import com.gadarts.isometric.systems.character.CharacterSystem;
+import com.gadarts.isometric.systems.enemy.EnemySystem;
+import com.gadarts.isometric.systems.input.InputSystem;
+import com.gadarts.isometric.systems.player.PlayerSystem;
+import com.gadarts.isometric.systems.render.RenderSystem;
+import com.gadarts.isometric.systems.turns.TurnsSystem;
+import com.gadarts.isometric.utils.map.MapGraph;
 
 public class SystemsHandler implements Disposable {
 	private final PooledEngine engine;

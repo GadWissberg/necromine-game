@@ -3,7 +3,8 @@ package com.gadarts.isometric.utils;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
-import com.gadarts.isometric.components.CharacterComponent;
+import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.utils.map.MapGraphNode;
 
 public class Utils {
 	private static final Plane floorPlane = new Plane(new Vector3(0, 1, 0), 0);
