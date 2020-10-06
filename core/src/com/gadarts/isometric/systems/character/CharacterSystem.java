@@ -60,19 +60,22 @@ public class CharacterSystem extends GameEntitySystem implements
 	 */
 	@SuppressWarnings("JavaDoc")
 	public void applyCommand(final CharacterCommand command, final Entity character) {
-		currentCommand = command;
-		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onNewCommandSet(command);
-		}
 		boolean foundPath = calculatePathForCommand(command, character);
-		if (foundPath && currentPath.nodes.size > 1) {
-			initDestinationNode(ComponentsMapper.character.get(character), currentPath.get(1));
-		} else {
-			destinationReached(character);
+		if (currentPath.nodes.size > 1) {
+			currentCommand = command;
+			if (foundPath) {
+				for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+					subscriber.onNewCommandSet(command);
+				}
+				initDestinationNode(ComponentsMapper.character.get(character), currentPath.get(1));
+			} else {
+				destinationReached(character);
+			}
 		}
 	}
 
 	private boolean calculatePathForCommand(final CharacterCommand command, final Entity character) {
+		currentPath.clear();
 		MapGraphNode sourceNode = map.getNode(ComponentsMapper.decal.get(character).getCellPosition(auxVector3_1));
 		MapGraphNode destNode = command.getDestination();
 		return pathFinder.searchNodePath(sourceNode, destNode, heuristic, currentPath);
