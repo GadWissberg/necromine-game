@@ -86,7 +86,10 @@ public class PlayerSystem extends GameEntitySystem implements
 						}
 					} else {
 						MapGraphNode selectedNode = getCursorNode();
-						characterSystem.applyCommand(auxCommand.init(Commands.GO_TO, selectedNode, player), player);
+						MapGraphNode playerNode = map.getNode(ComponentsMapper.decal.get(player).getDecal().getPosition());
+						if (!playerNode.equals(selectedNode)) {
+							characterSystem.applyCommand(auxCommand.init(Commands.GO_TO, selectedNode, player), player);
+						}
 					}
 				} else {
 					List<MapGraphNode> availableNodes = map.getAvailableNodesAroundNode(enemiesEntities, selectedAttackNode);

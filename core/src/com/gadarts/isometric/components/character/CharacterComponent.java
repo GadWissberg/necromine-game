@@ -21,6 +21,7 @@ public class CharacterComponent implements GameComponent, EventsNotifier<Charact
 	@Setter(AccessLevel.NONE)
 	private final List<CharacterComponentEventsSubscriber> subscribers = new ArrayList<>();
 
+	private boolean attacking;
 	private Entity target;
 
 	@Getter(AccessLevel.NONE)

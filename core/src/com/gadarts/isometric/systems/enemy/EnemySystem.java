@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.EnemyComponent;
@@ -16,10 +15,7 @@ import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.Commands;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
-import com.gadarts.isometric.utils.map.GameHeuristic;
-import com.gadarts.isometric.utils.map.MapGraph;
-import com.gadarts.isometric.utils.map.MapGraphNode;
-import com.gadarts.isometric.utils.map.MapGraphPath;
+import com.gadarts.isometric.utils.map.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +30,7 @@ public class EnemySystem extends GameEntitySystem implements
 	private static final MapGraphPath auxPath = new MapGraphPath();
 	private final static CharacterCommand auxCommand = new CharacterCommand();
 	private final List<EnemySystemEventsSubscriber> subscribers = new ArrayList<>();
-	private final IndexedAStarPathFinder<MapGraphNode> pathFinder;
+	private final GamePathFinder pathFinder;
 	private final GameHeuristic heuristic;
 	private final MapGraph map;
 	private ImmutableArray<Entity> enemies;
@@ -44,7 +40,7 @@ public class EnemySystem extends GameEntitySystem implements
 
 	public EnemySystem(final MapGraph map) {
 		this.map = map;
-		this.pathFinder = new IndexedAStarPathFinder<>(map);
+		this.pathFinder = new GamePathFinder(map);
 		this.heuristic = new GameHeuristic();
 	}
 
@@ -70,7 +66,7 @@ public class EnemySystem extends GameEntitySystem implements
 			MapGraphNode enemyNode = map.getNode((int) enemyPosition.x, (int) enemyPosition.z);
 			MapGraphNode playerNode = map.getNode((int) playerPosition.x, (int) playerPosition.z);
 			auxPath.clear();
-			boolean pathFound = pathFinder.searchNodePath(enemyNode, playerNode, heuristic, auxPath);
+			boolean pathFound = pathFinder.searchNodePathBeforeCommand(enemyNode, playerNode, heuristic, auxPath);
 			if (pathFound) {
 				auxCommand.init(Commands.GO_TO_MELEE, auxPath.get(auxPath.nodes.size - 2), enemy);
 				characterSystem.applyCommand(auxCommand, enemy);

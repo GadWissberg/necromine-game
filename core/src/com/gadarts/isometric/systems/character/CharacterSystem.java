@@ -61,16 +61,16 @@ public class CharacterSystem extends GameEntitySystem implements
 	@SuppressWarnings("JavaDoc")
 	public void applyCommand(final CharacterCommand command, final Entity character) {
 		boolean foundPath = calculatePathForCommand(command, character);
+		currentCommand = command;
 		if (currentPath.nodes.size > 1) {
-			currentCommand = command;
 			if (foundPath) {
 				for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 					subscriber.onNewCommandSet(command);
 				}
 				initDestinationNode(ComponentsMapper.character.get(character), currentPath.get(1));
-			} else {
-				destinationReached(character);
 			}
+		} else {
+			destinationReached(character);
 		}
 	}
 
@@ -90,6 +90,7 @@ public class CharacterSystem extends GameEntitySystem implements
 	}
 
 	private void commandDone(final Entity character) {
+		ComponentsMapper.character.get(character).setAttacking(false);
 		ComponentsMapper.character.get(character).setSpriteType(SpriteType.IDLE);
 		currentCommand = null;
 		currentPath.clear();
@@ -107,8 +108,8 @@ public class CharacterSystem extends GameEntitySystem implements
 
 	private void initDestinationNode(final CharacterComponent characterComponent,
 									 final MapGraphNode destNode) {
-		characterComponent.setDestinationNode(destNode);
 		characterComponent.setRotating(true);
+		characterComponent.setDestinationNode(destNode);
 	}
 
 	@Override
@@ -129,12 +130,17 @@ public class CharacterSystem extends GameEntitySystem implements
 	private void handleRotation(final Entity character, final CharacterComponent charComponent) {
 		if (charComponent.isRotating() && TimeUtils.timeSinceMillis(charComponent.getLastRotation()) > ROT_INTERVAL) {
 			charComponent.setLastRotation(TimeUtils.millis());
-			Direction directionToDest = calculateDirectionToDestination(character);
+			Direction directionToDest;
+			if (!charComponent.isAttacking()) {
+				directionToDest = calculateDirectionToDestination(character);
+			} else {
+				directionToDest = calculateDirectionToTarget(character);
+			}
 			if (charComponent.getDirection() != directionToDest) {
 				rotate(charComponent, directionToDest);
 			} else {
 				charComponent.setRotating(false);
-				charComponent.setSpriteType(SpriteType.RUN);
+				charComponent.setSpriteType(charComponent.isAttacking() ? SpriteType.ATTACK : SpriteType.RUN);
 			}
 		}
 	}
@@ -153,7 +159,19 @@ public class CharacterSystem extends GameEntitySystem implements
 
 	private Direction calculateDirectionToDestination(final Entity character) {
 		Vector3 pos = auxVector3_1.set(ComponentsMapper.decal.get(character).getDecal().getPosition());
-		Vector2 destPos = ComponentsMapper.character.get(character).getDestinationNode().getCenterPosition(auxVector2_2);
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		MapGraphNode destinationNode = characterComponent.getDestinationNode();
+		Vector2 destPos = destinationNode.getCenterPosition(auxVector2_2);
+		Vector2 directionToDest = destPos.sub(map.getNode(pos).getCenterPosition(auxVector2_1)).nor();
+		return Direction.findDirection(directionToDest);
+	}
+
+	private Direction calculateDirectionToTarget(final Entity character) {
+		Vector3 pos = auxVector3_1.set(ComponentsMapper.decal.get(character).getDecal().getPosition());
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		Entity target = characterComponent.getTarget();
+		MapGraphNode targetNode = map.getNode(ComponentsMapper.decal.get(target).getDecal().getPosition());
+		Vector2 destPos = targetNode.getCenterPosition(auxVector2_2);
 		Vector2 directionToDest = destPos.sub(map.getNode(pos).getCenterPosition(auxVector2_1)).nor();
 		return Direction.findDirection(directionToDest);
 	}

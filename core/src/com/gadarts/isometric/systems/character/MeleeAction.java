@@ -4,8 +4,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
-import com.gadarts.isometric.components.character.SpriteType;
-import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 
@@ -27,12 +25,14 @@ public class MeleeAction implements ToDoAfterDestinationReached {
 			List<MapGraphNode> nearbyNodes = map.getNodesAround(myNode, auxNodesList);
 			for (MapGraphNode nearbyNode : nearbyNodes) {
 				if (nearbyNode.equals(targetNode)) {
-					CharacterComponent.Direction direction = Utils.getDirectionBetweenNodes(myNode, targetNode);
-					characterComponent.setDirection(direction);
-					characterComponent.setSpriteType(SpriteType.ATTACK);
-					if (ComponentsMapper.animation.has(character)) {
-						ComponentsMapper.animation.get(character).resetStateTime();
-					}
+					characterComponent.setRotating(true);
+					characterComponent.setAttacking(true);
+//					CharacterComponent.Direction direction = Utils.getDirectionBetweenNodes(myNode, targetNode);
+//					characterComponent.setDirection(direction);
+//					characterComponent.setSpriteType(SpriteType.ATTACK);
+//					if (ComponentsMapper.animation.has(character)) {
+//						ComponentsMapper.animation.get(character).resetStateTime();
+//					}
 					break;
 				}
 			}

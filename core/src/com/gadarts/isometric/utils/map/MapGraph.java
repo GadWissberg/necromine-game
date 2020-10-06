@@ -11,6 +11,9 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.systems.character.CharacterCommand;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.utils.Utils;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,10 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private static final List<MapGraphNode> auxNodesList_2 = new ArrayList<>();
 	private final Array<MapGraphNode> nodes;
 	private final ImmutableArray<Entity> characterEntities;
-	private CharacterCommand currentCommand;
+
+	@Setter(AccessLevel.PACKAGE)
+	@Getter(AccessLevel.PACKAGE)
+	MapGraphNode currentDestination;
 
 	public MapGraph(final ImmutableArray<Entity> characterEntities) {
 		this.characterEntities = characterEntities;
@@ -120,7 +126,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private boolean checkIfNodeIsAvailable(final Connection<MapGraphNode> connection) {
 		for (Entity character : characterEntities) {
 			MapGraphNode node = getNode(ComponentsMapper.decal.get(character).getCellPosition(auxVector));
-			if (currentCommand != null && currentCommand.getDestination() == node) {
+			if (currentDestination == node) {
 				continue;
 			}
 			if (node.equals(connection.getToNode())) {
@@ -182,11 +188,11 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
 	@Override
 	public void onCommandDone(final Entity character) {
-
+		currentDestination = null;
 	}
 
 	@Override
 	public void onNewCommandSet(final CharacterCommand command) {
-		currentCommand = command;
+		currentDestination = command.getDestination();
 	}
 }
