@@ -3,9 +3,9 @@ package com.gadarts.isometric.systems.render;
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -29,16 +29,18 @@ import com.gadarts.isometric.components.DecalComponent;
 import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
-import com.gadarts.isometric.systems.CameraSystem;
 import com.gadarts.isometric.systems.EventsNotifier;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.gadarts.isometric.systems.GameEntitySystem;
+import com.gadarts.isometric.systems.camera.CameraSystem;
+import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 
 /**
  * Handles rendering.
  */
-public class RenderSystem extends EntitySystem implements EntityListener, EventsNotifier<RenderSystemEventsSubscriber> {
+public class RenderSystem extends GameEntitySystem<RenderSystemEventsSubscriber> implements
+		EntityListener,
+		CameraSystemEventsSubscriber,
+		EventsNotifier<RenderSystemEventsSubscriber> {
 
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
@@ -47,16 +49,12 @@ public class RenderSystem extends EntitySystem implements EntityListener, Events
 	private static final int DECALS_POOL_SIZE = 200;
 	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
 
-	private final ModelBatch modelBatch;
+	private ModelBatch modelBatch;
 	private DecalBatch decalBatch;
-	private Camera camera;
 	private ImmutableArray<Entity> modelInstanceEntities;
 	private ImmutableArray<Entity> decalEntities;
-	private final List<RenderSystemEventsSubscriber> subscribers = new ArrayList<>();
-
-	public RenderSystem() {
-		this.modelBatch = new ModelBatch();
-	}
+	private boolean ready;
+	private CameraSystem cameraSystem;
 
 	private void resetDisplay(final Color color) {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -67,8 +65,6 @@ public class RenderSystem extends EntitySystem implements EntityListener, Events
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
-		this.camera = engine.getSystem(CameraSystem.class).getCamera();
-		this.decalBatch = new DecalBatch(DECALS_POOL_SIZE, new CameraGroupStrategy(camera));
 		engine.addEntityListener(this);
 		createAxis(engine);
 		modelInstanceEntities = engine.getEntitiesFor(Family.all(ModelInstanceComponent.class).get());
@@ -97,7 +93,9 @@ public class RenderSystem extends EntitySystem implements EntityListener, Events
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
+		if (!ready) return;
 		resetDisplay(Color.BLACK);
+		OrthographicCamera camera = cameraSystem.getCamera();
 		modelBatch.begin(camera);
 		for (Entity entity : modelInstanceEntities) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
@@ -172,8 +170,21 @@ public class RenderSystem extends EntitySystem implements EntityListener, Events
 	}
 
 	@Override
-	public void subscribeForEvents(RenderSystemEventsSubscriber sub) {
-		if (subscribers.contains(sub)) return;
-		subscribers.add(sub);
+	public void init() {
+		this.modelBatch = new ModelBatch();
 	}
+
+	@Override
+	public void dispose() {
+		decalBatch.dispose();
+		modelBatch.dispose();
+	}
+
+	@Override
+	public void onCameraSystemReady(final CameraSystem cameraSystem) {
+		this.cameraSystem = cameraSystem;
+		this.decalBatch = new DecalBatch(DECALS_POOL_SIZE, new CameraGroupStrategy(cameraSystem.getCamera()));
+		ready = true;
+	}
+
 }

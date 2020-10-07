@@ -7,7 +7,6 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -20,6 +19,9 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
 import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.ModelInstanceComponent;
+import com.gadarts.isometric.systems.camera.CameraSystem;
+import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.utils.EntityBuilder;
@@ -31,7 +33,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class HudSystem extends GameEntitySystem implements InputSystemEventsSubscriber, PlayerSystemEventsSubscriber {
+public class HudSystem extends GameEntitySystem<HudSystemEventsSubscriber> implements
+		InputSystemEventsSubscriber,
+		PlayerSystemEventsSubscriber,
+		CameraSystemEventsSubscriber {
 	public static final Color CURSOR_REGULAR = Color.YELLOW;
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
@@ -43,9 +48,9 @@ public class HudSystem extends GameEntitySystem implements InputSystemEventsSubs
 	private final List<Entity> attackNodesEntities = new ArrayList<>();
 	@Getter
 	private ModelInstance cursorModelInstance;
-	private OrthographicCamera camera;
 	private ImmutableArray<Entity> enemiesEntities;
 	private Model attackNodeModel;
+	private CameraSystem cameraSystem;
 
 	public HudSystem(final MapGraph map) {
 		this.map = map;
@@ -61,7 +66,6 @@ public class HudSystem extends GameEntitySystem implements InputSystemEventsSubs
 		super.addedToEngine(engine);
 		Entity cursorEntity = engine.getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 		cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
-		camera = engine.getSystem(CameraSystem.class).getCamera();
 		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		attackNodeModel = createAttackNodeModel();
 		createAttackNodesEntities();
@@ -97,7 +101,7 @@ public class HudSystem extends GameEntitySystem implements InputSystemEventsSubs
 
 	@Override
 	public void mouseMoved(final int screenX, final int screenY) {
-		MapGraphNode newNode = map.getRayNode(screenX, screenY, camera);
+		MapGraphNode newNode = map.getRayNode(screenX, screenY, cameraSystem.getCamera());
 		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
 		if (!newNode.equals(oldNode)) {
 			colorizeCursor(newNode);
@@ -169,4 +173,17 @@ public class HudSystem extends GameEntitySystem implements InputSystemEventsSubs
 	public void onAttackModeDeactivated() {
 		hideAttackNodes();
 	}
+
+	@Override
+	public void init() {
+		for (HudSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onHudSystemReady(this);
+		}
+	}
+
+	@Override
+	public void onCameraSystemReady(final CameraSystem cameraSystem) {
+		this.cameraSystem = cameraSystem;
+	}
+
 }

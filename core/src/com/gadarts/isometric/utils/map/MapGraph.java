@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.systems.character.CharacterCommand;
+import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.utils.Utils;
 import lombok.AccessLevel;
@@ -194,5 +195,10 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	@Override
 	public void onNewCommandSet(final CharacterCommand command) {
 		currentDestination = command.getDestination();
+	}
+
+	@Override
+	public void onCharacterSystemReady(final CharacterSystem characterSystem) {
+
 	}
 }

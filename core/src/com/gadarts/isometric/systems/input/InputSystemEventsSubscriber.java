@@ -1,6 +1,8 @@
 package com.gadarts.isometric.systems.input;
 
-public interface InputSystemEventsSubscriber {
+import com.gadarts.isometric.systems.SystemEventsSubscriber;
+
+public interface InputSystemEventsSubscriber extends SystemEventsSubscriber {
 	void mouseMoved(final int screenX, final int screenY);
 
 	void touchDown(int screenX, int screenY, int button);

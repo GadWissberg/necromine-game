@@ -9,37 +9,39 @@ import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.PlayerComponent;
-import com.gadarts.isometric.systems.CameraSystem;
-import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.HudSystem;
+import com.gadarts.isometric.systems.camera.CameraSystem;
+import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.CharacterCommand;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.Commands;
+import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.Turns;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
+import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerSystem extends GameEntitySystem implements
+public class PlayerSystem extends GameEntitySystem<PlayerSystemEventsSubscriber> implements
+		CameraSystemEventsSubscriber,
+		TurnsSystemEventsSubscriber,
+		HudSystemEventsSubscriber,
 		InputSystemEventsSubscriber,
-		EventsNotifier<PlayerSystemEventsSubscriber>,
 		CharacterSystemEventsSubscriber {
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final CharacterCommand auxCommand = new CharacterCommand();
-	private final List<PlayerSystemEventsSubscriber> subscribers = new ArrayList<>();
 	private final MapGraph map;
 	private MapGraphNode selectedAttackNode;
-	private CameraSystem cameraSystem;
 	private Entity player;
+	private CameraSystem cameraSystem;
+	private HudSystem hudSystem;
 	private TurnsSystem turnsSystem;
 	private CharacterSystem characterSystem;
-	private HudSystem hudSystem;
 	private ImmutableArray<Entity> enemiesEntities;
 
 	public PlayerSystem(final MapGraph map) {
@@ -54,12 +56,8 @@ public class PlayerSystem extends GameEntitySystem implements
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
-		cameraSystem = getEngine().getSystem(CameraSystem.class);
 		player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		turnsSystem = engine.getSystem(TurnsSystem.class);
-		characterSystem = engine.getSystem(CharacterSystem.class);
-		hudSystem = engine.getSystem(HudSystem.class);
-		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
+		enemiesEntities = getEngine().getEntitiesFor(Family.all(EnemyComponent.class).get());
 	}
 
 	@Override
@@ -69,7 +67,7 @@ public class PlayerSystem extends GameEntitySystem implements
 
 	@Override
 	public void touchDown(final int screenX, final int screenY, final int button) {
-		if (cameraSystem.isRotateCamera()) return;
+		if (cameraSystem.isCameraRotating()) return;
 		if (turnsSystem.getCurrentTurn() == Turns.PLAYER) {
 			if (button == Input.Buttons.LEFT && !characterSystem.isProcessingCommand()) {
 				MapGraphNode node = map.getRayNode(screenX, screenY, cameraSystem.getCamera());
@@ -115,8 +113,7 @@ public class PlayerSystem extends GameEntitySystem implements
 
 	private MapGraphNode getCursorNode() {
 		Vector3 dest = hudSystem.getCursorModelInstance().transform.getTranslation(auxVector3_1);
-		MapGraphNode selectedNode = map.getNode((int) dest.x, (int) dest.z);
-		return selectedNode;
+		return map.getNode((int) dest.x, (int) dest.z);
 	}
 
 
@@ -128,12 +125,6 @@ public class PlayerSystem extends GameEntitySystem implements
 	@Override
 	public void touchDragged(final int screenX, final int screenY) {
 
-	}
-
-	@Override
-	public void subscribeForEvents(final PlayerSystemEventsSubscriber sub) {
-		if (subscribers.contains(sub)) return;
-		subscribers.add(sub);
 	}
 
 	@Override
@@ -153,5 +144,40 @@ public class PlayerSystem extends GameEntitySystem implements
 	@Override
 	public void onNewCommandSet(final CharacterCommand command) {
 
+	}
+
+	@Override
+	public void onCharacterSystemReady(final CharacterSystem characterSystem) {
+		this.characterSystem = characterSystem;
+	}
+
+	@Override
+	public void init() {
+
+	}
+
+	@Override
+	public void onCameraSystemReady(final CameraSystem cameraSystem) {
+		this.cameraSystem = cameraSystem;
+	}
+
+	@Override
+	public void onHudSystemReady(final HudSystem hudSystem) {
+		this.hudSystem = hudSystem;
+	}
+
+	@Override
+	public void onEnemyTurn() {
+
+	}
+
+	@Override
+	public void onPlayerTurn() {
+
+	}
+
+	@Override
+	public void onTurnsSystemReady(final TurnsSystem turnsSystem) {
+		this.turnsSystem = turnsSystem;
 	}
 }

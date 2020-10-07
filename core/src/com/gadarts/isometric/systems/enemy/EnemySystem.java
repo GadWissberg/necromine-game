@@ -8,28 +8,23 @@ import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.PlayerComponent;
-import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterCommand;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.Commands;
+import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.map.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class EnemySystem extends GameEntitySystem implements
+public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> implements
 		TurnsSystemEventsSubscriber,
-		CharacterSystemEventsSubscriber,
-		EventsNotifier<EnemySystemEventsSubscriber> {
+		CharacterSystemEventsSubscriber {
 
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final MapGraphPath auxPath = new MapGraphPath();
 	private final static CharacterCommand auxCommand = new CharacterCommand();
-	private final List<EnemySystemEventsSubscriber> subscribers = new ArrayList<>();
 	private final GamePathFinder pathFinder;
 	private final GameHeuristic heuristic;
 	private final MapGraph map;
@@ -52,7 +47,6 @@ public class EnemySystem extends GameEntitySystem implements
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
-		characterSystem = engine.getSystem(CharacterSystem.class);
 		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 	}
@@ -81,6 +75,11 @@ public class EnemySystem extends GameEntitySystem implements
 	}
 
 	@Override
+	public void onTurnsSystemReady(final TurnsSystem turnsSystem) {
+
+	}
+
+	@Override
 	public void onDestinationReached(final Entity character) {
 	}
 
@@ -99,8 +98,12 @@ public class EnemySystem extends GameEntitySystem implements
 	}
 
 	@Override
-	public void subscribeForEvents(final EnemySystemEventsSubscriber sub) {
-		if (subscribers.contains(sub)) return;
-		subscribers.add(sub);
+	public void onCharacterSystemReady(final CharacterSystem characterSystem) {
+		this.characterSystem = characterSystem;
+	}
+
+	@Override
+	public void init() {
+
 	}
 }

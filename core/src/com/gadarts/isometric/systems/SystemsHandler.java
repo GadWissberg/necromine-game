@@ -2,50 +2,64 @@ package com.gadarts.isometric.systems;
 
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.utils.Disposable;
-import com.gadarts.isometric.systems.character.CharacterSystem;
+import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
+import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
+import com.gadarts.isometric.systems.character.CharacterSystemImpl;
 import com.gadarts.isometric.systems.enemy.EnemySystem;
+import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystem;
+import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystem;
+import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystem;
-import com.gadarts.isometric.systems.turns.TurnsSystem;
+import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
+import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
+import com.gadarts.isometric.systems.turns.TurnsSystemImpl;
 import com.gadarts.isometric.utils.map.MapGraph;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SystemsHandler implements Disposable {
 	private final PooledEngine engine;
 
+	@SuppressWarnings("rawtypes")
+	private final Map<Class<? extends SystemEventsSubscriber>, Class<? extends GameEntitySystem>> subscribersInterfaces = new HashMap<>();
+
 	public SystemsHandler(final PooledEngine engine, final MapGraph map) {
 		this.engine = engine;
-		CharacterSystem characterSystem = new CharacterSystem(map);
-		engine.addSystem(characterSystem);
-		CameraSystem cameraSystem = new CameraSystem();
-		engine.addSystem(cameraSystem);
-		EnemySystem enemySystem = new EnemySystem(map);
-		TurnsSystem turnsSystem = new TurnsSystem();
-		engine.addSystem(turnsSystem);
-		turnsSystem.subscribeForEvents(enemySystem);
-		enemySystem.subscribeForEvents(turnsSystem);
-		HudSystem hudSystem = new HudSystem(map);
-		engine.addSystem(hudSystem);
-		PlayerSystem playerSystem = new PlayerSystem(map);
-		playerSystem.subscribeForEvents(hudSystem);
-		characterSystem.subscribeForEvents(map);
-		characterSystem.subscribeForEvents(playerSystem);
-		characterSystem.subscribeForEvents(enemySystem);
-		playerSystem.subscribeForEvents(turnsSystem);
-		engine.addSystem(playerSystem);
-		RenderSystem renderSystem = new RenderSystem();
-		renderSystem.subscribeForEvents(characterSystem);
-		engine.addSystem(renderSystem);
-		engine.addSystem(enemySystem);
-		InputSystem inputSystem = new InputSystem();
-		engine.addSystem(inputSystem);
-		inputSystem.subscribeForEvents(hudSystem);
-		inputSystem.subscribeForEvents(cameraSystem);
-		inputSystem.subscribeForEvents(playerSystem);
+		addSystem(new CharacterSystemImpl(map), CharacterSystemEventsSubscriber.class);
+		addSystem(new EnemySystem(map), EnemySystemEventsSubscriber.class);
+		addSystem(new TurnsSystemImpl(), TurnsSystemEventsSubscriber.class);
+		addSystem(new PlayerSystem(map), PlayerSystemEventsSubscriber.class);
+		addSystem(new RenderSystem(), RenderSystemEventsSubscriber.class);
+		addSystem(new InputSystem(), InputSystemEventsSubscriber.class);
+		addSystem(new CameraSystemImpl(), CameraSystemEventsSubscriber.class);
+		addSystem(new HudSystem(map), HudSystemEventsSubscriber.class);
+		engine.getSystems().forEach((system) -> Arrays.stream(system.getClass().getInterfaces()).forEach(i -> {
+			if (subscribersInterfaces.containsKey(i)) {
+				//noinspection unchecked
+				EventsNotifier<SystemEventsSubscriber> s = engine.getSystem(subscribersInterfaces.get(i));
+				s.subscribeForEvents((SystemEventsSubscriber) system);
+			}
+		}));
+		engine.getSystems().forEach((system) -> ((GameEntitySystem<? extends SystemEventsSubscriber>) system).init());
+	}
+
+	private void addSystem(final GameEntitySystem<? extends SystemEventsSubscriber> system,
+						   final Class<? extends SystemEventsSubscriber> systemEventsSubscriberClass) {
+		engine.addSystem(system);
+
+		//noinspection rawtypes
+		Class<? extends GameEntitySystem> systemClass = system.getClass();
+
+		subscribersInterfaces.put(systemEventsSubscriberClass, systemClass);
 	}
 
 	@Override
 	public void dispose() {
-		engine.getSystems().forEach(system -> ((GameEntitySystem) system).dispose());
+		engine.getSystems().forEach(system -> ((GameEntitySystem<? extends SystemEventsSubscriber>) system).dispose());
 	}
 }
