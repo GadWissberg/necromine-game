@@ -11,6 +11,7 @@ import com.gadarts.isometric.components.AnimationComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterComponent.Direction;
+import com.gadarts.isometric.components.character.CharacterRotationData;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
@@ -57,14 +58,18 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		currentCommand = command;
 		if (currentPath.nodes.size > 1) {
 			if (foundPath) {
-				for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-					subscriber.onNewCommandSet(command);
-				}
-				initDestinationNode(ComponentsMapper.character.get(character), currentPath.get(1));
+				commandSet(command, character);
 			}
 		} else {
 			destinationReached(character);
 		}
+	}
+
+	private void commandSet(final CharacterCommand command, final Entity character) {
+		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onNewCommandSet(command);
+		}
+		initDestinationNode(ComponentsMapper.character.get(character), currentPath.get(1));
 	}
 
 	private boolean calculatePathForCommand(final CharacterCommand command, final Entity character) {
@@ -101,7 +106,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 
 	private void initDestinationNode(final CharacterComponent characterComponent,
 									 final MapGraphNode destNode) {
-		characterComponent.setRotating(true);
+		characterComponent.getRotationData().setRotating(true);
 		characterComponent.setDestinationNode(destNode);
 	}
 
@@ -121,8 +126,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void handleRotation(final Entity character, final CharacterComponent charComponent) {
-		if (charComponent.isRotating() && TimeUtils.timeSinceMillis(charComponent.getLastRotation()) > ROT_INTERVAL) {
-			charComponent.setLastRotation(TimeUtils.millis());
+		CharacterRotationData rotationData = charComponent.getRotationData();
+		if (rotationData.isRotating() && TimeUtils.timeSinceMillis(rotationData.getLastRotation()) > ROT_INTERVAL) {
+			rotationData.setLastRotation(TimeUtils.millis());
 			Direction directionToDest;
 			if (!charComponent.isAttacking()) {
 				directionToDest = calculateDirectionToDestination(character);
@@ -132,7 +138,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			if (charComponent.getDirection() != directionToDest) {
 				rotate(charComponent, directionToDest);
 			} else {
-				charComponent.setRotating(false);
+				rotationData.setRotating(false);
 				charComponent.setSpriteType(charComponent.isAttacking() ? SpriteType.ATTACK : SpriteType.RUN);
 			}
 		}
