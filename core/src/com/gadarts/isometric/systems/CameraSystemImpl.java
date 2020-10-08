@@ -22,10 +22,13 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private static final float NEAR = 0.1f;
 	private static final float FAR = 100f;
 	private static final Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);
+
 	private final Vector2 lastMousePosition = new Vector2();
 	private final Vector3 rotationPoint = new Vector3();
+
 	@Getter
 	private OrthographicCamera camera;
+
 	@Getter
 	private boolean rotateCamera;
 
