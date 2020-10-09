@@ -202,4 +202,9 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
     public void onCharacterSystemReady(final CharacterSystem characterSystem) {
 
     }
+
+    @Override
+    public void onCharacterGotDamage(final Entity target) {
+
+    }
 }

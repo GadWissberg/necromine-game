@@ -221,6 +221,14 @@
             <key type="filename">../sprites/player/idle_south_west_1.png</key>
             <key type="filename">../sprites/player/idle_west_0.png</key>
             <key type="filename">../sprites/player/idle_west_1.png</key>
+            <key type="filename">../sprites/player/pain_east.png</key>
+            <key type="filename">../sprites/player/pain_north.png</key>
+            <key type="filename">../sprites/player/pain_north_east.png</key>
+            <key type="filename">../sprites/player/pain_north_west.png</key>
+            <key type="filename">../sprites/player/pain_south.png</key>
+            <key type="filename">../sprites/player/pain_south_east.png</key>
+            <key type="filename">../sprites/player/pain_south_west.png</key>
+            <key type="filename">../sprites/player/pain_west.png</key>
             <key type="filename">../sprites/player/run_east_0.png</key>
             <key type="filename">../sprites/player/run_east_1.png</key>
             <key type="filename">../sprites/player/run_east_2.png</key>
@@ -342,6 +350,14 @@
             <filename>../sprites/player/attack_west_0.png</filename>
             <filename>../sprites/player/attack_west_1.png</filename>
             <filename>../sprites/player/attack_west_2.png</filename>
+            <filename>../sprites/player/pain_east.png</filename>
+            <filename>../sprites/player/pain_north.png</filename>
+            <filename>../sprites/player/pain_north_east.png</filename>
+            <filename>../sprites/player/pain_north_west.png</filename>
+            <filename>../sprites/player/pain_south.png</filename>
+            <filename>../sprites/player/pain_south_east.png</filename>
+            <filename>../sprites/player/pain_south_west.png</filename>
+            <filename>../sprites/player/pain_west.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

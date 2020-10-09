@@ -152,6 +152,11 @@ public class PlayerSystem extends GameEntitySystem<PlayerSystemEventsSubscriber>
 	}
 
 	@Override
+	public void onCharacterGotDamage(final Entity target) {
+
+	}
+
+	@Override
 	public void init() {
 
 	}

@@ -31,6 +31,7 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
 	private Entity player;
+	private TurnsSystem turnsSystem;
 
 
 	public EnemySystem(final MapGraph map) {
@@ -55,17 +56,21 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	@Override
 	public void onEnemyTurn() {
 		for (Entity enemy : enemies) {
-			Vector3 enemyPosition = ComponentsMapper.decal.get(enemy).getCellPosition(auxVector3_2);
-			Vector3 playerPosition = ComponentsMapper.decal.get(player).getCellPosition(auxVector3_1);
-			MapGraphNode enemyNode = map.getNode((int) enemyPosition.x, (int) enemyPosition.z);
-			MapGraphNode playerNode = map.getNode((int) playerPosition.x, (int) playerPosition.z);
-			auxPath.clear();
-			boolean pathFound = pathFinder.searchNodePathBeforeCommand(enemyNode, playerNode, heuristic, auxPath);
-			if (pathFound) {
-				auxCommand.init(Commands.GO_TO_MELEE, auxPath.get(auxPath.nodes.size - 2), enemy);
-				characterSystem.applyCommand(auxCommand, enemy);
+			if (ComponentsMapper.character.get(enemy).getHp() > 0) {
+				Vector3 enemyPosition = ComponentsMapper.decal.get(enemy).getCellPosition(auxVector3_2);
+				Vector3 playerPosition = ComponentsMapper.decal.get(player).getCellPosition(auxVector3_1);
+				MapGraphNode enemyNode = map.getNode((int) enemyPosition.x, (int) enemyPosition.z);
+				MapGraphNode playerNode = map.getNode((int) playerPosition.x, (int) playerPosition.z);
+				auxPath.clear();
+				boolean pathFound = pathFinder.searchNodePathBeforeCommand(enemyNode, playerNode, heuristic, auxPath);
+				if (pathFound) {
+					auxCommand.init(Commands.GO_TO_MELEE, auxPath.get(auxPath.nodes.size - 2), enemy);
+					characterSystem.applyCommand(auxCommand, enemy);
+				}
+				break;
+			} else {
+				onCommandDone(enemy);
 			}
-			break;
 		}
 	}
 
@@ -76,7 +81,7 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 
 	@Override
 	public void onTurnsSystemReady(final TurnsSystem turnsSystem) {
-
+		this.turnsSystem = turnsSystem;
 	}
 
 	@Override
@@ -100,6 +105,11 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	@Override
 	public void onCharacterSystemReady(final CharacterSystem characterSystem) {
 		this.characterSystem = characterSystem;
+	}
+
+	@Override
+	public void onCharacterGotDamage(final Entity target) {
+
 	}
 
 	@Override

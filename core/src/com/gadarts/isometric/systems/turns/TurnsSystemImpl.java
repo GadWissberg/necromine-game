@@ -58,4 +58,5 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 			subscriber.onTurnsSystemReady(this);
 		}
 	}
+
 }

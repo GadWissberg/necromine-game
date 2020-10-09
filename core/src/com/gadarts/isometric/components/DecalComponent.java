@@ -35,7 +35,11 @@ public class DecalComponent implements GameComponent {
 	public void initializeSprite(final SpriteType type, final CharacterComponent.Direction direction) {
 		this.type = type;
 		this.direction = direction;
-		decal.setTextureRegion(animations.get(type, direction).getKeyFrames()[0]);
+		if (type.isSingleAnimation()) {
+			decal.setTextureRegion(animations.get(type, CharacterComponent.Direction.SOUTH).getKeyFrames()[0]);
+		} else {
+			decal.setTextureRegion(animations.get(type, direction).getKeyFrames()[0]);
+		}
 	}
 
 	public Vector3 getCellPosition(final Vector3 output) {

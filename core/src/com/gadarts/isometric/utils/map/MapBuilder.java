@@ -92,20 +92,41 @@ public final class MapBuilder {
 	private CharacterAnimations createCharacterAnimations(final Atlases zealot) {
 		CharacterAnimations animations = new CharacterAnimations();
 		TextureAtlas atlas = assetManager.getAtlas(zealot);
-		Arrays.stream(SpriteType.values()).forEach(spriteType -> Arrays.stream(CharacterComponent.Direction.values())
-				.forEach(dir -> {
-							String name = spriteType.name().toLowerCase() + "_" + dir.name().toLowerCase();
-							float animaDur = spriteType.getAnimationDuration();
-							Animation<TextureAtlas.AtlasRegion> a = new Animation<>(
-									animaDur,
-									atlas.findRegions(name),
-									spriteType.getPlayMode()
-							);
-							animations.put(spriteType, dir, a);
-						}
-				)
-		);
+		Arrays.stream(SpriteType.values()).forEach(spriteType -> {
+			if (spriteType.isSingleAnimation()) {
+				inflateCharacterAnimation(animations, atlas, spriteType, CharacterComponent.Direction.SOUTH);
+			} else {
+				CharacterComponent.Direction[] directions = CharacterComponent.Direction.values();
+				Arrays.stream(directions).forEach(dir -> inflateCharacterAnimation(animations, atlas, spriteType, dir));
+			}
+		});
 		return animations;
+	}
+
+	private void inflateCharacterAnimation(final CharacterAnimations animations,
+										   final TextureAtlas atlas,
+										   final SpriteType spriteType,
+										   final CharacterComponent.Direction dir) {
+		String name;
+		String spriteTypeName = spriteType.name().toLowerCase();
+		if (spriteType.isSingleAnimation()) {
+			name = spriteTypeName;
+		} else {
+			name = spriteTypeName + "_" + dir.name().toLowerCase();
+		}
+		Animation<TextureAtlas.AtlasRegion> a = createAnimation(atlas, spriteType, name);
+		animations.put(spriteType, dir, a);
+	}
+
+	private Animation<TextureAtlas.AtlasRegion> createAnimation(final TextureAtlas atlas,
+																final SpriteType spriteType,
+																final String name) {
+		Animation<TextureAtlas.AtlasRegion> a = new Animation<>(
+				spriteType.getAnimationDuration(),
+				atlas.findRegions(name),
+				spriteType.getPlayMode()
+		);
+		return a;
 	}
 
 	private void addTestFloor() {

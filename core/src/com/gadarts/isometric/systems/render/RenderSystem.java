@@ -136,10 +136,15 @@ public class RenderSystem extends GameEntitySystem<RenderSystemEventsSubscriber>
 			}
 			SpriteType spriteType = characterComponent.getSpriteType();
 			if (!characterComponent.getSpriteType().equals(decalComponent.getType()) || !decalComponent.getDirection().equals(direction)) {
-				decalComponent.initializeSprite(spriteType, direction);
-				if (ComponentsMapper.animation.has(entity)) {
-					AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
-					animationComponent.init(spriteType.getAnimationDuration(), decalComponent.getAnimations().get(spriteType, direction));
+				if (decalComponent.getType() != SpriteType.DIE) {
+					decalComponent.initializeSprite(spriteType, direction);
+					if (ComponentsMapper.animation.has(entity)) {
+						AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
+						if (spriteType.isSingleAnimation()) {
+							direction = CharacterComponent.Direction.SOUTH;
+						}
+						animationComponent.init(spriteType.getAnimationDuration(), decalComponent.getAnimations().get(spriteType, direction));
+					}
 				}
 			} else {
 				if (ComponentsMapper.animation.has(entity)) {

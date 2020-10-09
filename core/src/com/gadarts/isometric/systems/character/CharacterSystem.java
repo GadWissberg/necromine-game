@@ -6,4 +6,5 @@ public interface CharacterSystem {
 	boolean isProcessingCommand();
 
 	void applyCommand(CharacterCommand command, Entity character);
+
 }

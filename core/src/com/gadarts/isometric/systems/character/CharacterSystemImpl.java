@@ -1,8 +1,13 @@
 package com.gadarts.isometric.systems.character;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -33,17 +38,25 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private static final Vector2 auxVector2_3 = new Vector2();
 	private static final float CHARACTER_STEP_SIZE = 0.3f;
 	private static final int ROT_INTERVAL = 125;
+	private static final long CHARACTER_PAIN_DURATION = 1000;
 
 	private final MapGraphPath currentPath = new MapGraphPath();
 	private final MapGraph map;
 	private final IndexedAStarPathFinder<MapGraphNode> pathFinder;
 	private final Heuristic<MapGraphNode> heuristic;
 	private CharacterCommand currentCommand;
+	private ImmutableArray<Entity> characters;
 
 	public CharacterSystemImpl(final MapGraph map) {
 		this.map = map;
 		this.pathFinder = new IndexedAStarPathFinder<>(map);
 		this.heuristic = new GameHeuristic();
+	}
+
+	@Override
+	public void addedToEngine(final Engine engine) {
+		super.addedToEngine(engine);
+		characters = engine.getEntitiesFor(Family.all(CharacterComponent.class).get());
 	}
 
 	/**
@@ -123,9 +136,22 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				handleRotation(character, characterComponent);
 			}
 		}
+		for (Entity character : characters) {
+			handlePain(character);
+		}
+	}
+
+	private void handlePain(final Entity character) {
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		long lastDamage = characterComponent.getLastDamage();
+		if (characterComponent.isInPain() && TimeUtils.timeSinceMillis(lastDamage) > CHARACTER_PAIN_DURATION) {
+			characterComponent.setInPain(false);
+			characterComponent.setSpriteType(SpriteType.IDLE);
+		}
 	}
 
 	private void handleRotation(final Entity character, final CharacterComponent charComponent) {
+		if (charComponent.isInPain()) return;
 		CharacterRotationData rotationData = charComponent.getRotationData();
 		if (rotationData.isRotating() && TimeUtils.timeSinceMillis(rotationData.getLastRotation()) > ROT_INTERVAL) {
 			rotationData.setLastRotation(TimeUtils.millis());
@@ -139,7 +165,24 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				rotate(charComponent, directionToDest);
 			} else {
 				rotationData.setRotating(false);
-				charComponent.setSpriteType(charComponent.isAttacking() ? SpriteType.ATTACK : SpriteType.RUN);
+				SpriteType spriteType;
+				if (charComponent.isAttacking()) {
+					Entity target = charComponent.getTarget();
+					CharacterComponent targetCharacterComponent = ComponentsMapper.character.get(target);
+					targetCharacterComponent.dealDamage(1);
+					spriteType = SpriteType.ATTACK;
+					if (targetCharacterComponent.getHp() <= 0) {
+						targetCharacterComponent.setInPain(false);
+						targetCharacterComponent.setSpriteType(SpriteType.DIE);
+					} else {
+						for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+							subscriber.onCharacterGotDamage(target);
+						}
+					}
+				} else {
+					spriteType = SpriteType.RUN;
+				}
+				charComponent.setSpriteType(spriteType);
 			}
 		}
 	}
@@ -177,8 +220,19 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 
 	private void handleAttack(final Entity character) {
 		AnimationComponent animationComponent = ComponentsMapper.animation.get(character);
-		if (animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime())) {
+		Animation<TextureAtlas.AtlasRegion> animation = animationComponent.getAnimation();
+		if (animation.isAnimationFinished(animationComponent.getStateTime())) {
 			commandDone(character);
+		} else if (animation.getKeyFrameIndex(animationComponent.getStateTime()) == 1) {
+			applyTargetToDisplayPain(character);
+		}
+	}
+
+	private void applyTargetToDisplayPain(final Entity character) {
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		CharacterComponent targetCharacterComponent = ComponentsMapper.character.get(characterComponent.getTarget());
+		if (targetCharacterComponent.getHp() > 0) {
+			targetCharacterComponent.setSpriteType(SpriteType.PAIN);
 		}
 	}
 

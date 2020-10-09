@@ -205,6 +205,17 @@
             <key type="filename">../sprites/zealot/attack_west_0.png</key>
             <key type="filename">../sprites/zealot/attack_west_1.png</key>
             <key type="filename">../sprites/zealot/attack_west_2.png</key>
+            <key type="filename">../sprites/zealot/die_0.png</key>
+            <key type="filename">../sprites/zealot/die_1.png</key>
+            <key type="filename">../sprites/zealot/die_10.png</key>
+            <key type="filename">../sprites/zealot/die_2.png</key>
+            <key type="filename">../sprites/zealot/die_3.png</key>
+            <key type="filename">../sprites/zealot/die_4.png</key>
+            <key type="filename">../sprites/zealot/die_5.png</key>
+            <key type="filename">../sprites/zealot/die_6.png</key>
+            <key type="filename">../sprites/zealot/die_7.png</key>
+            <key type="filename">../sprites/zealot/die_8.png</key>
+            <key type="filename">../sprites/zealot/die_9.png</key>
             <key type="filename">../sprites/zealot/idle_east_0.png</key>
             <key type="filename">../sprites/zealot/idle_east_1.png</key>
             <key type="filename">../sprites/zealot/idle_north_0.png</key>
@@ -221,6 +232,14 @@
             <key type="filename">../sprites/zealot/idle_south_west_1.png</key>
             <key type="filename">../sprites/zealot/idle_west_0.png</key>
             <key type="filename">../sprites/zealot/idle_west_1.png</key>
+            <key type="filename">../sprites/zealot/pain_east.png</key>
+            <key type="filename">../sprites/zealot/pain_north.png</key>
+            <key type="filename">../sprites/zealot/pain_north_east.png</key>
+            <key type="filename">../sprites/zealot/pain_north_west.png</key>
+            <key type="filename">../sprites/zealot/pain_south.png</key>
+            <key type="filename">../sprites/zealot/pain_south_east.png</key>
+            <key type="filename">../sprites/zealot/pain_south_west.png</key>
+            <key type="filename">../sprites/zealot/pain_west.png</key>
             <key type="filename">../sprites/zealot/run_east_0.png</key>
             <key type="filename">../sprites/zealot/run_east_1.png</key>
             <key type="filename">../sprites/zealot/run_east_2.png</key>
@@ -342,6 +361,25 @@
             <filename>../sprites/zealot/attack_west_0.png</filename>
             <filename>../sprites/zealot/attack_west_1.png</filename>
             <filename>../sprites/zealot/attack_west_2.png</filename>
+            <filename>../sprites/zealot/pain_east.png</filename>
+            <filename>../sprites/zealot/pain_north.png</filename>
+            <filename>../sprites/zealot/pain_north_east.png</filename>
+            <filename>../sprites/zealot/pain_north_west.png</filename>
+            <filename>../sprites/zealot/pain_south.png</filename>
+            <filename>../sprites/zealot/pain_south_east.png</filename>
+            <filename>../sprites/zealot/pain_south_west.png</filename>
+            <filename>../sprites/zealot/pain_west.png</filename>
+            <filename>../sprites/zealot/die_0.png</filename>
+            <filename>../sprites/zealot/die_1.png</filename>
+            <filename>../sprites/zealot/die_10.png</filename>
+            <filename>../sprites/zealot/die_2.png</filename>
+            <filename>../sprites/zealot/die_3.png</filename>
+            <filename>../sprites/zealot/die_4.png</filename>
+            <filename>../sprites/zealot/die_5.png</filename>
+            <filename>../sprites/zealot/die_6.png</filename>
+            <filename>../sprites/zealot/die_7.png</filename>
+            <filename>../sprites/zealot/die_8.png</filename>
+            <filename>../sprites/zealot/die_9.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

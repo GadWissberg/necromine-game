@@ -11,4 +11,6 @@ public interface CharacterSystemEventsSubscriber extends SystemEventsSubscriber 
 	void onNewCommandSet(CharacterCommand command);
 
 	void onCharacterSystemReady(CharacterSystem characterSystem);
+
+	void onCharacterGotDamage(Entity target);
 }
