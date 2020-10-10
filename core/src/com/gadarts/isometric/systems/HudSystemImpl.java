@@ -15,12 +15,16 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.gadarts.isometric.IsometricGame;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
 import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
@@ -33,7 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class HudSystem extends GameEntitySystem<HudSystemEventsSubscriber> implements
+public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> implements
+		HudSystem,
 		InputSystemEventsSubscriber,
 		PlayerSystemEventsSubscriber,
 		CameraSystemEventsSubscriber {
@@ -51,8 +56,9 @@ public class HudSystem extends GameEntitySystem<HudSystemEventsSubscriber> imple
 	private ImmutableArray<Entity> enemiesEntities;
 	private Model attackNodeModel;
 	private CameraSystem cameraSystem;
+	private Stage stage;
 
-	public HudSystem(final MapGraph map) {
+	public HudSystemImpl(final MapGraph map) {
 		this.map = map;
 	}
 
@@ -64,6 +70,7 @@ public class HudSystem extends GameEntitySystem<HudSystemEventsSubscriber> imple
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
+		stage = new Stage(new FitViewport(IsometricGame.RESOLUTION_WIDTH, IsometricGame.RESOLUTION_HEIGHT));
 		Entity cursorEntity = engine.getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 		cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
 		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
@@ -82,7 +89,7 @@ public class HudSystem extends GameEntitySystem<HudSystemEventsSubscriber> imple
 	private Model createAttackNodeModel() {
 		ModelBuilder builder = new ModelBuilder();
 		builder.begin();
-		Material material = new Material(ColorAttribute.createDiffuse(HudSystem.CURSOR_ATTACK));
+		Material material = new Material(ColorAttribute.createDiffuse(HudSystemImpl.CURSOR_ATTACK));
 		MeshPartBuilder meshPartBuilder = builder.part(
 				"attack_node_1",
 				GL20.GL_LINES,
@@ -127,6 +134,12 @@ public class HudSystem extends GameEntitySystem<HudSystemEventsSubscriber> imple
 	@Override
 	public void touchDown(final int screenX, final int screenY, final int button) {
 
+	}
+
+	@Override
+	public void update(final float deltaTime) {
+		super.update(deltaTime);
+		stage.act();
 	}
 
 	private void displayAttackNodes(final List<MapGraphNode> availableNodes) {
@@ -186,4 +199,8 @@ public class HudSystem extends GameEntitySystem<HudSystemEventsSubscriber> imple
 		this.cameraSystem = cameraSystem;
 	}
 
+	@Override
+	public Stage getStage() {
+		return stage;
+	}
 }

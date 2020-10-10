@@ -19,6 +19,7 @@ import com.gadarts.isometric.components.character.CharacterComponent.Direction;
 import com.gadarts.isometric.components.character.CharacterRotationData;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.GameEntitySystem;
+import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.map.GameHeuristic;
@@ -259,6 +260,11 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		} else {
 			takeStep(character);
 		}
+	}
+
+	@Override
+	public void onRenderSystemReady(final RenderSystem renderSystem) {
+
 	}
 
 	private void reachedNodeOfPath(final Entity character,

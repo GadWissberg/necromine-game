@@ -20,7 +20,7 @@ import com.gadarts.isometric.components.PlayerComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
-import com.gadarts.isometric.systems.HudSystem;
+import com.gadarts.isometric.systems.HudSystemImpl;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.Assets.Atlases;
@@ -146,7 +146,7 @@ public final class MapBuilder {
 	private Model modelTestCursor() {
 		modelBuilder.begin();
 
-		Material material = new Material(ColorAttribute.createDiffuse(HudSystem.CURSOR_REGULAR));
+		Material material = new Material(ColorAttribute.createDiffuse(HudSystemImpl.CURSOR_REGULAR));
 
 		MeshPartBuilder meshPartBuilder = modelBuilder.part(
 				"test_cursor",
