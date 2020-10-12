@@ -36,6 +36,7 @@ import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
+import com.gadarts.isometric.utils.DefaultGameSettings;
 
 /**
  * Handles rendering.
@@ -100,12 +101,13 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
 		if (!ready) return;
-		resetDisplay(Color.BLACK);
+		Gdx.gl.glDepthMask(true);
+		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
 		OrthographicCamera camera = cameraSystem.getCamera();
 		modelBatch.begin(camera);
 		for (Entity entity : modelInstanceEntities) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
-			if (modelInstanceComponent.isVisible()) {
+			if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
 				ModelInstance modelInstance = modelInstanceComponent.getModelInstance();
 				modelBatch.render(modelInstance);
 			}
@@ -161,15 +163,18 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 						for (RenderSystemEventsSubscriber subscriber : subscribers) {
 							subscriber.onRunFrameChanged(entity, deltaTime);
 						}
-						if (characterComponent.getSpriteType() == spriteType) {
-							decal.setTextureRegion(newFrame);
-						}
+					}
+					if (characterComponent.getSpriteType() == spriteType) {
+						decal.setTextureRegion(newFrame);
 					}
 				}
 			}
-			decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
-			decalBatch.add(decal);
+			if (!DefaultGameSettings.HIDE_ENEMIES || !ComponentsMapper.enemy.has(entity)) {
+				decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
+				decalBatch.add(decal);
+			}
 		}
+		Gdx.gl.glDepthMask(false);
 		decalBatch.flush();
 		stage.draw();
 	}
@@ -197,7 +202,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		this.cameraSystem = cameraSystem;
-		this.decalBatch = new DecalBatch(DECALS_POOL_SIZE, new CameraGroupStrategy(cameraSystem.getCamera()));
+		this.decalBatch = new DecalBatch(
+				DECALS_POOL_SIZE,
+				new CameraGroupStrategy(cameraSystem.getCamera())
+		);
 		systemReady();
 	}
 

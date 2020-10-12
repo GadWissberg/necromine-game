@@ -132,6 +132,7 @@ public final class MapBuilder {
 	private void addTestFloor() {
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(createTestFloorModelInstance(modelBuilder), true)
+				.addFloorComponent()
 				.finishAndAddToEngine();
 	}
 

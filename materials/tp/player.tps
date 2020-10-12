@@ -205,6 +205,14 @@
             <key type="filename">../sprites/player/attack_west_0.png</key>
             <key type="filename">../sprites/player/attack_west_1.png</key>
             <key type="filename">../sprites/player/attack_west_2.png</key>
+            <key type="filename">../sprites/player/die_0.png</key>
+            <key type="filename">../sprites/player/die_1.png</key>
+            <key type="filename">../sprites/player/die_2.png</key>
+            <key type="filename">../sprites/player/die_3.png</key>
+            <key type="filename">../sprites/player/die_4.png</key>
+            <key type="filename">../sprites/player/die_5.png</key>
+            <key type="filename">../sprites/player/die_6.png</key>
+            <key type="filename">../sprites/player/die_7.png</key>
             <key type="filename">../sprites/player/idle_east_0.png</key>
             <key type="filename">../sprites/player/idle_east_1.png</key>
             <key type="filename">../sprites/player/idle_north_0.png</key>
@@ -358,6 +366,14 @@
             <filename>../sprites/player/pain_south_east.png</filename>
             <filename>../sprites/player/pain_south_west.png</filename>
             <filename>../sprites/player/pain_west.png</filename>
+            <filename>../sprites/player/die_0.png</filename>
+            <filename>../sprites/player/die_1.png</filename>
+            <filename>../sprites/player/die_2.png</filename>
+            <filename>../sprites/player/die_3.png</filename>
+            <filename>../sprites/player/die_4.png</filename>
+            <filename>../sprites/player/die_5.png</filename>
+            <filename>../sprites/player/die_6.png</filename>
+            <filename>../sprites/player/die_7.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

@@ -99,4 +99,10 @@ public final class EntityBuilder {
 		currentEntity.add(animComponent);
 		return instance;
 	}
+
+	public EntityBuilder addFloorComponent() {
+		FloorComponent floorComponent = engine.createComponent(FloorComponent.class);
+		currentEntity.add(floorComponent);
+		return instance;
+	}
 }

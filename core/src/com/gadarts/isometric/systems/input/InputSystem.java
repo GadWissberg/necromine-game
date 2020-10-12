@@ -1,40 +1,35 @@
 package com.gadarts.isometric.systems.input;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.utils.Disposable;
-import com.gadarts.isometric.systems.CameraSystemImpl;
 import com.gadarts.isometric.systems.GameEntitySystem;
+import com.gadarts.isometric.systems.camera.CameraSystem;
+import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 
 public class InputSystem extends GameEntitySystem<InputSystemEventsSubscriber> implements
+		CameraSystemEventsSubscriber,
 		Disposable,
 		InputProcessor {
 
 	private CameraInputController debugInput;
 
-	@Override
-	public void addedToEngine(final Engine engine) {
-		super.addedToEngine(engine);
-		initializeInputProcessor();
-	}
-
-	private void initializeInputProcessor() {
+	private void initializeInputProcessor(final CameraSystem cameraSystem) {
 		InputProcessor input;
 		if (DefaultGameSettings.DEBUG_INPUT) {
-			input = createDebugInput();
+			input = createDebugInput(cameraSystem);
 		} else {
 			input = createMultiplexer();
 		}
 		Gdx.input.setInputProcessor(input);
 	}
 
-	private InputProcessor createDebugInput() {
+	private InputProcessor createDebugInput(final CameraSystem cameraSystem) {
 		InputProcessor input;
-		debugInput = new CameraInputController(getEngine().getSystem(CameraSystemImpl.class).getCamera());
+		debugInput = new CameraInputController(cameraSystem.getCamera());
 		input = debugInput;
 		debugInput.autoUpdate = true;
 		return input;
@@ -116,5 +111,10 @@ public class InputSystem extends GameEntitySystem<InputSystemEventsSubscriber> i
 	@Override
 	public void init() {
 
+	}
+
+	@Override
+	public void onCameraSystemReady(final CameraSystem cameraSystem) {
+		initializeInputProcessor(cameraSystem);
 	}
 }
