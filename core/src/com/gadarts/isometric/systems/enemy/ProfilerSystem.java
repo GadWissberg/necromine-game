@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.StringBuilder;
+import com.gadarts.isometric.IsometricGame;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.HudSystem;
@@ -23,14 +24,15 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		HudSystemEventsSubscriber {
 
 	private static final char SEPARATOR = '/';
-	private static final String FPS_STRING = "FPS: ";
-	private static final String UI_BATCH_RENDER_CALLS_STRING = "UI batch render calls: ";
-	private static final String GL_CALL_STRING = "Total openGL calls: ";
-	private static final String GL_DRAW_CALL_STRING = "Draw calls: ";
-	private static final String GL_SHADER_SWITCHES_STRING = "Shader switches: ";
-	private static final String GL_TEXTURE_BINDINGS_STRING = "Texture bindings: ";
-	private static final String GL_VERTEX_COUNT_STRING = "Vertex count: ";
+	private static final String LABEL_FPS = "FPS: ";
+	private static final String LABEL_UI_BATCH_RENDER_CALLS = "UI batch render calls: ";
+	private static final String LABEL_GL_CALL = "Total openGL calls: ";
+	private static final String LABEL_GL_DRAW_CALL = "Draw calls: ";
+	private static final String LABEL_GL_SHADER_SWITCHES = "Shader switches: ";
+	private static final String LABEL_GL_TEXTURE_BINDINGS = "Texture bindings: ";
+	private static final String LABEL_GL_VERTEX_COUNT = "Vertex count: ";
 	private static final String VISIBLE_OBJECTS_STRING = "Visible objects: ";
+	private static final String LABEL_VERSION = "Version: ";
 	private final GLProfiler glProfiler;
 	private final StringBuilder stringBuilder;
 	private Stage stage;
@@ -53,24 +55,25 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		super.update(deltaTime);
 		if (Gdx.app.getLogLevel() == Application.LOG_DEBUG && glProfiler.isEnabled()) {
 			stringBuilder.setLength(0);
-			displayLine(FPS_STRING, Gdx.graphics.getFramesPerSecond());
+			displayLine(LABEL_FPS, Gdx.graphics.getFramesPerSecond());
 			displayGlProfiling();
 			displayBatchCalls();
+			stringBuilder.append("\n").append(LABEL_VERSION).append(IsometricGame.VERSION_NAME);
 			label.setText(stringBuilder);
 		}
 	}
 
 	private void displayBatchCalls() {
-		displayLine(UI_BATCH_RENDER_CALLS_STRING, ((SpriteBatch) stage.getBatch()).renderCalls);
+		displayLine(LABEL_UI_BATCH_RENDER_CALLS, ((SpriteBatch) stage.getBatch()).renderCalls);
 	}
 
 	private void displayGlProfiling() {
-		displayLine(GL_CALL_STRING, glProfiler.getCalls());
-		displayLine(GL_DRAW_CALL_STRING, glProfiler.getDrawCalls());
-		displayLine(GL_SHADER_SWITCHES_STRING, glProfiler.getShaderSwitches());
+		displayLine(LABEL_GL_CALL, glProfiler.getCalls());
+		displayLine(LABEL_GL_DRAW_CALL, glProfiler.getDrawCalls());
+		displayLine(LABEL_GL_SHADER_SWITCHES, glProfiler.getShaderSwitches());
 		int valueWithoutText = glProfiler.getTextureBindings() - 1;
-		displayLine(GL_TEXTURE_BINDINGS_STRING, valueWithoutText);
-		displayLine(GL_VERTEX_COUNT_STRING, glProfiler.getVertexCount().total);
+		displayLine(LABEL_GL_TEXTURE_BINDINGS, valueWithoutText);
+		displayLine(LABEL_GL_VERTEX_COUNT, glProfiler.getVertexCount().total);
 		if (renderSystem != null) displayNumberOfVisibleObjects();
 		glProfiler.reset();
 	}

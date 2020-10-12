@@ -21,9 +21,9 @@ public class Utils {
 	}
 
 	public static Vector3 alignPositionToGrid(final Vector3 position) {
-		position.x = MathUtils.round(position.x);
+		position.x = MathUtils.floor(position.x);
 		position.y = 0;
-		position.z = MathUtils.round(position.z);
+		position.z = MathUtils.floor(position.z);
 		return position;
 	}
 

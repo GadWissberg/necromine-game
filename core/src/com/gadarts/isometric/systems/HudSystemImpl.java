@@ -111,12 +111,12 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		MapGraphNode newNode = map.getRayNode(screenX, screenY, cameraSystem.getCamera());
 		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
 		if (!newNode.equals(oldNode)) {
+			cursorModelInstance.transform.setTranslation(newNode.getX(), 0, newNode.getY());
 			colorizeCursor(newNode);
 		}
 	}
 
 	private void colorizeCursor(final MapGraphNode newNode) {
-		cursorModelInstance.transform.setTranslation(newNode.getX(), 0, newNode.getY());
 		if (map.getEnemyFromNode(enemiesEntities, newNode) != null) {
 			setCursorColor(CURSOR_ATTACK);
 		} else {

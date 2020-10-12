@@ -170,7 +170,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				if (charComponent.isAttacking()) {
 					Entity target = charComponent.getTarget();
 					CharacterComponent targetCharacterComponent = ComponentsMapper.character.get(target);
-					targetCharacterComponent.dealDamage(1);
+					if (ComponentsMapper.enemy.has(target)) {
+						targetCharacterComponent.dealDamage(1);
+					}
 					spriteType = SpriteType.ATTACK;
 					if (targetCharacterComponent.getHp() <= 0) {
 						targetCharacterComponent.setInPain(false);
