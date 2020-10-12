@@ -6,8 +6,6 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -25,8 +23,6 @@ import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.Assets.Atlases;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
-
-import java.util.Arrays;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
 
@@ -82,52 +78,14 @@ public final class MapBuilder {
 									   final Atlases atlas,
 									   final Vector3 position,
 									   final Entity target) {
-		CharacterAnimations animations = createCharacterAnimations(atlas);
+		CharacterAnimations animations = assetManager.get(atlas.name());
 		entityBuilder.addCharacterComponent(CharacterComponent.Direction.SOUTH, SpriteType.IDLE, target)
 				.addDecalComponent(animations, SpriteType.IDLE, CharacterComponent.Direction.SOUTH, position)
 				.addAnimationComponent();
 	}
 
 
-	private CharacterAnimations createCharacterAnimations(final Atlases zealot) {
-		CharacterAnimations animations = new CharacterAnimations();
-		TextureAtlas atlas = assetManager.getAtlas(zealot);
-		Arrays.stream(SpriteType.values()).forEach(spriteType -> {
-			if (spriteType.isSingleAnimation()) {
-				inflateCharacterAnimation(animations, atlas, spriteType, CharacterComponent.Direction.SOUTH);
-			} else {
-				CharacterComponent.Direction[] directions = CharacterComponent.Direction.values();
-				Arrays.stream(directions).forEach(dir -> inflateCharacterAnimation(animations, atlas, spriteType, dir));
-			}
-		});
-		return animations;
-	}
 
-	private void inflateCharacterAnimation(final CharacterAnimations animations,
-										   final TextureAtlas atlas,
-										   final SpriteType spriteType,
-										   final CharacterComponent.Direction dir) {
-		String name;
-		String spriteTypeName = spriteType.name().toLowerCase();
-		if (spriteType.isSingleAnimation()) {
-			name = spriteTypeName;
-		} else {
-			name = spriteTypeName + "_" + dir.name().toLowerCase();
-		}
-		Animation<TextureAtlas.AtlasRegion> a = createAnimation(atlas, spriteType, name);
-		animations.put(spriteType, dir, a);
-	}
-
-	private Animation<TextureAtlas.AtlasRegion> createAnimation(final TextureAtlas atlas,
-																final SpriteType spriteType,
-																final String name) {
-		Animation<TextureAtlas.AtlasRegion> a = new Animation<>(
-				spriteType.getAnimationDuration(),
-				atlas.findRegions(name),
-				spriteType.getPlayMode()
-		);
-		return a;
-	}
 
 	private void addTestFloor() {
 		EntityBuilder.beginBuildingEntity(engine)
