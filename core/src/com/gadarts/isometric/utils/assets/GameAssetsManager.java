@@ -69,12 +69,11 @@ public class GameAssetsManager extends AssetManager {
 	private Animation<TextureAtlas.AtlasRegion> createAnimation(final TextureAtlas atlas,
 																final SpriteType spriteType,
 																final String name) {
-		Animation<TextureAtlas.AtlasRegion> a = new Animation<>(
+		return new Animation<>(
 				spriteType.getAnimationDuration(),
 				atlas.findRegions(name),
 				spriteType.getPlayMode()
 		);
-		return a;
 	}
 
 	public TextureAtlas getAtlas(final Atlases atlas) {

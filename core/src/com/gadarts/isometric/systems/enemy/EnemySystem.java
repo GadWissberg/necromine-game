@@ -31,7 +31,6 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
 	private Entity player;
-	private TurnsSystem turnsSystem;
 
 
 	public EnemySystem(final MapGraph map) {
@@ -81,7 +80,7 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 
 	@Override
 	public void onTurnsSystemReady(final TurnsSystem turnsSystem) {
-		this.turnsSystem = turnsSystem;
+
 	}
 
 	@Override

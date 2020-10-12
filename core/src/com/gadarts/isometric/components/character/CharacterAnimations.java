@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class CharacterAnimations {
-	HashMap<SpriteType, Map<Direction, Animation<TextureAtlas.AtlasRegion>>> animations = new HashMap<>();
+	final HashMap<SpriteType, Map<Direction, Animation<TextureAtlas.AtlasRegion>>> animations = new HashMap<>();
 
 	public void put(final SpriteType type, final Direction dir, final Animation<TextureAtlas.AtlasRegion> animation) {
 		if (!animations.containsKey(type)) {
