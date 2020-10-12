@@ -161,8 +161,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 						for (RenderSystemEventsSubscriber subscriber : subscribers) {
 							subscriber.onRunFrameChanged(entity, deltaTime);
 						}
+						if (characterComponent.getSpriteType() == spriteType) {
+							decal.setTextureRegion(newFrame);
+						}
 					}
-					decal.setTextureRegion(newFrame);
 				}
 			}
 			decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
