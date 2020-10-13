@@ -11,12 +11,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
-import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Plane;
@@ -52,11 +49,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector2 auxVector2_3 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
-	private static final int DECALS_POOL_SIZE = 200;
 	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
 
-	private ModelBatch modelBatch;
-	private DecalBatch decalBatch;
+	private RenderBatches renderBatches;
 	private ImmutableArray<Entity> modelInstanceEntities;
 	private ImmutableArray<Entity> decalEntities;
 	private boolean ready;
@@ -104,15 +99,15 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		Gdx.gl.glDepthMask(true);
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
 		OrthographicCamera camera = cameraSystem.getCamera();
-		modelBatch.begin(camera);
+		renderBatches.getModelBatch().begin(camera);
 		for (Entity entity : modelInstanceEntities) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 			if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
 				ModelInstance modelInstance = modelInstanceComponent.getModelInstance();
-				modelBatch.render(modelInstance);
+				renderBatches.getModelBatch().render(modelInstance);
 			}
 		}
-		modelBatch.end();
+		renderBatches.getModelBatch().end();
 		for (Entity entity : decalEntities) {
 			CharacterComponent characterComponent = ComponentsMapper.character.get(entity);
 			DecalComponent decalComponent = ComponentsMapper.decal.get(entity);
@@ -171,11 +166,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			}
 			if (!DefaultGameSettings.HIDE_ENEMIES || !ComponentsMapper.enemy.has(entity)) {
 				decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
-				decalBatch.add(decal);
+				renderBatches.getDecalBatch().add(decal);
 			}
 		}
 		Gdx.gl.glDepthMask(false);
-		decalBatch.flush();
+		renderBatches.getDecalBatch().flush();
 		stage.draw();
 	}
 
@@ -190,22 +185,19 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	@Override
 	public void init() {
-		this.modelBatch = new ModelBatch();
+
 	}
 
 	@Override
 	public void dispose() {
-		decalBatch.dispose();
-		modelBatch.dispose();
+		renderBatches.getDecalBatch().dispose();
+		renderBatches.getModelBatch().dispose();
 	}
 
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		this.cameraSystem = cameraSystem;
-		this.decalBatch = new DecalBatch(
-				DECALS_POOL_SIZE,
-				new CameraGroupStrategy(cameraSystem.getCamera())
-		);
+		this.renderBatches = new RenderBatches(cameraSystem.getCamera());
 		systemReady();
 	}
 

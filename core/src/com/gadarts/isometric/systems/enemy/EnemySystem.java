@@ -17,6 +17,9 @@ import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.map.*;
 
+/**
+ * Handles enemy AI.
+ */
 public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> implements
 		TurnsSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber {
@@ -24,7 +27,8 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final MapGraphPath auxPath = new MapGraphPath();
-	private final static CharacterCommand auxCommand = new CharacterCommand();
+	private static final CharacterCommand auxCommand = new CharacterCommand();
+
 	private final GamePathFinder pathFinder;
 	private final GameHeuristic heuristic;
 	private final MapGraph map;
@@ -56,20 +60,23 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	public void onEnemyTurn() {
 		for (Entity enemy : enemies) {
 			if (ComponentsMapper.character.get(enemy).getHp() > 0) {
-				Vector3 enemyPosition = ComponentsMapper.decal.get(enemy).getCellPosition(auxVector3_2);
-				Vector3 playerPosition = ComponentsMapper.decal.get(player).getCellPosition(auxVector3_1);
-				MapGraphNode enemyNode = map.getNode((int) enemyPosition.x, (int) enemyPosition.z);
-				MapGraphNode playerNode = map.getNode((int) playerPosition.x, (int) playerPosition.z);
-				auxPath.clear();
-				boolean pathFound = pathFinder.searchNodePathBeforeCommand(enemyNode, playerNode, heuristic, auxPath);
-				if (pathFound) {
-					auxCommand.init(Commands.GO_TO_MELEE, auxPath.get(auxPath.nodes.size - 2), enemy);
-					characterSystem.applyCommand(auxCommand, enemy);
-				}
+				invokeEnemyTurn(enemy);
 				break;
 			} else {
 				onCommandDone(enemy);
 			}
+		}
+	}
+
+	private void invokeEnemyTurn(final Entity enemy) {
+		Vector3 enemyPosition = ComponentsMapper.decal.get(enemy).getCellPosition(auxVector3_2);
+		Vector3 playerPosition = ComponentsMapper.decal.get(player).getCellPosition(auxVector3_1);
+		MapGraphNode enemyNode = map.getNode((int) enemyPosition.x, (int) enemyPosition.z);
+		MapGraphNode playerNode = map.getNode((int) playerPosition.x, (int) playerPosition.z);
+		auxPath.clear();
+		if (pathFinder.searchNodePathBeforeCommand(enemyNode, playerNode, heuristic, auxPath)) {
+			auxCommand.init(Commands.GO_TO_MELEE, auxPath.get(auxPath.nodes.size - 2), enemy);
+			characterSystem.applyCommand(auxCommand, enemy);
 		}
 	}
 

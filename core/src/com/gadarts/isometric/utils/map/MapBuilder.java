@@ -30,12 +30,12 @@ import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
  * Creates the map.
  */
 public final class MapBuilder {
+	public static final float BILLBOARD_Y = 0.6f;
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final Vector3 auxVector3_3 = new Vector3();
 	private static final Vector3 auxVector3_4 = new Vector3();
 	private static final Vector3 auxVector3_5 = new Vector3();
-	public static final float BILLBOARD_Y = 0.6f;
 
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
@@ -83,8 +83,6 @@ public final class MapBuilder {
 				.addDecalComponent(animations, SpriteType.IDLE, CharacterComponent.Direction.SOUTH, position)
 				.addAnimationComponent();
 	}
-
-
 
 
 	private void addTestFloor() {
