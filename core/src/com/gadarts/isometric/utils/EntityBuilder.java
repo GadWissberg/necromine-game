@@ -105,4 +105,14 @@ public final class EntityBuilder {
 		currentEntity.add(floorComponent);
 		return instance;
 	}
+
+	public EntityBuilder addWallComponent(final int topLeftX,
+										  final int topLeftY,
+										  final int bottomRightX,
+										  final int bottomRightY) {
+		WallComponent wallComponent = engine.createComponent(WallComponent.class);
+		wallComponent.init(topLeftX, topLeftY, bottomRightX, bottomRightY);
+		currentEntity.add(wallComponent);
+		return instance;
+	}
 }

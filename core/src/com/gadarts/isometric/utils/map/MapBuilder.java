@@ -13,8 +13,10 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.PlayerComponent;
+import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
@@ -31,6 +33,8 @@ import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
  */
 public final class MapBuilder {
 	public static final float BILLBOARD_Y = 0.6f;
+	private static final Vector2 auxVector2_1 = new Vector2();
+	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final Vector3 auxVector3_3 = new Vector3();
@@ -40,6 +44,7 @@ public final class MapBuilder {
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
 	private final ModelBuilder modelBuilder;
+	private Model testFloorModel;
 
 	public MapBuilder(final GameAssetsManager assetManager, final PooledEngine engine) {
 		this.assetManager = assetManager;
@@ -53,12 +58,40 @@ public final class MapBuilder {
 	 * @return The map graph.
 	 */
 	public MapGraph createAndAddTestMap() {
-		MapGraph map = new MapGraph(engine.getEntitiesFor(Family.all(CharacterComponent.class).get()));
-		addTestFloor();
+		testFloorModel = createTestFloorModel(modelBuilder);
 		createAndAdd3dCursor();
 		addPlayer();
 		addEnemyTest();
-		return map;
+		return createTestMap();
+	}
+
+	private MapGraph createTestMap() {
+		addTestWalls();
+		addTestFloor(auxVector3_1.setZero());
+		addTestFloor(auxVector3_1.set(0, 0, 4));
+		return new MapGraph(
+				engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
+				engine.getEntitiesFor(Family.all(WallComponent.class).get()));
+	}
+
+	private void addTestWalls() {
+		auxVector2_1.set(-1, -1);
+		addTestWall(auxVector3_1.setZero(), 0, auxVector2_1, auxVector2_1);
+		addTestWall(auxVector3_1.set(0, 0, 4), 90, auxVector2_1, auxVector2_1);
+		addTestWall(auxVector3_1.set(4, 0, 0), 270, auxVector2_1.set(4, 0), auxVector2_2.set(4, 4));
+	}
+
+	private void addTestWall(final Vector3 position,
+							 final float rotation,
+							 final Vector2 topLeft,
+							 final Vector2 bottomRight) {
+		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(Assets.Models.WALL_1));
+		modelInstance.transform.setTranslation(position);
+		modelInstance.transform.rotate(Vector3.Y, rotation);
+		EntityBuilder.beginBuildingEntity(engine)
+				.addWallComponent((int) topLeft.x, (int) topLeft.y, (int) bottomRight.x, (int) bottomRight.y)
+				.addModelInstanceComponent(modelInstance, true)
+				.finishAndAddToEngine();
 	}
 
 	private void addPlayer() {
@@ -85,9 +118,11 @@ public final class MapBuilder {
 	}
 
 
-	private void addTestFloor() {
+	private void addTestFloor(final Vector3 position) {
+		ModelInstance testFloorModelInstance = createTestFloorModelInstance(modelBuilder);
+		testFloorModelInstance.transform.setTranslation(position);
 		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(createTestFloorModelInstance(modelBuilder), true)
+				.addModelInstanceComponent(testFloorModelInstance, true)
 				.addFloorComponent()
 				.finishAndAddToEngine();
 	}
@@ -157,14 +192,17 @@ public final class MapBuilder {
 	}
 
 	private ModelInstance createTestFloorModelInstance(final ModelBuilder modelBuilder) {
+		return new ModelInstance(testFloorModel);
+	}
+
+	private Model createTestFloorModel(ModelBuilder modelBuilder) {
 		modelBuilder.begin();
 		MeshPartBuilder meshPartBuilder = modelBuilder.part("test_floor",
 				GL20.GL_TRIANGLES,
 				Usage.Position | Usage.Normal | Usage.TextureCoordinates,
 				createTestFloorMaterial());
 		createRect(meshPartBuilder, 4, 4, 0, 0);
-		Model testFloorModel = modelBuilder.end();
-		return new ModelInstance(testFloorModel);
+		return modelBuilder.end();
 	}
 
 	private void createRect(final MeshPartBuilder meshPartBuilder,
@@ -182,7 +220,7 @@ public final class MapBuilder {
 	}
 
 	private Material createTestFloorMaterial() {
-		Texture floor = assetManager.getTexture(Assets.Textures.FloorTextures.FLOOR_0);
+		Texture floor = assetManager.getTexture(Assets.Textures.FloorTextures.FLOOR_3);
 		floor.setWrap(Repeat, Repeat);
 		Material material = new Material(TextureAttribute.createDiffuse(floor));
 		material.id = "floor_test";

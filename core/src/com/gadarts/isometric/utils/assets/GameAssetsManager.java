@@ -6,9 +6,12 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.utils.AtlasDefinition;
+import com.gadarts.isometric.utils.ModelDefinition;
 import com.gadarts.isometric.utils.TextureDefinition;
 import com.gadarts.isometric.utils.assets.Assets.Atlases;
 import com.gadarts.isometric.utils.assets.Assets.Textures.FloorTextures;
@@ -16,19 +19,20 @@ import com.gadarts.isometric.utils.assets.Assets.Textures.FloorTextures;
 import java.util.Arrays;
 
 public class GameAssetsManager extends AssetManager {
-	private static final String ATLAS_FOLDER = "atlases";
 
 	public void loadGameFiles() {
 		Arrays.stream(FloorTextures.values()).forEach(floor -> load(
 				Gdx.files.getFileHandle(floor.getFilePath(), FileType.Internal).path(),
-				Texture.class)
-		);
+				Texture.class
+		));
+		Arrays.stream(Assets.Models.values()).forEach(model -> load(
+				Gdx.files.getFileHandle(model.getFilePath(), FileType.Internal).path(),
+				Model.class
+		));
 		Arrays.stream(Atlases.values()).forEach(atlas -> load(
-				Gdx.files.getFileHandle(
-						ATLAS_FOLDER + "/" + atlas.name().toLowerCase() + ".txt",
-						FileType.Internal
-				).path(), TextureAtlas.class)
-		);
+				Gdx.files.getFileHandle(atlas.getFilePath(), FileType.Internal).path(),
+				TextureAtlas.class
+		));
 		finishLoading();
 		Arrays.stream(Atlases.values()).forEach(atlas -> {
 					CharacterAnimations animations = createCharacterAnimations(atlas);
@@ -76,8 +80,12 @@ public class GameAssetsManager extends AssetManager {
 		);
 	}
 
-	public TextureAtlas getAtlas(final Atlases atlas) {
-		return get(ATLAS_FOLDER + "/" + atlas.name().toLowerCase() + ".txt", TextureAtlas.class);
+	public TextureAtlas getAtlas(final AtlasDefinition atlas) {
+		return get(atlas.getFilePath(), TextureAtlas.class);
+	}
+
+	public Model getModel(final ModelDefinition model) {
+		return get(model.getFilePath(), Model.class);
 	}
 
 	public Texture getTexture(final TextureDefinition definition) {
