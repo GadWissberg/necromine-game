@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.PlayerComponent;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
@@ -67,11 +68,24 @@ public final class MapBuilder {
 
 	private MapGraph createTestMap() {
 		addTestWalls();
+		addTestObstacle(1, 1);
+		addTestObstacle(1, 3);
+		addTestObstacle(1, 5);
 		addTestFloor(auxVector3_1.setZero());
 		addTestFloor(auxVector3_1.set(0, 0, 4));
 		return new MapGraph(
 				engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
-				engine.getEntitiesFor(Family.all(WallComponent.class).get()));
+				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
+				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()));
+	}
+
+	private void addTestObstacle(final int x, final int y) {
+		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(Assets.Models.PILLAR));
+		modelInstance.transform.setTranslation(x, 0, y);
+		EntityBuilder.beginBuildingEntity(engine)
+				.addModelInstanceComponent(modelInstance, true)
+				.addObstacleComponent(x, y)
+				.finishAndAddToEngine();
 	}
 
 	private void addTestWalls() {
@@ -119,7 +133,7 @@ public final class MapBuilder {
 
 
 	private void addTestFloor(final Vector3 position) {
-		ModelInstance testFloorModelInstance = createTestFloorModelInstance(modelBuilder);
+		ModelInstance testFloorModelInstance = new ModelInstance(testFloorModel);
 		testFloorModelInstance.transform.setTranslation(position);
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(testFloorModelInstance, true)
@@ -191,11 +205,7 @@ public final class MapBuilder {
 		return modelBuilder.end();
 	}
 
-	private ModelInstance createTestFloorModelInstance(final ModelBuilder modelBuilder) {
-		return new ModelInstance(testFloorModel);
-	}
-
-	private Model createTestFloorModel(ModelBuilder modelBuilder) {
+	private Model createTestFloorModel(final ModelBuilder modelBuilder) {
 		modelBuilder.begin();
 		MeshPartBuilder meshPartBuilder = modelBuilder.part("test_floor",
 				GL20.GL_TRIANGLES,

@@ -20,13 +20,14 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	public static final int VIEWPORT_WIDTH = IsometricGame.RESOLUTION_WIDTH / 75;
 	public static final int VIEWPORT_HEIGHT = IsometricGame.RESOLUTION_HEIGHT / 75;
-	private static final float NEAR = 0.1f;
+	public static final float SCROLL_SCALE_HORIZONTAL = 0.04f;
+	public static final float SCROLL_SCALE_VERTICAL = 0.09f;
+	public static final int CAMERA_HEIGHT = 6;
 	private static final float FAR = 100f;
+	private static final float NEAR = 0.01f;
 	private static final Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);
-	public static final float SCROLL_SCALE_HORIZONTAL = 0.05f;
-	public static final float SCROLL_SCALE_VERTICAL = 0.1f;
-	private static final float SCROLL_OFFSET = 160;
 	private static final Vector3 auxVector3 = new Vector3();
+	private static final float SCROLL_OFFSET = 100;
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
 	private final Vector3 rotationPoint = new Vector3();
@@ -108,7 +109,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Override
 	public void init() {
 		camera = createCamera();
-		camera.position.set(4, 3, 4);
+		camera.position.set(4, CAMERA_HEIGHT, 4);
 		camera.direction.rotate(Vector3.X, -45);
 		camera.direction.rotate(Vector3.Y, 45);
 		for (CameraSystemEventsSubscriber subscriber : subscribers) {

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.systems.character.CharacterCommand;
 import com.gadarts.isometric.systems.character.CharacterSystem;
@@ -34,7 +35,9 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	@Getter(AccessLevel.PACKAGE)
 	MapGraphNode currentDestination;
 
-	public MapGraph(final ImmutableArray<Entity> characterEntities, final ImmutableArray<Entity> wallEntities) {
+	public MapGraph(final ImmutableArray<Entity> characterEntities,
+					final ImmutableArray<Entity> wallEntities,
+					final ImmutableArray<Entity> obstacleEntities) {
 		this.characterEntities = characterEntities;
 		this.nodes = new Array<>(MAP_SIZE * MAP_SIZE);
 		int[][] map = new int[MAP_SIZE][MAP_SIZE];
@@ -51,6 +54,10 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 					}
 				}
 			}
+		});
+		obstacleEntities.forEach(obstacle -> {
+			ObstacleComponent obstacleComponent = ComponentsMapper.obstacle.get(obstacle);
+			map[obstacleComponent.getY()][obstacleComponent.getX()] = 1;
 		});
 		for (int x = 0; x < MAP_SIZE; x++) {
 			for (int y = 0; y < MAP_SIZE; y++) {

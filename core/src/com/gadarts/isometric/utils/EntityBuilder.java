@@ -115,4 +115,11 @@ public final class EntityBuilder {
 		currentEntity.add(wallComponent);
 		return instance;
 	}
+
+	public EntityBuilder addObstacleComponent(final int x, final int y) {
+		ObstacleComponent obstacleComponent = engine.createComponent(ObstacleComponent.class);
+		obstacleComponent.init(x, y);
+		currentEntity.add(obstacleComponent);
+		return instance;
+	}
 }
