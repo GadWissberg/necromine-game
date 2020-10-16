@@ -96,6 +96,9 @@ public final class MapBuilder {
 		auxVector2_1.set(-1, -1);
 		addTestWall(auxVector3_1.setZero(), 0, auxVector2_1, auxVector2_1);
 		addTestWall(auxVector3_1.set(0, 0, 4), 90, auxVector2_1, auxVector2_1);
+		addTestWall(auxVector3_1.set(0, 0, 8), 90, auxVector2_1, auxVector2_1);
+		addTestWall(auxVector3_1.set(4, 0, 8), 180, auxVector2_1.set(0, 8), auxVector2_2.set(4, 8));
+		addTestWall(auxVector3_1.set(4, 0, 4), 270, auxVector2_1.set(4, 4), auxVector2_2.set(4, 8));
 		addTestWall(auxVector3_1.set(4, 0, 0), 270, auxVector2_1.set(4, 0), auxVector2_2.set(4, 4));
 	}
 
