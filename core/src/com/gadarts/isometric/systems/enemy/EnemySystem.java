@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.PlayerComponent;
@@ -15,6 +16,8 @@ import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.Commands;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
+import com.gadarts.isometric.utils.SoundPlayer;
+import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.map.*;
 
 /**
@@ -32,15 +35,29 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	private final GamePathFinder pathFinder;
 	private final GameHeuristic heuristic;
 	private final MapGraph map;
+	private final SoundPlayer soundPlayer;
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
 	private Entity player;
 
 
-	public EnemySystem(final MapGraph map) {
+	public EnemySystem(final MapGraph map, final SoundPlayer soundPlayer) {
 		this.map = map;
 		this.pathFinder = new GamePathFinder(map);
 		this.heuristic = new GameHeuristic();
+		this.soundPlayer = soundPlayer;
+	}
+
+	@Override
+	public void update(final float deltaTime) {
+		super.update(deltaTime);
+		for (Entity enemy : enemies) {
+			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
+			if (TimeUtils.timeSinceMillis(enemyComponent.getNextRoamSound()) >= 0) {
+				enemyComponent.calculateNextRoamSound();
+				soundPlayer.playSound(Assets.Sounds.ENEMY_ROAM);
+			}
+		}
 	}
 
 	@Override

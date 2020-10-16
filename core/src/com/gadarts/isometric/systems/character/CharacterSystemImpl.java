@@ -21,7 +21,9 @@ import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
+import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.Utils;
+import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.map.GameHeuristic;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
@@ -45,13 +47,15 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private final MapGraph map;
 	private final IndexedAStarPathFinder<MapGraphNode> pathFinder;
 	private final Heuristic<MapGraphNode> heuristic;
+	private final SoundPlayer soundPlayer;
 	private CharacterCommand currentCommand;
 	private ImmutableArray<Entity> characters;
 
-	public CharacterSystemImpl(final MapGraph map) {
+	public CharacterSystemImpl(final MapGraph map, final SoundPlayer soundPlayer) {
 		this.map = map;
 		this.pathFinder = new IndexedAStarPathFinder<>(map);
 		this.heuristic = new GameHeuristic();
+		this.soundPlayer = soundPlayer;
 	}
 
 	@Override
@@ -115,7 +119,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onDestinationReached(character);
 		}
-		currentCommand.getType().getToDoAfterDestinationReached().run(character, map);
+		currentCommand.getType().getToDoAfterDestinationReached().run(character, map, soundPlayer);
 	}
 
 	private void initDestinationNode(final CharacterComponent characterComponent,
@@ -172,9 +176,10 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 					CharacterComponent targetCharacterComponent = ComponentsMapper.character.get(target);
 					targetCharacterComponent.dealDamage(1);
 					spriteType = SpriteType.ATTACK;
-					if (targetCharacterComponent.getHp() <= 0) {
+					if (targetCharacterComponent.getSpriteType() != SpriteType.DIE && targetCharacterComponent.getHp() <= 0) {
 						targetCharacterComponent.setInPain(false);
 						targetCharacterComponent.setSpriteType(SpriteType.DIE);
+						soundPlayer.playSound(Assets.Sounds.ENEMY_DIE);
 					} else {
 						for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 							subscriber.onCharacterGotDamage(target);
@@ -251,12 +256,27 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	@Override
-	public void onRunFrameChanged(final Entity character, final float deltaTime) {
+	public void onFrameChanged(final Entity character, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		if (characterComponent.getSpriteType() == SpriteType.RUN) {
+			applyRunning(character, newFrame, characterComponent);
+		} else if (characterComponent.getSpriteType() == SpriteType.ATTACK) {
+			if (newFrame.index == 1) {
+				soundPlayer.playSound(Assets.Sounds.ATTACK_CLAW);
+			}
+		}
+	}
+
+	private void applyRunning(final Entity character,
+							  final TextureAtlas.AtlasRegion newFrame,
+							  final CharacterComponent characterComponent) {
+		if (newFrame.index % 2 == 0) {
+			soundPlayer.playRandomSound(Assets.Sounds.STEP_1, Assets.Sounds.STEP_2, Assets.Sounds.STEP_3);
+		}
 		MapGraphNode oldDest = characterComponent.getDestinationNode();
 		Decal decal = ComponentsMapper.decal.get(character).getDecal();
 		if (auxVector2_1.set(decal.getX(), decal.getZ()).dst2(oldDest.getCenterPosition(auxVector2_2)) < Utils.EPSILON) {
-			reachedNodeOfPath(character, characterComponent, oldDest);
+			reachedNodeOfPath(character, oldDest);
 		} else {
 			takeStep(character);
 		}
@@ -268,8 +288,8 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void reachedNodeOfPath(final Entity character,
-								   final CharacterComponent characterComponent,
 								   final MapGraphNode oldDest) {
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		MapGraphNode newDest = currentPath.getNextOf(oldDest);
 		if (newDest != null) {
 			initDestinationNode(characterComponent, newDest);

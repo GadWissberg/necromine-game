@@ -28,11 +28,14 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private static final Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);
 	private static final Vector3 auxVector3 = new Vector3();
 	private static final float SCROLL_OFFSET = 100;
+
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
 	private final Vector3 rotationPoint = new Vector3();
+
 	@Getter
 	private OrthographicCamera camera;
+
 	@Getter
 	private boolean rotateCamera;
 

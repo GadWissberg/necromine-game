@@ -17,6 +17,7 @@ import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystemImpl;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystemImpl;
+import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 
 import java.util.Arrays;
@@ -29,10 +30,10 @@ public class SystemsHandler implements Disposable {
 	@SuppressWarnings("rawtypes")
 	private final Map<Class<? extends SystemEventsSubscriber>, Class<? extends GameEntitySystem>> subscribersInterfaces = new HashMap<>();
 
-	public SystemsHandler(final PooledEngine engine, final MapGraph map) {
+	public SystemsHandler(final PooledEngine engine, final MapGraph map, final SoundPlayer soundPlayer) {
 		this.engine = engine;
-		addSystem(new CharacterSystemImpl(map), CharacterSystemEventsSubscriber.class);
-		addSystem(new EnemySystem(map), EnemySystemEventsSubscriber.class);
+		addSystem(new CharacterSystemImpl(map, soundPlayer), CharacterSystemEventsSubscriber.class);
+		addSystem(new EnemySystem(map, soundPlayer), EnemySystemEventsSubscriber.class);
 		addSystem(new TurnsSystemImpl(), TurnsSystemEventsSubscriber.class);
 		addSystem(new PlayerSystem(map), PlayerSystemEventsSubscriber.class);
 		addSystem(new RenderSystemImpl(), RenderSystemEventsSubscriber.class);

@@ -3,6 +3,8 @@ package com.gadarts.isometric.utils.assets;
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -10,11 +12,11 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
-import com.gadarts.isometric.utils.AtlasDefinition;
-import com.gadarts.isometric.utils.ModelDefinition;
-import com.gadarts.isometric.utils.TextureDefinition;
 import com.gadarts.isometric.utils.assets.Assets.Atlases;
 import com.gadarts.isometric.utils.assets.Assets.Textures.FloorTextures;
+import com.gadarts.isometric.utils.assets.definitions.AtlasDefinition;
+import com.gadarts.isometric.utils.assets.definitions.ModelDefinition;
+import com.gadarts.isometric.utils.assets.definitions.TextureDefinition;
 
 import java.util.Arrays;
 
@@ -32,6 +34,14 @@ public class GameAssetsManager extends AssetManager {
 		Arrays.stream(Atlases.values()).forEach(atlas -> load(
 				Gdx.files.getFileHandle(atlas.getFilePath(), FileType.Internal).path(),
 				TextureAtlas.class
+		));
+		Arrays.stream(Assets.Melody.values()).forEach(melody -> load(
+				Gdx.files.getFileHandle(melody.getFilePath(), FileType.Internal).path(),
+				Music.class
+		));
+		Arrays.stream(Assets.Sounds.values()).forEach(sound -> load(
+				Gdx.files.getFileHandle(sound.getFilePath(), FileType.Internal).path(),
+				Sound.class
 		));
 		finishLoading();
 		Arrays.stream(Atlases.values()).forEach(atlas -> {
@@ -89,6 +99,14 @@ public class GameAssetsManager extends AssetManager {
 	}
 
 	public Texture getTexture(final TextureDefinition definition) {
-		return get(definition.getFilePath());
+		return get(definition.getFilePath(), Texture.class);
+	}
+
+	public Music getMelody(final Assets.Melody definition) {
+		return get(definition.getFilePath(), Music.class);
+	}
+
+	public Sound getSound(final Assets.Sounds sound) {
+		return get(sound.getFilePath(), Sound.class);
 	}
 }

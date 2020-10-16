@@ -33,7 +33,7 @@ import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
  * Creates the map.
  */
 public final class MapBuilder {
-	public static final float BILLBOARD_Y = 0.6f;
+	private static final float BILLBOARD_Y = 0.6f;
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
@@ -68,15 +68,19 @@ public final class MapBuilder {
 
 	private MapGraph createTestMap() {
 		addTestWalls();
-		addTestObstacle(1, 1);
-		addTestObstacle(1, 3);
-		addTestObstacle(1, 5);
+		addObstacles();
 		addTestFloor(auxVector3_1.setZero());
 		addTestFloor(auxVector3_1.set(0, 0, 4));
 		return new MapGraph(
 				engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
 				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
 				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()));
+	}
+
+	private void addObstacles() {
+		addTestObstacle(1, 1);
+		addTestObstacle(1, 3);
+		addTestObstacle(1, 5);
 	}
 
 	private void addTestObstacle(final int x, final int y) {

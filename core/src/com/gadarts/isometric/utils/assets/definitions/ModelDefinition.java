@@ -1,4 +1,4 @@
-package com.gadarts.isometric.utils;
+package com.gadarts.isometric.utils.assets.definitions;
 
 public interface ModelDefinition extends AssetDefinition {
 	String FOLDER = "models";

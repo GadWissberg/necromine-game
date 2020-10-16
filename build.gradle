@@ -18,9 +18,9 @@ buildscript {
 allprojects {
     apply plugin: "eclipse"
 
-    version = '1.0'
+    version = '0.1.0'
     ext {
-        appName = "isometric-game"
+        appName = "necromine"
         gdxVersion = '1.9.10'
         roboVMVersion = '2.3.8'
         box2DLightsVersion = '1.4'

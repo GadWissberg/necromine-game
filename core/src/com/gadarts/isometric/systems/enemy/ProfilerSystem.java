@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -123,7 +124,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	}
 
 	@Override
-	public void onRunFrameChanged(final Entity entity, final float deltaTime) {
+	public void onFrameChanged(final Entity entity, final float deltaTime, TextureAtlas.AtlasRegion newFrame) {
 
 	}
 

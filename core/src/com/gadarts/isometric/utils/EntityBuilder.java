@@ -13,10 +13,12 @@ import lombok.AccessLevel;
 import lombok.Setter;
 
 public final class EntityBuilder {
-	public static final float BILLBOARD_SCALE = 0.015f;
+	private static final float BILLBOARD_SCALE = 0.015f;
 	private static final EntityBuilder instance = new EntityBuilder();
+
 	@Setter(AccessLevel.PRIVATE)
 	private PooledEngine engine;
+
 	private Entity currentEntity;
 
 	private EntityBuilder() {
@@ -90,7 +92,9 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addEnemyComponent() {
-		currentEntity.add(engine.createComponent(EnemyComponent.class));
+		EnemyComponent component = engine.createComponent(EnemyComponent.class);
+		component.init();
+		currentEntity.add(component);
 		return instance;
 	}
 
