@@ -3,15 +3,13 @@ package com.gadarts.isometric.systems;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Plane;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.IsometricGame;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
+import com.gadarts.isometric.utils.map.MapGraph;
 import lombok.Getter;
 
 public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscriber>
@@ -26,8 +24,10 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private static final float FAR = 100f;
 	private static final float NEAR = 0.01f;
 	private static final Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);
-	private static final Vector3 auxVector3 = new Vector3();
+	private static final Vector3 auxVector3_1 = new Vector3();
+	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final float SCROLL_OFFSET = 100;
+	private static final int MAP_EDGES_OFFSET = 4;
 
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
@@ -49,22 +49,37 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	private void handleHorizontalScroll() {
 		if (lastMousePosition.x >= IsometricGame.RESOLUTION_WIDTH - SCROLL_OFFSET) {
-			Vector3 direction = auxVector3.set(camera.direction).crs(camera.up).nor().scl(SCROLL_SCALE_HORIZONTAL);
-			camera.translate(direction.x, 0, direction.z);
+			horizontalTranslateCamera(SCROLL_SCALE_HORIZONTAL);
 		} else if (lastMousePosition.x <= SCROLL_OFFSET) {
-			Vector3 direction = auxVector3.set(camera.direction).crs(camera.up).nor().scl(-SCROLL_SCALE_HORIZONTAL);
-			camera.translate(direction.x, 0, direction.z);
+			horizontalTranslateCamera(-SCROLL_SCALE_HORIZONTAL);
 		}
+	}
+
+	private void horizontalTranslateCamera(final float scrollScaleHorizontal) {
+		Vector3 direction = auxVector3_1.set(camera.direction).crs(camera.up).nor().scl(scrollScaleHorizontal);
+		setCameraTranslationClamped(direction);
+	}
+
+	private void setCameraTranslationClamped(final Vector3 direction) {
+		auxVector3_2.set(camera.position).add(direction.x, 0, direction.z);
+		camera.position.set(
+				MathUtils.clamp(auxVector3_2.x, MAP_EDGES_OFFSET, MapGraph.MAP_SIZE - MAP_EDGES_OFFSET),
+				camera.position.y,
+				MathUtils.clamp(auxVector3_2.z, MAP_EDGES_OFFSET, MapGraph.MAP_SIZE - MAP_EDGES_OFFSET)
+		);
 	}
 
 	private void handleVerticalScroll() {
 		if (lastMousePosition.y >= IsometricGame.RESOLUTION_HEIGHT - SCROLL_OFFSET) {
-			Vector3 direction = auxVector3.set(camera.direction).nor().scl(-SCROLL_SCALE_VERTICAL);
-			camera.translate(direction.x, 0, direction.z);
+			verticalTranslateCamera(-SCROLL_SCALE_VERTICAL);
 		} else if (lastMousePosition.y <= SCROLL_OFFSET) {
-			Vector3 direction = auxVector3.set(camera.direction).nor().scl(SCROLL_SCALE_VERTICAL);
-			camera.translate(direction.x, 0, direction.z);
+			verticalTranslateCamera(SCROLL_SCALE_VERTICAL);
 		}
+	}
+
+	private void verticalTranslateCamera(final float v) {
+		Vector3 direction = auxVector3_1.set(camera.direction).nor().scl(v);
+		setCameraTranslationClamped(direction);
 	}
 
 	private OrthographicCamera createCamera() {

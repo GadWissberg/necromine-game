@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEventsSubscriber {
-	static final int MAP_SIZE = 20;
+	public static final int MAP_SIZE = 20;
 	private static final Array<Connection<MapGraphNode>> auxConnectionsList = new Array<>();
 	private static final Vector3 auxVector = new Vector3();
 	private static final List<MapGraphNode> auxNodesList_1 = new ArrayList<>();

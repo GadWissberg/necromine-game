@@ -12,5 +12,5 @@ public class DefaultGameSettings {
 	public static final boolean HIDE_ENEMIES = false;
 	public static final Color BACKGROUND_COLOR = Color.BLACK;
 	public static final boolean MUTE_MELODY = true;
-	public static final boolean MUTE_SFX = false;
+	public static final boolean MUTE_SFX = true;
 }
