@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -262,6 +263,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			applyRunning(character, newFrame, characterComponent);
 		} else if (characterComponent.getSpriteType() == SpriteType.ATTACK) {
 			if (newFrame.index == 1) {
+				Gdx.app.log("!", "!");
 				soundPlayer.playSound(Assets.Sounds.ATTACK_CLAW);
 			}
 		}

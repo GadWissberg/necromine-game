@@ -42,8 +42,10 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
-		handleHorizontalScroll();
-		handleVerticalScroll();
+		if (!rotateCamera) {
+			handleHorizontalScroll();
+			handleVerticalScroll();
+		}
 		camera.update();
 	}
 

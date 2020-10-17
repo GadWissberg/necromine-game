@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class AnimationComponent implements GameComponent {
-	private Animation<TextureAtlas.AtlasRegion> animation;
+	private CharacterAnimation animation;
 	private float stateTime;
 
 	@Override
