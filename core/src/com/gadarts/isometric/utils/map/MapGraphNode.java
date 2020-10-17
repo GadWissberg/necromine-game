@@ -65,4 +65,15 @@ public class MapGraphNode {
 		connections.addAll(newValue.connections);
 		return this;
 	}
+
+	public boolean isConnectedNeighbour(final MapGraphNode selectedAttackNode) {
+		boolean result = false;
+		for (Connection<MapGraphNode> connection : connections) {
+			if (connection.getToNode().equals(selectedAttackNode)) {
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
 }

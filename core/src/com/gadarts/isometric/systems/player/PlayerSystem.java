@@ -99,6 +99,9 @@ public class PlayerSystem extends GameEntitySystem<PlayerSystemEventsSubscriber>
 							break;
 						}
 					}
+					if (!result && selectedNode.equals(selectedAttackNode) && map.getNode(ComponentsMapper.decal.get(player).getCellPosition(auxVector3_1)).isConnectedNeighbour(selectedAttackNode)) {
+						result = true;
+					}
 					if (result) {
 						characterSystem.applyCommand(auxCommand.init(Commands.GO_TO_MELEE, selectedNode, player), player);
 					}
