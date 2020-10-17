@@ -14,10 +14,9 @@ public class AnimationComponent implements GameComponent {
 
 	}
 
-	public void init(final float frameDuration, final Animation<TextureAtlas.AtlasRegion> animation) {
+	public void init(final float frameDuration, final CharacterAnimation animation) {
 		this.animation = animation;
 		animation.setFrameDuration(frameDuration);
-		stateTime = 0;
 	}
 
 	public TextureAtlas.AtlasRegion calculateFrame(final float deltaTime) {
@@ -25,4 +24,7 @@ public class AnimationComponent implements GameComponent {
 		return animation.getKeyFrame(stateTime, animation.getPlayMode() == Animation.PlayMode.LOOP);
 	}
 
+	public void resetStateTime() {
+		stateTime = 0;
+	}
 }

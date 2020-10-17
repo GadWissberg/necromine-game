@@ -166,7 +166,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			} else {
 				directionToDest = calculateDirectionToTarget(character);
 			}
-			if (charComponent.getDirection() != directionToDest) {
+			if (charComponent.getFacingDirection() != directionToDest) {
 				rotate(charComponent, directionToDest);
 			} else {
 				rotationData.setRotating(false);
@@ -194,7 +194,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void rotate(final CharacterComponent charComponent, final Direction directionToDest) {
-		Vector2 currentDirVector = charComponent.getDirection().getDirection(auxVector2_1);
+		Vector2 currentDirVector = charComponent.getFacingDirection().getDirection(auxVector2_1);
 		int side;
 		float diff = directionToDest.getDirection(auxVector2_2).angle() - currentDirVector.angle();
 		if (auxVector2_3.set(1, 0).setAngle(diff).angle() > 180) {
@@ -202,7 +202,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		} else {
 			side = 1;
 		}
-		charComponent.setDirection(Direction.findDirection(currentDirVector.rotate(45f * side)));
+		charComponent.setFacingDirection(Direction.findDirection(currentDirVector.rotate(45f * side)));
 	}
 
 	private Direction calculateDirectionToDestination(final Entity character) {

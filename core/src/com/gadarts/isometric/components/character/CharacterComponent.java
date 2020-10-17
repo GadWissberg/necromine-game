@@ -23,7 +23,7 @@ public class CharacterComponent implements GameComponent {
 	private Entity target;
 	private CharacterRotationData rotationData = new CharacterRotationData();
 	private SpriteType spriteType;
-	private Direction direction;
+	private Direction facingDirection;
 	private int hp;
 	private long lastDamage;
 
@@ -44,7 +44,7 @@ public class CharacterComponent implements GameComponent {
 	}
 
 	public void init(final Direction direction, final SpriteType type) {
-		this.direction = direction;
+		this.facingDirection = direction;
 		this.spriteType = type;
 		this.hp = 3;
 	}
@@ -73,7 +73,7 @@ public class CharacterComponent implements GameComponent {
 
 		public static Direction findDirection(final Vector2 direction) {
 			Direction[] values = values();
-			Direction result = null;
+			Direction result = SOUTH;
 			for (Direction dir : values) {
 				if (dir.directionVector.epsilonEquals(direction, Utils.EPSILON)) {
 					result = dir;

@@ -14,7 +14,7 @@ public class DecalComponent implements GameComponent {
 	private static final Vector3 auxVector = new Vector3();
 	private Decal decal;
 	private CharacterAnimations animations;
-	private SpriteType type;
+	private SpriteType spriteType;
 	private CharacterComponent.Direction direction;
 
 	@Override
@@ -27,13 +27,13 @@ public class DecalComponent implements GameComponent {
 					 final CharacterComponent.Direction direction) {
 		this.animations = animations;
 		this.direction = direction;
-		this.type = type;
+		this.spriteType = type;
 		decal = Decal.newDecal(animations.get(type, direction).getKeyFrames()[0], true);//Optimize this - it creates an object each time.
 	}
 
 
 	public void initializeSprite(final SpriteType type, final CharacterComponent.Direction direction) {
-		this.type = type;
+		this.spriteType = type;
 		this.direction = direction;
 		if (type.isSingleAnimation()) {
 			decal.setTextureRegion(animations.get(type, CharacterComponent.Direction.SOUTH).getKeyFrames()[0]);

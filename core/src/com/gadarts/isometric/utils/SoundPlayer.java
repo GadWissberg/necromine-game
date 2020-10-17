@@ -15,20 +15,20 @@ public class SoundPlayer {
 	}
 
 	public void playMusic(final Assets.Melody melody) {
-		if (DefaultGameSettings.MUTE_MELODY) return;
+		if (!DefaultGameSettings.MELODY_ENABLED) return;
 		Music music = assetManager.getMelody(melody);
 		music.setVolume(MELODY_VOLUME);
 		music.play();
 	}
 
 	public void playRandomSound(final Assets.Sounds... sounds) {
-		if (DefaultGameSettings.MUTE_SFX) return;
+		if (!DefaultGameSettings.SFX_ENABLED) return;
 		int randomSound = MathUtils.random(sounds.length - 1);
 		playSound(sounds[randomSound]);
 	}
 
 	public void playSound(final Assets.Sounds sound) {
-		if (DefaultGameSettings.MUTE_SFX) return;
+		if (!DefaultGameSettings.SFX_ENABLED) return;
 		assetManager.getSound(sound).play(1f, 1 + (MathUtils.randomBoolean() ? 1 : -1) * PITCH_OFFSET, 0);
 	}
 }

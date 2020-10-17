@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -113,7 +112,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			DecalComponent decalComponent = ComponentsMapper.decal.get(entity);
 			Decal decal = decalComponent.getDecal();
 			auxVector2_3.set(1, 0);
-			float playerAngle = characterComponent.getDirection().getDirection(auxVector2_1).angle();
+			float playerAngle = characterComponent.getFacingDirection().getDirection(auxVector2_1).angle();
 			Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
 			Intersector.intersectRayPlane(ray, auxPlane, auxVector3_1);
 			float cameraAngle = auxVector2_2.set(camera.position.x, camera.position.z).sub(auxVector3_1.x, auxVector3_1.z).angle();
@@ -138,23 +137,26 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				direction = CharacterComponent.Direction.SOUTH_EAST;
 			}
 			SpriteType spriteType = characterComponent.getSpriteType();
-			if (!characterComponent.getSpriteType().equals(decalComponent.getType()) || !decalComponent.getDirection().equals(direction)) {
-				if (decalComponent.getType() != SpriteType.DIE) {
-					decalComponent.initializeSprite(spriteType, direction);
-					if (ComponentsMapper.animation.has(entity)) {
-						AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
-						if (spriteType.isSingleAnimation()) {
-							direction = CharacterComponent.Direction.SOUTH;
-						}
-						animationComponent.init(spriteType.getAnimationDuration(), decalComponent.getAnimations().get(spriteType, direction));
+			boolean sameSpriteType = characterComponent.getSpriteType().equals(decalComponent.getSpriteType());
+			boolean sameDirection = decalComponent.getDirection().equals(direction);
+			if ((!sameSpriteType || !sameDirection) && decalComponent.getSpriteType() != SpriteType.DIE) {
+				decalComponent.initializeSprite(spriteType, direction);
+				if (ComponentsMapper.animation.has(entity)) {
+					AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
+					if (spriteType.isSingleAnimation()) {
+						direction = CharacterComponent.Direction.SOUTH;
+					}
+					animationComponent.init(spriteType.getAnimationDuration(), decalComponent.getAnimations().get(spriteType, direction));
+					if (!sameSpriteType) {
+						animationComponent.resetStateTime();
 					}
 				}
 			} else {
 				if (ComponentsMapper.animation.has(entity)) {
 					AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
-					TextureRegion currentFrame = decal.getTextureRegion();
+					TextureAtlas.AtlasRegion currentFrame = (TextureAtlas.AtlasRegion) decal.getTextureRegion();
 					TextureAtlas.AtlasRegion newFrame = animationComponent.calculateFrame(deltaTime);
-					if (currentFrame != newFrame) {
+					if (currentFrame.index != newFrame.index) {
 						for (RenderSystemEventsSubscriber subscriber : subscribers) {
 							subscriber.onFrameChanged(entity, deltaTime, newFrame);
 						}

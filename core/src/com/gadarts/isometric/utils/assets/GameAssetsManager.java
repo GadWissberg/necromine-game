@@ -6,9 +6,9 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.gadarts.isometric.components.CharacterAnimation;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
@@ -76,17 +76,19 @@ public class GameAssetsManager extends AssetManager {
 		} else {
 			name = spriteTypeName + "_" + dir.name().toLowerCase();
 		}
-		Animation<TextureAtlas.AtlasRegion> a = createAnimation(atlas, spriteType, name);
+		CharacterAnimation a = createAnimation(atlas, spriteType, name, dir);
 		animations.put(spriteType, dir, a);
 	}
 
-	private Animation<TextureAtlas.AtlasRegion> createAnimation(final TextureAtlas atlas,
-																final SpriteType spriteType,
-																final String name) {
-		return new Animation<>(
+	private CharacterAnimation createAnimation(final TextureAtlas atlas,
+											   final SpriteType spriteType,
+											   final String name,
+											   final CharacterComponent.Direction dir) {
+		return new CharacterAnimation(
 				spriteType.getAnimationDuration(),
 				atlas.findRegions(name),
-				spriteType.getPlayMode()
+				spriteType.getPlayMode(),
+				dir
 		);
 	}
 
