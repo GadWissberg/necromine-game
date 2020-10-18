@@ -20,11 +20,13 @@ import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 
+/**
+ * Aggregates rendering data.
+ */
 public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		implements RenderSystemEventsSubscriber,
 		HudSystemEventsSubscriber {
 
-	private static final char SEPARATOR = '/';
 	private static final String LABEL_FPS = "FPS: ";
 	private static final String LABEL_UI_BATCH_RENDER_CALLS = "UI batch render calls: ";
 	private static final String LABEL_GL_CALL = "Total openGL calls: ";
@@ -34,6 +36,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	private static final String LABEL_GL_VERTEX_COUNT = "Vertex count: ";
 	private static final String VISIBLE_OBJECTS_STRING = "Visible objects: ";
 	private static final String LABEL_VERSION = "Version: ";
+
 	private final GLProfiler glProfiler;
 	private final StringBuilder stringBuilder;
 	private Stage stage;
@@ -72,10 +75,11 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		displayLine(LABEL_GL_CALL, glProfiler.getCalls());
 		displayLine(LABEL_GL_DRAW_CALL, glProfiler.getDrawCalls());
 		displayLine(LABEL_GL_SHADER_SWITCHES, glProfiler.getShaderSwitches());
-		int valueWithoutText = glProfiler.getTextureBindings() - 1;
-		displayLine(LABEL_GL_TEXTURE_BINDINGS, valueWithoutText);
+		displayLine(LABEL_GL_TEXTURE_BINDINGS, glProfiler.getTextureBindings() - 1);
 		displayLine(LABEL_GL_VERTEX_COUNT, glProfiler.getVertexCount().total);
-		if (renderSystem != null) displayNumberOfVisibleObjects();
+		if (renderSystem != null) {
+			displayNumberOfVisibleObjects();
+		}
 		glProfiler.reset();
 	}
 
@@ -93,10 +97,16 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		stringBuilder.append('\n');
 	}
 
+	/**
+	 * Resets the GLProfiler.
+	 */
 	public void reset() {
 		glProfiler.reset();
 	}
 
+	/**
+	 * Toggles the GLProfiler.
+	 */
 	public void toggle() {
 		if (glProfiler.isEnabled()) {
 			glProfiler.disable();
@@ -108,6 +118,9 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		label.setVisible(glProfiler.isEnabled());
 	}
 
+	/**
+	 * @return Whether GLProfiler is enabled.
+	 */
 	public boolean isEnabled() {
 		return glProfiler.isEnabled();
 	}
@@ -124,7 +137,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	}
 
 	@Override
-	public void onFrameChanged(final Entity entity, final float deltaTime, TextureAtlas.AtlasRegion newFrame) {
+	public void onFrameChanged(final Entity entity, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
 
 	}
 

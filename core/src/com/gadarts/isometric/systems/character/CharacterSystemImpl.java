@@ -4,8 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.ai.pfa.Heuristic;
-import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -24,7 +22,6 @@ import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.assets.Assets;
-import com.gadarts.isometric.utils.map.GameHeuristic;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
@@ -43,18 +40,15 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private static final int ROT_INTERVAL = 125;
 	private static final long CHARACTER_PAIN_DURATION = 1000;
 
-	private final MapGraphPath currentPath = new MapGraphPath();
 	private final MapGraph map;
-	private final IndexedAStarPathFinder<MapGraphNode> pathFinder;
-	private final Heuristic<MapGraphNode> heuristic;
+	private final CharacterSystemGraphData graphData;
 	private final SoundPlayer soundPlayer;
 	private CharacterCommand currentCommand;
 	private ImmutableArray<Entity> characters;
 
 	public CharacterSystemImpl(final MapGraph map, final SoundPlayer soundPlayer) {
+		this.graphData = new CharacterSystemGraphData(map);
 		this.map = map;
-		this.pathFinder = new IndexedAStarPathFinder<>(map);
-		this.heuristic = new GameHeuristic();
 		this.soundPlayer = soundPlayer;
 	}
 
@@ -74,7 +68,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	public void applyCommand(final CharacterCommand command, final Entity character) {
 		boolean foundPath = calculatePathForCommand(command, character);
 		currentCommand = command;
-		if (currentPath.nodes.size > 1) {
+		if (graphData.getCurrentPath().nodes.size > 1) {
 			if (foundPath) {
 				commandSet(command, character);
 			}
@@ -87,14 +81,15 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onNewCommandSet(command);
 		}
-		initDestinationNode(ComponentsMapper.character.get(character), currentPath.get(1));
+		initDestinationNode(ComponentsMapper.character.get(character), graphData.getCurrentPath().get(1));
 	}
 
 	private boolean calculatePathForCommand(final CharacterCommand command, final Entity character) {
+		MapGraphPath currentPath = graphData.getCurrentPath();
 		currentPath.clear();
 		MapGraphNode sourceNode = map.getNode(ComponentsMapper.decal.get(character).getCellPosition(auxVector3_1));
 		MapGraphNode destNode = command.getDestination();
-		return pathFinder.searchNodePath(sourceNode, destNode, heuristic, currentPath);
+		return graphData.getPathFinder().searchNodePath(sourceNode, destNode, graphData.getHeuristic(), currentPath);
 	}
 
 	public void destinationReached(final Entity character) {
@@ -109,7 +104,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		ComponentsMapper.character.get(character).setAttacking(false);
 		ComponentsMapper.character.get(character).setSpriteType(SpriteType.IDLE);
 		currentCommand = null;
-		currentPath.clear();
+		graphData.getCurrentPath().clear();
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCommandDone(character);
 		}
@@ -290,7 +285,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void reachedNodeOfPath(final Entity character,
 								   final MapGraphNode oldDest) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		MapGraphNode newDest = currentPath.getNextOf(oldDest);
+		MapGraphNode newDest = graphData.getCurrentPath().getNextOf(oldDest);
 		if (newDest != null) {
 			initDestinationNode(characterComponent, newDest);
 			takeStep(character);
