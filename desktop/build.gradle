@@ -41,7 +41,6 @@ jpackageImage.dependsOn dist
 
 dist.dependsOn classes
 
-eclipse.project.name = appName + "-desktop"
 
 runtime {
     options = ['--strip-debug',

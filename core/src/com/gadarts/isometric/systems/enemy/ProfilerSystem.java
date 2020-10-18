@@ -59,7 +59,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 			displayLine(LABEL_FPS, Gdx.graphics.getFramesPerSecond());
 			displayGlProfiling();
 			displayBatchCalls();
-			stringBuilder.append("\n").append(LABEL_VERSION).append(IsometricGame.VERSION_NAME);
+			stringBuilder.append("\n").append(LABEL_VERSION).append(IsometricGame.getVersionName());
 			label.setText(stringBuilder);
 		}
 	}

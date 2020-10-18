@@ -1,5 +1,5 @@
 buildscript {
-    
+
 
     repositories {
         mavenLocal()
@@ -10,13 +10,12 @@ buildscript {
         google()
     }
     dependencies {
-        
+
 
     }
 }
 
 allprojects {
-    apply plugin: "eclipse"
 
     version = '0.1.0'
     ext {
@@ -26,6 +25,7 @@ allprojects {
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.0'
         aiVersion = '1.8.0'
+        versionNumber = 2
     }
 
     repositories {
@@ -48,7 +48,7 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
-        
+
     }
 }
 

@@ -5,4 +5,13 @@ sourceCompatibility = 1.14
 
 sourceSets.main.java.srcDirs = [ "src/" ]
 
-eclipse.project.name = appName + "-core"
+task currentVersion() {
+    doLast {
+        def file = new File("core/assets/version.txt")
+        file.text = project.version + "\n" + project.versionNumber
+    }
+}
+
+compileJava.dependsOn currentVersion
+
+
