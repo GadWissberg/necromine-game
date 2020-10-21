@@ -64,6 +64,7 @@ public final class Assets {
 	@Getter
 	public enum Models implements ModelDefinition {
 		WALL_1,
+		COLT,
 		PILLAR;
 
 		private final String filePath;

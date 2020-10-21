@@ -17714,7 +17714,7 @@
       "textures": [
         {
           "id": "Tex",
-          "filename": "texture.png",
+          "filename": "pillar_texture.png",
           "type": "DIFFUSE"
         }
       ]

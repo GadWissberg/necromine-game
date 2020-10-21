@@ -63,7 +63,17 @@ public final class MapBuilder {
 		createAndAdd3dCursor();
 		addPlayer();
 		addEnemyTest();
+		addWeaponTest();
 		return createTestMap();
+	}
+
+	private void addWeaponTest() {
+		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(Assets.Models.COLT));
+		modelInstance.transform.setTranslation(auxVector3_1.set(1.5f, 0, 2.5f));
+		EntityBuilder.beginBuildingEntity(engine)
+				.addModelInstanceComponent(modelInstance, true)
+				.addPickUpComponent()
+				.finishAndAddToEngine();
 	}
 
 	private MapGraph createTestMap() {

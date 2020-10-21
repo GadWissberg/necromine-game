@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
+import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.utils.Disposable;
 import lombok.Getter;
 
@@ -13,9 +14,11 @@ public class RenderBatches implements Disposable {
 
 	private final ModelBatch modelBatch;
 	private final DecalBatch decalBatch;
+	private final ShaderProvider shaderProvider;
 
 	public RenderBatches(final Camera camera) {
-		this.modelBatch = new ModelBatch();
+		shaderProvider = new GameShaderProvider();
+		this.modelBatch = new ModelBatch(shaderProvider);
 		this.decalBatch = new DecalBatch(DECALS_POOL_SIZE, new CameraGroupStrategy(camera));
 	}
 

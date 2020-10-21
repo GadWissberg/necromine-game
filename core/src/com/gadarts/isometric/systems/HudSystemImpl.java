@@ -14,14 +14,13 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gadarts.isometric.IsometricGame;
-import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.CursorComponent;
-import com.gadarts.isometric.components.EnemyComponent;
-import com.gadarts.isometric.components.ModelInstanceComponent;
+import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.HudSystem;
@@ -57,6 +56,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private Model attackNodeModel;
 	private CameraSystem cameraSystem;
 	private Stage stage;
+	private ImmutableArray<Entity> pickupEntities;
 
 	public HudSystemImpl(final MapGraph map) {
 		this.map = map;
@@ -74,6 +74,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		Entity cursorEntity = engine.getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 		cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
 		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
+		pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
 		attackNodeModel = createAttackNodeModel();
 		createAttackNodesEntities();
 	}
@@ -113,6 +114,25 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		if (!newNode.equals(oldNode)) {
 			cursorModelInstance.transform.setTranslation(newNode.getX(), 0, newNode.getY());
 			colorizeCursor(newNode);
+		}
+		highlightPickupsUnderMouse(screenX, screenY);
+	}
+
+	private void highlightPickupsUnderMouse(final int screenX, final int screenY) {
+		Ray ray = cameraSystem.getCamera().getPickRay(screenX, screenY);
+		for (Entity pickup : pickupEntities) {
+			handlePickupHighlight(ray, pickup);
+		}
+	}
+
+	private void handlePickupHighlight(final Ray ray, final Entity pickup) {
+		ModelInstanceComponent mic = ComponentsMapper.modelInstance.get(pickup);
+		Vector3 center = mic.getModelInstance().transform.getTranslation(auxVector3_1);
+		ColorAttribute attr = (ColorAttribute) mic.getModelInstance().materials.get(0).get(ColorAttribute.Emissive);
+		if (Intersector.intersectRayBoundsFast(ray, center, auxVector3_2.set(0.5f, 0.5f, 0.5f))) {
+			attr.color.set(1, 1, 1, 1);
+		} else {
+			attr.color.set(0, 0, 0, 0);
 		}
 	}
 

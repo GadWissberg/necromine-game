@@ -126,4 +126,10 @@ public final class EntityBuilder {
 		currentEntity.add(obstacleComponent);
 		return instance;
 	}
+
+	public EntityBuilder addPickUpComponent() {
+		PickUpComponent pickupComponent = engine.createComponent(PickUpComponent.class);
+		currentEntity.add(pickupComponent);
+		return instance;
+	}
 }

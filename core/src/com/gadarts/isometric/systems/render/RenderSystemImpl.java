@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -98,15 +99,16 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		Gdx.gl.glDepthMask(true);
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
 		OrthographicCamera camera = cameraSystem.getCamera();
-		renderBatches.getModelBatch().begin(camera);
+		ModelBatch modelBatch = renderBatches.getModelBatch();
+		modelBatch.begin(camera);
 		for (Entity entity : modelInstanceEntities) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 			if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
 				ModelInstance modelInstance = modelInstanceComponent.getModelInstance();
-				renderBatches.getModelBatch().render(modelInstance);
+				modelBatch.render(modelInstance);
 			}
 		}
-		renderBatches.getModelBatch().end();
+		modelBatch.end();
 		for (Entity entity : decalEntities) {
 			CharacterComponent characterComponent = ComponentsMapper.character.get(entity);
 			DecalComponent decalComponent = ComponentsMapper.decal.get(entity);

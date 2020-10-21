@@ -41,6 +41,7 @@ public class SystemsHandler implements Disposable {
 		addSystem(new CameraSystemImpl(), CameraSystemEventsSubscriber.class);
 		addSystem(new HudSystemImpl(map), HudSystemEventsSubscriber.class);
 		addSystem(new ProfilerSystem(), SystemEventsSubscriber.class);
+		addSystem(new PickUpSystem(), SystemEventsSubscriber.class);
 		engine.getSystems().forEach((system) -> Arrays.stream(system.getClass().getInterfaces()).forEach(i -> {
 			if (subscribersInterfaces.containsKey(i)) {
 				//noinspection unchecked
