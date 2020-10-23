@@ -9,7 +9,7 @@ import com.gadarts.isometric.components.character.SpriteType;
 import lombok.Getter;
 
 @Getter
-public class DecalComponent implements GameComponent {
+public class CharacterDecalComponent implements GameComponent {
 
 	private static final Vector3 auxVector = new Vector3();
 	private Decal decal;

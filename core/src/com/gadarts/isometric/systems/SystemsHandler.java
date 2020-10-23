@@ -11,13 +11,14 @@ import com.gadarts.isometric.systems.enemy.ProfilerSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
-import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
+import com.gadarts.isometric.systems.player.PlayerSystemImpl;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystemImpl;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystemImpl;
 import com.gadarts.isometric.utils.SoundPlayer;
+import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import com.gadarts.isometric.utils.map.MapGraph;
 
 import java.util.Arrays;
@@ -30,16 +31,19 @@ public class SystemsHandler implements Disposable {
 	@SuppressWarnings("rawtypes")
 	private final Map<Class<? extends SystemEventsSubscriber>, Class<? extends GameEntitySystem>> subscribersInterfaces = new HashMap<>();
 
-	public SystemsHandler(final PooledEngine engine, final MapGraph map, final SoundPlayer soundPlayer) {
+	public SystemsHandler(final PooledEngine engine,
+						  final MapGraph map,
+						  final SoundPlayer soundPlayer,
+						  final GameAssetsManager assetManager) {
 		this.engine = engine;
 		addSystem(new CharacterSystemImpl(map, soundPlayer), CharacterSystemEventsSubscriber.class);
 		addSystem(new EnemySystem(map, soundPlayer), EnemySystemEventsSubscriber.class);
 		addSystem(new TurnsSystemImpl(), TurnsSystemEventsSubscriber.class);
-		addSystem(new PlayerSystem(map), PlayerSystemEventsSubscriber.class);
+		addSystem(new PlayerSystemImpl(map), PlayerSystemEventsSubscriber.class);
 		addSystem(new RenderSystemImpl(), RenderSystemEventsSubscriber.class);
 		addSystem(new InputSystem(), InputSystemEventsSubscriber.class);
 		addSystem(new CameraSystemImpl(), CameraSystemEventsSubscriber.class);
-		addSystem(new HudSystemImpl(map), HudSystemEventsSubscriber.class);
+		addSystem(new HudSystemImpl(map, assetManager), HudSystemEventsSubscriber.class);
 		addSystem(new ProfilerSystem(), SystemEventsSubscriber.class);
 		addSystem(new PickUpSystem(), SystemEventsSubscriber.class);
 		engine.getSystems().forEach((system) -> Arrays.stream(system.getClass().getInterfaces()).forEach(i -> {

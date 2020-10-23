@@ -27,6 +27,10 @@ public class GameAssetsManager extends AssetManager {
 				Gdx.files.getFileHandle(floor.getFilePath(), FileType.Internal).path(),
 				Texture.class
 		));
+		Arrays.stream(Assets.Textures.MiscTextures.values()).forEach(misc -> load(
+				Gdx.files.getFileHandle(misc.getFilePath(), FileType.Internal).path(),
+				Texture.class
+		));
 		Arrays.stream(Assets.Models.values()).forEach(model -> load(
 				Gdx.files.getFileHandle(model.getFilePath(), FileType.Internal).path(),
 				Model.class

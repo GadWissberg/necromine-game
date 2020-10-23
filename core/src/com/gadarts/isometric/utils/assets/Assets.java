@@ -8,7 +8,7 @@ import lombok.Getter;
  */
 public final class Assets {
 
-	private static final String PATH_SEPARATOR = "/";
+	public static final String PATH_SEPARATOR = "/";
 
 	private Assets() {
 	}
@@ -78,19 +78,27 @@ public final class Assets {
 	 * Images - mainly floors.
 	 */
 	public static final class Textures {
-		@Getter
+
 		public enum FloorTextures implements TextureDefinition {
 			FLOOR_0,
 			FLOOR_1,
 			FLOOR_2,
 			FLOOR_3;
 
-			private final String filePath;
-
-			FloorTextures() {
-				filePath = TEXTURES_FOLDER + PATH_SEPARATOR + name().toLowerCase() + "." + TEXTURE_FORMAT;
+			@Override
+			public String getName() {
+				return name();
 			}
+		}
 
+		public enum MiscTextures implements TextureDefinition {
+			PATH_ARROW;
+
+
+			@Override
+			public String getName() {
+				return name();
+			}
 		}
 	}
 }

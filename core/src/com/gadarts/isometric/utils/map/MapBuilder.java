@@ -144,7 +144,7 @@ public final class MapBuilder {
 									   final Entity target) {
 		CharacterAnimations animations = assetManager.get(atlas.name());
 		entityBuilder.addCharacterComponent(CharacterComponent.Direction.SOUTH, SpriteType.IDLE, target)
-				.addDecalComponent(animations, SpriteType.IDLE, CharacterComponent.Direction.SOUTH, position)
+				.addCharacterDecalComponent(animations, SpriteType.IDLE, CharacterComponent.Direction.SOUTH, position)
 				.addAnimationComponent();
 	}
 

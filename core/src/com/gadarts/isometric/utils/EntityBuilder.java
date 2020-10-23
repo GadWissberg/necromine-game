@@ -2,6 +2,7 @@ package com.gadarts.isometric.utils;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
@@ -78,16 +79,26 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addDecalComponent(final CharacterAnimations animations,
-										   final SpriteType spriteType,
-										   final CharacterComponent.Direction direction,
-										   final Vector3 position) {
-		DecalComponent decalComponent = engine.createComponent(DecalComponent.class);
-		decalComponent.init(animations, spriteType, direction);
-		Decal decal = decalComponent.getDecal();
+	public EntityBuilder addCharacterDecalComponent(final CharacterAnimations animations,
+													final SpriteType spriteType,
+													final CharacterComponent.Direction direction,
+													final Vector3 position) {
+		CharacterDecalComponent characterDecalComponent = engine.createComponent(CharacterDecalComponent.class);
+		characterDecalComponent.init(animations, spriteType, direction);
+		Decal decal = characterDecalComponent.getDecal();
 		decal.setPosition(position);
 		decal.setScale(BILLBOARD_SCALE);
-		currentEntity.add(decalComponent);
+		currentEntity.add(characterDecalComponent);
+		return instance;
+	}
+
+	public EntityBuilder addSimpleDecalComponent(final Vector3 position, final Texture texture, boolean visible) {
+		SimpleDecalComponent simpleDecalComponent = engine.createComponent(SimpleDecalComponent.class);
+		simpleDecalComponent.init(texture, visible);
+		Decal decal = simpleDecalComponent.getDecal();
+		decal.setPosition(position);
+		decal.setScale(BILLBOARD_SCALE);
+		currentEntity.add(simpleDecalComponent);
 		return instance;
 	}
 

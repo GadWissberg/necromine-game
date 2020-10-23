@@ -23,7 +23,7 @@ public class BattleScreen implements Screen {
 		MapGraph map = mapBuilder.createAndAddTestMap();
 		soundPlayer = new SoundPlayer(assetManager);
 		soundPlayer.playMusic(Assets.Melody.TEST);
-		systemsHandler = new SystemsHandler(engine, map, soundPlayer);
+		systemsHandler = new SystemsHandler(engine, map, soundPlayer, assetManager);
 	}
 
 	@Override

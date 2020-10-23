@@ -20,9 +20,9 @@ public class MeleeAction implements ToDoAfterDestinationReached {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		Entity target = characterComponent.getTarget();
 		if (target != null) {
-			Vector3 targetPosition = ComponentsMapper.decal.get(target).getCellPosition(auxVector);
+			Vector3 targetPosition = ComponentsMapper.characterDecal.get(target).getCellPosition(auxVector);
 			MapGraphNode targetNode = map.getNode(targetPosition);
-			MapGraphNode myNode = map.getNode(ComponentsMapper.decal.get(character).getCellPosition(auxVector));
+			MapGraphNode myNode = map.getNode(ComponentsMapper.characterDecal.get(character).getCellPosition(auxVector));
 			List<MapGraphNode> nearbyNodes = map.getNodesAround(myNode, auxNodesList);
 			for (MapGraphNode nearbyNode : nearbyNodes) {
 				if (nearbyNode.equals(targetNode)) {

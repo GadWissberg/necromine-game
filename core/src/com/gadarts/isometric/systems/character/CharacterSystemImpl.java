@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -77,6 +78,32 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		}
 	}
 
+	@Override
+	public boolean calculatePath(final MapGraphNode sourceNode,
+								 final MapGraphNode destinationNode,
+								 final GraphPath<MapGraphNode> outputPath) {
+		outputPath.clear();
+		return graphData.getPathFinder().searchNodePath(
+				sourceNode,
+				destinationNode,
+				graphData.getHeuristic(),
+				outputPath
+		);
+	}
+
+	@Override
+	public boolean calculatePathToCharacter(final MapGraphNode sourceNode,
+											final Entity character,
+											final MapGraphPath outputPath) {
+		outputPath.clear();
+		return graphData.getPathFinder().searchNodePathBeforeCommand(
+				sourceNode,
+				map.getNode(ComponentsMapper.characterDecal.get(character).getCellPosition(auxVector3_1)),
+				graphData.getHeuristic(),
+				outputPath
+		);
+	}
+
 	private void commandSet(final CharacterCommand command, final Entity character) {
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onNewCommandSet(command);
@@ -84,12 +111,12 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		initDestinationNode(ComponentsMapper.character.get(character), graphData.getCurrentPath().get(1));
 	}
 
-	private boolean calculatePathForCommand(final CharacterCommand command, final Entity character) {
+	public boolean calculatePathForCommand(final CharacterCommand command, final Entity character) {
 		MapGraphPath currentPath = graphData.getCurrentPath();
 		currentPath.clear();
-		MapGraphNode sourceNode = map.getNode(ComponentsMapper.decal.get(character).getCellPosition(auxVector3_1));
+		MapGraphNode sourceNode = map.getNode(ComponentsMapper.characterDecal.get(character).getCellPosition(auxVector3_1));
 		MapGraphNode destNode = command.getDestination();
-		return graphData.getPathFinder().searchNodePath(sourceNode, destNode, graphData.getHeuristic(), currentPath);
+		return calculatePath(sourceNode, destNode, currentPath);
 	}
 
 	public void destinationReached(final Entity character) {
@@ -201,7 +228,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private Direction calculateDirectionToDestination(final Entity character) {
-		Vector3 pos = auxVector3_1.set(ComponentsMapper.decal.get(character).getDecal().getPosition());
+		Vector3 pos = auxVector3_1.set(ComponentsMapper.characterDecal.get(character).getDecal().getPosition());
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		MapGraphNode destinationNode = characterComponent.getDestinationNode();
 		Vector2 destPos = destinationNode.getCenterPosition(auxVector2_2);
@@ -210,10 +237,10 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private Direction calculateDirectionToTarget(final Entity character) {
-		Vector3 pos = auxVector3_1.set(ComponentsMapper.decal.get(character).getDecal().getPosition());
+		Vector3 pos = auxVector3_1.set(ComponentsMapper.characterDecal.get(character).getDecal().getPosition());
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		Entity target = characterComponent.getTarget();
-		MapGraphNode targetNode = map.getNode(ComponentsMapper.decal.get(target).getDecal().getPosition());
+		MapGraphNode targetNode = map.getNode(ComponentsMapper.characterDecal.get(target).getDecal().getPosition());
 		Vector2 destPos = targetNode.getCenterPosition(auxVector2_2);
 		Vector2 directionToDest = destPos.sub(map.getNode(pos).getCenterPosition(auxVector2_1)).nor();
 		return Direction.findDirection(directionToDest);
@@ -269,7 +296,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			soundPlayer.playRandomSound(Assets.Sounds.STEP_1, Assets.Sounds.STEP_2, Assets.Sounds.STEP_3);
 		}
 		MapGraphNode oldDest = characterComponent.getDestinationNode();
-		Decal decal = ComponentsMapper.decal.get(character).getDecal();
+		Decal decal = ComponentsMapper.characterDecal.get(character).getDecal();
 		if (auxVector2_1.set(decal.getX(), decal.getZ()).dst2(oldDest.getCenterPosition(auxVector2_2)) < Utils.EPSILON) {
 			reachedNodeOfPath(character, oldDest);
 		} else {
@@ -297,7 +324,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void takeStep(final Entity entity) {
 		MapGraphNode oldDest = ComponentsMapper.character.get(entity).getDestinationNode();
 		oldDest.getCenterPosition(auxVector2_2);
-		Decal decal = ComponentsMapper.decal.get(entity).getDecal();
+		Decal decal = ComponentsMapper.characterDecal.get(entity).getDecal();
 		auxVector2_1.set(decal.getX(), decal.getZ());
 		Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(CHARACTER_STEP_SIZE);
 		decal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));

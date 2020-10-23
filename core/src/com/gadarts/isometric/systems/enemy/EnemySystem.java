@@ -86,8 +86,8 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	}
 
 	private void invokeEnemyTurn(final Entity enemy) {
-		Vector3 enemyPosition = ComponentsMapper.decal.get(enemy).getCellPosition(auxVector3_2);
-		Vector3 playerPosition = ComponentsMapper.decal.get(player).getCellPosition(auxVector3_1);
+		Vector3 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getCellPosition(auxVector3_2);
+		Vector3 playerPosition = ComponentsMapper.characterDecal.get(player).getCellPosition(auxVector3_1);
 		MapGraphNode enemyNode = map.getNode((int) enemyPosition.x, (int) enemyPosition.z);
 		MapGraphNode playerNode = map.getNode((int) playerPosition.x, (int) playerPosition.z);
 		auxPath.clear();

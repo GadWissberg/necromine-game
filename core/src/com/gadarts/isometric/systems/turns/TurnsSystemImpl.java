@@ -3,6 +3,7 @@ package com.gadarts.isometric.systems.turns;
 import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
+import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.Getter;
@@ -30,6 +31,11 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 				subscriber.onEnemyTurn();
 			}
 		}
+	}
+
+	@Override
+	public void onPlayerSystemReady(final PlayerSystem playerSystem) {
+
 	}
 
 	@Override
