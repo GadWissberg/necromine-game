@@ -3,14 +3,18 @@ package com.gadarts.isometric.systems;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Plane;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.IsometricGame;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
-import com.gadarts.isometric.utils.map.MapGraph;
 import lombok.Getter;
+
+import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
 
 public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscriber>
 		implements InputSystemEventsSubscriber,
@@ -27,7 +31,6 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final float SCROLL_OFFSET = 100;
-	private static final int MAP_EDGES_OFFSET = 4;
 
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
@@ -63,12 +66,22 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	private void setCameraTranslationClamped(final Vector3 direction) {
-		auxVector3_2.set(camera.position).add(direction.x, 0, direction.z);
-		camera.position.set(
-				MathUtils.clamp(auxVector3_2.x, MAP_EDGES_OFFSET, MapGraph.MAP_SIZE - MAP_EDGES_OFFSET),
-				camera.position.y,
-				MathUtils.clamp(auxVector3_2.z, MAP_EDGES_OFFSET, MapGraph.MAP_SIZE - MAP_EDGES_OFFSET)
-		);
+		Vector3 newPosition = auxVector3_2.set(camera.position).add(direction.x, 0, direction.z);
+		float cameraX = camera.position.x;
+		float cameraZ = camera.position.z;
+		camera.position.x = clampTranslation(cameraX, newPosition.x);
+		camera.position.z = clampTranslation(cameraZ, newPosition.z);
+	}
+
+	private float clampTranslation(final float cameraFrag, final float newPositionFrag) {
+		boolean canMoveWhenCameraOnLeftEdge = cameraFrag < 0 && newPositionFrag >= cameraFrag;
+		boolean canMoveWhenCameraOnRightEdge = cameraFrag > MAP_SIZE && newPositionFrag <= cameraFrag;
+		boolean isInSideMap = cameraFrag >= 0 && cameraFrag <= MAP_SIZE;
+		if (canMoveWhenCameraOnLeftEdge || canMoveWhenCameraOnRightEdge || isInSideMap) {
+			return newPositionFrag;
+		} else {
+			return cameraFrag;
+		}
 	}
 
 	private void handleVerticalScroll() {

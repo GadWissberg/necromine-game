@@ -36,6 +36,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	private static final String LABEL_GL_VERTEX_COUNT = "Vertex count: ";
 	private static final String VISIBLE_OBJECTS_STRING = "Visible objects: ";
 	private static final String LABEL_VERSION = "Version: ";
+	private static final int VERTEX_COUNT_WARNING_LIMIT = 30000;
 
 	private final GLProfiler glProfiler;
 	private final StringBuilder stringBuilder;
@@ -76,7 +77,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		displayLine(LABEL_GL_DRAW_CALL, glProfiler.getDrawCalls());
 		displayLine(LABEL_GL_SHADER_SWITCHES, glProfiler.getShaderSwitches());
 		displayLine(LABEL_GL_TEXTURE_BINDINGS, glProfiler.getTextureBindings() - 1);
-		displayLine(LABEL_GL_VERTEX_COUNT, glProfiler.getVertexCount().total);
+		displayLine(LABEL_GL_VERTEX_COUNT, glProfiler.getVertexCount().total, VERTEX_COUNT_WARNING_LIMIT);
 		if (renderSystem != null) {
 			displayNumberOfVisibleObjects();
 		}
@@ -94,6 +95,19 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	private void displayLine(final String label, final Object value) {
 		stringBuilder.append(label);
 		stringBuilder.append(value);
+		stringBuilder.append('\n');
+	}
+
+	private void displayLine(final String label, final Object value, final int warningThreshold) {
+		stringBuilder.append(label);
+		boolean displayWarning = value instanceof Float && warningThreshold <= ((float) value);
+		if (displayWarning) {
+			stringBuilder.append("[RED]");
+		}
+		stringBuilder.append(value);
+		if (displayWarning) {
+			stringBuilder.append("[WHITE]");
+		}
 		stringBuilder.append('\n');
 	}
 
@@ -149,7 +163,9 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	@Override
 	public void onHudSystemReady(final HudSystem hudSystem) {
 		this.stage = hudSystem.getStage();
-		label = new Label(stringBuilder, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		BitmapFont font = new BitmapFont();
+		font.getData().markupEnabled = true;
+		label = new Label(stringBuilder, new Label.LabelStyle(font, Color.WHITE));
 		label.setPosition(0, Gdx.graphics.getHeight() - 90);
 		stage.addActor(label);
 		label.setZIndex(0);
