@@ -9,6 +9,7 @@ import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
+import com.gadarts.isometric.utils.map.MapGraph;
 
 public class InputSystem extends GameEntitySystem<InputSystemEventsSubscriber> implements
 		CameraSystemEventsSubscriber,
@@ -16,6 +17,10 @@ public class InputSystem extends GameEntitySystem<InputSystemEventsSubscriber> i
 		InputProcessor {
 
 	private CameraInputController debugInput;
+
+	public InputSystem(final MapGraph map) {
+		super(map);
+	}
 
 	private void initializeInputProcessor(final CameraSystem cameraSystem) {
 		InputProcessor input;

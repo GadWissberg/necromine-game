@@ -12,6 +12,7 @@ import com.gadarts.isometric.IsometricGame;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
+import com.gadarts.isometric.utils.map.MapGraph;
 import lombok.Getter;
 
 import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
@@ -41,6 +42,10 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	@Getter
 	private boolean rotateCamera;
+
+	public CameraSystemImpl(final MapGraph map) {
+		super(map);
+	}
 
 	@Override
 	public void update(final float deltaTime) {

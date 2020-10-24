@@ -9,6 +9,7 @@ import com.gadarts.isometric.systems.enemy.EnemySystem;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
 import com.gadarts.isometric.systems.enemy.ProfilerSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
@@ -38,14 +39,14 @@ public class SystemsHandler implements Disposable {
 		this.engine = engine;
 		addSystem(new CharacterSystemImpl(map, soundPlayer), CharacterSystemEventsSubscriber.class);
 		addSystem(new EnemySystem(map, soundPlayer), EnemySystemEventsSubscriber.class);
-		addSystem(new TurnsSystemImpl(), TurnsSystemEventsSubscriber.class);
+		addSystem(new TurnsSystemImpl(map), TurnsSystemEventsSubscriber.class);
 		addSystem(new PlayerSystemImpl(map), PlayerSystemEventsSubscriber.class);
-		addSystem(new RenderSystemImpl(), RenderSystemEventsSubscriber.class);
-		addSystem(new InputSystem(), InputSystemEventsSubscriber.class);
-		addSystem(new CameraSystemImpl(), CameraSystemEventsSubscriber.class);
+		addSystem(new RenderSystemImpl(map), RenderSystemEventsSubscriber.class);
+		addSystem(new InputSystem(map), InputSystemEventsSubscriber.class);
+		addSystem(new CameraSystemImpl(map), CameraSystemEventsSubscriber.class);
 		addSystem(new HudSystemImpl(map, assetManager), HudSystemEventsSubscriber.class);
-		addSystem(new ProfilerSystem(), SystemEventsSubscriber.class);
-		addSystem(new PickUpSystem(), SystemEventsSubscriber.class);
+		addSystem(new ProfilerSystem(map), SystemEventsSubscriber.class);
+		addSystem(new PickUpSystem(map), SystemEventsSubscriber.class);
 		engine.getSystems().forEach((system) -> Arrays.stream(system.getClass().getInterfaces()).forEach(i -> {
 			if (subscribersInterfaces.containsKey(i)) {
 				//noinspection unchecked

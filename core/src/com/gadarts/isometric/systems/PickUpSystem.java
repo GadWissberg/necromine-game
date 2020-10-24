@@ -7,10 +7,15 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.PickUpComponent;
+import com.gadarts.isometric.utils.map.MapGraph;
 
 public class PickUpSystem extends GameEntitySystem<SystemEventsSubscriber> {
 	private static final float PICK_UP_ROTATION = 10;
 	private ImmutableArray<Entity> pickupsEntities;
+
+	public PickUpSystem(final MapGraph map) {
+		super(map);
+	}
 
 	@Override
 	public void init() {

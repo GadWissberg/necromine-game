@@ -48,6 +48,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private ImmutableArray<Entity> characters;
 
 	public CharacterSystemImpl(final MapGraph map, final SoundPlayer soundPlayer) {
+		super(map);
 		this.graphData = new CharacterSystemGraphData(map);
 		this.map = map;
 		this.soundPlayer = soundPlayer;

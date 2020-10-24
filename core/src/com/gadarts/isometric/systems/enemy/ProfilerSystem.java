@@ -19,6 +19,7 @@ import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
+import com.gadarts.isometric.utils.map.MapGraph;
 
 /**
  * Aggregates rendering data.
@@ -45,7 +46,8 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	private Label label;
 	private RenderSystem renderSystem;
 
-	public ProfilerSystem() {
+	public ProfilerSystem(final MapGraph map) {
+		super(map);
 		glProfiler = new GLProfiler(Gdx.graphics);
 		stringBuilder = new StringBuilder();
 	}

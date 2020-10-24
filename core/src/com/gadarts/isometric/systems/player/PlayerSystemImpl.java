@@ -35,6 +35,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private CharacterSystem characterSystem;
 
 	public PlayerSystemImpl(final MapGraph map) {
+		super(map);
 		this.map = map;
 	}
 

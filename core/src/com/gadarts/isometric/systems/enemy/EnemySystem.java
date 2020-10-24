@@ -42,6 +42,7 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 
 
 	public EnemySystem(final MapGraph map, final SoundPlayer soundPlayer) {
+		super(map);
 		this.map = map;
 		this.pathFinder = new GamePathFinder(map);
 		this.heuristic = new GameHeuristic();
