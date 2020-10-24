@@ -39,7 +39,7 @@ import com.gadarts.isometric.systems.turns.Turns;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.EntityBuilder;
-import com.gadarts.isometric.utils.assets.Assets.Textures.MiscTextures;
+import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
@@ -113,7 +113,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void createArrowsEntities() {
-		Texture texture = assetManager.getTexture(MiscTextures.PATH_ARROW);
+		Texture texture = assetManager.getTexture(Assets.Textures.PATH_ARROW);
 		IntStream.range(0, ARROWS_POOL_SIZE).forEach(i -> {
 			Entity entity = EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
 					.addSimpleDecalComponent(auxVector3_1.setZero(), texture, false)

@@ -247,7 +247,7 @@ public final class MapBuilder {
 	}
 
 	private Material createTestFloorMaterial() {
-		Texture floor = assetManager.getTexture(Assets.Textures.FloorTextures.FLOOR_3);
+		Texture floor = assetManager.getTexture(Assets.Textures.FLOOR_3);
 		floor.setWrap(Repeat, Repeat);
 		Material material = new Material(TextureAttribute.createDiffuse(floor));
 		material.id = "floor_test";

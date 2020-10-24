@@ -2,7 +2,7 @@ package com.gadarts.isometric.utils.assets.definitions;
 
 import com.gadarts.isometric.utils.assets.Assets;
 
-public interface TextureDefinition {
+public interface TextureDefinition extends AssetDefinition {
 	String TEXTURES_FOLDER = "textures";
 	String TEXTURE_FORMAT = "png";
 
