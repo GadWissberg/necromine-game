@@ -201,7 +201,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	@Override
 	public void touchDown(final int screenX, final int screenY, final int button) {
 		if (cameraSystem.isCameraRotating()) return;
-		if (turnsSystem.getCurrentTurn() == Turns.PLAYER) {
+		if (turnsSystem.getCurrentTurn() == Turns.PLAYER && ComponentsMapper.character.get(playerSystem.getPlayer()).getHp() > 0) {
 			if (button == Input.Buttons.LEFT && !characterSystem.isProcessingCommand()) {
 				MapGraphNode playerNode = map.getNode(ComponentsMapper.characterDecal.get(playerSystem.getPlayer()).getCellPosition(auxVector3_1));
 				MapGraphNode cursorNode = getCursorNode();

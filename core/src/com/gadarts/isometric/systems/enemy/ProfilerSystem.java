@@ -37,6 +37,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	private static final String VISIBLE_OBJECTS_STRING = "Visible objects: ";
 	private static final String LABEL_VERSION = "Version: ";
 	private static final int VERTEX_COUNT_WARNING_LIMIT = 30000;
+	public static final String WARNING_COLOR = "[RED]";
 
 	private final GLProfiler glProfiler;
 	private final StringBuilder stringBuilder;
@@ -102,7 +103,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		stringBuilder.append(label);
 		boolean displayWarning = value instanceof Float && warningThreshold <= ((float) value);
 		if (displayWarning) {
-			stringBuilder.append("[RED]");
+			stringBuilder.append(WARNING_COLOR);
 		}
 		stringBuilder.append(value);
 		if (displayWarning) {

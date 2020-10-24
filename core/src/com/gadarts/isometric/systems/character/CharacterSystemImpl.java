@@ -194,19 +194,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				rotationData.setRotating(false);
 				SpriteType spriteType;
 				if (charComponent.isAttacking()) {
-					Entity target = charComponent.getTarget();
-					CharacterComponent targetCharacterComponent = ComponentsMapper.character.get(target);
-					targetCharacterComponent.dealDamage(1);
 					spriteType = SpriteType.ATTACK;
-					if (targetCharacterComponent.getSpriteType() != SpriteType.DIE && targetCharacterComponent.getHp() <= 0) {
-						targetCharacterComponent.setInPain(false);
-						targetCharacterComponent.setSpriteType(SpriteType.DIE);
-						soundPlayer.playSound(Assets.Sounds.ENEMY_DIE);
-					} else {
-						for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-							subscriber.onCharacterGotDamage(target);
-						}
-					}
 				} else {
 					spriteType = SpriteType.RUN;
 				}
@@ -251,17 +239,30 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		Animation<TextureAtlas.AtlasRegion> animation = animationComponent.getAnimation();
 		if (animation.isAnimationFinished(animationComponent.getStateTime())) {
 			commandDone(character);
-		} else if (animation.getKeyFrameIndex(animationComponent.getStateTime()) == 1) {
+		}
+	}
+
+	private void applyDamageToCharacter(final Entity character) {
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		characterComponent.dealDamage(1);
+		if (characterComponent.getHp() <= 0) {
+			characterComponent.setInPain(false);
+			characterComponent.setSpriteType(SpriteType.DIE);
+			soundPlayer.playSound(Assets.Sounds.ENEMY_DIE);
+		} else {
 			applyTargetToDisplayPain(character);
+			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+				subscriber.onCharacterGotDamage(character);
+			}
+			if (characterComponent.getHp() > 0) {
+				characterComponent.setInPain(true);
+			}
 		}
 	}
 
 	private void applyTargetToDisplayPain(final Entity character) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		CharacterComponent targetCharacterComponent = ComponentsMapper.character.get(characterComponent.getTarget());
-		if (targetCharacterComponent.getHp() > 0) {
-			targetCharacterComponent.setSpriteType(SpriteType.PAIN);
-		}
+		characterComponent.setSpriteType(SpriteType.PAIN);
 	}
 
 	@Override
@@ -285,6 +286,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		} else if (characterComponent.getSpriteType() == SpriteType.ATTACK) {
 			if (newFrame.index == 1) {
 				soundPlayer.playSound(Assets.Sounds.ATTACK_CLAW);
+				applyDamageToCharacter(characterComponent.getTarget());
 			}
 		}
 	}
