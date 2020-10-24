@@ -108,7 +108,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void createAttackNodesForFutureUse() {
-		attackNodeModel = createAttackNodeModel();
+		attackNodeModel = createAttackNodeModelTest();
 		createAttackNodesEntities();
 	}
 
@@ -130,7 +130,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 				));
 	}
 
-	private Model createAttackNodeModel() {
+	private Model createAttackNodeModelTest() {
 		ModelBuilder builder = new ModelBuilder();
 		builder.begin();
 		Material material = new Material(ColorAttribute.createDiffuse(HudSystemImpl.CURSOR_ATTACK));
@@ -201,70 +201,101 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	@Override
 	public void touchDown(final int screenX, final int screenY, final int button) {
 		if (cameraSystem.isCameraRotating()) return;
-		if (turnsSystem.getCurrentTurn() == Turns.PLAYER && ComponentsMapper.character.get(playerSystem.getPlayer()).getHp() > 0) {
+		Entity player = playerSystem.getPlayer();
+		if (turnsSystem.getCurrentTurn() == Turns.PLAYER && ComponentsMapper.character.get(player).getHp() > 0) {
 			if (button == Input.Buttons.LEFT && !characterSystem.isProcessingCommand()) {
-				MapGraphNode playerNode = map.getNode(ComponentsMapper.characterDecal.get(playerSystem.getPlayer()).getCellPosition(auxVector3_1));
-				MapGraphNode cursorNode = getCursorNode();
-				arrowsEntities.forEach(arrow -> ComponentsMapper.simpleDecal.get(arrow).setVisible(false));
-				if (plannedPath.getCount() > 0 && plannedPath.get(plannedPath.getCount() - 1).equals(cursorNode)) {
-					MapGraphNode node = map.getRayNode(screenX, screenY, cameraSystem.getCamera());
-					if (selectedAttackNode == null) {
-						Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, node);
-						if (enemyAtNode != null) {
-							enemySelected(node, enemyAtNode);
-						} else {
-							MapGraphNode selectedNode = cursorNode;
-							playerSystem.applyGoToCommand(selectedNode);
-						}
-					} else {
-						List<MapGraphNode> availableNodes = map.getAvailableNodesAroundNode(enemiesEntities, selectedAttackNode);
-						MapGraphNode selectedNode = cursorNode;
-						boolean result = false;
-						for (MapGraphNode availableNode : availableNodes) {
-							if (availableNode.equals(selectedNode)) {
-								result = true;
-								break;
-							}
-						}
-						if (!result && selectedNode.equals(selectedAttackNode) && playerNode.isConnectedNeighbour(selectedAttackNode)) {
-							result = true;
-						}
-						if (result) {
-							playerSystem.applyGoToMeleeCommand(selectedNode);
-						}
-						selectedAttackNode = null;
-						playerSystem.deactivateAttackMode();
-					}
-				} else {
-					Entity enemyFromNode = map.getEnemyFromNode(enemiesEntities, cursorNode);
-					if ((enemyFromNode != null && characterSystem.calculatePathToCharacter(playerNode, enemyFromNode, plannedPath))
-							|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath)) {
-						if (enemyFromNode != null) {
-							enemySelected(cursorNode, enemyFromNode);
-						}
-						IntStream.range(0, plannedPath.getCount()).forEach(i -> {
-							if (i < arrowsEntities.size() && i < plannedPath.getCount() - 1) {
-								MapGraphNode currentNode = plannedPath.get(i);
-								SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(arrowsEntities.get(i));
-								MapGraphNode nextNode = plannedPath.get(i + 1);
-								Vector2 directionVector = auxVector2.set(nextNode.getX(), nextNode.getY()).sub(currentNode.getX(), currentNode.getY()).nor().scl(0.5f);
-								float angle = directionVector.angle();
-								Decal decal = simpleDecalComponent.getDecal();
-								decal.getRotation().idt();
-								decal.rotateX(90);
-								decal.rotateZ(angle);
-								Vector3 pos = auxVector3_1.set(currentNode.getX() + 0.5f, 0.1f, currentNode.getY() + 0.5f);
-								decal.setPosition(pos.add(directionVector.x, 0, directionVector.y));
-								simpleDecalComponent.setVisible(true);
-							}
-						});
-					}
-				}
+				applyPlayerTurn(screenX, screenY);
 			}
 		}
 	}
 
-	private void enemySelected(MapGraphNode node, Entity enemyAtNode) {
+	private void applyPlayerTurn(final int screenX, final int screenY) {
+		MapGraphNode cursorNode = getCursorNode();
+		arrowsEntities.forEach(arrow -> ComponentsMapper.simpleDecal.get(arrow).setVisible(false));
+		if (plannedPath.getCount() > 0 && plannedPath.get(plannedPath.getCount() - 1).equals(cursorNode)) {
+			applyPlayerCommand(screenX, screenY, cursorNode);
+		} else {
+			Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, cursorNode);
+			if (calculatePathAccordingToSelection(cursorNode, enemyAtNode)) {
+				displayPathPlan(cursorNode, enemyAtNode);
+			}
+		}
+	}
+
+	private boolean calculatePathAccordingToSelection(final MapGraphNode cursorNode, final Entity enemyAtNode) {
+		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(playerSystem.getPlayer());
+		MapGraphNode playerNode = map.getNode(characterDecalComponent.getCellPosition(auxVector3_1));
+		return (enemyAtNode != null && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
+				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath);
+	}
+
+	private void displayPathPlan(final MapGraphNode cursorNode, final Entity enemyFromNode) {
+		if (enemyFromNode != null) {
+			enemySelected(cursorNode, enemyFromNode);
+		}
+		IntStream.range(0, plannedPath.getCount()).forEach(i -> {
+			if (i < arrowsEntities.size() && i < plannedPath.getCount() - 1) {
+				MapGraphNode n = plannedPath.get(i);
+				MapGraphNode next = plannedPath.get(i + 1);
+				Vector2 dirVector = auxVector2.set(next.getX(), next.getY()).sub(n.getX(), n.getY()).nor().scl(0.5f);
+				transformArrowDecal(n, dirVector, ComponentsMapper.simpleDecal.get(arrowsEntities.get(i)).getDecal());
+				ComponentsMapper.simpleDecal.get(arrowsEntities.get(i)).setVisible(true);
+			}
+		});
+	}
+
+	private void transformArrowDecal(final MapGraphNode currentNode, final Vector2 directionVector, final Decal decal) {
+		decal.getRotation().idt();
+		decal.rotateX(90);
+		decal.rotateZ(directionVector.angle());
+		Vector3 pos = auxVector3_1.set(currentNode.getX() + 0.5f, 0.1f, currentNode.getY() + 0.5f);
+		decal.setPosition(pos.add(directionVector.x, 0, directionVector.y));
+	}
+
+	private void applyPlayerCommand(final int screenX, final int screenY, final MapGraphNode cursorNode) {
+		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(playerSystem.getPlayer());
+		MapGraphNode playerNode = map.getNode(characterDecalComponent.getCellPosition(auxVector3_1));
+		MapGraphNode node = map.getRayNode(screenX, screenY, cameraSystem.getCamera());
+		if (selectedAttackNode == null) {
+			applyCommandWhenNoAttackNodeSelected(cursorNode, node);
+		} else {
+			applyPlayerAttackCommand(cursorNode, playerNode);
+		}
+	}
+
+	private void applyPlayerAttackCommand(final MapGraphNode cursorNode, final MapGraphNode playerNode) {
+		List<MapGraphNode> availableNodes = map.getAvailableNodesAroundNode(enemiesEntities, selectedAttackNode);
+		boolean result = false;
+		result = isNodeInAvailableNodes(cursorNode, availableNodes, result);
+		result |= cursorNode.equals(selectedAttackNode) && playerNode.isConnectedNeighbour(selectedAttackNode);
+		if (result) {
+			playerSystem.applyGoToMeleeCommand(cursorNode);
+		}
+		selectedAttackNode = null;
+		playerSystem.deactivateAttackMode();
+	}
+
+	private boolean isNodeInAvailableNodes(final MapGraphNode cursorNode, final List<MapGraphNode> availableNodes, boolean result) {
+		for (MapGraphNode availableNode : availableNodes) {
+			if (availableNode.equals(cursorNode)) {
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
+
+	private void applyCommandWhenNoAttackNodeSelected(final MapGraphNode cursorNode, final MapGraphNode node) {
+		Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, node);
+		if (enemyAtNode != null) {
+			enemySelected(node, enemyAtNode);
+		} else {
+			MapGraphNode selectedNode = cursorNode;
+			playerSystem.applyGoToCommand(selectedNode);
+		}
+	}
+
+	private void enemySelected(final MapGraphNode node, final Entity enemyAtNode) {
 		List<MapGraphNode> availableNodes = map.getAvailableNodesAroundNode(enemiesEntities, node);
 		if (availableNodes.size() > 0) {
 			selectedAttackNode = node;

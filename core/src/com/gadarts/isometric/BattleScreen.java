@@ -13,7 +13,6 @@ public class BattleScreen implements Screen {
 	private final PooledEngine engine;
 	private final SystemsHandler systemsHandler;
 	private final GameAssetsManager assetManager;
-	private final SoundPlayer soundPlayer;
 
 	public BattleScreen() {
 		this.engine = new PooledEngine();
@@ -21,7 +20,7 @@ public class BattleScreen implements Screen {
 		assetManager.loadGameFiles();
 		MapBuilder mapBuilder = new MapBuilder(assetManager, engine);
 		MapGraph map = mapBuilder.createAndAddTestMap();
-		soundPlayer = new SoundPlayer(assetManager);
+		SoundPlayer soundPlayer = new SoundPlayer(assetManager);
 		soundPlayer.playMusic(Assets.Melody.TEST);
 		systemsHandler = new SystemsHandler(engine, map, soundPlayer, assetManager);
 	}
