@@ -204,8 +204,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	@Override
 	public void dispose() {
-		renderBatches.getDecalBatch().dispose();
-		renderBatches.getModelBatch().dispose();
+		renderBatches.dispose();
 	}
 
 	@Override
