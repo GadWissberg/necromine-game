@@ -104,19 +104,21 @@ public final class MapBuilder {
 
 	private void addTestWalls() {
 		auxVector2_1.set(-1, -1);
-		addTestWall(auxVector3_1.setZero(), 0, auxVector2_1, auxVector2_1);
-		addTestWall(auxVector3_1.set(0, 0, 4), 90, auxVector2_1, auxVector2_1);
-		addTestWall(auxVector3_1.set(0, 0, 8), 90, auxVector2_1, auxVector2_1);
-		addTestWall(auxVector3_1.set(4, 0, 8), 180, auxVector2_1.set(0, 8), auxVector2_2.set(4, 8));
-		addTestWall(auxVector3_1.set(4, 0, 4), 270, auxVector2_1.set(4, 4), auxVector2_2.set(4, 8));
-		addTestWall(auxVector3_1.set(4, 0, 0), 270, auxVector2_1.set(4, 0), auxVector2_2.set(4, 4));
+		addTestWall(auxVector3_1.setZero(), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(0, 0, 4), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(0, 0, 8), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(4, 0, 8), 180, auxVector2_1.set(2, 8), auxVector2_2.set(4, 8), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(2, 0, 8), 180, auxVector2_1.set(0, 8), auxVector2_2.set(2, 8), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(4, 0, 4), 270, auxVector2_1.set(4, 4), auxVector2_2.set(4, 8), Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(4, 0, 0), 270, auxVector2_1.set(4, 0), auxVector2_2.set(4, 4), Assets.Models.WALL_1);
 	}
 
 	private void addTestWall(final Vector3 position,
 							 final float rotation,
 							 final Vector2 topLeft,
-							 final Vector2 bottomRight) {
-		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(Assets.Models.WALL_1));
+							 final Vector2 bottomRight,
+							 final Assets.Models model) {
+		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(model));
 		modelInstance.transform.setTranslation(position);
 		modelInstance.transform.rotate(Vector3.Y, rotation);
 		EntityBuilder.beginBuildingEntity(engine)

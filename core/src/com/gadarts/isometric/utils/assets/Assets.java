@@ -100,6 +100,7 @@ public final class Assets {
 	@Getter
 	public enum Models implements ModelDefinition {
 		WALL_1,
+		WALL_2,
 		COLT,
 		PILLAR;
 
