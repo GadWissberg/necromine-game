@@ -19,6 +19,7 @@ import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
+import com.gadarts.isometric.utils.map.MapGraphPath;
 
 import java.util.List;
 
@@ -144,10 +145,10 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
     }
 
     @Override
-    public void applyGoToCommand(final MapGraphNode selectedNode) {
+    public void applyGoToCommand(final MapGraphPath path) {
         MapGraphNode playerNode = map.getNode(ComponentsMapper.characterDecal.get(player).getDecal().getPosition());
-        if (!playerNode.equals(selectedNode)) {
-            characterSystem.applyCommand(auxCommand.init(Commands.GO_TO, selectedNode, player), player);
+        if (path.getCount() > 0 && !playerNode.equals(path.get(path.getCount() - 1))) {
+            characterSystem.applyCommand(auxCommand.init(Commands.GO_TO, path, player), player);
         }
     }
 
@@ -159,12 +160,12 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
     }
 
     @Override
-    public void applyGoToMeleeCommand(final MapGraphNode selectedNode) {
-        characterSystem.applyCommand(auxCommand.init(Commands.GO_TO_MELEE, selectedNode, player), player);
+    public void applyGoToMeleeCommand(final MapGraphPath path) {
+        characterSystem.applyCommand(auxCommand.init(Commands.GO_TO_MELEE, path, player), player);
     }
 
     @Override
-    public void applyGoToPickupCommand(MapGraphNode selectedNode) {
-        characterSystem.applyCommand(auxCommand.init(Commands.GO_TO_PICKUP, selectedNode, player), player);
+    public void applyGoToPickupCommand(MapGraphPath path) {
+        characterSystem.applyCommand(auxCommand.init(Commands.GO_TO_PICKUP, path, player), player);
     }
 }

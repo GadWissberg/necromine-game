@@ -146,17 +146,17 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
         Turns currentTurn = getSystem(TurnsSystem.class).getCurrentTurn();
         if (currentTurn == Turns.PLAYER && ComponentsMapper.character.get(player).getHp() > 0) {
             if (button == Input.Buttons.LEFT && !getSystem(CharacterSystem.class).isProcessingCommand()) {
-                applyPlayerTurn(screenX, screenY);
+                applyPlayerTurn();
             }
         }
     }
 
 
-    private void applyPlayerTurn(final int screenX, final int screenY) {
+    private void applyPlayerTurn() {
         MapGraphNode cursorNode = getCursorNode();
         MapGraphPath plannedPath = pathPlanHandler.getPlannedPath();
         if (plannedPath.getCount() > 0 && plannedPath.get(plannedPath.getCount() - 1).equals(cursorNode)) {
-            applyPlayerCommand(screenX, screenY, cursorNode);
+            applyPlayerCommand(cursorNode);
         } else {
             Entity enemyAtNode = getMap().getEnemyFromNode(enemiesEntities, cursorNode);
             if (calculatePathAccordingToSelection(cursorNode, enemyAtNode)) {
@@ -186,14 +186,13 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
     }
 
 
-    private void applyPlayerCommand(final int screenX, final int screenY, final MapGraphNode cursorNode) {
+    private void applyPlayerCommand(final MapGraphNode cursorNode) {
         pathPlanHandler.hideAllArrows();
         PlayerSystem playerSystem = getSystem(PlayerSystem.class);
         CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(playerSystem.getPlayer());
         MapGraphNode playerNode = getMap().getNode(characterDecalComponent.getCellPosition(auxVector3_1));
-        MapGraphNode node = getMap().getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
         if (attackNodesHandler.getSelectedAttackNode() == null) {
-            applyCommandWhenNoAttackNodeSelected(cursorNode, node);
+            applyCommandWhenNoAttackNodeSelected();
         } else {
             applyPlayerAttackCommand(cursorNode, playerNode);
         }
@@ -205,7 +204,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
         result = isNodeInAvailableNodes(cursorNode, getMap().getAvailableNodesAroundNode(enemiesEntities, attackNode));
         result |= cursorNode.equals(attackNode) && playerNode.isConnectedNeighbour(attackNode);
         if (result) {
-            getSystem(PlayerSystem.class).applyGoToMeleeCommand(cursorNode);
+            getSystem(PlayerSystem.class).applyGoToMeleeCommand(pathPlanHandler.getPlannedPath());
         }
         attackNodesHandler.setSelectedAttackNode(null);
         getSystem(PlayerSystem.class).deactivateAttackMode();
@@ -222,20 +221,18 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
         return result;
     }
 
-    private void applyCommandWhenNoAttackNodeSelected(final MapGraphNode cursorNode, final MapGraphNode node) {
-        Entity enemyAtNode = getMap().getEnemyFromNode(enemiesEntities, node);
-        if (enemyAtNode != null) {
-            enemySelected(node, enemyAtNode);
-        } else if (itemToPickup != null) {
-            getSystem(PlayerSystem.class).applyGoToPickupCommand(cursorNode);
+    private void applyCommandWhenNoAttackNodeSelected() {
+        MapGraphPath plannedPath = pathPlanHandler.getPlannedPath();
+        if (itemToPickup != null) {
+            getSystem(PlayerSystem.class).applyGoToPickupCommand(plannedPath);
         } else {
-            getSystem(PlayerSystem.class).applyGoToCommand(cursorNode);
+            getSystem(PlayerSystem.class).applyGoToCommand(plannedPath);
         }
     }
 
     private void enemySelected(final MapGraphNode node, final Entity enemyAtNode) {
         List<MapGraphNode> availableNodes = getMap().getAvailableNodesAroundNode(enemiesEntities, node);
-        if (availableNodes.size() > 0) {
+        if (availableNodes.isEmpty()) {
             attackNodesHandler.setSelectedAttackNode(node);
             getSystem(PlayerSystem.class).activateAttackMode(enemyAtNode, availableNodes);
         }

@@ -69,7 +69,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
      */
     @SuppressWarnings("JavaDoc")
     public void applyCommand(final CharacterCommand command, final Entity character) {
-        boolean foundPath = calculatePathForCommand(command, character);
+        boolean foundPath = command.getPath() != null;
         currentCommand = command;
         if (graphData.getCurrentPath().nodes.size > 1) {
             if (foundPath) {
@@ -111,14 +111,6 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
             subscriber.onNewCommandSet(command);
         }
         initDestinationNode(ComponentsMapper.character.get(character), graphData.getCurrentPath().get(1));
-    }
-
-    public boolean calculatePathForCommand(final CharacterCommand command, final Entity character) {
-        MapGraphPath currentPath = graphData.getCurrentPath();
-        currentPath.clear();
-        MapGraphNode sourceNode = map.getNode(ComponentsMapper.characterDecal.get(character).getCellPosition(auxVector3_1));
-        MapGraphNode destNode = command.getDestination();
-        return calculatePath(sourceNode, destNode, currentPath);
     }
 
     public void destinationReached(final Entity character) {

@@ -3,20 +3,21 @@ package com.gadarts.isometric.systems.player;
 import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.systems.turns.GameSystem;
 import com.gadarts.isometric.utils.map.MapGraphNode;
+import com.gadarts.isometric.utils.map.MapGraphPath;
 
 import java.util.List;
 
 public interface PlayerSystem extends GameSystem {
 
-	Entity getPlayer();
+    Entity getPlayer();
 
-	void activateAttackMode(Entity enemyAtNode, List<MapGraphNode> availableNodes);
+    void activateAttackMode(Entity enemyAtNode, List<MapGraphNode> availableNodes);
 
-	void applyGoToCommand(MapGraphNode selectedNode);
+    void applyGoToCommand(MapGraphPath path);
 
-	void deactivateAttackMode();
+    void deactivateAttackMode();
 
-	void applyGoToMeleeCommand(MapGraphNode selectedNode);
+    void applyGoToMeleeCommand(MapGraphPath path);
 
-	void applyGoToPickupCommand(MapGraphNode cursorNode);
+    void applyGoToPickupCommand(MapGraphPath path);
 }

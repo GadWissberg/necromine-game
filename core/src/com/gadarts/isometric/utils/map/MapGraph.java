@@ -226,7 +226,8 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
     @Override
     public void onNewCommandSet(final CharacterCommand command) {
-        currentDestination = command.getDestination();
+        MapGraphPath path = command.getPath();
+        currentDestination = path.get(path.getCount() - 1);
     }
 
     @Override

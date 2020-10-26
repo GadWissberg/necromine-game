@@ -93,7 +93,7 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 		MapGraphNode playerNode = map.getNode((int) playerPosition.x, (int) playerPosition.z);
 		auxPath.clear();
 		if (pathFinder.searchNodePathBeforeCommand(enemyNode, playerNode, heuristic, auxPath)) {
-			auxCommand.init(Commands.GO_TO_MELEE, auxPath.get(auxPath.nodes.size - 2), enemy);
+			auxCommand.init(Commands.GO_TO_MELEE, auxPath, enemy);
 			characterSystem.applyCommand(auxCommand, enemy);
 		}
 	}
