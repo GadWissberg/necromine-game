@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.EnemyComponent;
-import com.gadarts.isometric.components.PlayerComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterCommand;
 import com.gadarts.isometric.systems.character.CharacterSystem;
@@ -18,7 +17,9 @@ import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.assets.Assets;
-import com.gadarts.isometric.utils.map.*;
+import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.isometric.utils.map.MapGraphNode;
+import com.gadarts.isometric.utils.map.MapGraphPath;
 
 /**
  * Handles enemy AI.
@@ -32,20 +33,15 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	private static final MapGraphPath auxPath = new MapGraphPath();
 	private static final CharacterCommand auxCommand = new CharacterCommand();
 
-	private final GamePathFinder pathFinder;
-	private final GameHeuristic heuristic;
 	private final MapGraph map;
 	private final SoundPlayer soundPlayer;
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
-	private Entity player;
 
 
 	public EnemySystem(final MapGraph map, final SoundPlayer soundPlayer) {
 		super(map);
 		this.map = map;
-		this.pathFinder = new GamePathFinder(map);
-		this.heuristic = new GameHeuristic();
 		this.soundPlayer = soundPlayer;
 	}
 
@@ -70,7 +66,6 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
-		player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 	}
 
 
@@ -88,11 +83,16 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 
 	private void invokeEnemyTurn(final Entity enemy) {
 		Vector3 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getCellPosition(auxVector3_2);
-		Vector3 playerPosition = ComponentsMapper.characterDecal.get(player).getCellPosition(auxVector3_1);
+		Entity target = ComponentsMapper.character.get(enemy).getTarget();
 		MapGraphNode enemyNode = map.getNode((int) enemyPosition.x, (int) enemyPosition.z);
-		MapGraphNode playerNode = map.getNode((int) playerPosition.x, (int) playerPosition.z);
-		auxPath.clear();
-		if (pathFinder.searchNodePathBeforeCommand(enemyNode, playerNode, heuristic, auxPath)) {
+		applyGoToMelee(enemy, enemyNode, target);
+	}
+
+	private void applyGoToMelee(final Entity enemy,
+								final MapGraphNode enemyNode,
+								final Entity target) {
+		if (characterSystem.calculatePathToCharacter(enemyNode, target, auxPath)) {
+			auxPath.nodes.removeIndex(auxPath.getCount() - 1);
 			auxCommand.init(Commands.GO_TO_MELEE, auxPath, enemy);
 			characterSystem.applyCommand(auxCommand, enemy);
 		}

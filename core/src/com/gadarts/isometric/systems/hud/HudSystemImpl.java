@@ -232,7 +232,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
     private void enemySelected(final MapGraphNode node, final Entity enemyAtNode) {
         List<MapGraphNode> availableNodes = getMap().getAvailableNodesAroundNode(enemiesEntities, node);
-        if (availableNodes.isEmpty()) {
+        if (!availableNodes.isEmpty()) {
             attackNodesHandler.setSelectedAttackNode(node);
             getSystem(PlayerSystem.class).activateAttackMode(enemyAtNode, availableNodes);
         }
