@@ -17,4 +17,6 @@ public interface PlayerSystem extends GameSystem {
 	void deactivateAttackMode();
 
 	void applyGoToMeleeCommand(MapGraphNode selectedNode);
+
+	void applyGoToPickupCommand(MapGraphNode cursorNode);
 }

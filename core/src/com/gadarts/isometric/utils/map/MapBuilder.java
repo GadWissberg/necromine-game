@@ -84,7 +84,8 @@ public final class MapBuilder {
 		return new MapGraph(
 				engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
 				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
-				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()));
+				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()),
+				engine);
 	}
 
 	private void addObstacles() {
