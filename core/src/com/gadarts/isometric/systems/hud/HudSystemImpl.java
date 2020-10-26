@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gadarts.isometric.IsometricGame;
 import com.gadarts.isometric.components.*;
@@ -37,305 +38,317 @@ import com.gadarts.isometric.utils.map.MapGraphPath;
 import java.util.List;
 
 public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> implements
-        HudSystem,
-        InputSystemEventsSubscriber,
-        PlayerSystemEventsSubscriber,
-        CameraSystemEventsSubscriber,
-        TurnsSystemEventsSubscriber,
-        CharacterSystemEventsSubscriber {
+		HudSystem,
+		InputSystemEventsSubscriber,
+		PlayerSystemEventsSubscriber,
+		CameraSystemEventsSubscriber,
+		TurnsSystemEventsSubscriber,
+		CharacterSystemEventsSubscriber {
 
-    public static final Color CURSOR_REGULAR = Color.YELLOW;
-    static final Color CURSOR_ATTACK = Color.RED;
-    private static final Vector3 auxVector3_1 = new Vector3();
-    private static final Vector3 auxVector3_2 = new Vector3();
+	public static final Color CURSOR_REGULAR = Color.YELLOW;
+	static final Color CURSOR_ATTACK = Color.RED;
+	private static final Vector3 auxVector3_1 = new Vector3();
+	private static final Vector3 auxVector3_2 = new Vector3();
 
-    private final PathPlanHandler pathPlanHandler;
-    private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
-    private ImmutableArray<Entity> enemiesEntities;
-    private ImmutableArray<Entity> pickupEntities;
-    private ModelInstance cursorModelInstance;
-    private Stage stage;
-    private Entity currentHighLightedPickup;
-    private Entity itemToPickup;
+	private final PathPlanHandler pathPlanHandler;
+	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
+	private ImmutableArray<Entity> enemiesEntities;
+	private ImmutableArray<Entity> pickupEntities;
+	private ModelInstance cursorModelInstance;
+	private Stage stage;
+	private Entity currentHighLightedPickup;
+	private Entity itemToPickup;
 
-    public HudSystemImpl(final MapGraph map, final GameAssetsManager assetManager) {
-        super(map);
-        pathPlanHandler = new PathPlanHandler(assetManager);
-    }
+	public HudSystemImpl(final MapGraph map, final GameAssetsManager assetManager) {
+		super(map);
+		pathPlanHandler = new PathPlanHandler(assetManager);
+	}
 
-    @Override
-    public void dispose() {
-        attackNodesHandler.dispose();
-    }
+	@Override
+	public void dispose() {
+		attackNodesHandler.dispose();
+	}
 
-    @Override
-    public void addedToEngine(final Engine engine) {
-        super.addedToEngine(engine);
-        pathPlanHandler.init((PooledEngine) engine);
-        stage = new Stage(new FitViewport(IsometricGame.RESOLUTION_WIDTH, IsometricGame.RESOLUTION_HEIGHT));
-        Entity cursorEntity = engine.getEntitiesFor(Family.all(CursorComponent.class).get()).first();
-        cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
-        enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
-        pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
-        attackNodesHandler.init(getEngine());
-    }
-
-
-    @Override
-    public void mouseMoved(final int screenX, final int screenY) {
-        MapGraph map = getMap();
-        MapGraphNode newNode = map.getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
-        MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
-        if (!newNode.equals(oldNode)) {
-            cursorModelInstance.transform.setTranslation(newNode.getX(), 0, newNode.getY());
-            colorizeCursor(newNode);
-        }
-        boolean foundPickup = highlightPickupUnderMouse(screenX, screenY);
-        currentHighLightedPickup = foundPickup ? currentHighLightedPickup : null;
-    }
-
-    private boolean highlightPickupUnderMouse(final int screenX, final int screenY) {
-        Ray ray = getSystem(CameraSystem.class).getCamera().getPickRay(screenX, screenY);
-        boolean result = false;
-        for (Entity pickup : pickupEntities) {
-            result = handlePickupHighlight(ray, pickup);
-            if (result) {
-                currentHighLightedPickup = pickup;
-                break;
-            }
-        }
-        return result;
-    }
-
-    private boolean handlePickupHighlight(final Ray ray, final Entity pickup) {
-        ModelInstance mic = ComponentsMapper.modelInstance.get(pickup).getModelInstance();
-        Vector3 cen = mic.transform.getTranslation(auxVector3_1);
-        ColorAttribute attr = (ColorAttribute) mic.materials.get(0).get(ColorAttribute.Emissive);
-        if (Intersector.intersectRayBoundsFast(ray, cen, auxVector3_2.set(0.5f, 0.5f, 0.5f))) {
-            attr.color.set(1, 1, 1, 1);
-            return true;
-        } else {
-            attr.color.set(0, 0, 0, 0);
-            return false;
-        }
-    }
-
-    private void colorizeCursor(final MapGraphNode newNode) {
-        if (getMap().getEnemyFromNode(enemiesEntities, newNode) != null) {
-            setCursorColor(CURSOR_ATTACK);
-        } else {
-            setCursorColor(CURSOR_REGULAR);
-        }
-    }
-
-    private void setCursorColor(final Color color) {
-        Material material = cursorModelInstance.materials.get(0);
-        ColorAttribute colorAttribute = (ColorAttribute) material.get(ColorAttribute.Diffuse);
-        colorAttribute.color.set(color);
-    }
-
-    private MapGraphNode getCursorNode() {
-        Vector3 dest = getCursorModelInstance().transform.getTranslation(auxVector3_1);
-        return getMap().getNode((int) dest.x, (int) dest.z);
-    }
-
-    @Override
-    public void touchDown(final int screenX, final int screenY, final int button) {
-        if (getSystem(CameraSystem.class).isCameraRotating()) return;
-        Entity player = getSystem(PlayerSystem.class).getPlayer();
-        Turns currentTurn = getSystem(TurnsSystem.class).getCurrentTurn();
-        if (currentTurn == Turns.PLAYER && ComponentsMapper.character.get(player).getHp() > 0) {
-            if (button == Input.Buttons.LEFT && !getSystem(CharacterSystem.class).isProcessingCommand()) {
-                applyPlayerTurn();
-            }
-        }
-    }
+	@Override
+	public void addedToEngine(final Engine engine) {
+		super.addedToEngine(engine);
+		pathPlanHandler.init((PooledEngine) engine);
+		stage = new Stage(new FitViewport(IsometricGame.RESOLUTION_WIDTH, IsometricGame.RESOLUTION_HEIGHT));
+		Entity cursorEntity = engine.getEntitiesFor(Family.all(CursorComponent.class).get()).first();
+		cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
+		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
+		pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
+		attackNodesHandler.init(getEngine());
+	}
 
 
-    private void applyPlayerTurn() {
-        MapGraphNode cursorNode = getCursorNode();
-        MapGraphPath plannedPath = pathPlanHandler.getPlannedPath();
-        if (plannedPath.getCount() > 0 && plannedPath.get(plannedPath.getCount() - 1).equals(cursorNode)) {
-            applyPlayerCommand(cursorNode);
-        } else {
-            Entity enemyAtNode = getMap().getEnemyFromNode(enemiesEntities, cursorNode);
-            if (calculatePathAccordingToSelection(cursorNode, enemyAtNode)) {
-                pathHasCreated(cursorNode, enemyAtNode);
-            }
-        }
-    }
+	@Override
+	public void mouseMoved(final int screenX, final int screenY) {
+		MapGraph map = getMap();
+		MapGraphNode newNode = map.getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
+		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
+		if (!newNode.equals(oldNode)) {
+			cursorModelInstance.transform.setTranslation(newNode.getX(), 0, newNode.getY());
+			colorizeCursor(newNode);
+		}
+		boolean foundPickup = highlightPickupUnderMouse(screenX, screenY);
+		currentHighLightedPickup = foundPickup ? currentHighLightedPickup : null;
+	}
 
-    private void pathHasCreated(final MapGraphNode cursorNode, final Entity enemyAtNode) {
-        if (enemyAtNode != null) {
-            enemySelected(cursorNode, enemyAtNode);
-        } else if (currentHighLightedPickup != null) {
-            itemToPickup = currentHighLightedPickup;
-        }
-        pathPlanHandler.displayPathPlan();
-    }
+	private boolean highlightPickupUnderMouse(final int screenX, final int screenY) {
+		Ray ray = getSystem(CameraSystem.class).getCamera().getPickRay(screenX, screenY);
+		boolean result = false;
+		for (Entity pickup : pickupEntities) {
+			result = handlePickupHighlight(ray, pickup);
+			if (result) {
+				currentHighLightedPickup = pickup;
+				break;
+			}
+		}
+		return result;
+	}
 
-    private boolean calculatePathAccordingToSelection(final MapGraphNode cursorNode, final Entity enemyAtNode) {
-        PlayerSystem system = getSystem(PlayerSystem.class);
-        CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(system.getPlayer());
-        MapGraphNode playerNode = getMap().getNode(characterDecalComponent.getCellPosition(auxVector3_1));
-        CharacterSystem characterSystem = getSystem(CharacterSystem.class);
-        MapGraphPath plannedPath = pathPlanHandler.getPlannedPath();
-        return (enemyAtNode != null && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
-                || currentHighLightedPickup != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath)
-                || characterSystem.calculatePath(playerNode, cursorNode, plannedPath);
-    }
+	private boolean handlePickupHighlight(final Ray ray, final Entity pickup) {
+		ModelInstance mic = ComponentsMapper.modelInstance.get(pickup).getModelInstance();
+		Vector3 cen = mic.transform.getTranslation(auxVector3_1);
+		ColorAttribute attr = (ColorAttribute) mic.materials.get(0).get(ColorAttribute.Emissive);
+		if (Intersector.intersectRayBoundsFast(ray, cen, auxVector3_2.set(0.5f, 0.5f, 0.5f))) {
+			attr.color.set(1, 1, 1, 1);
+			return true;
+		} else {
+			attr.color.set(0, 0, 0, 0);
+			return false;
+		}
+	}
 
+	private void colorizeCursor(final MapGraphNode newNode) {
+		if (getMap().getEnemyFromNode(enemiesEntities, newNode) != null) {
+			setCursorColor(CURSOR_ATTACK);
+		} else {
+			setCursorColor(CURSOR_REGULAR);
+		}
+	}
 
-    private void applyPlayerCommand(final MapGraphNode cursorNode) {
-        pathPlanHandler.hideAllArrows();
-        PlayerSystem playerSystem = getSystem(PlayerSystem.class);
-        CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(playerSystem.getPlayer());
-        MapGraphNode playerNode = getMap().getNode(characterDecalComponent.getCellPosition(auxVector3_1));
-        if (attackNodesHandler.getSelectedAttackNode() == null) {
-            applyCommandWhenNoAttackNodeSelected();
-        } else {
-            applyPlayerAttackCommand(cursorNode, playerNode);
-        }
-    }
+	private void setCursorColor(final Color color) {
+		Material material = cursorModelInstance.materials.get(0);
+		ColorAttribute colorAttribute = (ColorAttribute) material.get(ColorAttribute.Diffuse);
+		colorAttribute.color.set(color);
+	}
 
-    private void applyPlayerAttackCommand(final MapGraphNode cursorNode, final MapGraphNode playerNode) {
-        MapGraphNode attackNode = attackNodesHandler.getSelectedAttackNode();
-        boolean result;
-        result = isNodeInAvailableNodes(cursorNode, getMap().getAvailableNodesAroundNode(enemiesEntities, attackNode));
-        result |= cursorNode.equals(attackNode) && playerNode.isConnectedNeighbour(attackNode);
-        if (result) {
-            getSystem(PlayerSystem.class).applyGoToMeleeCommand(pathPlanHandler.getPlannedPath());
-        }
-        attackNodesHandler.setSelectedAttackNode(null);
-        getSystem(PlayerSystem.class).deactivateAttackMode();
-    }
+	private MapGraphNode getCursorNode() {
+		Vector3 dest = getCursorModelInstance().transform.getTranslation(auxVector3_1);
+		return getMap().getNode((int) dest.x, (int) dest.z);
+	}
 
-    private boolean isNodeInAvailableNodes(final MapGraphNode cursorNode, final List<MapGraphNode> availableNodes) {
-        boolean result = false;
-        for (MapGraphNode availableNode : availableNodes) {
-            if (availableNode.equals(cursorNode)) {
-                result = true;
-                break;
-            }
-        }
-        return result;
-    }
-
-    private void applyCommandWhenNoAttackNodeSelected() {
-        MapGraphPath plannedPath = pathPlanHandler.getPlannedPath();
-        if (itemToPickup != null) {
-            getSystem(PlayerSystem.class).applyGoToPickupCommand(plannedPath);
-        } else {
-            getSystem(PlayerSystem.class).applyGoToCommand(plannedPath);
-        }
-    }
-
-    private void enemySelected(final MapGraphNode node, final Entity enemyAtNode) {
-        List<MapGraphNode> availableNodes = getMap().getAvailableNodesAroundNode(enemiesEntities, node);
-        if (!availableNodes.isEmpty()) {
-            attackNodesHandler.setSelectedAttackNode(node);
-            getSystem(PlayerSystem.class).activateAttackMode(enemyAtNode, availableNodes);
-        }
-    }
-
-    @Override
-    public void update(final float deltaTime) {
-        super.update(deltaTime);
-        stage.act();
-    }
+	@Override
+	public void touchDown(final int screenX, final int screenY, final int button) {
+		if (getSystem(CameraSystem.class).isCameraRotating()) return;
+		Entity player = getSystem(PlayerSystem.class).getPlayer();
+		Turns currentTurn = getSystem(TurnsSystem.class).getCurrentTurn();
+		if (currentTurn == Turns.PLAYER && ComponentsMapper.character.get(player).getHp() > 0) {
+			if (button == Input.Buttons.LEFT && !getSystem(CharacterSystem.class).isProcessingCommand()) {
+				applyPlayerTurn();
+			}
+		}
+	}
 
 
-    @Override
-    public void touchUp(final int screenX, final int screenY, final int button) {
+	private void applyPlayerTurn() {
+		MapGraphNode cursorNode = getCursorNode();
+		int pathSize = pathPlanHandler.getPath().getCount();
+		if (!pathPlanHandler.getPath().nodes.isEmpty() && pathPlanHandler.getPath().get(pathSize - 1).equals(cursorNode)) {
+			applyPlayerCommandAccordingToPlan(cursorNode);
+		} else {
+			planPath(cursorNode);
+		}
+	}
 
-    }
+	private void planPath(final MapGraphNode cursorNode) {
+		Entity enemyAtNode = getMap().getEnemyFromNode(enemiesEntities, cursorNode);
+		if (calculatePathAccordingToSelection(cursorNode, enemyAtNode)) {
+			MapGraphNode selectedAttackNode = attackNodesHandler.getSelectedAttackNode();
+			if (currentHighLightedPickup != null || (selectedAttackNode != null && !isNodeInAvailableNodes(cursorNode, getMap().getAvailableNodesAroundNode(enemiesEntities, selectedAttackNode)))) {
+				attackNodesHandler.reset();
+			}
+			pathHasCreated(cursorNode, enemyAtNode);
+		}
+	}
 
-    @Override
-    public void touchDragged(final int screenX, final int screenY) {
+	private void pathHasCreated(final MapGraphNode cursorNode, final Entity enemyAtNode) {
+		if (enemyAtNode != null) {
+			enemySelected(cursorNode, enemyAtNode);
+		} else if (currentHighLightedPickup != null) {
+			itemToPickup = currentHighLightedPickup;
+		}
+		pathPlanHandler.displayPathPlan();
+	}
 
-    }
-
-    @Override
-    public void onPlayerFinishedTurn() {
-
-    }
-
-    @Override
-    public void onPlayerSystemReady(final PlayerSystem playerSystem) {
-        addSystem(PlayerSystem.class, playerSystem);
-    }
-
-    @Override
-    public void onAttackModeActivated(final List<MapGraphNode> availableNodes) {
-        attackNodesHandler.onAttackModeActivated(availableNodes);
-    }
+	private boolean calculatePathAccordingToSelection(final MapGraphNode cursorNode, final Entity enemyAtNode) {
+		PlayerSystem system = getSystem(PlayerSystem.class);
+		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(system.getPlayer());
+		MapGraphNode playerNode = getMap().getNode(characterDecalComponent.getCellPosition(auxVector3_1));
+		CharacterSystem characterSystem = getSystem(CharacterSystem.class);
+		MapGraphPath plannedPath = pathPlanHandler.getPath();
+		return (enemyAtNode != null && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
+				|| currentHighLightedPickup != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath)
+				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath);
+	}
 
 
-    @Override
-    public void onAttackModeDeactivated() {
-        attackNodesHandler.onAttackModeDeactivated();
-    }
+	private void applyPlayerCommandAccordingToPlan(final MapGraphNode cursorNode) {
+		pathPlanHandler.hideAllArrows();
+		PlayerSystem playerSystem = getSystem(PlayerSystem.class);
+		CharacterDecalComponent charDecalComp = ComponentsMapper.characterDecal.get(playerSystem.getPlayer());
+		MapGraphNode playerNode = getMap().getNode(charDecalComp.getCellPosition(auxVector3_1));
+		if (attackNodesHandler.getSelectedAttackNode() == null) {
+			applyCommandWhenNoAttackNodeSelected();
+		} else {
+			applyPlayerAttackCommand(cursorNode, playerNode);
+		}
+	}
 
-    @Override
-    public void init() {
-        for (HudSystemEventsSubscriber subscriber : subscribers) {
-            subscriber.onHudSystemReady(this);
-        }
-    }
+	private void applyPlayerAttackCommand(final MapGraphNode targetNode, final MapGraphNode playerNode) {
+		MapGraphNode attackNode = attackNodesHandler.getSelectedAttackNode();
+		boolean result = targetNode.equals(attackNode);
+		result |= isNodeInAvailableNodes(targetNode, getMap().getAvailableNodesAroundNode(enemiesEntities, attackNode));
+		result |= targetNode.equals(attackNode) && playerNode.isConnectedNeighbour(attackNode);
+		if (result) {
+			if (getMap().getEnemyFromNode(enemiesEntities, targetNode) != null) {
+				Array<MapGraphNode> nodes = pathPlanHandler.getPath().nodes;
+				nodes.removeIndex(nodes.size - 1);
+			}
+			getSystem(PlayerSystem.class).applyGoToMeleeCommand(pathPlanHandler.getPath());
+		}
+		attackNodesHandler.setSelectedAttackNode(null);
+		getSystem(PlayerSystem.class).deactivateAttackMode();
+	}
 
-    @Override
-    public void onCameraSystemReady(final CameraSystem cameraSystem) {
-        addSystem(CameraSystem.class, cameraSystem);
-    }
+	private boolean isNodeInAvailableNodes(final MapGraphNode node, final List<MapGraphNode> availableNodes) {
+		boolean result = false;
+		for (MapGraphNode availableNode : availableNodes) {
+			if (availableNode.equals(node)) {
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
 
-    @Override
-    public Stage getStage() {
-        return stage;
-    }
+	private void applyCommandWhenNoAttackNodeSelected() {
+		MapGraphPath plannedPath = pathPlanHandler.getPath();
+		if (itemToPickup != null) {
+			getSystem(PlayerSystem.class).applyGoToPickupCommand(plannedPath);
+		} else {
+			getSystem(PlayerSystem.class).applyGoToCommand(plannedPath);
+		}
+	}
 
-    @Override
-    public ModelInstance getCursorModelInstance() {
-        return cursorModelInstance;
-    }
+	private void enemySelected(final MapGraphNode node, final Entity enemyAtNode) {
+		List<MapGraphNode> availableNodes = getMap().getAvailableNodesAroundNode(enemiesEntities, node);
+		if (!availableNodes.isEmpty()) {
+			attackNodesHandler.setSelectedAttackNode(node);
+			getSystem(PlayerSystem.class).activateAttackMode(enemyAtNode, availableNodes);
+		}
+	}
 
-    @Override
-    public void onEnemyTurn() {
+	@Override
+	public void update(final float deltaTime) {
+		super.update(deltaTime);
+		stage.act();
+	}
 
-    }
 
-    @Override
-    public void onPlayerTurn() {
+	@Override
+	public void touchUp(final int screenX, final int screenY, final int button) {
 
-    }
+	}
 
-    @Override
-    public void onTurnsSystemReady(final TurnsSystem turnsSystem) {
-        super.addSystem(TurnsSystem.class, turnsSystem);
-    }
+	@Override
+	public void touchDragged(final int screenX, final int screenY) {
 
-    @Override
-    public void onDestinationReached(final Entity character) {
+	}
 
-    }
+	@Override
+	public void onPlayerFinishedTurn() {
 
-    @Override
-    public void onCommandDone(final Entity character) {
+	}
 
-    }
+	@Override
+	public void onPlayerSystemReady(final PlayerSystem playerSystem) {
+		addSystem(PlayerSystem.class, playerSystem);
+	}
 
-    @Override
-    public void onNewCommandSet(final CharacterCommand command) {
+	@Override
+	public void onAttackModeActivated(final List<MapGraphNode> availableNodes) {
+		attackNodesHandler.onAttackModeActivated(availableNodes);
+	}
 
-    }
 
-    @Override
-    public void onCharacterSystemReady(final CharacterSystem characterSystem) {
-        addSystem(CharacterSystem.class, characterSystem);
-    }
+	@Override
+	public void onAttackModeDeactivated() {
+		attackNodesHandler.onAttackModeDeactivated();
+	}
 
-    @Override
-    public void onCharacterGotDamage(final Entity target) {
+	@Override
+	public void init() {
+		for (HudSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onHudSystemReady(this);
+		}
+	}
 
-    }
+	@Override
+	public void onCameraSystemReady(final CameraSystem cameraSystem) {
+		addSystem(CameraSystem.class, cameraSystem);
+	}
+
+	@Override
+	public Stage getStage() {
+		return stage;
+	}
+
+	@Override
+	public ModelInstance getCursorModelInstance() {
+		return cursorModelInstance;
+	}
+
+	@Override
+	public void onEnemyTurn() {
+
+	}
+
+	@Override
+	public void onPlayerTurn() {
+
+	}
+
+	@Override
+	public void onTurnsSystemReady(final TurnsSystem turnsSystem) {
+		super.addSystem(TurnsSystem.class, turnsSystem);
+	}
+
+	@Override
+	public void onDestinationReached(final Entity character) {
+
+	}
+
+	@Override
+	public void onCommandDone(final Entity character) {
+
+	}
+
+	@Override
+	public void onNewCommandSet(final CharacterCommand command) {
+
+	}
+
+	@Override
+	public void onCharacterSystemReady(final CharacterSystem characterSystem) {
+		addSystem(CharacterSystem.class, characterSystem);
+	}
+
+	@Override
+	public void onCharacterGotDamage(final Entity target) {
+
+	}
 
 }

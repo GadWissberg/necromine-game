@@ -26,7 +26,7 @@ public class PathPlanHandler {
 	private final List<Entity> arrowsEntities = new ArrayList<>();
 
 	@Getter
-	private final MapGraphPath plannedPath = new MapGraphPath();
+	private final MapGraphPath path = new MapGraphPath();
 
 	public PathPlanHandler(final GameAssetsManager assetManager) {
 		this.assetManager = assetManager;
@@ -48,10 +48,10 @@ public class PathPlanHandler {
 
 	void displayPathPlan() {
 		hideAllArrows();
-		IntStream.range(0, getPlannedPath().getCount()).forEach(i -> {
-			if (i < arrowsEntities.size() && i < plannedPath.getCount() - 1) {
-				MapGraphNode n = plannedPath.get(i);
-				MapGraphNode next = plannedPath.get(i + 1);
+		IntStream.range(0, getPath().getCount()).forEach(i -> {
+			if (i < arrowsEntities.size() && i < path.getCount() - 1) {
+				MapGraphNode n = path.get(i);
+				MapGraphNode next = path.get(i + 1);
 				Vector2 dirVector = auxVector2.set(next.getX(), next.getY()).sub(n.getX(), n.getY()).nor().scl(0.5f);
 				transformArrowDecal(n, dirVector, ComponentsMapper.simpleDecal.get(arrowsEntities.get(i)).getDecal());
 				ComponentsMapper.simpleDecal.get(arrowsEntities.get(i)).setVisible(true);
@@ -69,5 +69,10 @@ public class PathPlanHandler {
 
 	public void init(final PooledEngine engine) {
 		createArrowsEntities(engine);
+	}
+
+	public void resetPlan() {
+		hideAllArrows();
+		path.clear();
 	}
 }

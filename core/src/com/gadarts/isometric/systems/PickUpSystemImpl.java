@@ -3,6 +3,7 @@ package com.gadarts.isometric.systems;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
@@ -47,7 +48,8 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
     }
 
     @Override
-    public void onItemPickedUp(Entity pickup) {
-        getEngine().removeEntity(pickup);
+    public void onItemPickedUp(final Entity pickup) {
+        PooledEngine engine = (PooledEngine) getEngine();
+        engine.removeEntity(pickup);
     }
 }

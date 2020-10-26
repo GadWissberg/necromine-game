@@ -51,7 +51,7 @@ public class AttackNodesHandler implements Disposable {
 		}
 	}
 
-	private void hideAttackNodes() {
+	public void hideAttackNodes() {
 		for (Entity attackNodeEntity : attackNodesEntities) {
 			ModelInstanceComponent modelInstanceComp = ComponentsMapper.modelInstance.get(attackNodeEntity);
 			modelInstanceComp.setVisible(false);
@@ -108,5 +108,10 @@ public class AttackNodesHandler implements Disposable {
 	public void init(final Engine engine) {
 		this.engine = engine;
 		createAttackNodesForFutureUse();
+	}
+
+	public void reset() {
+		hideAttackNodes();
+		setSelectedAttackNode(null);
 	}
 }

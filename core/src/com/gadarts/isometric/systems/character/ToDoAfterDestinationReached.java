@@ -9,5 +9,5 @@ import com.gadarts.isometric.utils.map.MapGraph;
 public interface ToDoAfterDestinationReached {
     Vector3 auxVector = new Vector3();
 
-    void run(Entity character, MapGraph map, SoundPlayer soundPlayer, PickUpSystem pickUpSystem);
+    boolean run(Entity character, MapGraph map, SoundPlayer soundPlayer, PickUpSystem pickUpSystem);
 }

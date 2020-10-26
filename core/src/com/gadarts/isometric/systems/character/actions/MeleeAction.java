@@ -14,24 +14,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MeleeAction implements ToDoAfterDestinationReached {
-    private static final List<MapGraphNode> auxNodesList = new ArrayList<>();
+	private static final List<MapGraphNode> auxNodesList = new ArrayList<>();
 
-    @Override
-    public void run(Entity character, MapGraph map, SoundPlayer soundPlayer, PickUpSystem pickUpSystem) {
-        CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-        Entity target = characterComponent.getTarget();
-        if (target != null) {
-            Vector3 targetPosition = ComponentsMapper.characterDecal.get(target).getCellPosition(auxVector);
-            MapGraphNode targetNode = map.getNode(targetPosition);
-            MapGraphNode myNode = map.getNode(ComponentsMapper.characterDecal.get(character).getCellPosition(auxVector));
-            List<MapGraphNode> nearbyNodes = map.getNodesAround(myNode, auxNodesList);
-            for (MapGraphNode nearbyNode : nearbyNodes) {
-                if (nearbyNode.equals(targetNode)) {
-                    characterComponent.getRotationData().setRotating(true);
-                    characterComponent.setAttacking(true);
-                    break;
-                }
-            }
-        }
-    }
+	@Override
+	public boolean run(final Entity character,
+					   final MapGraph map,
+					   final SoundPlayer soundPlayer,
+					   final PickUpSystem pickUpSystem) {
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		Entity target = characterComponent.getTarget();
+		if (target != null) {
+			Vector3 targetPosition = ComponentsMapper.characterDecal.get(target).getCellPosition(auxVector);
+			MapGraphNode targetNode = map.getNode(targetPosition);
+			MapGraphNode myNode = map.getNode(ComponentsMapper.characterDecal.get(character).getCellPosition(auxVector));
+			List<MapGraphNode> nearbyNodes = map.getNodesAround(myNode, auxNodesList);
+			for (MapGraphNode nearbyNode : nearbyNodes) {
+				if (nearbyNode.equals(targetNode)) {
+					characterComponent.getRotationData().setRotating(true);
+					characterComponent.setAttacking(true);
+					break;
+				}
+			}
+		}
+		return false;
+	}
 }
