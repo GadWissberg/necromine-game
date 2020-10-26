@@ -69,12 +69,12 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
      */
     @SuppressWarnings("JavaDoc")
     public void applyCommand(final CharacterCommand command, final Entity character) {
-        boolean foundPath = command.getPath() != null;
         currentCommand = command;
-        if (graphData.getCurrentPath().nodes.size > 1) {
-            if (foundPath) {
-                commandSet(command, character);
-            }
+        MapGraphPath currentPath = graphData.getCurrentPath();
+        currentPath.clear();
+        currentPath.nodes.addAll(command.getPath().nodes);
+        if (currentPath.nodes.size > 1) {
+            commandSet(command, character);
         } else {
             destinationReached(character);
         }
