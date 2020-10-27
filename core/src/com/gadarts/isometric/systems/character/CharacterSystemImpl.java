@@ -15,6 +15,7 @@ import com.gadarts.isometric.components.AnimationComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterComponent.Direction;
+import com.gadarts.isometric.components.character.CharacterMode;
 import com.gadarts.isometric.components.character.CharacterRotationData;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -28,6 +29,8 @@ import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
+
+import static com.gadarts.isometric.components.character.CharacterMode.*;
 
 /**
  * Handles characters behaviour.
@@ -125,10 +128,15 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void commandDone(final Entity character) {
-		ComponentsMapper.character.get(character).setAttacking(false);
-		ComponentsMapper.character.get(character).setSpriteType(SpriteType.IDLE);
-		currentCommand = null;
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		Object additionalData = currentCommand.getAdditionalData();
+		if (characterComponent.getMode() == PICKING_UP && additionalData != null) {
+			getSystem(PickUpSystem.class).onItemPickedUp((Entity) additionalData);
+		}
 		graphData.getCurrentPath().clear();
+		characterComponent.setMode(IDLE);
+		characterComponent.setSpriteType(SpriteType.IDLE);
+		currentCommand = null;
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCommandDone(character);
 		}
@@ -138,12 +146,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onDestinationReached(character);
 		}
-		boolean commandDone = currentCommand.getType()
+		currentCommand.getType()
 				.getToDoAfterDestinationReached()
-				.run(character, map, soundPlayer, getSystem(PickUpSystem.class));
-		if (commandDone) {
-			commandDone(character);
-		}
+				.run(character, map, soundPlayer, currentCommand.getAdditionalData());
 	}
 
 	private void initDestinationNode(final CharacterComponent characterComponent,
@@ -159,8 +164,8 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			Entity character = currentCommand.getCharacter();
 			CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 			SpriteType spriteType = characterComponent.getSpriteType();
-			if (spriteType == SpriteType.ATTACK) {
-				handleAttack(character);
+			if (spriteType == SpriteType.ATTACK || spriteType == SpriteType.PICKUP) {
+				handleModeWithNonLoopingAnimation(character);
 			} else {
 				Commands type = currentCommand.getType();
 				if (type == Commands.GO_TO || type == Commands.GO_TO_MELEE || type == Commands.GO_TO_PICKUP) {
@@ -176,30 +181,34 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void handlePain(final Entity character) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		long lastDamage = characterComponent.getLastDamage();
-		if (characterComponent.isInPain() && TimeUtils.timeSinceMillis(lastDamage) > CHARACTER_PAIN_DURATION) {
-			characterComponent.setInPain(false);
+		if (characterComponent.getMode() == PAIN && TimeUtils.timeSinceMillis(lastDamage) > CHARACTER_PAIN_DURATION) {
+			characterComponent.setMode(IDLE);
 			characterComponent.setSpriteType(SpriteType.IDLE);
 		}
 	}
 
 	private void handleRotation(final Entity character, final CharacterComponent charComponent) {
-		if (charComponent.isInPain()) return;
+		if (charComponent.getMode() == CharacterMode.PAIN) return;
 		CharacterRotationData rotationData = charComponent.getRotationData();
 		if (rotationData.isRotating() && TimeUtils.timeSinceMillis(rotationData.getLastRotation()) > ROT_INTERVAL) {
 			rotationData.setLastRotation(TimeUtils.millis());
 			Direction directionToDest;
-			if (!charComponent.isAttacking()) {
-				directionToDest = calculateDirectionToDestination(character);
-			} else {
+			if (charComponent.getMode() == CharacterMode.ATTACKING) {
 				directionToDest = calculateDirectionToTarget(character);
+			} else if (charComponent.getMode() == PICKING_UP) {
+				directionToDest = charComponent.getFacingDirection();
+			} else {
+				directionToDest = calculateDirectionToDestination(character);
 			}
 			if (charComponent.getFacingDirection() != directionToDest) {
 				rotate(charComponent, directionToDest);
 			} else {
 				rotationData.setRotating(false);
 				SpriteType spriteType;
-				if (charComponent.isAttacking()) {
+				if (charComponent.getMode() == CharacterMode.ATTACKING) {
 					spriteType = SpriteType.ATTACK;
+				} else if (charComponent.getMode() == CharacterMode.PICKING_UP) {
+					spriteType = SpriteType.PICKUP;
 				} else {
 					spriteType = SpriteType.RUN;
 				}
@@ -239,11 +248,24 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		return Direction.findDirection(directionToDest);
 	}
 
-	private void handleAttack(final Entity character) {
+	private void handleModeWithNonLoopingAnimation(final Entity character) {
 		AnimationComponent animationComponent = ComponentsMapper.animation.get(character);
 		Animation<TextureAtlas.AtlasRegion> animation = animationComponent.getAnimation();
 		if (animation.isAnimationFinished(animationComponent.getStateTime())) {
-			commandDone(character);
+			SpriteType spriteType = ComponentsMapper.character.get(character).getSpriteType();
+			if (spriteType.isAddReverse()) {
+				if (animationComponent.isDoReverse()) {
+					commandDone(character);
+					animationComponent.setDoReverse(false);
+				} else {
+					animationComponent.setDoReverse(true);
+					animation.setPlayMode(Animation.PlayMode.REVERSED);
+					animation.setFrameDuration(spriteType.getAnimationDuration());
+					animationComponent.resetStateTime();
+				}
+			} else {
+				commandDone(character);
+			}
 		}
 	}
 
@@ -251,7 +273,6 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		characterComponent.dealDamage(1);
 		if (characterComponent.getHp() <= 0) {
-			characterComponent.setInPain(false);
 			characterComponent.setSpriteType(SpriteType.DIE);
 			soundPlayer.playSound(Assets.Sounds.ENEMY_DIE);
 		} else {
@@ -260,7 +281,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				subscriber.onCharacterGotDamage(character);
 			}
 			if (characterComponent.getHp() > 0) {
-				characterComponent.setInPain(true);
+				characterComponent.setMode(CharacterMode.PAIN);
 			}
 		}
 	}

@@ -18,14 +18,15 @@ public class CharacterComponent implements GameComponent {
 	@Setter(AccessLevel.NONE)
 	private MapGraphNode destinationNode;
 
-	private boolean attacking;
-	private boolean inPain;
+	private CharacterMode mode = CharacterMode.IDLE;
+
 	private Entity target;
 	private CharacterRotationData rotationData = new CharacterRotationData();
 	private SpriteType spriteType;
 	private Direction facingDirection;
 	private int hp;
 	private long lastDamage;
+	private Object modeAdditionalData;
 
 	public MapGraphNode getDestinationNode() {
 		return destinationNode;
@@ -35,10 +36,20 @@ public class CharacterComponent implements GameComponent {
 		this.destinationNode = newValue;
 	}
 
+
+	public void setMode(final CharacterMode mode) {
+		setMode(mode, null);
+	}
+
+	public void setMode(final CharacterMode mode, final Object additionalData) {
+		this.mode = mode;
+		this.modeAdditionalData = additionalData;
+	}
+
 	@Override
 	public void reset() {
 		destinationNode = null;
-		attacking = false;
+		mode = CharacterMode.IDLE;
 		target = null;
 		rotationData.reset();
 	}
@@ -51,7 +62,7 @@ public class CharacterComponent implements GameComponent {
 
 	public void dealDamage(final int damagePoints) {
 		hp -= damagePoints;
-		inPain = true;
+		mode = CharacterMode.PAIN;
 		lastDamage = TimeUtils.millis();
 	}
 

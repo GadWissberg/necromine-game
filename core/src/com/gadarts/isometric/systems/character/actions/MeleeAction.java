@@ -4,8 +4,8 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.CharacterMode;
 import com.gadarts.isometric.systems.character.ToDoAfterDestinationReached;
-import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
@@ -17,10 +17,10 @@ public class MeleeAction implements ToDoAfterDestinationReached {
 	private static final List<MapGraphNode> auxNodesList = new ArrayList<>();
 
 	@Override
-	public boolean run(final Entity character,
-					   final MapGraph map,
-					   final SoundPlayer soundPlayer,
-					   final PickUpSystem pickUpSystem) {
+	public void run(final Entity character,
+					final MapGraph map,
+					final SoundPlayer soundPlayer,
+					final Object additionalData) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		Entity target = characterComponent.getTarget();
 		if (target != null) {
@@ -31,11 +31,10 @@ public class MeleeAction implements ToDoAfterDestinationReached {
 			for (MapGraphNode nearbyNode : nearbyNodes) {
 				if (nearbyNode.equals(targetNode)) {
 					characterComponent.getRotationData().setRotating(true);
-					characterComponent.setAttacking(true);
+					characterComponent.setMode(CharacterMode.ATTACKING);
 					break;
 				}
 			}
 		}
-		return false;
 	}
 }

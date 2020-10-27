@@ -14,11 +14,22 @@ public class CharacterCommand {
 	private MapGraphPath path;
 
 	private Entity character;
+	private Object additionalData;
 
-	public CharacterCommand init(final Commands type, final MapGraphPath path, final Entity character) {
+	public CharacterCommand init(final Commands type,
+								 final MapGraphPath path,
+								 final Entity character) {
+		return init(type, path, character, null);
+	}
+
+	public CharacterCommand init(final Commands type,
+								 final MapGraphPath path,
+								 final Entity character,
+								 final Object additionalData) {
 		this.type = type;
 		this.path = path;
 		this.character = character;
+		this.additionalData = additionalData;
 		return this;
 	}
 }

@@ -237,6 +237,30 @@
             <key type="filename">../sprites/player/pain_south_east.png</key>
             <key type="filename">../sprites/player/pain_south_west.png</key>
             <key type="filename">../sprites/player/pain_west.png</key>
+            <key type="filename">../sprites/player/pickup_east0018.png</key>
+            <key type="filename">../sprites/player/pickup_east0019.png</key>
+            <key type="filename">../sprites/player/pickup_east0020.png</key>
+            <key type="filename">../sprites/player/pickup_north_0.png</key>
+            <key type="filename">../sprites/player/pickup_north_1.png</key>
+            <key type="filename">../sprites/player/pickup_north_2.png</key>
+            <key type="filename">../sprites/player/pickup_north_east_0.png</key>
+            <key type="filename">../sprites/player/pickup_north_east_1.png</key>
+            <key type="filename">../sprites/player/pickup_north_east_2.png</key>
+            <key type="filename">../sprites/player/pickup_north_west_0.png</key>
+            <key type="filename">../sprites/player/pickup_north_west_1.png</key>
+            <key type="filename">../sprites/player/pickup_north_west_2.png</key>
+            <key type="filename">../sprites/player/pickup_south_0.png</key>
+            <key type="filename">../sprites/player/pickup_south_1.png</key>
+            <key type="filename">../sprites/player/pickup_south_2.png</key>
+            <key type="filename">../sprites/player/pickup_south_east_0.png</key>
+            <key type="filename">../sprites/player/pickup_south_east_1.png</key>
+            <key type="filename">../sprites/player/pickup_south_east_2.png</key>
+            <key type="filename">../sprites/player/pickup_south_west_0.png</key>
+            <key type="filename">../sprites/player/pickup_south_west_1.png</key>
+            <key type="filename">../sprites/player/pickup_south_west_2.png</key>
+            <key type="filename">../sprites/player/pickup_west_0.png</key>
+            <key type="filename">../sprites/player/pickup_west_1.png</key>
+            <key type="filename">../sprites/player/pickup_west_2.png</key>
             <key type="filename">../sprites/player/run_east_0.png</key>
             <key type="filename">../sprites/player/run_east_1.png</key>
             <key type="filename">../sprites/player/run_east_2.png</key>
@@ -374,6 +398,30 @@
             <filename>../sprites/player/die_5.png</filename>
             <filename>../sprites/player/die_6.png</filename>
             <filename>../sprites/player/die_7.png</filename>
+            <filename>../sprites/player/pickup_east0018.png</filename>
+            <filename>../sprites/player/pickup_east0019.png</filename>
+            <filename>../sprites/player/pickup_east0020.png</filename>
+            <filename>../sprites/player/pickup_north_0.png</filename>
+            <filename>../sprites/player/pickup_north_1.png</filename>
+            <filename>../sprites/player/pickup_north_2.png</filename>
+            <filename>../sprites/player/pickup_north_east_0.png</filename>
+            <filename>../sprites/player/pickup_north_east_1.png</filename>
+            <filename>../sprites/player/pickup_north_east_2.png</filename>
+            <filename>../sprites/player/pickup_north_west_0.png</filename>
+            <filename>../sprites/player/pickup_north_west_1.png</filename>
+            <filename>../sprites/player/pickup_north_west_2.png</filename>
+            <filename>../sprites/player/pickup_south_0.png</filename>
+            <filename>../sprites/player/pickup_south_1.png</filename>
+            <filename>../sprites/player/pickup_south_2.png</filename>
+            <filename>../sprites/player/pickup_south_east_0.png</filename>
+            <filename>../sprites/player/pickup_south_east_1.png</filename>
+            <filename>../sprites/player/pickup_south_east_2.png</filename>
+            <filename>../sprites/player/pickup_south_west_0.png</filename>
+            <filename>../sprites/player/pickup_south_west_1.png</filename>
+            <filename>../sprites/player/pickup_south_west_2.png</filename>
+            <filename>../sprites/player/pickup_west_0.png</filename>
+            <filename>../sprites/player/pickup_west_1.png</filename>
+            <filename>../sprites/player/pickup_west_2.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

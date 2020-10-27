@@ -237,7 +237,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private void applyCommandWhenNoAttackNodeSelected() {
 		MapGraphPath plannedPath = pathPlanHandler.getPath();
 		if (itemToPickup != null) {
-			getSystem(PlayerSystem.class).applyGoToPickupCommand(plannedPath);
+			getSystem(PlayerSystem.class).applyGoToPickupCommand(plannedPath, itemToPickup);
 		} else {
 			getSystem(PlayerSystem.class).applyGoToCommand(plannedPath);
 		}

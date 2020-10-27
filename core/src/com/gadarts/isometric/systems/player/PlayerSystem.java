@@ -19,5 +19,5 @@ public interface PlayerSystem extends GameSystem {
 
     void applyGoToMeleeCommand(MapGraphPath path);
 
-    void applyGoToPickupCommand(MapGraphPath path);
+    void applyGoToPickupCommand(MapGraphPath path, Entity itemToPickup);
 }

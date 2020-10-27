@@ -100,19 +100,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
 		if (!ready) return;
-		Gdx.gl.glDepthMask(true);
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
 		OrthographicCamera camera = cameraSystem.getCamera();
-		ModelBatch modelBatch = renderBatches.getModelBatch();
-		modelBatch.begin(camera);
-		for (Entity entity : modelInstanceEntities) {
-			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
-			if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
-				ModelInstance modelInstance = modelInstanceComponent.getModelInstance();
-				modelBatch.render(modelInstance);
-			}
-		}
-		modelBatch.end();
+		renderModels(camera);
 		for (Entity entity : characterDecalsEntities) {
 			CharacterComponent characterComponent = ComponentsMapper.character.get(entity);
 			CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(entity);
@@ -186,6 +176,20 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		Gdx.gl.glDepthMask(false);
 		renderBatches.getDecalBatch().flush();
 		stage.draw();
+	}
+
+	private void renderModels(OrthographicCamera camera) {
+		Gdx.gl.glDepthMask(true);
+		ModelBatch modelBatch = renderBatches.getModelBatch();
+		modelBatch.begin(camera);
+		for (Entity entity : modelInstanceEntities) {
+			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
+			if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
+				ModelInstance modelInstance = modelInstanceComponent.getModelInstance();
+				modelBatch.render(modelInstance);
+			}
+		}
+		modelBatch.end();
 	}
 
 	@Override
