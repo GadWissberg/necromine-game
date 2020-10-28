@@ -15,10 +15,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Plane;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.gadarts.isometric.components.*;
@@ -48,7 +45,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Vector2 auxVector2_3 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
-
+	private static final Quaternion auxQuat = new Quaternion();
+	private static final Matrix4 auxMatrix = new Matrix4();
 	private RenderBatches renderBatches;
 	private ImmutableArray<Entity> modelInstanceEntities;
 	private ImmutableArray<Entity> characterDecalsEntities;
@@ -178,12 +176,21 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		stage.draw();
 	}
 
-	private void renderModels(OrthographicCamera camera) {
+	private void renderModels(final OrthographicCamera camera) {
 		Gdx.gl.glDepthMask(true);
 		ModelBatch modelBatch = renderBatches.getModelBatch();
 		modelBatch.begin(camera);
 		for (Entity entity : modelInstanceEntities) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
+			if (ComponentsMapper.wall.has(entity)) {
+				float angleAround = MathUtils.round(modelInstanceComponent.getModelInstance().transform.getRotation(auxQuat).getAngleAround(Vector3.Y));
+				Vector2 modelAngle = auxVector2_1.set(1, 0).setAngle(angleAround).rotate90((angleAround < 90 || angleAround > 270) || angleAround == 180 ? 1 : -1);
+				Vector2 cameraAngle = auxVector2_2.set(camera.direction.x, camera.direction.z);
+				float angle = auxVector2_3.set(1, 0).setAngle(modelAngle.angle(cameraAngle)).angle();
+				if (angle < 90 || angle > 270) {
+					continue;
+				}
+			}
 			if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
 				ModelInstance modelInstance = modelInstanceComponent.getModelInstance();
 				modelBatch.render(modelInstance);
