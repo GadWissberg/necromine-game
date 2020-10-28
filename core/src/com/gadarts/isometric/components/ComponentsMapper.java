@@ -5,6 +5,7 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 
 public class ComponentsMapper {
 	public static final ComponentMapper<ModelInstanceComponent> modelInstance = ComponentMapper.getFor(ModelInstanceComponent.class);
+	public static final ComponentMapper<PickUpComponent> pickup = ComponentMapper.getFor(PickUpComponent.class);
 	public static final ComponentMapper<WallComponent> wall = ComponentMapper.getFor(WallComponent.class);
 	public static final ComponentMapper<ObstacleComponent> obstacle = ComponentMapper.getFor(ObstacleComponent.class);
 	public static final ComponentMapper<EnemyComponent> enemy = ComponentMapper.getFor(EnemyComponent.class);

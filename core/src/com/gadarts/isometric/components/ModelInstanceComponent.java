@@ -2,8 +2,8 @@ package com.gadarts.isometric.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Pool;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,15 +13,24 @@ public class ModelInstanceComponent implements Component, Pool.Poolable {
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 
-	private final BoundingBox boundingBox = new BoundingBox();
 	private ModelInstance modelInstance;
+	private ColorAttribute colorAttribute;
+
 	@Setter
 	private boolean visible;
+
 
 	public void init(final ModelInstance modelInstance, final boolean visible) {
 		this.modelInstance = modelInstance;
 		this.visible = visible;
-		modelInstance.calculateBoundingBox(boundingBox);
+		this.colorAttribute = null;
+	}
+
+	public ColorAttribute getColorAttribute() {
+		if (colorAttribute == null) {
+			colorAttribute = modelInstance.materials.get(0).get(ColorAttribute.class, ColorAttribute.Diffuse);
+		}
+		return colorAttribute;
 	}
 
 	@Override
