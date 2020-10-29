@@ -97,6 +97,7 @@ public final class MapBuilder {
 	private void addTestObstacle(final int x, final int y) {
 		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(Assets.Models.PILLAR));
 		modelInstance.transform.setTranslation(x, 0, y);
+		modelInstance.transform.setTranslation(x, 0, y);
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true)
 				.addObstacleComponent(x, y)
