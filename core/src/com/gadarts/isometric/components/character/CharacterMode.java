@@ -4,5 +4,5 @@ public enum CharacterMode {
 	IDLE,
 	ATTACKING,
 	PAIN,
-	PICKING_UP
+	DEAD, PICKING_UP
 }

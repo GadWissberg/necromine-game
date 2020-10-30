@@ -274,6 +274,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		characterComponent.dealDamage(1);
 		if (characterComponent.getHp() <= 0) {
 			characterComponent.setSpriteType(SpriteType.DIE);
+			characterComponent.setMode(CharacterMode.DEAD);
 			soundPlayer.playSound(Assets.Sounds.ENEMY_DIE);
 		} else {
 			applyTargetToDisplayPain(character);
