@@ -45,7 +45,8 @@ public final class MapBuilder {
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
 	private final ModelBuilder modelBuilder;
-	private Model testFloorModel;
+	private Model testFloorModel3_3;
+	private Model testFloorModel1_2;
 
 	public MapBuilder(final GameAssetsManager assetManager, final PooledEngine engine) {
 		this.assetManager = assetManager;
@@ -59,7 +60,8 @@ public final class MapBuilder {
 	 * @return The map graph.
 	 */
 	public MapGraph createAndAddTestMap() {
-		testFloorModel = createTestFloorModel(modelBuilder);
+		testFloorModel3_3 = createTestFloorModel(modelBuilder, 3, 3, 3, 3);
+		testFloorModel1_2 = createTestFloorModel(modelBuilder, 1, 2, 1, 3);
 		createAndAdd3dCursor();
 		addPlayer();
 		addEnemyTest();
@@ -79,8 +81,11 @@ public final class MapBuilder {
 	private MapGraph createTestMap() {
 		addTestWalls();
 		addObstacles();
-		addTestFloor(auxVector3_1.setZero());
-		addTestFloor(auxVector3_1.set(0, 0, 4));
+		addTestFloor(auxVector3_1.setZero(), testFloorModel3_3);
+		addTestFloor(auxVector3_1.set(0, 0, 3), testFloorModel3_3);
+		addTestFloor(auxVector3_1.set(3, 0, 0), testFloorModel3_3);
+		addTestFloor(auxVector3_1.set(3, 0, 3), testFloorModel3_3);
+		addTestFloor(auxVector3_1.set(2, 0, 6), testFloorModel1_2);
 		return new MapGraph(
 				engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
 				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
@@ -89,30 +94,32 @@ public final class MapBuilder {
 	}
 
 	private void addObstacles() {
-		addTestObstacle(1, 1);
-		addTestObstacle(1, 3);
-		addTestObstacle(1, 5);
+		addTestObstacle(1, 1, Assets.Models.PILLAR, 0, true);
+		addTestObstacle(1, 3, Assets.Models.PILLAR, 0, true);
+		addTestObstacle(2, 6, Assets.Models.CAVE_SUPPORTER_3, 90, false);
 	}
 
-	private void addTestObstacle(final int x, final int y) {
-		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(Assets.Models.PILLAR));
+	private void addTestObstacle(final int x, final int y, final Assets.Models model, final int rotation, final boolean blockPath) {
+		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(model));
 		modelInstance.transform.setTranslation(x, 0, y);
-		modelInstance.transform.setTranslation(x, 0, y);
+		modelInstance.transform.rotate(Vector3.Y, rotation);
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true)
-				.addObstacleComponent(x, y)
+				.addObstacleComponent(x, y, blockPath)
 				.finishAndAddToEngine();
 	}
 
 	private void addTestWalls() {
 		auxVector2_1.set(-1, -1);
 		addTestWall(auxVector3_1.setZero(), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(4, 0, 0), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_2);
 		addTestWall(auxVector3_1.set(0, 0, 4), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(0, 0, 8), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(4, 0, 8), 180, auxVector2_1.set(2, 8), auxVector2_2.set(4, 8), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(2, 0, 8), 180, auxVector2_1.set(0, 8), auxVector2_2.set(2, 8), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(4, 0, 4), 270, auxVector2_1.set(4, 4), auxVector2_2.set(4, 8), Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(4, 0, 0), 270, auxVector2_1.set(4, 0), auxVector2_2.set(4, 4), Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(0, 0, 6), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(2, 0, 8), 90, auxVector2_1.set(1, 6), auxVector2_1.set(1, 7), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(2, 0, 6), 180, auxVector2_1.set(0, 6), auxVector2_2.set(1, 6), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(5, 0, 6), 180, auxVector2_1.set(3, 6), auxVector2_2.set(5, 8), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(6, 0, 4), 270, auxVector2_1.set(6, 4), auxVector2_2.set(6, 6), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(6, 0, 0), 270, auxVector2_1.set(6, 0), auxVector2_2.set(6, 4), Assets.Models.WALL_1);
 	}
 
 	private void addTestWall(final Vector3 position,
@@ -153,8 +160,8 @@ public final class MapBuilder {
 	}
 
 
-	private void addTestFloor(final Vector3 position) {
-		ModelInstance testFloorModelInstance = new ModelInstance(testFloorModel);
+	private void addTestFloor(final Vector3 position, Model model) {
+		ModelInstance testFloorModelInstance = new ModelInstance(model);
 		testFloorModelInstance.transform.setTranslation(position);
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(testFloorModelInstance, true)
@@ -226,26 +233,28 @@ public final class MapBuilder {
 		return modelBuilder.end();
 	}
 
-	private Model createTestFloorModel(final ModelBuilder modelBuilder) {
+	private Model createTestFloorModel(final ModelBuilder modelBuilder, int width, int height, int u, int v) {
 		modelBuilder.begin();
 		MeshPartBuilder meshPartBuilder = modelBuilder.part("test_floor",
 				GL20.GL_TRIANGLES,
 				Usage.Position | Usage.Normal | Usage.TextureCoordinates,
 				createTestFloorMaterial());
-		createRect(meshPartBuilder, 4, 4, 0, 0);
+		createRect(meshPartBuilder, width, height, u, v, 0, 0);
 		return modelBuilder.end();
 	}
 
 	private void createRect(final MeshPartBuilder meshPartBuilder,
-							final int size,
-							final int uv,
+							final int width,
+							final int height,
+							final int u,
+							final int v,
 							final float xOffset,
 							final float zOffset) {
-		meshPartBuilder.setUVRange(0, 0, uv, uv);
+		meshPartBuilder.setUVRange(0, 0, u, v);
 		meshPartBuilder.rect(
-				auxVector3_4.set(xOffset, 0, size + zOffset),
-				auxVector3_1.set(size + xOffset, 0, size + zOffset),
-				auxVector3_2.set(size + xOffset, 0, zOffset),
+				auxVector3_4.set(xOffset, 0, height + zOffset),
+				auxVector3_1.set(width + xOffset, 0, height + zOffset),
+				auxVector3_2.set(width + xOffset, 0, zOffset),
 				auxVector3_3.set(xOffset, 0, zOffset),
 				auxVector3_5.set(0, 1, 0));
 	}

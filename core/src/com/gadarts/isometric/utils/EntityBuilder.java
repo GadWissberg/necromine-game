@@ -131,9 +131,9 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addObstacleComponent(final int x, final int y) {
+	public EntityBuilder addObstacleComponent(final int x, final int y, boolean blockPath) {
 		ObstacleComponent obstacleComponent = engine.createComponent(ObstacleComponent.class);
-		obstacleComponent.init(x, y);
+		obstacleComponent.init(x, y, blockPath);
 		currentEntity.add(obstacleComponent);
 		return instance;
 	}

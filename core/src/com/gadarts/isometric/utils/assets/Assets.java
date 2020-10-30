@@ -102,7 +102,10 @@ public final class Assets {
 		WALL_1,
 		WALL_2,
 		COLT,
-		PILLAR;
+		PILLAR,
+		CAVE_SUPPORTER_1,
+		CAVE_SUPPORTER_2,
+		CAVE_SUPPORTER_3;
 
 		private final String filePath;
 

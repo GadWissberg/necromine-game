@@ -64,7 +64,9 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
         });
         obstacleEntities.forEach(obstacle -> {
             ObstacleComponent obstacleComponent = ComponentsMapper.obstacle.get(obstacle);
-            map[obstacleComponent.getY()][obstacleComponent.getX()] = 1;
+            if (obstacleComponent.isBlockPath()) {
+                map[obstacleComponent.getY()][obstacleComponent.getX()] = 1;
+            }
         });
         for (int x = 0; x < MAP_SIZE; x++) {
             for (int y = 0; y < MAP_SIZE; y++) {

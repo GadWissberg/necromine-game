@@ -6,10 +6,12 @@ import lombok.Getter;
 public class ObstacleComponent implements GameComponent {
 	private int x;
 	private int y;
+	private boolean blockPath;
 
-	public void init(final int x, final int y) {
+	public void init(final int x, final int y, final boolean blockPath) {
 		this.x = x;
 		this.y = y;
+		this.blockPath = blockPath;
 	}
 
 	@Override
