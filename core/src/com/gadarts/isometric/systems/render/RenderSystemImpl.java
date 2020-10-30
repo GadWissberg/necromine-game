@@ -156,7 +156,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
                             subscriber.onFrameChanged(entity, deltaTime, newFrame);
                         }
                     }
-                    if (characterDecalComponent.getSpriteType() == spriteType) {
+                    if (characterDecalComponent.getSpriteType() == spriteType && currentFrame != newFrame) {
                         decal.setTextureRegion(newFrame);
                     }
                 }

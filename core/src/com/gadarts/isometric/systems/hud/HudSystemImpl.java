@@ -91,15 +91,15 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 			cursorModelInstance.transform.setTranslation(newNode.getX(), 0, newNode.getY());
 			colorizeCursor(newNode);
 		}
-		boolean foundPickup = highlightPickupUnderMouse(screenX, screenY);
+		boolean foundPickup = highlightPickupUnderMouse(screenX, screenY, newNode);
 		currentHighLightedPickup = foundPickup ? currentHighLightedPickup : null;
 	}
 
-	private boolean highlightPickupUnderMouse(final int screenX, final int screenY) {
+	private boolean highlightPickupUnderMouse(final int screenX, final int screenY, final MapGraphNode currentNode) {
 		Ray ray = getSystem(CameraSystem.class).getCamera().getPickRay(screenX, screenY);
 		boolean result = false;
 		for (Entity pickup : pickupEntities) {
-			result = handlePickupHighlight(ray, pickup);
+			result = handlePickupHighlight(ray, pickup, currentNode);
 			if (result) {
 				currentHighLightedPickup = pickup;
 				break;
@@ -108,11 +108,12 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		return result;
 	}
 
-	private boolean handlePickupHighlight(final Ray ray, final Entity pickup) {
+	private boolean handlePickupHighlight(final Ray ray, final Entity pickup, final MapGraphNode currentNode) {
 		ModelInstance mic = ComponentsMapper.modelInstance.get(pickup).getModelInstance();
 		Vector3 cen = mic.transform.getTranslation(auxVector3_1);
 		ColorAttribute attr = (ColorAttribute) mic.materials.get(0).get(ColorAttribute.Emissive);
-		if (Intersector.intersectRayBoundsFast(ray, cen, auxVector3_2.set(0.5f, 0.5f, 0.5f))) {
+		boolean rayCheck = Intersector.intersectRayBoundsFast(ray, cen, auxVector3_2.set(0.5f, 0.5f, 0.5f));
+		if (rayCheck && getMap().getEnemyFromNode(enemiesEntities, currentNode) == null) {
 			attr.color.set(1, 1, 1, 1);
 			return true;
 		} else {

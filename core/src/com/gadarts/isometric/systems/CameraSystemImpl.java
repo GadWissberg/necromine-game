@@ -20,7 +20,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	public static final int VIEWPORT_WIDTH = IsometricGame.RESOLUTION_WIDTH / 75;
 	public static final int VIEWPORT_HEIGHT = IsometricGame.RESOLUTION_HEIGHT / 75;
-	public static final float SCROLL_SCALE = 0.15f;
+	public static final float SCROLL_SCALE = 0.12f;
 	public static final int CAMERA_HEIGHT = 6;
 	private static final float FAR = 100f;
 	private static final float NEAR = 0.01f;
