@@ -3,10 +3,7 @@ package com.gadarts.isometric.systems;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Plane;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.IsometricGame;
 import com.gadarts.isometric.systems.camera.CameraSystem;
@@ -23,8 +20,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	public static final int VIEWPORT_WIDTH = IsometricGame.RESOLUTION_WIDTH / 75;
 	public static final int VIEWPORT_HEIGHT = IsometricGame.RESOLUTION_HEIGHT / 75;
-	public static final float SCROLL_SCALE_HORIZONTAL = 0.04f;
-	public static final float SCROLL_SCALE_VERTICAL = 0.09f;
+	public static final float SCROLL_SCALE = 0.15f;
 	public static final int CAMERA_HEIGHT = 6;
 	private static final float FAR = 100f;
 	private static final float NEAR = 0.01f;
@@ -42,6 +38,8 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	@Getter
 	private boolean rotateCamera;
+	private float cameraHorizontalInterpolationAlpha;
+	private float cameraVerticalInterpolationAlpha;
 
 	public CameraSystemImpl(final MapGraph map) {
 		super(map);
@@ -59,23 +57,29 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	private void handleHorizontalScroll() {
 		if (lastMousePosition.x >= IsometricGame.RESOLUTION_WIDTH - SCROLL_OFFSET) {
-			horizontalTranslateCamera(SCROLL_SCALE_HORIZONTAL);
+			float diff = IsometricGame.RESOLUTION_WIDTH - SCROLL_OFFSET - lastMousePosition.x;
+			horizontalTranslateCamera(SCROLL_SCALE, diff);
 		} else if (lastMousePosition.x <= SCROLL_OFFSET) {
-			horizontalTranslateCamera(-SCROLL_SCALE_HORIZONTAL);
+			float diff = SCROLL_OFFSET - lastMousePosition.x;
+			horizontalTranslateCamera(-SCROLL_SCALE, diff);
 		}
 	}
 
-	private void horizontalTranslateCamera(final float scrollScaleHorizontal) {
+	private void horizontalTranslateCamera(final float scrollScaleHorizontal, final float diff) {
+		float abs = Math.abs(diff);
+		cameraHorizontalInterpolationAlpha = MathUtils.norm(0, SCROLL_OFFSET, abs);
 		Vector3 direction = auxVector3_1.set(camera.direction).crs(camera.up).nor().scl(scrollScaleHorizontal);
-		setCameraTranslationClamped(direction);
+		setCameraTranslationClamped(direction, cameraHorizontalInterpolationAlpha);
 	}
 
-	private void setCameraTranslationClamped(final Vector3 direction) {
+	private void setCameraTranslationClamped(final Vector3 direction, final float alpha) {
 		Vector3 newPosition = auxVector3_2.set(camera.position).add(direction.x, 0, direction.z);
 		float cameraX = camera.position.x;
 		float cameraZ = camera.position.z;
-		camera.position.x = clampTranslation(cameraX, newPosition.x);
-		camera.position.z = clampTranslation(cameraZ, newPosition.z);
+		auxVector3_1.x = clampTranslation(cameraX, newPosition.x);
+		auxVector3_1.y = camera.position.y;
+		auxVector3_1.z = clampTranslation(cameraZ, newPosition.z);
+		camera.position.interpolate(auxVector3_1, alpha, Interpolation.smooth2);
 	}
 
 	private float clampTranslation(final float cameraFrag, final float newPositionFrag) {
@@ -91,15 +95,19 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	private void handleVerticalScroll() {
 		if (lastMousePosition.y >= IsometricGame.RESOLUTION_HEIGHT - SCROLL_OFFSET) {
-			verticalTranslateCamera(-SCROLL_SCALE_VERTICAL);
+			float diff = IsometricGame.RESOLUTION_HEIGHT - SCROLL_OFFSET - lastMousePosition.y;
+			verticalTranslateCamera(-SCROLL_SCALE, diff);
 		} else if (lastMousePosition.y <= SCROLL_OFFSET) {
-			verticalTranslateCamera(SCROLL_SCALE_VERTICAL);
+			float diff = SCROLL_OFFSET - lastMousePosition.y;
+			verticalTranslateCamera(SCROLL_SCALE, diff);
 		}
 	}
 
-	private void verticalTranslateCamera(final float v) {
+	private void verticalTranslateCamera(final float v, final float diff) {
+		float abs = Math.abs(diff);
+		cameraVerticalInterpolationAlpha = MathUtils.norm(0, SCROLL_OFFSET, abs);
 		Vector3 direction = auxVector3_1.set(camera.direction).nor().scl(v);
-		setCameraTranslationClamped(direction);
+		setCameraTranslationClamped(direction, cameraVerticalInterpolationAlpha);
 	}
 
 	private OrthographicCamera createCamera() {
