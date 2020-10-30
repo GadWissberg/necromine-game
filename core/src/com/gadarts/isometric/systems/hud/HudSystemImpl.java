@@ -30,8 +30,6 @@ import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.Turns;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
-import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 
@@ -50,7 +48,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 
-	private final PathPlanHandler pathPlanHandler;
+	private PathPlanHandler pathPlanHandler;
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
 	private ImmutableArray<Entity> enemiesEntities;
 	private ImmutableArray<Entity> pickupEntities;
@@ -59,10 +57,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private Entity currentHighLightedPickup;
 	private Entity itemToPickup;
 
-	public HudSystemImpl(final MapGraph map, final GameAssetsManager assetManager) {
-		super(map);
-		pathPlanHandler = new PathPlanHandler(assetManager);
-	}
 
 	@Override
 	public void dispose() {
@@ -72,7 +66,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
-		pathPlanHandler.init((PooledEngine) engine);
 		stage = new Stage(new FitViewport(IsometricGame.RESOLUTION_WIDTH, IsometricGame.RESOLUTION_HEIGHT));
 		Entity cursorEntity = engine.getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 		cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
@@ -84,7 +77,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	@Override
 	public void mouseMoved(final int screenX, final int screenY) {
-		MapGraph map = getMap();
 		MapGraphNode newNode = map.getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
 		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
 		if (!newNode.equals(oldNode)) {
@@ -113,7 +105,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		Vector3 cen = mic.transform.getTranslation(auxVector3_1);
 		ColorAttribute attr = (ColorAttribute) mic.materials.get(0).get(ColorAttribute.Emissive);
 		boolean rayCheck = Intersector.intersectRayBoundsFast(ray, cen, auxVector3_2.set(0.5f, 0.5f, 0.5f));
-		if (rayCheck && getMap().getEnemyFromNode(enemiesEntities, currentNode) == null) {
+		if (rayCheck && map.getEnemyFromNode(enemiesEntities, currentNode) == null) {
 			attr.color.set(1, 1, 1, 1);
 			return true;
 		} else {
@@ -123,7 +115,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void colorizeCursor(final MapGraphNode newNode) {
-		if (getMap().getEnemyFromNode(enemiesEntities, newNode) != null) {
+		if (map.getEnemyFromNode(enemiesEntities, newNode) != null) {
 			setCursorColor(CURSOR_ATTACK);
 		} else {
 			setCursorColor(CURSOR_REGULAR);
@@ -138,7 +130,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private MapGraphNode getCursorNode() {
 		Vector3 dest = getCursorModelInstance().transform.getTranslation(auxVector3_1);
-		return getMap().getNode((int) dest.x, (int) dest.z);
+		return map.getNode((int) dest.x, (int) dest.z);
 	}
 
 	@Override
@@ -165,10 +157,10 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void planPath(final MapGraphNode cursorNode) {
-		Entity enemyAtNode = getMap().getEnemyFromNode(enemiesEntities, cursorNode);
+		Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, cursorNode);
 		if (calculatePathAccordingToSelection(cursorNode, enemyAtNode)) {
 			MapGraphNode selectedAttackNode = attackNodesHandler.getSelectedAttackNode();
-			if (currentHighLightedPickup != null || (selectedAttackNode != null && !isNodeInAvailableNodes(cursorNode, getMap().getAvailableNodesAroundNode(enemiesEntities, selectedAttackNode)))) {
+			if (currentHighLightedPickup != null || (selectedAttackNode != null && !isNodeInAvailableNodes(cursorNode, map.getAvailableNodesAroundNode(enemiesEntities, selectedAttackNode)))) {
 				attackNodesHandler.reset();
 			}
 			pathHasCreated(cursorNode, enemyAtNode);
@@ -187,7 +179,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private boolean calculatePathAccordingToSelection(final MapGraphNode cursorNode, final Entity enemyAtNode) {
 		PlayerSystem system = getSystem(PlayerSystem.class);
 		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(system.getPlayer());
-		MapGraphNode playerNode = getMap().getNode(characterDecalComponent.getCellPosition(auxVector3_1));
+		MapGraphNode playerNode = map.getNode(characterDecalComponent.getCellPosition(auxVector3_1));
 		CharacterSystem characterSystem = getSystem(CharacterSystem.class);
 		MapGraphPath plannedPath = pathPlanHandler.getPath();
 		return (enemyAtNode != null && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
@@ -200,7 +192,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		pathPlanHandler.hideAllArrows();
 		PlayerSystem playerSystem = getSystem(PlayerSystem.class);
 		CharacterDecalComponent charDecalComp = ComponentsMapper.characterDecal.get(playerSystem.getPlayer());
-		MapGraphNode playerNode = getMap().getNode(charDecalComp.getCellPosition(auxVector3_1));
+		MapGraphNode playerNode = map.getNode(charDecalComp.getCellPosition(auxVector3_1));
 		if (attackNodesHandler.getSelectedAttackNode() == null) {
 			applyCommandWhenNoAttackNodeSelected();
 		} else {
@@ -211,10 +203,10 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private void applyPlayerAttackCommand(final MapGraphNode targetNode, final MapGraphNode playerNode) {
 		MapGraphNode attackNode = attackNodesHandler.getSelectedAttackNode();
 		boolean result = targetNode.equals(attackNode);
-		result |= isNodeInAvailableNodes(targetNode, getMap().getAvailableNodesAroundNode(enemiesEntities, attackNode));
+		result |= isNodeInAvailableNodes(targetNode, map.getAvailableNodesAroundNode(enemiesEntities, attackNode));
 		result |= targetNode.equals(attackNode) && playerNode.isConnectedNeighbour(attackNode);
 		if (result) {
-			if (getMap().getEnemyFromNode(enemiesEntities, targetNode) != null) {
+			if (map.getEnemyFromNode(enemiesEntities, targetNode) != null) {
 				Array<MapGraphNode> nodes = pathPlanHandler.getPath().nodes;
 				nodes.removeIndex(nodes.size - 1);
 			}
@@ -245,7 +237,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void enemySelected(final MapGraphNode node, final Entity enemyAtNode) {
-		List<MapGraphNode> availableNodes = getMap().getAvailableNodesAroundNode(enemiesEntities, node);
+		List<MapGraphNode> availableNodes = map.getAvailableNodesAroundNode(enemiesEntities, node);
 		if (!availableNodes.isEmpty()) {
 			attackNodesHandler.setSelectedAttackNode(node);
 			getSystem(PlayerSystem.class).activateAttackMode(enemyAtNode, availableNodes);
@@ -290,12 +282,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		attackNodesHandler.onAttackModeDeactivated();
 	}
 
-	@Override
-	public void init() {
-		for (HudSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onHudSystemReady(this);
-		}
-	}
 
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
@@ -352,4 +338,12 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	}
 
+	@Override
+	public void activate() {
+		pathPlanHandler = new PathPlanHandler(assetsManager);
+		pathPlanHandler.init((PooledEngine) getEngine());
+		for (HudSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onHudSystemReady(this);
+		}
+	}
 }

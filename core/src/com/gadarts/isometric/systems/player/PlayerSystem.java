@@ -1,7 +1,7 @@
 package com.gadarts.isometric.systems.player;
 
 import com.badlogic.ashley.core.Entity;
-import com.gadarts.isometric.systems.turns.GameSystem;
+import com.gadarts.isometric.systems.GameSystem;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 

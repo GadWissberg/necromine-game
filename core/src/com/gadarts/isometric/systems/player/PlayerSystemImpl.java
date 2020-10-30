@@ -17,7 +17,6 @@ import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
-import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 
@@ -31,14 +30,9 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		InputSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber {
 	private static final CharacterCommand auxCommand = new CharacterCommand();
-	private final MapGraph map;
 	private Entity player;
 	private CharacterSystem characterSystem;
 
-	public PlayerSystemImpl(final MapGraph map) {
-		super(map);
-		this.map = map;
-	}
 
 	@Override
 	public void dispose() {
@@ -100,12 +94,6 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	}
 
-	@Override
-	public void init() {
-		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onPlayerSystemReady(this);
-		}
-	}
 
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
@@ -167,5 +155,12 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	@Override
 	public void applyGoToPickupCommand(final MapGraphPath path, final Entity itemToPickup) {
 		characterSystem.applyCommand(auxCommand.init(Commands.GO_TO_PICKUP, path, player, itemToPickup), player);
+	}
+
+	@Override
+	public void activate() {
+		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onPlayerSystemReady(this);
+		}
 	}
 }

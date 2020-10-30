@@ -13,21 +13,12 @@ import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.PickUpComponent;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
-import com.gadarts.isometric.utils.map.MapGraph;
 
 public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscriber> implements PickUpSystem {
 	private static final float PICK_UP_ROTATION = 10;
 	private ImmutableArray<Entity> pickupsEntities;
 	private float[] hsvArray = new float[3];
 
-	public PickUpSystemImpl(final MapGraph map) {
-		super(map);
-	}
-
-	@Override
-	public void init() {
-		subscribers.forEach(sub -> sub.onPickUpSystemReady(PickUpSystemImpl.this));
-	}
 
 	@Override
 	public void addedToEngine(final Engine engine) {
@@ -86,5 +77,10 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 	public void onItemPickedUp(final Entity pickup) {
 		PooledEngine engine = (PooledEngine) getEngine();
 		engine.removeEntity(pickup);
+	}
+
+	@Override
+	public void activate() {
+		subscribers.forEach(sub -> sub.onPickUpSystemReady(PickUpSystemImpl.this));
 	}
 }

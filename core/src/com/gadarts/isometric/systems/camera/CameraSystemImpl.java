@@ -1,4 +1,4 @@
-package com.gadarts.isometric.systems;
+package com.gadarts.isometric.systems.camera;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -6,10 +6,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.IsometricGame;
-import com.gadarts.isometric.systems.camera.CameraSystem;
-import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
+import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
-import com.gadarts.isometric.utils.map.MapGraph;
 import lombok.Getter;
 
 import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
@@ -38,12 +36,6 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	@Getter
 	private boolean rotateCamera;
-	private float cameraHorizontalInterpolationAlpha;
-	private float cameraVerticalInterpolationAlpha;
-
-	public CameraSystemImpl(final MapGraph map) {
-		super(map);
-	}
 
 	@Override
 	public void update(final float deltaTime) {
@@ -67,7 +59,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	private void horizontalTranslateCamera(final float scrollScaleHorizontal, final float diff) {
 		float abs = Math.abs(diff);
-		cameraHorizontalInterpolationAlpha = MathUtils.norm(0, SCROLL_OFFSET, abs);
+		float cameraHorizontalInterpolationAlpha = MathUtils.norm(0, SCROLL_OFFSET, abs);
 		Vector3 direction = auxVector3_1.set(camera.direction).crs(camera.up).nor().scl(scrollScaleHorizontal);
 		setCameraTranslationClamped(direction, cameraHorizontalInterpolationAlpha);
 	}
@@ -105,7 +97,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	private void verticalTranslateCamera(final float v, final float diff) {
 		float abs = Math.abs(diff);
-		cameraVerticalInterpolationAlpha = MathUtils.norm(0, SCROLL_OFFSET, abs);
+		float cameraVerticalInterpolationAlpha = MathUtils.norm(0, SCROLL_OFFSET, abs);
 		Vector3 direction = auxVector3_1.set(camera.direction).nor().scl(v);
 		setCameraTranslationClamped(direction, cameraVerticalInterpolationAlpha);
 	}
@@ -152,8 +144,15 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		}
 	}
 
+
 	@Override
-	public void init() {
+	public boolean isCameraRotating() {
+		return rotateCamera;
+	}
+
+
+	@Override
+	public void activate() {
 		camera = createCamera();
 		camera.position.set(4, CAMERA_HEIGHT, 4);
 		camera.direction.rotate(Vector3.X, -45);
@@ -161,10 +160,5 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		for (CameraSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCameraSystemReady(this);
 		}
-	}
-
-	@Override
-	public boolean isCameraRotating() {
-		return rotateCamera;
 	}
 }

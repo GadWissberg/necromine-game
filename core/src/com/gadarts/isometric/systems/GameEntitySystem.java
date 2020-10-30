@@ -2,10 +2,9 @@ package com.gadarts.isometric.systems;
 
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.gdx.utils.Disposable;
-import com.gadarts.isometric.systems.turns.GameSystem;
+import com.gadarts.isometric.utils.SoundPlayer;
+import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import com.gadarts.isometric.utils.map.MapGraph;
-import lombok.AccessLevel;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,16 +13,21 @@ import java.util.Map;
 
 public abstract class GameEntitySystem<T extends SystemEventsSubscriber> extends EntitySystem
 		implements Disposable,
-		EventsNotifier<T> {
+		EventsNotifier<T>,
+		GameSystem {
 
 	protected final List<T> subscribers = new ArrayList<>();
+	private final Map<Class<? extends GameSystem>, GameSystem> mySystems = new HashMap<>();
 
-	@Getter(AccessLevel.PROTECTED)
-	private final MapGraph map;
-	private Map<Class<? extends GameSystem>, GameSystem> mySystems = new HashMap<>();
+	protected MapGraph map;
+	protected SoundPlayer soundPlayer;
+	protected GameAssetsManager assetsManager;
 
-	public GameEntitySystem(final MapGraph map) {
+	@Override
+	public void init(final MapGraph map, final SoundPlayer soundPlayer, final GameAssetsManager assetManager) {
 		this.map = map;
+		this.soundPlayer = soundPlayer;
+		this.assetsManager = assetManager;
 	}
 
 	@Override
@@ -32,13 +36,11 @@ public abstract class GameEntitySystem<T extends SystemEventsSubscriber> extends
 		subscribers.add(sub);
 	}
 
-	public abstract void init();
-
-	protected <V> V getSystem(Class<V> systemClass) {
+	protected <V> V getSystem(final Class<V> systemClass) {
 		return (V) mySystems.get(systemClass);
 	}
 
-	protected void addSystem(Class<? extends GameSystem> systemClass, final GameSystem gameSystem) {
+	protected void addSystem(final Class<? extends GameSystem> systemClass, final GameSystem gameSystem) {
 		mySystems.put(systemClass, gameSystem);
 	}
 }

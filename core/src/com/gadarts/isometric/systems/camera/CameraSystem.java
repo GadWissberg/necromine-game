@@ -1,7 +1,7 @@
 package com.gadarts.isometric.systems.camera;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.gadarts.isometric.systems.turns.GameSystem;
+import com.gadarts.isometric.systems.GameSystem;
 
 /**
  * Handles camera logic.

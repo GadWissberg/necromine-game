@@ -15,9 +15,7 @@ import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.Commands;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
-import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.assets.Assets;
-import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 
@@ -29,21 +27,13 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 		CharacterSystemEventsSubscriber {
 
 	private static final Vector3 auxVector3_1 = new Vector3();
-	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final MapGraphPath auxPath = new MapGraphPath();
 	private static final CharacterCommand auxCommand = new CharacterCommand();
 
-	private final MapGraph map;
-	private final SoundPlayer soundPlayer;
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
 
 
-	public EnemySystem(final MapGraph map, final SoundPlayer soundPlayer) {
-		super(map);
-		this.map = map;
-		this.soundPlayer = soundPlayer;
-	}
 
 	@Override
 	public void update(final float deltaTime) {
@@ -82,7 +72,7 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	}
 
 	private void invokeEnemyTurn(final Entity enemy) {
-		Vector3 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getCellPosition(auxVector3_2);
+		Vector3 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getCellPosition(auxVector3_1);
 		Entity target = ComponentsMapper.character.get(enemy).getTarget();
 		MapGraphNode enemyNode = map.getNode((int) enemyPosition.x, (int) enemyPosition.z);
 		applyGoToMelee(enemy, enemyNode, target);
@@ -137,7 +127,7 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	}
 
 	@Override
-	public void init() {
+	public void activate() {
 
 	}
 }

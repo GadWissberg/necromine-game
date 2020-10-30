@@ -28,7 +28,6 @@ import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
-import com.gadarts.isometric.utils.map.MapGraph;
 
 /**
  * Handles rendering.
@@ -55,9 +54,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
     private Stage stage;
     private ImmutableArray<Entity> simpleDecalsEntities;
 
-    public RenderSystemImpl(final MapGraph map) {
-        super(map);
-    }
 
     private void resetDisplay(final Color color) {
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -210,11 +206,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
     }
 
     @Override
-    public void init() {
-
-    }
-
-    @Override
     public void dispose() {
         renderBatches.dispose();
     }
@@ -238,5 +229,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
     public void onHudSystemReady(final HudSystem hudSystem) {
         this.stage = hudSystem.getStage();
         systemReady();
+    }
+
+    @Override
+    public void activate() {
+
     }
 }

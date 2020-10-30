@@ -23,10 +23,8 @@ import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
-import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.assets.Assets;
-import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 
@@ -48,23 +46,22 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private static final int ROT_INTERVAL = 125;
 	private static final long CHARACTER_PAIN_DURATION = 1000;
 
-	private final MapGraph map;
-	private final CharacterSystemGraphData graphData;
-	private final SoundPlayer soundPlayer;
+	private CharacterSystemGraphData graphData;
 	private CharacterCommand currentCommand;
 	private ImmutableArray<Entity> characters;
-
-	public CharacterSystemImpl(final MapGraph map, final SoundPlayer soundPlayer) {
-		super(map);
-		this.graphData = new CharacterSystemGraphData(map);
-		this.map = map;
-		this.soundPlayer = soundPlayer;
-	}
 
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 		characters = engine.getEntitiesFor(Family.all(CharacterComponent.class).get());
+	}
+
+	@Override
+	public void activate() {
+		this.graphData = new CharacterSystemGraphData(map);
+		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onCharacterSystemReady(this);
+		}
 	}
 
 	/**
@@ -359,12 +356,6 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		decal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));
 	}
 
-	@Override
-	public void init() {
-		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onCharacterSystemReady(this);
-		}
-	}
 
 	@Override
 	public void onPickUpSystemReady(final PickUpSystem pickUpSystem) {

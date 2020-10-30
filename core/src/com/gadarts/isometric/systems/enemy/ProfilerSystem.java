@@ -19,6 +19,8 @@ import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
+import com.gadarts.isometric.utils.SoundPlayer;
+import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import com.gadarts.isometric.utils.map.MapGraph;
 
 /**
@@ -28,6 +30,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		implements RenderSystemEventsSubscriber,
 		HudSystemEventsSubscriber {
 
+	public static final String WARNING_COLOR = "[RED]";
 	private static final String LABEL_FPS = "FPS: ";
 	private static final String LABEL_UI_BATCH_RENDER_CALLS = "UI batch render calls: ";
 	private static final String LABEL_GL_CALL = "Total openGL calls: ";
@@ -38,16 +41,15 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	private static final String VISIBLE_OBJECTS_STRING = "Visible objects: ";
 	private static final String LABEL_VERSION = "Version: ";
 	private static final int VERTEX_COUNT_WARNING_LIMIT = 30000;
-	public static final String WARNING_COLOR = "[RED]";
-
-	private final GLProfiler glProfiler;
-	private final StringBuilder stringBuilder;
+	private GLProfiler glProfiler;
+	private StringBuilder stringBuilder;
 	private Stage stage;
 	private Label label;
 	private RenderSystem renderSystem;
 
-	public ProfilerSystem(final MapGraph map) {
-		super(map);
+	@Override
+	public void init(final MapGraph map, final SoundPlayer soundPlayer, final GameAssetsManager assetManager) {
+		super.init(map, soundPlayer, assetManager);
 		glProfiler = new GLProfiler(Gdx.graphics);
 		stringBuilder = new StringBuilder();
 	}
@@ -142,10 +144,6 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		return glProfiler.isEnabled();
 	}
 
-	@Override
-	public void init() {
-
-	}
 
 	@Override
 	public void dispose() {
@@ -166,6 +164,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	@Override
 	public void onHudSystemReady(final HudSystem hudSystem) {
 		this.stage = hudSystem.getStage();
+		addSystem(HudSystem.class, hudSystem);
 		BitmapFont font = new BitmapFont();
 		font.getData().markupEnabled = true;
 		label = new Label(stringBuilder, new Label.LabelStyle(font, Color.WHITE));
@@ -173,5 +172,10 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		stage.addActor(label);
 		label.setZIndex(0);
 		setGlProfiler();
+	}
+
+	@Override
+	public void activate() {
+
 	}
 }
