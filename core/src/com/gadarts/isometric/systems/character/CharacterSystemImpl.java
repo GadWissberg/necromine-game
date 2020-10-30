@@ -125,17 +125,21 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void commandDone(final Entity character) {
-		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		Object additionalData = currentCommand.getAdditionalData();
-		if (characterComponent.getMode() == PICKING_UP && additionalData != null) {
-			getSystem(PickUpSystem.class).onItemPickedUp((Entity) additionalData);
-		}
+		handlePickupOnCommandDone(character);
 		graphData.getCurrentPath().clear();
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		characterComponent.setMode(IDLE);
 		characterComponent.setSpriteType(SpriteType.IDLE);
 		currentCommand = null;
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCommandDone(character);
+		}
+	}
+
+	private void handlePickupOnCommandDone(final Entity character) {
+		CharacterMode mode = ComponentsMapper.character.get(character).getMode();
+		if (mode == PICKING_UP && currentCommand.getAdditionalData() != null) {
+			getSystem(PickUpSystem.class).onItemPickedUp((Entity) currentCommand.getAdditionalData());
 		}
 	}
 

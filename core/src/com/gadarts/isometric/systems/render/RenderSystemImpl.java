@@ -45,7 +45,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
     private static final Vector3 auxVector3_1 = new Vector3();
     private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
     private static final Quaternion auxQuat = new Quaternion();
-    private static final Matrix4 auxMatrix = new Matrix4();
     private RenderBatches renderBatches;
     private ImmutableArray<Entity> modelInstanceEntities;
     private ImmutableArray<Entity> characterDecalsEntities;
@@ -229,6 +228,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
     public void onHudSystemReady(final HudSystem hudSystem) {
         this.stage = hudSystem.getStage();
         systemReady();
+    }
+
+    @Override
+    public void onPathCreated(final boolean pathToEnemy) {
+
     }
 
     @Override

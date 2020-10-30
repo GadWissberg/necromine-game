@@ -175,6 +175,11 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	}
 
 	@Override
+	public void onPathCreated(final boolean pathToEnemy) {
+
+	}
+
+	@Override
 	public void activate() {
 
 	}

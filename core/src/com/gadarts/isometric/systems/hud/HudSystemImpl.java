@@ -10,14 +10,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gadarts.isometric.IsometricGame;
-import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.CharacterDecalComponent;
+import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.CursorComponent;
+import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
@@ -25,6 +26,8 @@ import com.gadarts.isometric.systems.character.CharacterCommand;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
+import com.gadarts.isometric.systems.pickup.PickUpSystem;
+import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.Turns;
@@ -41,7 +44,8 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		PlayerSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
 		TurnsSystemEventsSubscriber,
-		CharacterSystemEventsSubscriber {
+		CharacterSystemEventsSubscriber,
+		PickupSystemEventsSubscriber {
 
 	public static final Color CURSOR_REGULAR = Color.YELLOW;
 	static final Color CURSOR_ATTACK = Color.RED;
@@ -51,11 +55,8 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private PathPlanHandler pathPlanHandler;
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
 	private ImmutableArray<Entity> enemiesEntities;
-	private ImmutableArray<Entity> pickupEntities;
 	private ModelInstance cursorModelInstance;
 	private Stage stage;
-	private Entity currentHighLightedPickup;
-	private Entity itemToPickup;
 
 
 	@Override
@@ -70,7 +71,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		Entity cursorEntity = engine.getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 		cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
 		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
-		pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
 		attackNodesHandler.init(getEngine());
 	}
 
@@ -83,36 +83,9 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 			cursorModelInstance.transform.setTranslation(newNode.getX(), 0, newNode.getY());
 			colorizeCursor(newNode);
 		}
-		boolean foundPickup = highlightPickupUnderMouse(screenX, screenY, newNode);
-		currentHighLightedPickup = foundPickup ? currentHighLightedPickup : null;
 	}
 
-	private boolean highlightPickupUnderMouse(final int screenX, final int screenY, final MapGraphNode currentNode) {
-		Ray ray = getSystem(CameraSystem.class).getCamera().getPickRay(screenX, screenY);
-		boolean result = false;
-		for (Entity pickup : pickupEntities) {
-			result = handlePickupHighlight(ray, pickup, currentNode);
-			if (result) {
-				currentHighLightedPickup = pickup;
-				break;
-			}
-		}
-		return result;
-	}
 
-	private boolean handlePickupHighlight(final Ray ray, final Entity pickup, final MapGraphNode currentNode) {
-		ModelInstance mic = ComponentsMapper.modelInstance.get(pickup).getModelInstance();
-		Vector3 cen = mic.transform.getTranslation(auxVector3_1);
-		ColorAttribute attr = (ColorAttribute) mic.materials.get(0).get(ColorAttribute.Emissive);
-		boolean rayCheck = Intersector.intersectRayBoundsFast(ray, cen, auxVector3_2.set(0.5f, 0.5f, 0.5f));
-		if (rayCheck && map.getEnemyFromNode(enemiesEntities, currentNode) == null) {
-			attr.color.set(1, 1, 1, 1);
-			return true;
-		} else {
-			attr.color.set(0, 0, 0, 0);
-			return false;
-		}
-	}
 
 	private void colorizeCursor(final MapGraphNode newNode) {
 		if (map.getEnemyFromNode(enemiesEntities, newNode) != null) {
@@ -160,7 +133,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, cursorNode);
 		if (calculatePathAccordingToSelection(cursorNode, enemyAtNode)) {
 			MapGraphNode selectedAttackNode = attackNodesHandler.getSelectedAttackNode();
-			if (currentHighLightedPickup != null || (selectedAttackNode != null && !isNodeInAvailableNodes(cursorNode, map.getAvailableNodesAroundNode(enemiesEntities, selectedAttackNode)))) {
+			if (getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null || (selectedAttackNode != null && !isNodeInAvailableNodes(cursorNode, map.getAvailableNodesAroundNode(enemiesEntities, selectedAttackNode)))) {
 				attackNodesHandler.reset();
 			}
 			pathHasCreated(cursorNode, enemyAtNode);
@@ -170,8 +143,9 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private void pathHasCreated(final MapGraphNode cursorNode, final Entity enemyAtNode) {
 		if (enemyAtNode != null) {
 			enemySelected(cursorNode, enemyAtNode);
-		} else if (currentHighLightedPickup != null) {
-			itemToPickup = currentHighLightedPickup;
+		}
+		for (HudSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onPathCreated(enemyAtNode != null);
 		}
 		pathPlanHandler.displayPathPlan();
 	}
@@ -183,7 +157,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		CharacterSystem characterSystem = getSystem(CharacterSystem.class);
 		MapGraphPath plannedPath = pathPlanHandler.getPath();
 		return (enemyAtNode != null && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
-				|| currentHighLightedPickup != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath)
+				|| getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath)
 				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath);
 	}
 
@@ -229,6 +203,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void applyCommandWhenNoAttackNodeSelected() {
 		MapGraphPath plannedPath = pathPlanHandler.getPath();
+		Entity itemToPickup = getSystem(PickUpSystem.class).getItemToPickup();
 		if (itemToPickup != null) {
 			getSystem(PlayerSystem.class).applyGoToPickupCommand(plannedPath, itemToPickup);
 		} else {
@@ -345,5 +320,10 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		for (HudSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onHudSystemReady(this);
 		}
+	}
+
+	@Override
+	public void onPickUpSystemReady(final PickUpSystem pickUpSystem) {
+		addSystem(PickUpSystem.class, pickUpSystem);
 	}
 }

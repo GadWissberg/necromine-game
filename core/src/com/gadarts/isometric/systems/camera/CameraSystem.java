@@ -8,7 +8,13 @@ import com.gadarts.isometric.systems.GameSystem;
  */
 public interface CameraSystem extends GameSystem {
 
-    OrthographicCamera getCamera();
+	/**
+	 * @return The orthographic camera object.
+	 */
+	OrthographicCamera getCamera();
 
-    boolean isCameraRotating();
+	/**
+	 * @return Whether the camera is in the middle of the rotation process.
+	 */
+	boolean isCameraRotating();
 }

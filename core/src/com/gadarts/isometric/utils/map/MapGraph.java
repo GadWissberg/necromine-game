@@ -34,7 +34,6 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
     private final Array<MapGraphNode> nodes;
     private final ImmutableArray<Entity> characterEntities;
-    private final PooledEngine engine;
     private final ImmutableArray<Entity> pickupEntities;
 
     @Setter(AccessLevel.PACKAGE)
@@ -45,7 +44,6 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
                     final ImmutableArray<Entity> wallEntities,
                     final ImmutableArray<Entity> obstacleEntities,
                     final PooledEngine engine) {
-        this.engine = engine;
         this.pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
         this.characterEntities = characterEntities;
         this.nodes = new Array<>(MAP_SIZE * MAP_SIZE);

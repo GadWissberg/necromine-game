@@ -106,6 +106,11 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	@Override
+	public void onPathCreated(final boolean pathToEnemy) {
+
+	}
+
+	@Override
 	public void onEnemyTurn() {
 
 	}

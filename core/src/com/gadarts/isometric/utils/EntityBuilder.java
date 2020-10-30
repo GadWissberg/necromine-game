@@ -92,7 +92,7 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addSimpleDecalComponent(final Vector3 position, final Texture texture, boolean visible) {
+	public EntityBuilder addSimpleDecalComponent(final Vector3 position, final Texture texture, final boolean visible) {
 		SimpleDecalComponent simpleDecalComponent = engine.createComponent(SimpleDecalComponent.class);
 		simpleDecalComponent.init(texture, visible);
 		Decal decal = simpleDecalComponent.getDecal();
