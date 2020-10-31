@@ -10,4 +10,6 @@ public interface InputSystemEventsSubscriber extends SystemEventsSubscriber {
 	void touchUp(int screenX, int screenY, int button);
 
 	void touchDragged(int screenX, int screenY);
+
+	void inputSystemReady(InputSystem inputSystem);
 }

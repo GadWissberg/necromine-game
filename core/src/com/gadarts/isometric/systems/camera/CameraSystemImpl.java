@@ -5,19 +5,23 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
-import com.gadarts.isometric.IsometricGame;
+import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.systems.GameEntitySystem;
+import com.gadarts.isometric.systems.hud.HudSystem;
+import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
+import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import lombok.Getter;
 
 import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
 
 public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscriber>
-		implements InputSystemEventsSubscriber,
-		CameraSystem {
+		implements CameraSystem,
+		InputSystemEventsSubscriber,
+		HudSystemEventsSubscriber {
 
-	public static final int VIEWPORT_WIDTH = IsometricGame.RESOLUTION_WIDTH / 75;
-	public static final int VIEWPORT_HEIGHT = IsometricGame.RESOLUTION_HEIGHT / 75;
+	public static final int VIEWPORT_WIDTH = NecromineGame.RESOLUTION_WIDTH / 75;
+	public static final int VIEWPORT_HEIGHT = NecromineGame.RESOLUTION_HEIGHT / 75;
 	public static final float SCROLL_SCALE = 0.12f;
 	public static final int CAMERA_HEIGHT = 6;
 	private static final float FAR = 100f;
@@ -25,7 +29,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private static final Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
-	private static final float SCROLL_OFFSET = 100;
+	private static final float SCROLL_OFFSET = 50;
 
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
@@ -40,7 +44,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
-		if (!rotateCamera) {
+		if (!rotateCamera && getSystem(HudSystem.class).hasOpenWindows()) {
 			handleHorizontalScroll();
 			handleVerticalScroll();
 		}
@@ -48,8 +52,8 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	private void handleHorizontalScroll() {
-		if (lastMousePosition.x >= IsometricGame.RESOLUTION_WIDTH - SCROLL_OFFSET) {
-			float diff = IsometricGame.RESOLUTION_WIDTH - SCROLL_OFFSET - lastMousePosition.x;
+		if (lastMousePosition.x >= NecromineGame.RESOLUTION_WIDTH - SCROLL_OFFSET) {
+			float diff = NecromineGame.RESOLUTION_WIDTH - SCROLL_OFFSET - lastMousePosition.x;
 			horizontalTranslateCamera(SCROLL_SCALE, diff);
 		} else if (lastMousePosition.x <= SCROLL_OFFSET) {
 			float diff = SCROLL_OFFSET - lastMousePosition.x;
@@ -86,8 +90,8 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	private void handleVerticalScroll() {
-		if (lastMousePosition.y >= IsometricGame.RESOLUTION_HEIGHT - SCROLL_OFFSET) {
-			float diff = IsometricGame.RESOLUTION_HEIGHT - SCROLL_OFFSET - lastMousePosition.y;
+		if (lastMousePosition.y >= NecromineGame.RESOLUTION_HEIGHT - SCROLL_OFFSET) {
+			float diff = NecromineGame.RESOLUTION_HEIGHT - SCROLL_OFFSET - lastMousePosition.y;
 			verticalTranslateCamera(-SCROLL_SCALE, diff);
 		} else if (lastMousePosition.y <= SCROLL_OFFSET) {
 			float diff = SCROLL_OFFSET - lastMousePosition.y;
@@ -144,6 +148,11 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		}
 	}
 
+	@Override
+	public void inputSystemReady(final InputSystem inputSystem) {
+
+	}
+
 
 	@Override
 	public boolean isCameraRotating() {
@@ -160,5 +169,15 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		for (CameraSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCameraSystemReady(this);
 		}
+	}
+
+	@Override
+	public void onHudSystemReady(HudSystem hudSystem) {
+		addSystem(HudSystem.class, hudSystem);
+	}
+
+	@Override
+	public void onPathCreated(boolean pathToEnemy) {
+
 	}
 }

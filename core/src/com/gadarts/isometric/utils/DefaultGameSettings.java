@@ -13,4 +13,5 @@ public class DefaultGameSettings {
 	public static final Color BACKGROUND_COLOR = Color.BLACK;
 	public static final boolean MELODY_ENABLED = false;
 	public static final boolean SFX_ENABLED = false;
+	public static final boolean DISPLAY_HUD_OUTLINES = true;
 }

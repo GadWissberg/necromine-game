@@ -1,5 +1,6 @@
 package com.gadarts.isometric.utils.assets.definitions;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.gadarts.isometric.utils.assets.Assets;
 
 public interface TextureDefinition extends AssetDefinition {
@@ -7,7 +8,15 @@ public interface TextureDefinition extends AssetDefinition {
 	String TEXTURE_FORMAT = "png";
 
 	default String getFilePath() {
-		return TEXTURES_FOLDER + Assets.PATH_SEPARATOR + getName().toLowerCase() + "." + TEXTURE_FORMAT;
+		String path = TEXTURES_FOLDER + Assets.PATH_SEPARATOR + getSubFolderName() + Assets.PATH_SEPARATOR;
+		return path + getName().toLowerCase() + "." + TEXTURE_FORMAT;
+	}
+
+	String getSubFolderName();
+
+	@Override
+	default Class<Texture> getTypeClass() {
+		return Texture.class;
 	}
 
 	String getName();

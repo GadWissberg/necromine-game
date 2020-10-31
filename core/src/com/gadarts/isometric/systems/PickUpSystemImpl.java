@@ -19,6 +19,7 @@ import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
+import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
@@ -161,6 +162,11 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 
 	@Override
 	public void touchDragged(final int screenX, final int screenY) {
+
+	}
+
+	@Override
+	public void inputSystemReady(final InputSystem inputSystem) {
 
 	}
 

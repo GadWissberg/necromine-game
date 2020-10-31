@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.StringBuilder;
-import com.gadarts.isometric.IsometricGame;
+import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.HudSystem;
@@ -68,7 +68,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 			displayLine(LABEL_FPS, Gdx.graphics.getFramesPerSecond());
 			displayGlProfiling();
 			displayBatchCalls();
-			stringBuilder.append("\n").append(LABEL_VERSION).append(IsometricGame.getVersionName());
+			stringBuilder.append("\n").append(LABEL_VERSION).append(NecromineGame.getVersionName());
 			label.setText(stringBuilder);
 		}
 	}

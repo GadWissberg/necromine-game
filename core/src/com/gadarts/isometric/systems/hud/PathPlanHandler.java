@@ -33,7 +33,7 @@ public class PathPlanHandler {
 	}
 
 	private void createArrowsEntities(final PooledEngine engine) {
-		Texture texture = assetManager.getTexture(Assets.Textures.PATH_ARROW);
+		Texture texture = assetManager.getTexture(Assets.UiTextures.PATH_ARROW);
 		IntStream.range(0, ARROWS_POOL_SIZE).forEach(i -> {
 			Entity entity = EntityBuilder.beginBuildingEntity(engine)
 					.addSimpleDecalComponent(auxVector3_1.setZero(), texture, false)

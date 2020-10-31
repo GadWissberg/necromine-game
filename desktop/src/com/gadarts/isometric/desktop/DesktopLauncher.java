@@ -2,7 +2,7 @@ package com.gadarts.isometric.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.gadarts.isometric.IsometricGame;
+import com.gadarts.isometric.NecromineGame;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,16 +25,16 @@ public class DesktopLauncher {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        new LwjglApplication(new IsometricGame(versionName, versionNumber), config);
+		new LwjglApplication(new NecromineGame(versionName, versionNumber), config);
     }
 
     private static LwjglApplicationConfiguration createGameConfig() {
-        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.width = IsometricGame.RESOLUTION_WIDTH;
-        config.height = IsometricGame.RESOLUTION_HEIGHT;
-        config.resizable = false;
-        config.samples = 3;
-        return config;
-    }
+		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		config.width = NecromineGame.RESOLUTION_WIDTH;
+		config.height = NecromineGame.RESOLUTION_HEIGHT;
+		config.resizable = false;
+		config.samples = 3;
+		return config;
+	}
 
 }

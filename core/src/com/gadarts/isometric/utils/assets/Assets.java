@@ -2,11 +2,14 @@ package com.gadarts.isometric.utils.assets;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.gadarts.isometric.utils.assets.definitions.*;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Definitions of the game content.
@@ -19,7 +22,7 @@ public final class Assets {
 		MELODY(Melody.values()),
 		SOUND(Sounds.values()),
 		MODEL(Models.values()),
-		TEXTURE(Textures.values());
+		TEXTURE(TexturesTypes.getAllDefinitionsInSingleArray());
 
 		private final AssetDefinition[] assetDefinitions;
 
@@ -119,25 +122,78 @@ public final class Assets {
 		}
 	}
 
+	@Getter
+	public enum TexturesTypes {
+		Floors(FloorsTextures.values()),
+		UI(UiTextures.values());
+
+		private final TextureDefinition[] definitions;
+
+		TexturesTypes(final TextureDefinition[] definitions) {
+			this.definitions = definitions;
+		}
+
+		public static TextureDefinition[] getAllDefinitionsInSingleArray() {
+			ArrayList<TextureDefinition> list = new ArrayList<>();
+			Arrays.stream(values()).forEach(defs -> list.addAll(Arrays
+					.stream(defs.getDefinitions())
+					.collect(Collectors.toList()))
+			);
+			return list.toArray(new TextureDefinition[0]);
+		}
+	}
+
 	/**
-	 * Images - mainly floors.
+	 * Image files of floors.
 	 */
-	public enum Textures implements TextureDefinition {
+	public enum FloorsTextures implements TextureDefinition {
 		FLOOR_0,
 		FLOOR_1,
 		FLOOR_2,
-		FLOOR_3,
-		PATH_ARROW;
+		FLOOR_3;
+
+		@Override
+		public String getSubFolderName() {
+			return "floors";
+		}
 
 		@Override
 		public String getName() {
 			return name();
 		}
 
-		@Override
-		public Class<Texture> getTypeClass() {
-			return Texture.class;
+	}
+
+	/**
+	 * Image files of UI components.
+	 */
+	public enum UiTextures implements TextureDefinition {
+		PATH_ARROW,
+		BUTTON_STORAGE,
+		BUTTON_STORAGE_DOWN,
+		BUTTON_STORAGE_HOVER,
+		NINEPATCHES("ninepatches.9"), PLAYER_LAYOUT;
+
+		private final String specialFileName;
+
+		UiTextures() {
+			this(null);
 		}
+
+		UiTextures(final String specialFileName) {
+			this.specialFileName = specialFileName;
+		}
+
+		@Override
+		public String getSubFolderName() {
+			return "ui";
+		}
+
+		@Override
+		public String getName() {
+			return specialFileName != null ? specialFileName : name();
+		}
+
 	}
 
 }

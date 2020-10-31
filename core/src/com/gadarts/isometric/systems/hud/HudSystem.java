@@ -8,4 +8,6 @@ public interface HudSystem extends GameSystem {
 	Stage getStage();
 
 	ModelInstance getCursorModelInstance();
+
+	boolean hasOpenWindows();
 }
