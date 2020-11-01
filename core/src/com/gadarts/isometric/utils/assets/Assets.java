@@ -167,26 +167,38 @@ public final class Assets {
 	/**
 	 * Image files of UI components.
 	 */
+	@Getter
 	public enum UiTextures implements TextureDefinition {
 		PATH_ARROW,
-		BUTTON_STORAGE,
-		BUTTON_STORAGE_DOWN,
-		BUTTON_STORAGE_HOVER,
-		NINEPATCHES("ninepatches.9"), PLAYER_LAYOUT;
+		BUTTON_STORAGE(null, "buttons"),
+		BUTTON_STORAGE_DOWN(null, "buttons"),
+		BUTTON_STORAGE_HOVER(null, "buttons"),
+		BUTTON_CLOSE(null, "buttons"),
+		BUTTON_CLOSE_DOWN(null, "buttons"),
+		BUTTON_CLOSE_HOVER(null, "buttons"),
+		NINEPATCHES("ninepatches.9"),
+		PLAYER_LAYOUT;
 
+		public static final String SUB_FOLDER_NAME = "ui";
 		private final String specialFileName;
+		private final String subSubFolder;
 
 		UiTextures() {
 			this(null);
 		}
 
 		UiTextures(final String specialFileName) {
+			this(specialFileName, null);
+		}
+
+		UiTextures(final String specialFileName, final String subSubFolder) {
 			this.specialFileName = specialFileName;
+			this.subSubFolder = subSubFolder;
 		}
 
 		@Override
 		public String getSubFolderName() {
-			return "ui";
+			return subSubFolder != null ? SUB_FOLDER_NAME + PATH_SEPARATOR + subSubFolder : SUB_FOLDER_NAME;
 		}
 
 		@Override

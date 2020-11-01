@@ -134,9 +134,10 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 			Texture ninePatchTexture = assetsManager.getTexture(Assets.UiTextures.NINEPATCHES);
 			NinePatch patch = new NinePatch(ninePatchTexture, 12, 12, 12, 12);
 			Window.WindowStyle style = new Window.WindowStyle(new BitmapFont(), Color.BLACK, new NinePatchDrawable(patch));
-			Window window = new Window(WINDOW_NAME_STORAGE, style);
+			GameWindow window = new GameWindow(WINDOW_NAME_STORAGE, style, assetsManager, windows);
 			defineStorageWindow(window);
 			stage.addActor(window);
+			windows.put(WINDOW_NAME_STORAGE, window);
 		}
 	}
 
