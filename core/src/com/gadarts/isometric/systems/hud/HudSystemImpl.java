@@ -8,9 +8,6 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -18,14 +15,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.components.CharacterDecalComponent;
@@ -55,9 +48,7 @@ import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.badlogic.gdx.Application.LOG_DEBUG;
 
@@ -75,13 +66,11 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final float BUTTON_PADDING = 40;
-	private static final String WINDOW_NAME_STORAGE = "storage";
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
 	private PathPlanHandler pathPlanHandler;
 	private ImmutableArray<Entity> enemiesEntities;
 	private ModelInstance cursorModelInstance;
-	private Stage stage;
-	private final Map<String, Window> windows = new HashMap<>();
+	private GameStage stage;
 
 
 	@Override
@@ -92,7 +81,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
-		stage = new Stage(new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT));
+		stage = new GameStage(new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT));
 		Entity cursorEntity = engine.getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 		cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
 		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
@@ -123,39 +112,10 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 			@Override
 			public void clicked(final InputEvent event, final float x, final float y) {
 				super.clicked(event, x, y);
-				openStorageWindow();
+				stage.openStorageWindow(assetsManager);
 			}
 		});
 		table.add(button).expand().left().bottom().pad(BUTTON_PADDING);
-	}
-
-	private void openStorageWindow() {
-		if (!windows.containsKey(WINDOW_NAME_STORAGE)) {
-			Texture ninePatchTexture = assetsManager.getTexture(Assets.UiTextures.NINEPATCHES);
-			NinePatch patch = new NinePatch(ninePatchTexture, 12, 12, 12, 12);
-			Window.WindowStyle style = new Window.WindowStyle(new BitmapFont(), Color.BLACK, new NinePatchDrawable(patch));
-			GameWindow window = new GameWindow(WINDOW_NAME_STORAGE, style, assetsManager, windows);
-			defineStorageWindow(window);
-			stage.addActor(window);
-			windows.put(WINDOW_NAME_STORAGE, window);
-		}
-	}
-
-	private void defineStorageWindow(final Window window) {
-		window.setName(WINDOW_NAME_STORAGE);
-		window.setSize(100, 100);
-		addPlayerLayout(window);
-		window.pack();
-		window.setPosition(
-				stage.getWidth() / 2 - window.getPrefWidth() / 2,
-				stage.getHeight() / 2 - window.getPrefHeight() / 2
-		);
-	}
-
-	private void addPlayerLayout(final Window window) {
-		Image image = new Image(assetsManager.getTexture(Assets.UiTextures.PLAYER_LAYOUT));
-		image.setScaling(Scaling.none);
-		window.add(image);
 	}
 
 
@@ -363,7 +323,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	@Override
 	public boolean hasOpenWindows() {
-		return !windows.isEmpty();
+		return !stage.hasOpenWindows();
 	}
 
 	@Override
