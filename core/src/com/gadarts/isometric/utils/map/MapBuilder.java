@@ -16,11 +16,13 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ObstacleComponent;
-import com.gadarts.isometric.components.PlayerComponent;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.player.Item;
+import com.gadarts.isometric.components.player.ItemsDefinitions;
+import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.assets.Assets;
@@ -137,7 +139,8 @@ public final class MapBuilder {
 	}
 
 	private void addPlayer() {
-		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent();
+		Item item = new Item(ItemsDefinitions.AXE_PICK, 0, 0);
+		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(item);
 		addCharBaseComponents(entityBuilder, Atlases.PLAYER, auxVector3_1.set(0.5f, BILLBOARD_Y, 0.5f), null);
 		entityBuilder.finishAndAddToEngine();
 	}

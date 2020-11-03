@@ -10,6 +10,8 @@ import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.player.Item;
+import com.gadarts.isometric.components.player.PlayerComponent;
 import lombok.AccessLevel;
 import lombok.Setter;
 
@@ -64,8 +66,10 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addPlayerComponent() {
-		currentEntity.add(engine.createComponent(PlayerComponent.class));
+	public EntityBuilder addPlayerComponent(final Item item) {
+		PlayerComponent playerComponent = engine.createComponent(PlayerComponent.class);
+		playerComponent.init(item);
+		currentEntity.add(playerComponent);
 		return instance;
 	}
 

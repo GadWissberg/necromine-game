@@ -22,7 +22,7 @@ public class GameWindow extends Window {
 		style.down = new TextureRegionDrawable(assetsManager.getTexture(Assets.UiTextures.BUTTON_CLOSE_DOWN));
 		style.over = new TextureRegionDrawable(assetsManager.getTexture(Assets.UiTextures.BUTTON_CLOSE_HOVER));
 		Button closeButton = new Button(style);
-		add(closeButton).expand().top().right().row();
+		add(closeButton).colspan(2).expand().top().right().row();
 		closeButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(final InputEvent event, final float x, final float y) {

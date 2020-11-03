@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.PlayerComponent;
+import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;

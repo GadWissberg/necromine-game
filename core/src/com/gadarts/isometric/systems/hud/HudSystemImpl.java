@@ -1,9 +1,6 @@
 package com.gadarts.isometric.systems.hud;
 
-import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -59,7 +56,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		CameraSystemEventsSubscriber,
 		TurnsSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber,
-		PickupSystemEventsSubscriber {
+		PickupSystemEventsSubscriber, EntityListener {
 
 	public static final Color CURSOR_REGULAR = Color.YELLOW;
 	static final Color CURSOR_ATTACK = Color.RED;
@@ -81,7 +78,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
-		stage = new GameStage(new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT));
+		engine.addEntityListener(this);
 		Entity cursorEntity = engine.getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 		cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
 		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
@@ -378,5 +375,18 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	@Override
 	public void onPickUpSystemReady(final PickUpSystem pickUpSystem) {
 		addSystem(PickUpSystem.class, pickUpSystem);
+	}
+
+	@Override
+	public void entityAdded(final Entity entity) {
+		if (ComponentsMapper.player.has(entity)) {
+			FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
+			stage = new GameStage(fitViewport, ComponentsMapper.player.get(entity).getStorage(), assetsManager);
+		}
+	}
+
+	@Override
+	public void entityRemoved(final Entity entity) {
+
 	}
 }
