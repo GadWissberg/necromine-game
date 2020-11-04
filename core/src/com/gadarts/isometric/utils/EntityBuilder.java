@@ -12,6 +12,7 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.player.Item;
 import com.gadarts.isometric.components.player.PlayerComponent;
+import com.gadarts.isometric.components.player.Weapon;
 import lombok.AccessLevel;
 import lombok.Setter;
 
@@ -69,6 +70,13 @@ public final class EntityBuilder {
 	public EntityBuilder addPlayerComponent(final Item item) {
 		PlayerComponent playerComponent = engine.createComponent(PlayerComponent.class);
 		playerComponent.init(item);
+		currentEntity.add(playerComponent);
+		return instance;
+	}
+
+	public EntityBuilder addPlayerComponent(final Weapon selectedWeapon) {
+		PlayerComponent playerComponent = engine.createComponent(PlayerComponent.class);
+		playerComponent.init(selectedWeapon);
 		currentEntity.add(playerComponent);
 		return instance;
 	}

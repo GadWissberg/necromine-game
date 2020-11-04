@@ -6,33 +6,33 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.gadarts.isometric.components.player.Item;
+import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
 public class GameStage extends Stage {
 	public static final int GRID_SIZE = 256;
+	public static final int GRID_CELL_SIZE = 32;
 	static final String WINDOW_NAME_STORAGE = "storage";
+	public static final int PLAYER_LAYOUT_PADDING = 40;
 	private final Map<String, Window> windows = new HashMap<>();
 	private final Texture gridTexture;
-	private final List<Item> playerStorage;
 	private final GameAssetsManager assetsManager;
+	private final PlayerComponent playerComponent;
 
-	public GameStage(final FitViewport fitViewport, final List<Item> storage, final GameAssetsManager assetsManager) {
+
+	public GameStage(final FitViewport fitViewport, final GameAssetsManager assetsManager, final PlayerComponent playerComponent) {
 		super(fitViewport);
-		gridTexture = createGridTexture();
-		playerStorage = storage;
+		this.gridTexture = createGridTexture();
 		this.assetsManager = assetsManager;
+		this.playerComponent = playerComponent;
 	}
 
 	void openStorageWindow(final GameAssetsManager assetsManager) {
@@ -48,9 +48,9 @@ public class GameStage extends Stage {
 	}
 
 	private void addPlayerLayout(final Window window, final GameAssetsManager assetsManager) {
-		Image image = new Image(assetsManager.getTexture(Assets.UiTextures.PLAYER_LAYOUT));
-		image.setScaling(Scaling.none);
-		window.add(image);
+		Texture texture = assetsManager.getTexture(Assets.UiTextures.PLAYER_LAYOUT);
+		PlayerLayout playerLayout = new PlayerLayout(texture, playerComponent.getSelectedWeapon());
+		window.add(playerLayout).pad(PLAYER_LAYOUT_PADDING);
 	}
 
 	private void defineStorageWindow(final Window window, final GameAssetsManager assetsManager) {
@@ -66,7 +66,7 @@ public class GameStage extends Stage {
 	}
 
 	private void addStorageGrid(final Window window) {
-		window.add(new StorageGrid(gridTexture, playerStorage, assetsManager));
+		window.add(new StorageGrid(gridTexture, playerComponent.getStorage()));
 	}
 
 	private Texture createGridTexture() {
@@ -82,8 +82,8 @@ public class GameStage extends Stage {
 		gridPixmap.fill();
 		gridPixmap.setColor(Color.BLACK);
 		gridPixmap.drawRectangle(0, 0, GRID_SIZE, GRID_SIZE);
-		IntStream.range(0, GRID_SIZE / 32).forEach(i -> {
-			int division = i * 32;
+		IntStream.range(0, GRID_SIZE / GRID_CELL_SIZE).forEach(i -> {
+			int division = i * GRID_CELL_SIZE;
 			gridPixmap.drawLine(division, 0, division, GRID_SIZE);
 			gridPixmap.drawLine(0, division, GRID_SIZE, division);
 		});

@@ -20,9 +20,9 @@ import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
-import com.gadarts.isometric.components.player.Item;
-import com.gadarts.isometric.components.player.ItemsDefinitions;
 import com.gadarts.isometric.components.player.PlayerComponent;
+import com.gadarts.isometric.components.player.Weapon;
+import com.gadarts.isometric.components.player.WeaponsDefinitions;
 import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.assets.Assets;
@@ -139,8 +139,9 @@ public final class MapBuilder {
 	}
 
 	private void addPlayer() {
-		Item item = new Item(ItemsDefinitions.AXE_PICK, 0, 0);
-		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(item);
+		Texture image = assetManager.getTexture(WeaponsDefinitions.AXE_PICK.getImage());
+		Weapon weapon = new Weapon(WeaponsDefinitions.AXE_PICK, 0, 0, image);
+		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon);
 		addCharBaseComponents(entityBuilder, Atlases.PLAYER, auxVector3_1.set(0.5f, BILLBOARD_Y, 0.5f), null);
 		entityBuilder.finishAndAddToEngine();
 	}

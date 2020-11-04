@@ -1,6 +1,9 @@
 package com.gadarts.isometric.systems.hud;
 
-import com.badlogic.ashley.core.*;
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -22,6 +25,7 @@ import com.gadarts.isometric.components.CharacterDecalComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
 import com.gadarts.isometric.components.EnemyComponent;
+import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
@@ -56,7 +60,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		CameraSystemEventsSubscriber,
 		TurnsSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber,
-		PickupSystemEventsSubscriber, EntityListener {
+		PickupSystemEventsSubscriber {
 
 	public static final Color CURSOR_REGULAR = Color.YELLOW;
 	static final Color CURSOR_ATTACK = Color.RED;
@@ -76,22 +80,24 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	@Override
+	public void init(final MapGraph map, final SoundPlayer soundPlayer, final GameAssetsManager assetManager) {
+		super.init(map, soundPlayer, assetManager);
+		createStageAndAddHud();
+	}
+
+	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
-		engine.addEntityListener(this);
 		Entity cursorEntity = engine.getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 		cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
 		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		attackNodesHandler.init(getEngine());
 	}
 
-	@Override
-	public void init(final MapGraph map, final SoundPlayer soundPlayer, final GameAssetsManager assetManager) {
-		super.init(map, soundPlayer, assetManager);
-		addHud();
-	}
-
-	private void addHud() {
+	private void createStageAndAddHud() {
+		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
+		Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+		stage = new GameStage(fitViewport, assetsManager, ComponentsMapper.player.get(player));
 		Table table = new Table();
 		stage.setDebugAll(Gdx.app.getLogLevel() == LOG_DEBUG && DefaultGameSettings.DISPLAY_HUD_OUTLINES);
 		table.setFillParent(true);
@@ -377,16 +383,4 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		addSystem(PickUpSystem.class, pickUpSystem);
 	}
 
-	@Override
-	public void entityAdded(final Entity entity) {
-		if (ComponentsMapper.player.has(entity)) {
-			FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
-			stage = new GameStage(fitViewport, ComponentsMapper.player.get(entity).getStorage(), assetsManager);
-		}
-	}
-
-	@Override
-	public void entityRemoved(final Entity entity) {
-
-	}
 }

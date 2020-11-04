@@ -8,7 +8,8 @@ import java.util.List;
 
 @Getter
 public class PlayerComponent implements GameComponent {
-	List<Item> storage = new ArrayList<>();
+	private final List<Item> storage = new ArrayList<>();
+	private Weapon selectedWeapon;
 
 	@Override
 	public void reset() {
@@ -17,5 +18,9 @@ public class PlayerComponent implements GameComponent {
 
 	public void init(final Item item) {
 		storage.add(item);
+	}
+
+	public void init(final Weapon selectedWeapon) {
+		this.selectedWeapon = selectedWeapon;
 	}
 }
