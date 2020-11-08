@@ -32,4 +32,8 @@ public class Utils {
 		Vector2 vector2 = auxVector2_1.set(targetNode.getX(), targetNode.getY()).sub(myNode.getX(), myNode.getY()).nor();
 		return CharacterComponent.Direction.findDirection(vector2);
 	}
+
+	public static float closestMultiplication(final float value, final int multiplication) {
+		return Math.round(value / multiplication) * multiplication;
+	}
 }

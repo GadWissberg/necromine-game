@@ -95,9 +95,9 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void createStageAndAddHud() {
-		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
 		Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		stage = new GameStage(fitViewport, assetsManager, ComponentsMapper.player.get(player));
+		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
+		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player));
 		Table table = new Table();
 		stage.setDebugAll(Gdx.app.getLogLevel() == LOG_DEBUG && DefaultGameSettings.DISPLAY_HUD_OUTLINES);
 		table.setFillParent(true);

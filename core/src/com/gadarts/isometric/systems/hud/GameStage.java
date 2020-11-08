@@ -20,19 +20,29 @@ import java.util.stream.IntStream;
 public class GameStage extends Stage {
 	public static final int GRID_SIZE = 256;
 	public static final int GRID_CELL_SIZE = 32;
-	static final String WINDOW_NAME_STORAGE = "storage";
 	public static final int PLAYER_LAYOUT_PADDING = 40;
+	public static final int CELL_PADDING = 2;
+	static final String WINDOW_NAME_STORAGE = "storage";
 	private final Map<String, Window> windows = new HashMap<>();
 	private final Texture gridTexture;
-	private final GameAssetsManager assetsManager;
 	private final PlayerComponent playerComponent;
+	private final Texture gridCellTexture;
 
-
-	public GameStage(final FitViewport fitViewport, final GameAssetsManager assetsManager, final PlayerComponent playerComponent) {
+	public GameStage(final FitViewport fitViewport, final PlayerComponent playerComponent) {
 		super(fitViewport);
 		this.gridTexture = createGridTexture();
-		this.assetsManager = assetsManager;
+		this.gridCellTexture = createGridCellTexture();
 		this.playerComponent = playerComponent;
+	}
+
+	private Texture createGridCellTexture() {
+		int size = GRID_CELL_SIZE - CELL_PADDING * 2;
+		Pixmap gridPixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
+		gridPixmap.setColor(Color.WHITE);
+		gridPixmap.fill();
+		Texture gridTexture = new Texture(gridPixmap);
+		gridPixmap.dispose();
+		return gridTexture;
 	}
 
 	void openStorageWindow(final GameAssetsManager assetsManager) {
@@ -40,20 +50,20 @@ public class GameStage extends Stage {
 			Texture ninePatchTexture = assetsManager.getTexture(Assets.UiTextures.NINEPATCHES);
 			NinePatch patch = new NinePatch(ninePatchTexture, 12, 12, 12, 12);
 			Window.WindowStyle style = new Window.WindowStyle(new BitmapFont(), Color.BLACK, new NinePatchDrawable(patch));
-			GameWindow window = new GameWindow(WINDOW_NAME_STORAGE, style, assetsManager, windows);
+			StorageWindow window = new StorageWindow(WINDOW_NAME_STORAGE, style, assetsManager, windows);
 			defineStorageWindow(window, assetsManager);
 			addActor(window);
 			windows.put(WINDOW_NAME_STORAGE, window);
 		}
 	}
 
-	private void addPlayerLayout(final Window window, final GameAssetsManager assetsManager) {
+	private void addPlayerLayout(final StorageWindow window, final GameAssetsManager assetsManager) {
 		Texture texture = assetsManager.getTexture(Assets.UiTextures.PLAYER_LAYOUT);
-		PlayerLayout playerLayout = new PlayerLayout(texture, playerComponent.getSelectedWeapon());
+		PlayerLayout playerLayout = new PlayerLayout(texture, playerComponent.getSelectedWeapon(), window);
 		window.add(playerLayout).pad(PLAYER_LAYOUT_PADDING);
 	}
 
-	private void defineStorageWindow(final Window window, final GameAssetsManager assetsManager) {
+	private void defineStorageWindow(final StorageWindow window, final GameAssetsManager assetsManager) {
 		window.setName(WINDOW_NAME_STORAGE);
 		window.setSize(100, 100);
 		addPlayerLayout(window, assetsManager);
@@ -65,8 +75,8 @@ public class GameStage extends Stage {
 		);
 	}
 
-	private void addStorageGrid(final Window window) {
-		window.add(new StorageGrid(gridTexture, playerComponent.getStorage()));
+	private void addStorageGrid(final StorageWindow window) {
+		window.add(new StorageGrid(gridTexture, playerComponent.getStorage(), gridCellTexture, window));
 	}
 
 	private Texture createGridTexture() {
@@ -102,4 +112,6 @@ public class GameStage extends Stage {
 	public boolean hasOpenWindows() {
 		return !windows.isEmpty();
 	}
+
+
 }

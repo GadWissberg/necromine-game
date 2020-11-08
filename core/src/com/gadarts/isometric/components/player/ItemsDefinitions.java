@@ -22,6 +22,11 @@ public enum ItemsDefinitions implements ItemDefinition {
 	}
 
 	@Override
+	public int[] getMask() {
+		return new int[0];
+	}
+
+	@Override
 	public int getHeight() {
 		return height;
 	}
