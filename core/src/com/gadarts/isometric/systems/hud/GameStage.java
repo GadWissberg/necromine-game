@@ -1,5 +1,6 @@
 package com.gadarts.isometric.systems.hud;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gadarts.isometric.components.player.PlayerComponent;
+import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 
@@ -57,6 +59,7 @@ public class GameStage extends Stage {
 		}
 	}
 
+
 	private void addPlayerLayout(final StorageWindow window, final GameAssetsManager assetsManager) {
 		Texture texture = assetsManager.getTexture(Assets.UiTextures.PLAYER_LAYOUT);
 		PlayerLayout playerLayout = new PlayerLayout(texture, playerComponent.getSelectedWeapon(), window);
@@ -67,16 +70,19 @@ public class GameStage extends Stage {
 		window.setName(WINDOW_NAME_STORAGE);
 		window.setSize(100, 100);
 		addPlayerLayout(window, assetsManager);
-		addStorageGrid(window);
+		StorageGrid grid = addStorageGrid(window);
 		window.pack();
+		grid.setPosition(Utils.closestMultiplication(grid.getX(), 32), Utils.closestMultiplication(grid.getY(), 32));
 		window.setPosition(
 				getWidth() / 2 - window.getPrefWidth() / 2,
 				getHeight() / 2 - window.getPrefHeight() / 2
 		);
 	}
 
-	private void addStorageGrid(final StorageWindow window) {
-		window.add(new StorageGrid(gridTexture, playerComponent.getStorage(), gridCellTexture, window));
+	private StorageGrid addStorageGrid(final StorageWindow window) {
+		StorageGrid actor = new StorageGrid(gridTexture, playerComponent.getStorage(), gridCellTexture, window);
+		window.add(actor);
+		return actor;
 	}
 
 	private Texture createGridTexture() {
@@ -106,6 +112,10 @@ public class GameStage extends Stage {
 
 	@Override
 	public boolean touchDown(final int screenX, final int screenY, final int pointer, final int button) {
+		if (windows.containsKey(WINDOW_NAME_STORAGE) && Input.Buttons.RIGHT == button) {
+			StorageWindow window = (StorageWindow) windows.get(WINDOW_NAME_STORAGE);
+			window.onRightMouseButtonClicked();
+		}
 		return super.touchDown(screenX, screenY, pointer, button) || !windows.isEmpty();
 	}
 

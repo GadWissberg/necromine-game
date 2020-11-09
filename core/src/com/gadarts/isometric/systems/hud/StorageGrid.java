@@ -22,6 +22,9 @@ public class StorageGrid extends Table {
 	private final static Rectangle auxRectangle_1 = new Rectangle();
 	private final static Rectangle auxRectangle_2 = new Rectangle();
 	private final static Rectangle auxRectangle_3 = new Rectangle();
+	private static final Color COLOR_REGULAR = Color.DARK_GRAY;
+	private static final Color COLOR_HIGHLIGHT = Color.YELLOW;
+	private static final Color COLOR_INVALID = Color.RED;
 	private final List<Weapon> playerStorage;
 	private final Texture gridCellTexture;
 	private final StorageWindow storageWindow;
@@ -37,6 +40,7 @@ public class StorageGrid extends Table {
 		this.storageWindow = window;
 	}
 
+
 	@Override
 	public void draw(final Batch batch, final float parentAlpha) {
 		super.draw(batch, parentAlpha);
@@ -49,6 +53,27 @@ public class StorageGrid extends Table {
 	private void drawCells(final Batch batch) {
 		int cellsInRow = GRID_SIZE / GRID_CELL_SIZE;
 		int numberOfCells = cellsInRow * cellsInRow;
+		Rectangle selectedItemRectangle = null;
+		ItemDisplay selectedItem = storageWindow.getSelectedItem();
+		float selectedItemX = 0;
+		float selectedItemY = 0;
+		Color color = COLOR_REGULAR;
+		boolean invalid = false;
+		if (selectedItem != null) {
+			float prefWidth = selectedItem.getPrefWidth();
+			float prefHeight = selectedItem.getPrefHeight();
+			selectedItemRectangle = auxRectangle_2.set(0, 0, prefWidth, prefHeight);
+			Group parent = getParent();
+			float mouseX = Gdx.input.getX(0) - parent.getX();
+			float mouseY = getStage().getHeight() - Gdx.input.getY(0) - parent.getY();
+			selectedItemX = Utils.closestMultiplication(mouseX - selectedItemRectangle.getWidth() / 2, 32);
+			selectedItemY = Utils.closestMultiplication(mouseY - selectedItemRectangle.getHeight() / 2, 32);
+			selectedItemRectangle.setPosition(selectedItemX, selectedItemY);
+			Rectangle storageGridRectangle = auxRectangle_1.set(getX(), getY(), getPrefWidth(), getPrefHeight());
+			if (!Utils.rectangleContainedInRectangleWithBoundaries(storageGridRectangle, selectedItemRectangle)) {
+				invalid = true;
+			}
+		}
 		for (int i = 0; i < numberOfCells; i++) {
 			int rowIndex = i / cellsInRow;
 			int width = gridCellTexture.getWidth();
@@ -57,26 +82,16 @@ public class StorageGrid extends Table {
 			float cellX = getX() + CELL_PADDING + (i % cellsInRow) * (width + paddingBothSides);
 			float cellY = getY() + CELL_PADDING + rowIndex * (height + paddingBothSides);
 			auxRectangle_1.set(cellX, cellY, width - 2, height - 2);
-			ItemDisplay selectedItem = storageWindow.getSelectedItem();
-			Color color = Color.BLUE;
 			if (selectedItem != null) {
-				Group parent = getParent();
-				float mouseX = Gdx.input.getX(0) - parent.getX();
-				float mouseY = getStage().getHeight() - Gdx.input.getY(0) - parent.getY();
-				float prefWidth = selectedItem.getPrefWidth();
-				float selectedItemX = Utils.closestMultiplication(mouseX - prefWidth / 2, 32);
-				float prefHeight = selectedItem.getPrefHeight();
-				float selectedItemY = Utils.closestMultiplication(mouseY - prefHeight / 2, 32);
-				auxRectangle_2.set(selectedItemX, selectedItemY, prefWidth, prefHeight);
-				if (auxRectangle_1.overlaps(auxRectangle_2)) {
-					Intersector.intersectRectangles(auxRectangle_1, auxRectangle_2, auxRectangle_3);
+				if (auxRectangle_1.overlaps(selectedItemRectangle)) {
+					Intersector.intersectRectangles(auxRectangle_1, selectedItemRectangle, auxRectangle_3);
 					ItemDefinition definition = selectedItem.getItem().getDefinition();
-					int col = ((int) (MathUtils.map(auxRectangle_2.x, auxRectangle_2.x + selectedItem.getPrefWidth(), 0, definition.getWidth(), auxRectangle_1.x)));
-					int row = (definition.getHeight() - 1) - ((int) (MathUtils.map(auxRectangle_2.y, auxRectangle_2.y + selectedItem.getPrefHeight(), 0, definition.getHeight(), auxRectangle_1.y)));
+					int col = ((int) (MathUtils.map(selectedItemRectangle.x, selectedItemRectangle.x + selectedItem.getPrefWidth(), 0, definition.getWidth(), auxRectangle_1.x)));
+					int row = (definition.getHeight() - 1) - ((int) (MathUtils.map(selectedItemRectangle.y, selectedItemRectangle.y + selectedItem.getPrefHeight(), 0, definition.getHeight(), auxRectangle_1.y)));
 					int mask = definition.getMask()[(row * definition.getWidth() + col)];
-					color = mask == 1 ? Color.YELLOW : Color.DARK_GRAY;
+					color = mask == 1 ? (!invalid ? COLOR_HIGHLIGHT : COLOR_INVALID) : COLOR_REGULAR;
 				} else {
-					color = Color.DARK_GRAY;
+					color = COLOR_REGULAR;
 				}
 			}
 			batch.setColor(color);

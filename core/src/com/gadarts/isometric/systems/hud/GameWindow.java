@@ -12,6 +12,8 @@ import java.util.Map;
 
 public class GameWindow extends Window {
 
+	final Button closeButton;
+
 	public GameWindow(final String windowNameStorage,
 					  final WindowStyle windowStyle,
 					  final GameAssetsManager assetsManager,
@@ -21,11 +23,12 @@ public class GameWindow extends Window {
 		style.up = new TextureRegionDrawable(assetsManager.getTexture(Assets.UiTextures.BUTTON_CLOSE));
 		style.down = new TextureRegionDrawable(assetsManager.getTexture(Assets.UiTextures.BUTTON_CLOSE_DOWN));
 		style.over = new TextureRegionDrawable(assetsManager.getTexture(Assets.UiTextures.BUTTON_CLOSE_HOVER));
-		Button closeButton = new Button(style);
+		closeButton = new Button(style);
 		add(closeButton).colspan(2).expand().top().right().row();
 		closeButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(final InputEvent event, final float x, final float y) {
+				if (closeButton.isDisabled()) return;
 				super.clicked(event, x, y);
 				GameWindow.this.remove();
 				windows.remove(windowNameStorage);

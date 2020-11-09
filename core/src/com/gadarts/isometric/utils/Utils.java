@@ -36,4 +36,18 @@ public class Utils {
 	public static float closestMultiplication(final float value, final int multiplication) {
 		return Math.round(value / multiplication) * multiplication;
 	}
+
+	public static boolean rectangleContainedInRectangleWithBoundaries(final Rectangle container,
+																	  final Rectangle contained) {
+		float xmin = contained.x;
+		float xmax = xmin + contained.width;
+		float ymin = contained.y;
+		float ymax = ymin + contained.height;
+		float x = container.getX();
+		float y = container.getY();
+		float width = container.getWidth();
+		float height = container.getHeight();
+		return ((xmin >= x && xmin <= x + width) && (xmax >= x && xmax <= x + width))
+				&& ((ymin >= y && ymin <= y + height) && (ymax >= y && ymax <= y + height));
+	}
 }

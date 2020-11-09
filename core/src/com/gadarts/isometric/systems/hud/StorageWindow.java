@@ -51,6 +51,7 @@ public class StorageWindow extends GameWindow implements EventsNotifier<StorageW
 		}
 		selectedItem = itemDisplay;
 		selectedItem.applyFlickerAction();
+		closeButton.setDisabled(true);
 		subscribers.forEach(sub -> sub.itemHasBeenSelected(itemDisplay));
 	}
 
@@ -58,5 +59,16 @@ public class StorageWindow extends GameWindow implements EventsNotifier<StorageW
 	public void subscribeForEvents(final StorageWindowEventsSubscriber sub) {
 		if (subscribers.contains(sub)) return;
 		subscribers.add(sub);
+	}
+
+	public void onRightMouseButtonClicked() {
+		if (selectedItem != null) {
+			closeButton.setDisabled(false);
+			selectedItem = null;
+			PlayerLayout playerLayout = findActor(PlayerLayout.NAME);
+			if (playerLayout != null) {
+				playerLayout.getSelectedWeapon().clearActions();
+			}
+		}
 	}
 }

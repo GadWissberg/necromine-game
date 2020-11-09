@@ -18,6 +18,11 @@ public class ItemDisplay extends Image {
 	private static final float FLICKER_DURATION = 0.2f;
 	private final Item item;
 
+	@Override
+	public void clearActions() {
+		super.clearActions();
+		setColor(Color.WHITE);
+	}
 
 	public ItemDisplay(final Weapon item, final StorageWindow window) {
 		super(item.getImage());
