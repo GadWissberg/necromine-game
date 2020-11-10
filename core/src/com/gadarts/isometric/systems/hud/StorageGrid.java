@@ -16,7 +16,9 @@ import com.gadarts.isometric.utils.Utils;
 
 import java.util.List;
 
-import static com.gadarts.isometric.systems.hud.GameStage.*;
+import static com.gadarts.isometric.systems.hud.GameStage.GRID_CELL_SIZE;
+import static com.gadarts.isometric.systems.hud.GameStage.GRID_SIZE;
+import static com.gadarts.isometric.systems.hud.StorageWindow.CELL_PADDING;
 
 public class StorageGrid extends Table {
 	private final static Rectangle auxRectangle_1 = new Rectangle();
@@ -27,17 +29,26 @@ public class StorageGrid extends Table {
 	private static final Color COLOR_INVALID = Color.RED;
 	private final List<Weapon> playerStorage;
 	private final Texture gridCellTexture;
-	private final StorageWindow storageWindow;
+	private ItemDisplay currentSelectedItem;
 
 	public StorageGrid(final Texture gridTexture,
 					   final List<Weapon> playerStorage,
-					   final Texture gridCellTexture,
-					   final StorageWindow window) {
+					   final Texture gridCellTexture) {
 		super();
 		setBackground(new TextureRegionDrawable(gridTexture));
 		this.playerStorage = playerStorage;
 		this.gridCellTexture = gridCellTexture;
-		this.storageWindow = window;
+		addListener(event -> {
+			boolean result = false;
+			if (event instanceof GameWindowEvent) {
+				GameWindowEvent gameWindowEvent = (GameWindowEvent) event;
+				if (gameWindowEvent.getType() == GameWindowEventType.ITEM_SELECTED) {
+					currentSelectedItem = (ItemDisplay) gameWindowEvent.getTarget();
+					result = true;
+				}
+			}
+			return result;
+		});
 	}
 
 
@@ -54,7 +65,7 @@ public class StorageGrid extends Table {
 		int cellsInRow = GRID_SIZE / GRID_CELL_SIZE;
 		int numberOfCells = cellsInRow * cellsInRow;
 		Rectangle selectedItemRectangle = null;
-		ItemDisplay selectedItem = storageWindow.getSelectedItem();
+		ItemDisplay selectedItem = currentSelectedItem;
 		float selectedItemX = 0;
 		float selectedItemY = 0;
 		Color color = COLOR_REGULAR;

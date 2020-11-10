@@ -14,10 +14,10 @@ public class PlayerLayout extends Table {
 	@Getter
 	private final ItemDisplay selectedWeapon;
 
-	public PlayerLayout(final Texture texture, final Weapon selectedWeapon, final StorageWindow window) {
+	public PlayerLayout(final Texture texture, final Weapon selectedWeapon) {
 		setName(NAME);
 		setBackground(new TextureRegionDrawable(texture));
-		this.selectedWeapon = new ItemDisplay(selectedWeapon, window);
+		this.selectedWeapon = new ItemDisplay(selectedWeapon);
 		addActor(this.selectedWeapon);
 		Texture weaponImage = this.selectedWeapon.getItem().getImage();
 		float weaponX = getX() + WEAPON_POSITION_X - weaponImage.getWidth() / 2f;

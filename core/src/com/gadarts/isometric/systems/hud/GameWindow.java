@@ -8,16 +8,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 
-import java.util.Map;
-
 public class GameWindow extends Window {
 
 	final Button closeButton;
 
 	public GameWindow(final String windowNameStorage,
 					  final WindowStyle windowStyle,
-					  final GameAssetsManager assetsManager,
-					  final Map<String, Window> windows) {
+					  final GameAssetsManager assetsManager) {
 		super(windowNameStorage, windowStyle);
 		Button.ButtonStyle style = new Button.ButtonStyle();
 		style.up = new TextureRegionDrawable(assetsManager.getTexture(Assets.UiTextures.BUTTON_CLOSE));
@@ -30,8 +27,8 @@ public class GameWindow extends Window {
 			public void clicked(final InputEvent event, final float x, final float y) {
 				if (closeButton.isDisabled()) return;
 				super.clicked(event, x, y);
+				GameWindow.this.fire(new GameWindowEvent(GameWindow.this, GameWindowEventType.WINDOW_CLOSED));
 				GameWindow.this.remove();
-				windows.remove(windowNameStorage);
 			}
 		});
 	}
