@@ -22,7 +22,6 @@ import java.util.Map;
 public class GameStage extends Stage {
 	public static final int GRID_SIZE = 256;
 	public static final int GRID_CELL_SIZE = 32;
-	public static final int PLAYER_LAYOUT_PADDING = 40;
 	static final String WINDOW_NAME_STORAGE = "storage";
 	private final Map<String, Window> windows = new HashMap<>();
 	private final PlayerComponent playerComponent;
@@ -58,16 +57,10 @@ public class GameStage extends Stage {
 	}
 
 
-	private void addPlayerLayout(final StorageWindow window, final GameAssetsManager assetsManager) {
-		Texture texture = assetsManager.getTexture(Assets.UiTextures.PLAYER_LAYOUT);
-		PlayerLayout playerLayout = new PlayerLayout(texture, playerComponent.getSelectedWeapon());
-		window.add(playerLayout).pad(PLAYER_LAYOUT_PADDING);
-	}
 
 	private void defineStorageWindow(final StorageWindow window, final GameAssetsManager assetsManager) {
 		window.setName(WINDOW_NAME_STORAGE);
 		window.setSize(100, 100);
-		addPlayerLayout(window, assetsManager);
 		window.pack();
 		window.initialize();
 		window.setPosition(

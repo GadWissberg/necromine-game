@@ -3,12 +3,9 @@ package com.gadarts.isometric.components.player;
 import com.gadarts.isometric.components.GameComponent;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 public class PlayerComponent implements GameComponent {
-	private final List<Weapon> storage = new ArrayList<>();
+	private final PlayerStorage storage = new PlayerStorage();
 	private Weapon selectedWeapon;
 
 	@Override

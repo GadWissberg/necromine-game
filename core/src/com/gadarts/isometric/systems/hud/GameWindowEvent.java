@@ -3,7 +3,9 @@ package com.gadarts.isometric.systems.hud;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 @Getter
 public class GameWindowEvent extends ChangeListener.ChangeEvent {
 
@@ -12,5 +14,11 @@ public class GameWindowEvent extends ChangeListener.ChangeEvent {
 	public GameWindowEvent(final Actor target, final GameWindowEventType type) {
 		setTarget(target);
 		this.type = type;
+	}
+
+	@Override
+	public void reset() {
+		super.reset();
+		type = null;
 	}
 }
