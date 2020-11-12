@@ -57,12 +57,10 @@ public class GameStage extends Stage {
 	}
 
 
-
 	private void defineStorageWindow(final StorageWindow window, final GameAssetsManager assetsManager) {
 		window.setName(WINDOW_NAME_STORAGE);
 		window.setSize(100, 100);
 		window.pack();
-		window.initialize();
 		window.setPosition(
 				getWidth() / 2 - window.getPrefWidth() / 2,
 				getHeight() / 2 - window.getPrefHeight() / 2
@@ -79,12 +77,21 @@ public class GameStage extends Stage {
 	public boolean touchDown(final int screenX, final int screenY, final int pointer, final int button) {
 		Group root = getRoot();
 		SnapshotArray<Actor> children = root.getChildren();
+		boolean stopPropagate = false;
 		if (button == Input.Buttons.RIGHT) {
-			children.forEach(child -> child.notify(new GameWindowEvent(root, GameWindowEventType.MOUSE_CLICK_RIGHT), false));
+			for (Actor child : children) {
+				stopPropagate |= child.notify(new GameWindowEvent(root, GameWindowEventType.MOUSE_CLICK_RIGHT), false);
+			}
 		} else if (button == Input.Buttons.LEFT) {
-			children.forEach(child -> child.notify(new GameWindowEvent(root, GameWindowEventType.MOUSE_CLICK_LEFT), false));
+			for (Actor child : children) {
+				stopPropagate |= child.notify(new GameWindowEvent(root, GameWindowEventType.MOUSE_CLICK_LEFT), false);
+			}
 		}
-		return super.touchDown(screenX, screenY, pointer, button) || !windows.isEmpty();
+		boolean result = false;
+		if (!stopPropagate) {
+			result = super.touchDown(screenX, screenY, pointer, button);
+		}
+		return result || !windows.isEmpty() || stopPropagate;
 	}
 
 	public boolean hasOpenWindows() {

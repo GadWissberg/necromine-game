@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gadarts.isometric.components.player.Item;
-import com.gadarts.isometric.components.player.Weapon;
 import lombok.Getter;
 
 @Getter
@@ -22,15 +21,16 @@ public class ItemDisplay extends Image {
 		setColor(Color.WHITE);
 	}
 
-	public ItemDisplay(final Weapon item) {
+	public ItemDisplay(final Item item) {
 		super(item.getImage());
 		this.item = item;
 		addListener(new ClickListener() {
 			@Override
-			public void clicked(final InputEvent event, final float x, final float y) {
-				super.clicked(event, x, y);
+			public boolean touchDown(final InputEvent event, final float x, final float y, final int pointer, final int button) {
 				fire(new GameWindowEvent(ItemDisplay.this, GameWindowEventType.ITEM_SELECTED));
+				return super.touchDown(event, x, y, pointer, button);
 			}
+
 		});
 	}
 

@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.gadarts.isometric.components.player.PlayerComponent;
-import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import lombok.Getter;
@@ -44,24 +43,24 @@ public class StorageWindow extends GameWindow {
 		addPlayerLayout(assetsManager);
 		addStorageGrid();
 		addListener(event -> {
-			boolean result = false;
+			boolean stopPropagate = false;
 			if (event instanceof GameWindowEvent) {
 				GameWindowEvent gameWindowEvent = (GameWindowEvent) event;
 				GameWindowEventType type = gameWindowEvent.getType();
 				if (type == GameWindowEventType.ITEM_SELECTED) {
 					applySelectedItem((ItemDisplay) gameWindowEvent.getTarget());
-					result = true;
+					stopPropagate = true;
 				} else if (type == GameWindowEventType.ITEM_SELECTION_CLEARED) {
 					applySelectedItem(null);
-					result = true;
+					stopPropagate = true;
 				} else if (type == GameWindowEventType.ITEM_PLACED) {
 					clearSelectedItem();
-					result = true;
+					stopPropagate = true;
 				} else if (type == GameWindowEventType.MOUSE_CLICK_RIGHT) {
 					clearSelectedItem();
 				}
 			}
-			return result;
+			return stopPropagate;
 		});
 		addListener(new InputListener() {
 			@Override
@@ -97,10 +96,12 @@ public class StorageWindow extends GameWindow {
 	public boolean notify(final Event event, final boolean capture) {
 		boolean result = super.notify(event, capture);
 		if (event instanceof GameWindowEvent) {
-			Actor[] children = getChildren().items;
-			for (int i = 0; i < children.length; i++) {
-				result |= children[i].notify(event, false);
+			for (int i = 0; i < getChildren().size; i++) {
+				result |= getChildren().get(i).notify(event, false);
 			}
+		}
+		if (result) {
+			event.cancel();
 		}
 		return result;
 	}
@@ -120,8 +121,6 @@ public class StorageWindow extends GameWindow {
 	}
 
 	private void paintGrid(final Pixmap gridPixmap) {
-		gridPixmap.setColor(Color.DARK_GRAY);
-		gridPixmap.fill();
 		gridPixmap.setColor(Color.BLACK);
 		gridPixmap.drawRectangle(0, 0, GRID_SIZE, GRID_SIZE);
 		IntStream.range(0, GRID_SIZE / GRID_CELL_SIZE).forEach(i -> {
@@ -132,7 +131,7 @@ public class StorageWindow extends GameWindow {
 	}
 
 	private Texture createGridCellTexture() {
-		int size = GRID_CELL_SIZE - CELL_PADDING * 2;
+		int size = GRID_CELL_SIZE;
 		Pixmap gridPixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
 		gridPixmap.setColor(Color.WHITE);
 		gridPixmap.fill();
@@ -186,7 +185,4 @@ public class StorageWindow extends GameWindow {
 		}
 	}
 
-	public void initialize() {
-		grid.setPosition(Utils.closestMultiplication(grid.getX(), 32), Utils.closestMultiplication(grid.getY(), 32));
-	}
 }

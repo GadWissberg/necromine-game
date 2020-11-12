@@ -15,11 +15,8 @@ import com.gadarts.isometric.components.player.ItemDefinition;
 import com.gadarts.isometric.components.player.PlayerStorage;
 import com.gadarts.isometric.utils.Utils;
 
-import java.util.List;
-
 import static com.gadarts.isometric.systems.hud.GameStage.GRID_CELL_SIZE;
 import static com.gadarts.isometric.systems.hud.GameStage.GRID_SIZE;
-import static com.gadarts.isometric.systems.hud.StorageWindow.CELL_PADDING;
 
 @SuppressWarnings("SameParameterValue")
 public class StorageGrid extends Table {
@@ -51,10 +48,8 @@ public class StorageGrid extends Table {
 				GameWindowEventType type = gameWindowEvent.getType();
 				if (type == GameWindowEventType.ITEM_SELECTED) {
 					currentSelectedItem = (ItemDisplay) gameWindowEvent.getTarget();
-					result = true;
 				} else if (type == GameWindowEventType.ITEM_SELECTION_CLEARED) {
 					currentSelectedItem = null;
-					result = true;
 				} else if (type == GameWindowEventType.MOUSE_CLICK_LEFT) {
 					if (!invalidLocation && currentSelectedItem != null) {
 						calculateSelectedItemRectangle();
@@ -73,8 +68,16 @@ public class StorageGrid extends Table {
 						}
 						item.setRow(minRow);
 						item.setCol(minCol);
+						currentSelectedItem.setPosition(
+								getX() + item.getCol() * GameStage.GRID_CELL_SIZE,
+								getY() + item.getRow() * GameStage.GRID_CELL_SIZE
+						);
+						currentSelectedItem.toFront();
+						currentSelectedItem.clearActions();
 						fire(new GameWindowEvent(currentSelectedItem, GameWindowEventType.ITEM_PLACED));
+						currentSelectedItem = null;
 						result = true;
+						event.cancel();
 					}
 				}
 			}
@@ -82,14 +85,16 @@ public class StorageGrid extends Table {
 		});
 	}
 
+
+	@Override
+	protected void drawChildren(final Batch batch, final float parentAlpha) {
+		super.drawChildren(batch, parentAlpha);
+	}
+
 	@Override
 	public void draw(final Batch batch, final float parentAlpha) {
-		super.draw(batch, parentAlpha);
 		drawCells(batch);
-		List<Item> items = playerStorage.getItems();
-		for (Item item : items) {
-			drawItem(batch, item);
-		}
+		super.draw(batch, parentAlpha);
 	}
 
 	@Override
@@ -109,9 +114,11 @@ public class StorageGrid extends Table {
 		Group parent = getParent();
 		float mouseX = Gdx.input.getX(0) - parent.getX();
 		float mouseY = getStage().getHeight() - Gdx.input.getY(0) - parent.getY();
-		float selectedItemX = Utils.closestMultiplication(mouseX - selectedItemRectangle.getWidth() / 2, 32);
-		float selectedItemY = Utils.closestMultiplication(mouseY - selectedItemRectangle.getHeight() / 2, 32);
-		selectedItemRectangle.setPosition(selectedItemX, selectedItemY);
+		float x = getX();
+		int selectedItemCol = MathUtils.round(MathUtils.map(x, x + getPrefWidth(), 0, PlayerStorage.WIDTH, mouseX - selectedItemRectangle.getWidth() / 2));
+		float y = getY();
+		int selectedItemRow = MathUtils.round(MathUtils.map(y, y + getPrefHeight(), 0, PlayerStorage.HEIGHT, mouseY - selectedItemRectangle.getHeight() / 2));
+		selectedItemRectangle.setPosition(x + selectedItemCol * GRID_CELL_SIZE, y + selectedItemRow * GRID_CELL_SIZE);
 	}
 
 	private void drawCells(final Batch batch) {
@@ -154,10 +161,9 @@ public class StorageGrid extends Table {
 		int width = gridCellTexture.getWidth();
 		int height = gridCellTexture.getHeight();
 		int cellsInRow = GRID_SIZE / GRID_CELL_SIZE;
-		int paddingBothSides = CELL_PADDING * 2;
 		int rowIndex = index / cellsInRow;
-		float cellX = getX() + CELL_PADDING + (index % cellsInRow) * (width + paddingBothSides);
-		float cellY = getY() + CELL_PADDING + rowIndex * (height + paddingBothSides);
+		float cellX = getX() + (index % cellsInRow) * (width);
+		float cellY = getY() + rowIndex * (height);
 		return output.set(cellX, cellY);
 	}
 
@@ -168,6 +174,7 @@ public class StorageGrid extends Table {
 				getY() + item.getRow() * GameStage.GRID_CELL_SIZE
 		);
 	}
+
 
 	private static class Coords {
 		private int row;
