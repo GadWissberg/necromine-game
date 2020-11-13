@@ -47,14 +47,14 @@ public class GameStage extends Stage {
 			NinePatch patch = new NinePatch(ninePatchTexture, 12, 12, 12, 12);
 			Window.WindowStyle style = new Window.WindowStyle(new BitmapFont(), Color.BLACK, new NinePatchDrawable(patch));
 			StorageWindow window = new StorageWindow(WINDOW_NAME_STORAGE, style, assetsManager, playerComponent);
-			defineStorageWindow(window, assetsManager);
+			defineStorageWindow(window);
 			addActor(window);
 			windows.put(WINDOW_NAME_STORAGE, window);
 		}
 	}
 
 
-	private void defineStorageWindow(final StorageWindow window, final GameAssetsManager assetsManager) {
+	private void defineStorageWindow(final StorageWindow window) {
 		window.setName(WINDOW_NAME_STORAGE);
 		window.setSize(100, 100);
 		window.pack();

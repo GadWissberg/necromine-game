@@ -1,5 +1,6 @@
 package com.gadarts.isometric.systems.hud;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
@@ -18,13 +19,13 @@ public class PlayerLayout extends Table {
 	static final String NAME = "player_layout";
 	private final static Vector2 auxVector = new Vector2();
 	private static final float SPOT_RADIUS = 25;
-	private ItemSelection selectedItem;
+	private ItemSelectionHandler itemSelectionHandler;
 	@Getter
 	private ItemDisplay weaponChoice;
 
-	public PlayerLayout(final Texture texture, final Weapon weaponChoice, final ItemSelection selection) {
-		this.weaponChoice = new ItemDisplay(weaponChoice);
-		this.selectedItem = selection;
+	public PlayerLayout(final Texture texture, final Weapon weaponChoice, final ItemSelectionHandler itemSelectionHandler) {
+		this.itemSelectionHandler = itemSelectionHandler;
+		this.weaponChoice = new ItemDisplay(weaponChoice, this.itemSelectionHandler);
 		setTouchable(Touchable.enabled);
 		setName(NAME);
 		setBackground(new TextureRegionDrawable(texture));
@@ -37,15 +38,40 @@ public class PlayerLayout extends Table {
 		});
 		addListener(new ClickListener() {
 			@Override
-			public void clicked(final InputEvent event, final float x, final float y) {
-				super.clicked(event, x, y);
-				Vector2 local = auxVector.set(WEAPON_POSITION_PARENT_X, WEAPON_POSITION_PARENT_Y);
-				float distance = parentToLocalCoordinates(local).dst(x, y);
-				if (selectedItem != null && PlayerLayout.this.weaponChoice == null && distance < SPOT_RADIUS) {
-					PlayerLayout.this.fire(new GameWindowEvent(PlayerLayout.this, GameWindowEventType.ITEM_PLACED));
+			public boolean touchDown(final InputEvent event,
+									 final float x,
+									 final float y,
+									 final int pointer,
+									 final int button) {
+				super.touchDown(event, x, y, pointer, button);
+				boolean result = false;
+				if (button == Input.Buttons.RIGHT) {
+					onRightClick(itemSelectionHandler);
+					result = true;
+				} else if (button == Input.Buttons.LEFT) {
+					result = onLeftClick(x, y);
 				}
+				return result;
 			}
+
 		});
+	}
+
+	private boolean onLeftClick(final float x, final float y) {
+		Vector2 local = auxVector.set(WEAPON_POSITION_PARENT_X, WEAPON_POSITION_PARENT_Y);
+		float distance = parentToLocalCoordinates(local).dst(x, y);
+		boolean result = false;
+		if (itemSelectionHandler != null && PlayerLayout.this.weaponChoice == null && distance < SPOT_RADIUS) {
+			PlayerLayout.this.fire(new GameWindowEvent(PlayerLayout.this, GameWindowEventType.ITEM_PLACED));
+			result = true;
+		}
+		return result;
+	}
+
+	private void onRightClick(final ItemSelectionHandler itemSelectionHandler) {
+		if (itemSelectionHandler.getSelection() != null) {
+			itemSelectionHandler.setSelection(null);
+		}
 	}
 
 	private boolean onGameWindowEvent(final com.badlogic.gdx.scenes.scene2d.Event event) {
@@ -53,7 +79,7 @@ public class PlayerLayout extends Table {
 		boolean result = false;
 		if (type == GameWindowEventType.ITEM_PLACED) {
 			if (event.getTarget() instanceof PlayerLayout) {
-				PlayerLayout.this.weaponChoice = selectedItem.getSelection();
+				PlayerLayout.this.weaponChoice = itemSelectionHandler.getSelection();
 				placeWeapon();
 			} else {
 				PlayerLayout.this.weaponChoice = null;
@@ -66,7 +92,7 @@ public class PlayerLayout extends Table {
 	@Override
 	public void draw(final Batch batch, final float parentAlpha) {
 		super.draw(batch, parentAlpha);
-		ItemDisplay selection = selectedItem.getSelection();
+		ItemDisplay selection = itemSelectionHandler.getSelection();
 		if (selection != null && selection.isWeapon() && weaponChoice == null) {
 			Texture image = selection.getItem().getImage();
 			batch.setColor(1f, 1f, 1f, 0.5f);

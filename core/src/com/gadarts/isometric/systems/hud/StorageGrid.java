@@ -1,6 +1,7 @@
 package com.gadarts.isometric.systems.hud;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -33,16 +34,16 @@ public class StorageGrid extends Table {
 	private final static Coords auxCoords = new Coords();
 	private final Texture gridCellTexture;
 	private final PlayerStorage playerStorage;
-	private ItemSelection currentSelectedItem;
+	private ItemSelectionHandler itemSelectionHandler;
 	private boolean invalidLocation;
 
 	public StorageGrid(final Texture gridTexture,
 					   final PlayerStorage playerStorage,
 					   final Texture gridCellTexture,
-					   final ItemSelection selection) {
+					   final ItemSelectionHandler itemSelectionHandler) {
 		super();
 		setTouchable(Touchable.enabled);
-		this.currentSelectedItem = selection;
+		this.itemSelectionHandler = itemSelectionHandler;
 		setName(NAME);
 		setBackground(new TextureRegionDrawable(gridTexture));
 		this.playerStorage = playerStorage;
@@ -55,7 +56,7 @@ public class StorageGrid extends Table {
 				if (type == GameWindowEventType.ITEM_PLACED) {
 					if (event.getTarget() instanceof StorageGrid) {
 						calculateSelectedItemRectangle();
-						ItemDisplay selectedItem = selection.getSelection();
+						ItemDisplay selectedItem = itemSelectionHandler.getSelection();
 						Item item = selectedItem.getItem();
 						playerStorage.getItems().add(item);
 						int cellsInRow = GRID_SIZE / GRID_CELL_SIZE;
@@ -87,13 +88,31 @@ public class StorageGrid extends Table {
 		});
 		addListener(new ClickListener() {
 			@Override
-			public void clicked(final InputEvent event, final float x, final float y) {
-				super.clicked(event, x, y);
-				if (!invalidLocation && currentSelectedItem != null) {
-					fire(new GameWindowEvent(StorageGrid.this, GameWindowEventType.ITEM_PLACED));
+			public boolean touchDown(final InputEvent event, final float x, final float y, final int pointer, final int button) {
+				boolean result = super.touchDown(event, x, y, pointer, button);
+				if (button == Input.Buttons.LEFT) {
+					result |= onLeftClick();
+				} else if (button == Input.Buttons.RIGHT) {
+					result |= onRightClick();
 				}
+				return result;
 			}
+
 		});
+	}
+
+	private boolean onRightClick() {
+		itemSelectionHandler.setSelection(null);
+		return true;
+	}
+
+	private boolean onLeftClick() {
+		boolean result = false;
+		if (!invalidLocation && itemSelectionHandler != null) {
+			fire(new GameWindowEvent(StorageGrid.this, GameWindowEventType.ITEM_PLACED));
+			result = true;
+		}
+		return result;
 	}
 
 
@@ -111,7 +130,7 @@ public class StorageGrid extends Table {
 	@Override
 	public void act(final float delta) {
 		super.act(delta);
-		if (currentSelectedItem.getSelection() != null) {
+		if (itemSelectionHandler.getSelection() != null) {
 			calculateSelectedItemRectangle();
 			Rectangle storageGridRectangle = auxRectangle_1.set(getX(), getY(), getPrefWidth(), getPrefHeight());
 			invalidLocation = !Utils.rectangleContainedInRectangleWithBoundaries(storageGridRectangle, selectedItemRectangle);
@@ -119,7 +138,7 @@ public class StorageGrid extends Table {
 	}
 
 	private void calculateSelectedItemRectangle() {
-		ItemDisplay selection = currentSelectedItem.getSelection();
+		ItemDisplay selection = itemSelectionHandler.getSelection();
 		float prefWidth = selection.getPrefWidth();
 		float prefHeight = selection.getPrefHeight();
 		selectedItemRectangle.set(0, 0, prefWidth, prefHeight);
@@ -157,9 +176,9 @@ public class StorageGrid extends Table {
 		);
 		Rectangle cellRectangle = auxRectangle_1.set(cellPosition.x, cellPosition.y, width, height);
 		boolean result = false;
-		if (currentSelectedItem.getSelection() != null) {
+		if (itemSelectionHandler.getSelection() != null) {
 			if (cellRectangle.overlaps(selectedItemRectangle)) {
-				ItemDisplay selection = currentSelectedItem.getSelection();
+				ItemDisplay selection = itemSelectionHandler.getSelection();
 				ItemDefinition definition = selection.getItem().getDefinition();
 				int col = ((int) (MathUtils.map(selectedItemRectangle.x, selectedItemRectangle.x + selection.getPrefWidth(), 0, definition.getWidth(), cellRectangle.x)));
 				int row = (definition.getHeight() - 1) - ((int) (MathUtils.map(selectedItemRectangle.y, selectedItemRectangle.y + selection.getPrefHeight(), 0, definition.getHeight(), cellRectangle.y)));

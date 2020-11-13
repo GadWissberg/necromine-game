@@ -31,7 +31,7 @@ public class StorageWindow extends GameWindow {
 	private final PlayerComponent playerComponent;
 	private StorageGrid grid;
 	@Getter
-	private ItemSelection selectedItem = new ItemSelection();
+	private ItemSelectionHandler selectedItem = new ItemSelectionHandler();
 
 	public StorageWindow(final String windowNameStorage,
 						 final WindowStyle windowStyle,
@@ -97,14 +97,21 @@ public class StorageWindow extends GameWindow {
 		});
 		addListener(new ClickListener() {
 			@Override
-			public void clicked(final InputEvent event, final float x, final float y) {
-				super.clicked(event, x, y);
-				if (event.getKeyCode() == Input.Buttons.RIGHT) {
+			public boolean touchDown(final InputEvent event,
+									 final float x,
+									 final float y,
+									 final int pointer,
+									 final int button) {
+				boolean result = super.touchDown(event, x, y, pointer, button);
+				if (button == Input.Buttons.RIGHT) {
 					if (selectedItem.getSelection() != null) {
 						selectedItem.setSelection(null);
+						result = true;
 					}
 				}
+				return result;
 			}
+
 		});
 	}
 
