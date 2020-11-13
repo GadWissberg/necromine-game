@@ -127,6 +127,11 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	}
 
 	@Override
+	public void onItemPickedUp(final Entity itemPickedUp) {
+
+	}
+
+	@Override
 	public void activate() {
 
 	}

@@ -139,7 +139,10 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void handlePickupOnCommandDone(final Entity character) {
 		CharacterMode mode = ComponentsMapper.character.get(character).getMode();
 		if (mode == PICKING_UP && currentCommand.getAdditionalData() != null) {
-			getSystem(PickUpSystem.class).onItemPickedUp((Entity) currentCommand.getAdditionalData());
+			Entity itemPickedUp = (Entity) currentCommand.getAdditionalData();
+			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+				subscriber.onItemPickedUp(itemPickedUp);
+			}
 		}
 	}
 

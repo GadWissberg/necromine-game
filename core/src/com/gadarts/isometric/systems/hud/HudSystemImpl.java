@@ -370,6 +370,11 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	@Override
+	public void onItemPickedUp(final Entity itemPickedUp) {
+
+	}
+
+	@Override
 	public void activate() {
 		pathPlanHandler = new PathPlanHandler(assetsManager);
 		pathPlanHandler.init((PooledEngine) getEngine());

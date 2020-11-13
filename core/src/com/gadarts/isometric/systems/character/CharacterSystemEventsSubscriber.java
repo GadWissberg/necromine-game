@@ -13,4 +13,6 @@ public interface CharacterSystemEventsSubscriber extends SystemEventsSubscriber 
 	void onCharacterSystemReady(CharacterSystem characterSystem);
 
 	void onCharacterGotDamage(Entity target);
+
+	void onItemPickedUp(Entity itemPickedUp);
 }

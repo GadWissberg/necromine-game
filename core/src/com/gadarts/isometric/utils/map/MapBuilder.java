@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
@@ -67,16 +68,16 @@ public final class MapBuilder {
 		createAndAdd3dCursor();
 		addPlayer();
 		addEnemyTest();
-		addWeaponTest();
+		addWeaponPickupTest();
 		return createTestMap();
 	}
 
-	private void addWeaponTest() {
+	private void addWeaponPickupTest() {
 		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(Assets.Models.COLT));
 		modelInstance.transform.setTranslation(auxVector3_1.set(1.5f, 0, 2.5f));
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true)
-				.addPickUpComponent()
+				.addPickUpComponent(WeaponsDefinitions.COLT, assetManager.getTexture(WeaponsDefinitions.COLT.getImage()))
 				.finishAndAddToEngine();
 	}
 
@@ -140,7 +141,8 @@ public final class MapBuilder {
 
 	private void addPlayer() {
 		Texture image = assetManager.getTexture(WeaponsDefinitions.AXE_PICK.getImage());
-		Weapon weapon = new Weapon(WeaponsDefinitions.AXE_PICK, 0, 0, image);
+		Weapon weapon = Pools.obtain(Weapon.class);
+		weapon.init(WeaponsDefinitions.AXE_PICK, 0, 0, image);
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon);
 		addCharBaseComponents(entityBuilder, Atlases.PLAYER, auxVector3_1.set(0.5f, BILLBOARD_Y, 0.5f), null);
 		entityBuilder.finishAndAddToEngine();

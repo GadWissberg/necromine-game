@@ -178,6 +178,7 @@ public final class Assets {
 		BUTTON_CLOSE_HOVER(null, "buttons"),
 		NINEPATCHES("ninepatches.9"),
 		WEAPON_AXE_PICK(null, "weapons"),
+		WEAPON_COLT(null, "weapons"),
 		PLAYER_LAYOUT;
 
 		public static final String SUB_FOLDER_NAME = "ui";

@@ -100,6 +100,11 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	}
 
+	@Override
+	public void onItemPickedUp(final Entity itemPickedUp) {
+		ComponentsMapper.player.get(player).getStorage().addItem(ComponentsMapper.pickup.get(itemPickedUp).getItem());
+	}
+
 
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {

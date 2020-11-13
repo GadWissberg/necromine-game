@@ -17,6 +17,9 @@ import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.PickUpComponent;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
+import com.gadarts.isometric.systems.character.CharacterCommand;
+import com.gadarts.isometric.systems.character.CharacterSystem;
+import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystem;
@@ -29,7 +32,8 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 		implements PickUpSystem,
 		InputSystemEventsSubscriber,
 		HudSystemEventsSubscriber,
-		CameraSystemEventsSubscriber {
+		CameraSystemEventsSubscriber,
+		CharacterSystemEventsSubscriber {
 
 	private static final float PICK_UP_ROTATION = 10;
 	private static final Vector3 auxVector3_1 = new Vector3();
@@ -95,11 +99,6 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 
 	}
 
-	@Override
-	public void onItemPickedUp(final Entity pickup) {
-		PooledEngine engine = (PooledEngine) getEngine();
-		engine.removeEntity(pickup);
-	}
 
 	@Override
 	public Entity getCurrentHighLightedPickup() {
@@ -185,5 +184,36 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		addSystem(CameraSystem.class, cameraSystem);
+	}
+
+	@Override
+	public void onDestinationReached(final Entity character) {
+
+	}
+
+	@Override
+	public void onCommandDone(final Entity character) {
+
+	}
+
+	@Override
+	public void onNewCommandSet(final CharacterCommand command) {
+
+	}
+
+	@Override
+	public void onCharacterSystemReady(final CharacterSystem characterSystem) {
+
+	}
+
+	@Override
+	public void onCharacterGotDamage(final Entity target) {
+
+	}
+
+	@Override
+	public void onItemPickedUp(final Entity itemPickedUp) {
+		PooledEngine engine = (PooledEngine) getEngine();
+		engine.removeEntity(itemPickedUp);
 	}
 }

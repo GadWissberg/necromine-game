@@ -6,10 +6,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.player.Item;
+import com.gadarts.isometric.components.player.ItemDefinition;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import lombok.AccessLevel;
@@ -135,15 +138,18 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addObstacleComponent(final int x, final int y, boolean blockPath) {
+	public EntityBuilder addObstacleComponent(final int x, final int y, final boolean blockPath) {
 		ObstacleComponent obstacleComponent = engine.createComponent(ObstacleComponent.class);
 		obstacleComponent.init(x, y, blockPath);
 		currentEntity.add(obstacleComponent);
 		return instance;
 	}
 
-	public EntityBuilder addPickUpComponent() {
+	public EntityBuilder addPickUpComponent(final ItemDefinition definition, final Texture displayImage) {
+		Item item = Pools.obtain(Item.class);
+		item.init(definition, 0, 0, displayImage);
 		PickUpComponent pickupComponent = engine.createComponent(PickUpComponent.class);
+		pickupComponent.setItem(item);
 		currentEntity.add(pickupComponent);
 		return instance;
 	}

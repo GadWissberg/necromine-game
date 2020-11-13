@@ -9,6 +9,10 @@ public enum WeaponsDefinitions implements ItemDefinition {
 			0, 1, 0, 0,
 			0, 1, 0, 0,
 			0, 1, 0, 0,
+	}),
+	COLT(2, 2, Assets.UiTextures.WEAPON_COLT, new int[]{
+			1, 1,
+			1, 0
 	});
 
 	private final int width;
