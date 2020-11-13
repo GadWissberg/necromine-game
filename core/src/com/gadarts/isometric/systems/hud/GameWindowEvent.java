@@ -11,6 +11,7 @@ public class GameWindowEvent extends ChangeListener.ChangeEvent {
 
 	private GameWindowEventType type;
 
+
 	public GameWindowEvent(final Actor target, final GameWindowEventType type) {
 		setTarget(target);
 		this.type = type;

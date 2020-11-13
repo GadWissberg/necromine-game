@@ -8,7 +8,10 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.gadarts.isometric.components.player.Item;
 import com.gadarts.isometric.components.player.ItemDefinition;
@@ -30,13 +33,16 @@ public class StorageGrid extends Table {
 	private final static Coords auxCoords = new Coords();
 	private final Texture gridCellTexture;
 	private final PlayerStorage playerStorage;
-	private ItemDisplay currentSelectedItem;
+	private ItemSelection currentSelectedItem;
 	private boolean invalidLocation;
 
 	public StorageGrid(final Texture gridTexture,
 					   final PlayerStorage playerStorage,
-					   final Texture gridCellTexture) {
+					   final Texture gridCellTexture,
+					   final ItemSelection selection) {
 		super();
+		setTouchable(Touchable.enabled);
+		this.currentSelectedItem = selection;
 		setName(NAME);
 		setBackground(new TextureRegionDrawable(gridTexture));
 		this.playerStorage = playerStorage;
@@ -46,14 +52,11 @@ public class StorageGrid extends Table {
 			if (event instanceof GameWindowEvent) {
 				GameWindowEvent gameWindowEvent = (GameWindowEvent) event;
 				GameWindowEventType type = gameWindowEvent.getType();
-				if (type == GameWindowEventType.ITEM_SELECTED) {
-					currentSelectedItem = (ItemDisplay) gameWindowEvent.getTarget();
-				} else if (type == GameWindowEventType.ITEM_SELECTION_CLEARED) {
-					currentSelectedItem = null;
-				} else if (type == GameWindowEventType.MOUSE_CLICK_LEFT) {
-					if (!invalidLocation && currentSelectedItem != null) {
+				if (type == GameWindowEventType.ITEM_PLACED) {
+					if (event.getTarget() instanceof StorageGrid) {
 						calculateSelectedItemRectangle();
-						Item item = currentSelectedItem.getItem();
+						ItemDisplay selectedItem = selection.getSelection();
+						Item item = selectedItem.getItem();
 						playerStorage.getItems().add(item);
 						int cellsInRow = GRID_SIZE / GRID_CELL_SIZE;
 						int numberOfCells = cellsInRow * cellsInRow;
@@ -68,20 +71,28 @@ public class StorageGrid extends Table {
 						}
 						item.setRow(minRow);
 						item.setCol(minCol);
-						currentSelectedItem.setPosition(
+						selectedItem.setPosition(
 								getX() + item.getCol() * GameStage.GRID_CELL_SIZE,
 								getY() + item.getRow() * GameStage.GRID_CELL_SIZE
 						);
-						currentSelectedItem.toFront();
-						currentSelectedItem.clearActions();
-						fire(new GameWindowEvent(currentSelectedItem, GameWindowEventType.ITEM_PLACED));
-						currentSelectedItem = null;
+						selectedItem.toFront();
+						selectedItem.clearActions();
 						result = true;
-						event.cancel();
+					} else {
+
 					}
 				}
 			}
 			return result;
+		});
+		addListener(new ClickListener() {
+			@Override
+			public void clicked(final InputEvent event, final float x, final float y) {
+				super.clicked(event, x, y);
+				if (!invalidLocation && currentSelectedItem != null) {
+					fire(new GameWindowEvent(StorageGrid.this, GameWindowEventType.ITEM_PLACED));
+				}
+			}
 		});
 	}
 
@@ -100,7 +111,7 @@ public class StorageGrid extends Table {
 	@Override
 	public void act(final float delta) {
 		super.act(delta);
-		if (currentSelectedItem != null) {
+		if (currentSelectedItem.getSelection() != null) {
 			calculateSelectedItemRectangle();
 			Rectangle storageGridRectangle = auxRectangle_1.set(getX(), getY(), getPrefWidth(), getPrefHeight());
 			invalidLocation = !Utils.rectangleContainedInRectangleWithBoundaries(storageGridRectangle, selectedItemRectangle);
@@ -108,8 +119,9 @@ public class StorageGrid extends Table {
 	}
 
 	private void calculateSelectedItemRectangle() {
-		float prefWidth = currentSelectedItem.getPrefWidth();
-		float prefHeight = currentSelectedItem.getPrefHeight();
+		ItemDisplay selection = currentSelectedItem.getSelection();
+		float prefWidth = selection.getPrefWidth();
+		float prefHeight = selection.getPrefHeight();
 		selectedItemRectangle.set(0, 0, prefWidth, prefHeight);
 		Group parent = getParent();
 		float mouseX = Gdx.input.getX(0) - parent.getX();
@@ -145,11 +157,12 @@ public class StorageGrid extends Table {
 		);
 		Rectangle cellRectangle = auxRectangle_1.set(cellPosition.x, cellPosition.y, width, height);
 		boolean result = false;
-		if (currentSelectedItem != null) {
+		if (currentSelectedItem.getSelection() != null) {
 			if (cellRectangle.overlaps(selectedItemRectangle)) {
-				ItemDefinition definition = currentSelectedItem.getItem().getDefinition();
-				int col = ((int) (MathUtils.map(selectedItemRectangle.x, selectedItemRectangle.x + currentSelectedItem.getPrefWidth(), 0, definition.getWidth(), cellRectangle.x)));
-				int row = (definition.getHeight() - 1) - ((int) (MathUtils.map(selectedItemRectangle.y, selectedItemRectangle.y + currentSelectedItem.getPrefHeight(), 0, definition.getHeight(), cellRectangle.y)));
+				ItemDisplay selection = currentSelectedItem.getSelection();
+				ItemDefinition definition = selection.getItem().getDefinition();
+				int col = ((int) (MathUtils.map(selectedItemRectangle.x, selectedItemRectangle.x + selection.getPrefWidth(), 0, definition.getWidth(), cellRectangle.x)));
+				int row = (definition.getHeight() - 1) - ((int) (MathUtils.map(selectedItemRectangle.y, selectedItemRectangle.y + selection.getPrefHeight(), 0, definition.getHeight(), cellRectangle.y)));
 				int mask = definition.getMask()[(row * definition.getWidth() + col)];
 				result = mask == 1;
 			}
@@ -166,15 +179,6 @@ public class StorageGrid extends Table {
 		float cellY = getY() + rowIndex * (height);
 		return output.set(cellX, cellY);
 	}
-
-	private void drawItem(final Batch batch, final Item item) {
-		batch.draw(
-				item.getImage(),
-				getX() + item.getCol() * GameStage.GRID_CELL_SIZE,
-				getY() + item.getRow() * GameStage.GRID_CELL_SIZE
-		);
-	}
-
 
 	private static class Coords {
 		private int row;

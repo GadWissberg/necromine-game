@@ -21,4 +21,8 @@ public class Item {
 		this.col = col;
 		this.image = image;
 	}
+
+	public boolean isWeapon() {
+		return false;
+	}
 }

@@ -6,4 +6,9 @@ public class Weapon extends Item {
 	public Weapon(final WeaponsDefinitions definition, final int x, final int y, final Texture image) {
 		super(definition, x, y, image);
 	}
+
+	@Override
+	public boolean isWeapon() {
+		return true;
+	}
 }

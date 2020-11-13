@@ -1,16 +1,13 @@
 package com.gadarts.isometric.systems.hud;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.utils.assets.Assets;
@@ -75,23 +72,7 @@ public class GameStage extends Stage {
 
 	@Override
 	public boolean touchDown(final int screenX, final int screenY, final int pointer, final int button) {
-		Group root = getRoot();
-		SnapshotArray<Actor> children = root.getChildren();
-		boolean stopPropagate = false;
-		if (button == Input.Buttons.RIGHT) {
-			for (Actor child : children) {
-				stopPropagate |= child.notify(new GameWindowEvent(root, GameWindowEventType.MOUSE_CLICK_RIGHT), false);
-			}
-		} else if (button == Input.Buttons.LEFT) {
-			for (Actor child : children) {
-				stopPropagate |= child.notify(new GameWindowEvent(root, GameWindowEventType.MOUSE_CLICK_LEFT), false);
-			}
-		}
-		boolean result = false;
-		if (!stopPropagate) {
-			result = super.touchDown(screenX, screenY, pointer, button);
-		}
-		return result || !windows.isEmpty() || stopPropagate;
+		return super.touchDown(screenX, screenY, pointer, button) || !windows.isEmpty();
 	}
 
 	public boolean hasOpenWindows() {

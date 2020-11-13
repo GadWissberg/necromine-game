@@ -1,16 +1,18 @@
 package com.gadarts.isometric.systems.hud;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
@@ -22,7 +24,6 @@ import static com.gadarts.isometric.systems.hud.GameStage.GRID_CELL_SIZE;
 import static com.gadarts.isometric.systems.hud.GameStage.GRID_SIZE;
 
 public class StorageWindow extends GameWindow {
-	public static final int CELL_PADDING = 2;
 	public static final int PLAYER_LAYOUT_PADDING = 40;
 
 	private final Texture gridTexture;
@@ -30,7 +31,7 @@ public class StorageWindow extends GameWindow {
 	private final PlayerComponent playerComponent;
 	private StorageGrid grid;
 	@Getter
-	private ItemDisplay selectedItem;
+	private ItemSelection selectedItem = new ItemSelection();
 
 	public StorageWindow(final String windowNameStorage,
 						 final WindowStyle windowStyle,
@@ -41,26 +42,31 @@ public class StorageWindow extends GameWindow {
 		this.gridCellTexture = createGridCellTexture();
 		this.playerComponent = playerComponent;
 		addPlayerLayout(assetsManager);
+		setTouchable(Touchable.enabled);
 		addStorageGrid();
 		addListener(event -> {
-			boolean stopPropagate = false;
+			boolean result = false;
 			if (event instanceof GameWindowEvent) {
 				GameWindowEvent gameWindowEvent = (GameWindowEvent) event;
 				GameWindowEventType type = gameWindowEvent.getType();
 				if (type == GameWindowEventType.ITEM_SELECTED) {
-					applySelectedItem((ItemDisplay) gameWindowEvent.getTarget());
-					stopPropagate = true;
-				} else if (type == GameWindowEventType.ITEM_SELECTION_CLEARED) {
-					applySelectedItem(null);
-					stopPropagate = true;
+					ItemDisplay target = (ItemDisplay) event.getTarget();
+					if (selectedItem.getSelection() != target) {
+						applySelectedItem(target);
+					} else {
+						clearSelectedItem();
+					}
 				} else if (type == GameWindowEventType.ITEM_PLACED) {
+					if (event.getTarget() instanceof PlayerLayout) {
+						findActor(StorageGrid.NAME).notify(event, false);
+					} else {
+						findActor(PlayerLayout.NAME).notify(event, false);
+					}
 					clearSelectedItem();
-					stopPropagate = true;
-				} else if (type == GameWindowEventType.MOUSE_CLICK_RIGHT) {
-					clearSelectedItem();
+					result = true;
 				}
 			}
-			return stopPropagate;
+			return result;
 		});
 		addListener(new InputListener() {
 			@Override
@@ -68,7 +74,7 @@ public class StorageWindow extends GameWindow {
 				super.enter(event, x, y, pointer, fromActor);
 				Actor target = event.getTarget();
 				if (target instanceof ItemDisplay) {
-					if (selectedItem == null) {
+					if (selectedItem.getSelection() == null) {
 						ItemDisplay item = (ItemDisplay) target;
 						item.clearActions();
 						item.applyFlickerAction();
@@ -81,34 +87,30 @@ public class StorageWindow extends GameWindow {
 				super.exit(event, x, y, pointer, toActor);
 				Actor target = event.getTarget();
 				if (target instanceof ItemDisplay) {
-					if (selectedItem == null) {
+					if (selectedItem.getSelection() == null) {
 						ItemDisplay item = (ItemDisplay) target;
 						item.clearActions();
 						item.addAction(Actions.color(Color.WHITE, ItemDisplay.FLICKER_DURATION, Interpolation.smooth2));
 					}
 				}
 			}
-
 		});
-	}
-
-	@Override
-	public boolean notify(final Event event, final boolean capture) {
-		boolean result = super.notify(event, capture);
-		if (event instanceof GameWindowEvent) {
-			for (int i = 0; i < getChildren().size; i++) {
-				result |= getChildren().get(i).notify(event, false);
+		addListener(new ClickListener() {
+			@Override
+			public void clicked(final InputEvent event, final float x, final float y) {
+				super.clicked(event, x, y);
+				if (event.getKeyCode() == Input.Buttons.RIGHT) {
+					if (selectedItem.getSelection() != null) {
+						selectedItem.setSelection(null);
+					}
+				}
 			}
-		}
-		if (result) {
-			event.cancel();
-		}
-		return result;
+		});
 	}
 
 	private void addPlayerLayout(final GameAssetsManager assetsManager) {
 		Texture texture = assetsManager.getTexture(Assets.UiTextures.PLAYER_LAYOUT);
-		PlayerLayout playerLayout = new PlayerLayout(texture, playerComponent.getSelectedWeapon());
+		PlayerLayout playerLayout = new PlayerLayout(texture, playerComponent.getSelectedWeapon(), selectedItem);
 		add(playerLayout).pad(PLAYER_LAYOUT_PADDING);
 	}
 
@@ -143,14 +145,14 @@ public class StorageWindow extends GameWindow {
 	@Override
 	public void draw(final Batch batch, final float parentAlpha) {
 		super.draw(batch, parentAlpha);
-		if (selectedItem != null) {
+		if (selectedItem.getSelection() != null) {
 			drawSelectedItemOnCursor(batch);
 		}
 	}
 
 
 	private void drawSelectedItemOnCursor(final Batch batch) {
-		Texture image = selectedItem.getItem().getImage();
+		Texture image = selectedItem.getSelection().getItem().getImage();
 		float x = Gdx.input.getX(0) - image.getWidth() / 2f;
 		float y = getStage().getHeight() - Gdx.input.getY(0) - image.getHeight() / 2f;
 		batch.setColor(1f, 1f, 1f, 0.5f);
@@ -159,29 +161,25 @@ public class StorageWindow extends GameWindow {
 	}
 
 	private void applySelectedItem(final ItemDisplay itemDisplay) {
-		if (selectedItem != null) {
-			selectedItem.clearActions();
+		if (itemDisplay != null) {
+			itemDisplay.clearActions();
 		}
-		selectedItem = itemDisplay;
-		if (selectedItem != null) {
-			selectedItem.applyFlickerAction();
+		selectedItem.setSelection(itemDisplay);
+		if (itemDisplay != null) {
+			itemDisplay.applyFlickerAction();
 		}
 		closeButton.setDisabled(true);
 	}
 
 	private void addStorageGrid() {
-		grid = new StorageGrid(gridTexture, playerComponent.getStorage(), gridCellTexture);
+		grid = new StorageGrid(gridTexture, playerComponent.getStorage(), gridCellTexture, selectedItem);
 		add(grid);
 	}
 
 	private void clearSelectedItem() {
-		if (selectedItem != null) {
+		if (selectedItem.getSelection() != null) {
 			closeButton.setDisabled(false);
-			selectedItem = null;
-			getChildren().forEach(child -> {
-				GameWindowEvent event = new GameWindowEvent(this, GameWindowEventType.ITEM_SELECTION_CLEARED);
-				child.notify(event, false);
-			});
+			selectedItem.setSelection(null);
 		}
 	}
 
