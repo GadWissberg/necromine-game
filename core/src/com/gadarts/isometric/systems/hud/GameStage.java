@@ -16,10 +16,10 @@ import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class GameStage extends Stage {
 	public static final int GRID_SIZE = 256;
 	public static final int GRID_CELL_SIZE = 32;
-	static final String WINDOW_NAME_STORAGE = "storage";
 	private final Map<String, Window> windows = new HashMap<>();
 	private final PlayerComponent playerComponent;
 
@@ -42,26 +42,27 @@ public class GameStage extends Stage {
 
 
 	void openStorageWindow(final GameAssetsManager assetsManager) {
-		if (!windows.containsKey(WINDOW_NAME_STORAGE)) {
+		if (!windows.containsKey(StorageWindow.NAME)) {
 			Texture ninePatchTexture = assetsManager.getTexture(Assets.UiTextures.NINEPATCHES);
 			NinePatch patch = new NinePatch(ninePatchTexture, 12, 12, 12, 12);
 			Window.WindowStyle style = new Window.WindowStyle(new BitmapFont(), Color.BLACK, new NinePatchDrawable(patch));
-			StorageWindow window = new StorageWindow(WINDOW_NAME_STORAGE, style, assetsManager, playerComponent);
+			StorageWindow window = new StorageWindow(StorageWindow.NAME, style, assetsManager, playerComponent);
 			defineStorageWindow(window);
 			addActor(window);
-			windows.put(WINDOW_NAME_STORAGE, window);
+			windows.put(StorageWindow.NAME, window);
 		}
 	}
 
 
 	private void defineStorageWindow(final StorageWindow window) {
-		window.setName(WINDOW_NAME_STORAGE);
+		window.setName(StorageWindow.NAME);
 		window.setSize(100, 100);
 		window.pack();
 		window.setPosition(
 				getWidth() / 2 - window.getPrefWidth() / 2,
 				getHeight() / 2 - window.getPrefHeight() / 2
 		);
+		window.initialize();
 	}
 
 
@@ -78,6 +79,5 @@ public class GameStage extends Stage {
 	public boolean hasOpenWindows() {
 		return !windows.isEmpty();
 	}
-
 
 }

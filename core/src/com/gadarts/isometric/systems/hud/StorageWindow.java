@@ -25,13 +25,15 @@ import static com.gadarts.isometric.systems.hud.GameStage.GRID_SIZE;
 
 public class StorageWindow extends GameWindow {
 	public static final int PLAYER_LAYOUT_PADDING = 40;
+	static final String NAME = "storage";
 
 	private final Texture gridTexture;
 	private final Texture gridCellTexture;
 	private final PlayerComponent playerComponent;
 	private StorageGrid grid;
+
 	@Getter
-	private ItemSelectionHandler selectedItem = new ItemSelectionHandler();
+	private final ItemSelectionHandler selectedItem = new ItemSelectionHandler();
 
 	public StorageWindow(final String windowNameStorage,
 						 final WindowStyle windowStyle,
@@ -190,4 +192,7 @@ public class StorageWindow extends GameWindow {
 		}
 	}
 
+	public void initialize() {
+		grid.initialize();
+	}
 }

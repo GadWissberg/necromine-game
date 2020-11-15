@@ -17,13 +17,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.gadarts.isometric.components.player.Item;
 import com.gadarts.isometric.components.player.ItemDefinition;
 import com.gadarts.isometric.components.player.PlayerStorage;
+import com.gadarts.isometric.components.player.PlayerStorageEventsSubscriber;
 import com.gadarts.isometric.utils.Utils;
 
 import static com.gadarts.isometric.systems.hud.GameStage.GRID_CELL_SIZE;
 import static com.gadarts.isometric.systems.hud.GameStage.GRID_SIZE;
 
 @SuppressWarnings("SameParameterValue")
-public class StorageGrid extends Table {
+public class StorageGrid extends Table implements PlayerStorageEventsSubscriber {
 	static final String NAME = "storage_grid";
 	private final static Rectangle auxRectangle_1 = new Rectangle();
 	private final static Rectangle selectedItemRectangle = new Rectangle();
@@ -34,7 +35,7 @@ public class StorageGrid extends Table {
 	private final static Coords auxCoords = new Coords();
 	private final Texture gridCellTexture;
 	private final PlayerStorage playerStorage;
-	private ItemSelectionHandler itemSelectionHandler;
+	private final ItemSelectionHandler itemSelectionHandler;
 	private boolean invalidLocation;
 
 	public StorageGrid(final Texture gridTexture,
@@ -79,8 +80,6 @@ public class StorageGrid extends Table {
 						selectedItem.toFront();
 						selectedItem.clearActions();
 						result = true;
-					} else {
-
 					}
 				}
 			}
@@ -99,6 +98,7 @@ public class StorageGrid extends Table {
 			}
 
 		});
+		playerStorage.subscribeForEvents(this);
 	}
 
 	private boolean onRightClick() {
@@ -114,7 +114,6 @@ public class StorageGrid extends Table {
 		}
 		return result;
 	}
-
 
 	@Override
 	protected void drawChildren(final Batch batch, final float parentAlpha) {
@@ -197,6 +196,21 @@ public class StorageGrid extends Table {
 		float cellX = getX() + (index % cellsInRow) * (width);
 		float cellY = getY() + rowIndex * (height);
 		return output.set(cellX, cellY);
+	}
+
+	@Override
+	public void itemAddedToStorage(final Item item) {
+
+	}
+
+	public void initialize() {
+		playerStorage.getItems().forEach(item -> {
+			ItemDisplay itemDisplay = new ItemDisplay(item, itemSelectionHandler);
+			float weaponX = getX() + item.getCol() * GRID_CELL_SIZE;
+			float weaponY = getY() + item.getRow() * GRID_CELL_SIZE;
+			itemDisplay.setPosition(weaponX, weaponY);
+			StorageGrid.this.getParent().addActor(itemDisplay);
+		});
 	}
 
 	private static class Coords {

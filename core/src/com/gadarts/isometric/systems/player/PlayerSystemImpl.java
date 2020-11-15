@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.player.PlayerComponent;
+import com.gadarts.isometric.components.player.PlayerStorage;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
@@ -30,6 +31,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		HudSystemEventsSubscriber,
 		InputSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber {
+
 	private static final CharacterCommand auxCommand = new CharacterCommand();
 	private Entity player;
 	private CharacterSystem characterSystem;
@@ -102,7 +104,8 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	@Override
 	public void onItemPickedUp(final Entity itemPickedUp) {
-		ComponentsMapper.player.get(player).getStorage().addItem(ComponentsMapper.pickup.get(itemPickedUp).getItem());
+		PlayerStorage storage = ComponentsMapper.player.get(player).getStorage();
+		boolean added = storage.addItem(ComponentsMapper.pickup.get(itemPickedUp).getItem());
 	}
 
 

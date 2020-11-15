@@ -13,4 +13,5 @@ public interface PlayerSystemEventsSubscriber extends SystemEventsSubscriber {
 	void onAttackModeActivated(List<MapGraphNode> availableNodes);
 
 	void onAttackModeDeactivated();
+
 }

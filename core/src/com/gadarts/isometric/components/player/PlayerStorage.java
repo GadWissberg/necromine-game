@@ -1,39 +1,52 @@
 package com.gadarts.isometric.components.player;
 
+import com.gadarts.isometric.systems.EventsNotifier;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-public class PlayerStorage {
+public class PlayerStorage implements EventsNotifier<PlayerStorageEventsSubscriber> {
 
 	public static final int WIDTH = 8;
 	public static final int HEIGHT = 8;
 	public static final int SIZE = WIDTH * HEIGHT;
+	private final int[] storageMapSketch = new int[SIZE];
+	private final List<PlayerStorageEventsSubscriber> subscribers = new ArrayList<>();
+
 	@Getter
 	private final Set<Item> items = new LinkedHashSet<>();
 
 	@Getter
 	private final int[] storageMap = new int[SIZE];
-	private final int[] storageMapSketch = new int[SIZE];
 
 	public void clear() {
 		items.clear();
 		IntStream.range(0, storageMap.length).forEach(i -> storageMap[i] = 0);
 	}
 
-	public void addItem(final Item item) {
+	public boolean addItem(final Item item) {
 		initializeStorageArray(storageMap, storageMapSketch);
 		int index = 0;
+		boolean result = false;
 		while (index < SIZE) {
 			if (tryToFillItemArea(index, item.getDefinition())) {
 				applyItemAddition(item);
+				result = true;
 				break;
 			} else {
 				index++;
 			}
 		}
+		if (result) {
+			for (PlayerStorageEventsSubscriber subscriber : subscribers) {
+				subscriber.itemAddedToStorage(item);
+			}
+		}
+		return result;
 	}
 
 	private void applyItemAddition(final Item item) {
@@ -85,5 +98,11 @@ public class PlayerStorage {
 		for (int i = 0; i < source.length; i++) {
 			destination[i] = source[i];
 		}
+	}
+
+	@Override
+	public void subscribeForEvents(final PlayerStorageEventsSubscriber sub) {
+		if (subscribers.contains(sub)) return;
+		subscribers.add(sub);
 	}
 }
