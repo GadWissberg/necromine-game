@@ -58,6 +58,10 @@ public class StorageGrid extends Table implements PlayerStorageEventsSubscriber 
 					if (event.getTarget() instanceof StorageGrid) {
 						calculateSelectedItemRectangle();
 						ItemDisplay selectedItem = itemSelectionHandler.getSelection();
+						if (selectedItem.getLocatedIn() == StorageGrid.class) {
+							playerStorage.removeItem(selectedItem.getItem().getDefinition().getId());
+						}
+						selectedItem.setLocatedIn(StorageGrid.class);
 						Item item = selectedItem.getItem();
 						playerStorage.getItems().add(item);
 						int cellsInRow = GRID_SIZE / GRID_CELL_SIZE;
@@ -66,7 +70,7 @@ public class StorageGrid extends Table implements PlayerStorageEventsSubscriber 
 						int minCol = Integer.MAX_VALUE;
 						for (int i = 0; i < numberOfCells; i++) {
 							if ((checkIfCellIsBehindSelection(i, auxCoords))) {
-								playerStorage.getStorageMap()[auxCoords.row * cellsInRow + auxCoords.col] = 1;
+								playerStorage.getStorageMap()[auxCoords.row * cellsInRow + auxCoords.col] = item.getDefinition().getId();
 								minRow = Math.min(auxCoords.row, minRow);
 								minCol = Math.min(auxCoords.col, minCol);
 							}
@@ -156,6 +160,12 @@ public class StorageGrid extends Table implements PlayerStorageEventsSubscriber 
 		int numberOfCells = cellsInRow * cellsInRow;
 		for (int i = 0; i < numberOfCells; i++) {
 			Color color = checkIfCellIsBehindSelection(i, auxCoords) ? (!invalidLocation ? COLOR_HIGHLIGHT : COLOR_INVALID) : COLOR_REGULAR;
+			int valueInMap = playerStorage.getStorageMap()[auxCoords.row * PlayerStorage.WIDTH + auxCoords.col];
+			ItemDisplay selection = itemSelectionHandler.getSelection();
+			if (selection != null && valueInMap > 0 && valueInMap != selection.getItem().getDefinition().getId()) {
+				invalidLocation = true;
+				color = COLOR_INVALID;
+			}
 			batch.setColor(color);
 			Vector2 cellPosition = calculateCellPosition(i, auxVector);
 			batch.draw(gridCellTexture, cellPosition.x, cellPosition.y);
@@ -180,7 +190,7 @@ public class StorageGrid extends Table implements PlayerStorageEventsSubscriber 
 				ItemDisplay selection = itemSelectionHandler.getSelection();
 				ItemDefinition definition = selection.getItem().getDefinition();
 				int col = ((int) (MathUtils.map(selectedItemRectangle.x, selectedItemRectangle.x + selection.getPrefWidth(), 0, definition.getWidth(), cellRectangle.x)));
-				int row = (definition.getHeight() - 1) - ((int) (MathUtils.map(selectedItemRectangle.y, selectedItemRectangle.y + selection.getPrefHeight(), 0, definition.getHeight(), cellRectangle.y)));
+				int row = ((int) (MathUtils.map(selectedItemRectangle.y, selectedItemRectangle.y + selection.getPrefHeight(), 0, definition.getHeight(), cellRectangle.y)));
 				int mask = definition.getMask()[(row * definition.getWidth() + col)];
 				result = mask == 1;
 			}
@@ -205,7 +215,7 @@ public class StorageGrid extends Table implements PlayerStorageEventsSubscriber 
 
 	public void initialize() {
 		playerStorage.getItems().forEach(item -> {
-			ItemDisplay itemDisplay = new ItemDisplay(item, itemSelectionHandler);
+			ItemDisplay itemDisplay = new ItemDisplay(item, itemSelectionHandler, StorageGrid.class);
 			float weaponX = getX() + item.getCol() * GRID_CELL_SIZE;
 			float weaponY = getY() + item.getRow() * GRID_CELL_SIZE;
 			itemDisplay.setPosition(weaponX, weaponY);

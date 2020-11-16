@@ -25,7 +25,7 @@ public class PlayerLayout extends Table {
 
 	public PlayerLayout(final Texture texture, final Weapon weaponChoice, final ItemSelectionHandler itemSelectionHandler) {
 		this.itemSelectionHandler = itemSelectionHandler;
-		this.weaponChoice = new ItemDisplay(weaponChoice, this.itemSelectionHandler);
+		this.weaponChoice = new ItemDisplay(weaponChoice, this.itemSelectionHandler, PlayerLayout.class);
 		setTouchable(Touchable.enabled);
 		setName(NAME);
 		setBackground(new TextureRegionDrawable(texture));
@@ -79,7 +79,9 @@ public class PlayerLayout extends Table {
 		boolean result = false;
 		if (type == GameWindowEventType.ITEM_PLACED) {
 			if (event.getTarget() instanceof PlayerLayout) {
-				PlayerLayout.this.weaponChoice = itemSelectionHandler.getSelection();
+				ItemDisplay selection = itemSelectionHandler.getSelection();
+				PlayerLayout.this.weaponChoice = selection;
+				selection.setLocatedIn(PlayerLayout.class);
 				placeWeapon();
 			} else {
 				PlayerLayout.this.weaponChoice = null;

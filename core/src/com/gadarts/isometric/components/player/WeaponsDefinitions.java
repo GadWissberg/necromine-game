@@ -24,7 +24,17 @@ public enum WeaponsDefinitions implements ItemDefinition {
 		this.width = width;
 		this.height = height;
 		this.image = image;
-		this.mask = mask;
+		this.mask = flipMatrixVertically(mask);
+	}
+
+	private int[] flipMatrixVertically(final int[] mask) {
+		int[] flipped = new int[mask.length];
+		for (int row = 0; row < height; row++) {
+			for (int col = 0; col < width; col++) {
+				flipped[row * width + col] = mask[((height - 1 - row) * width) + col];
+			}
+		}
+		return flipped;
 	}
 
 	@Override
@@ -40,6 +50,11 @@ public enum WeaponsDefinitions implements ItemDefinition {
 	@Override
 	public int getHeight() {
 		return height;
+	}
+
+	@Override
+	public int getId() {
+		return ordinal() + 1;
 	}
 
 	@Override

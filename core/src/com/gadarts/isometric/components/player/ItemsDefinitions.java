@@ -32,6 +32,11 @@ public enum ItemsDefinitions implements ItemDefinition {
 	}
 
 	@Override
+	public int getId() {
+		return 0;
+	}
+
+	@Override
 	public Assets.UiTextures getImage() {
 		return image;
 	}

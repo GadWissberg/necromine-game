@@ -10,8 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.gadarts.isometric.components.player.Item;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class ItemDisplay extends Image {
@@ -21,16 +23,22 @@ public class ItemDisplay extends Image {
 	private static final Vector2 auxVector = new Vector2();
 	private final ItemSelectionHandler itemSelectionHandler;
 
+	@Setter
+	private Class<? extends Table> locatedIn;
+
 	@Override
 	public void clearActions() {
 		super.clearActions();
 		setColor(Color.WHITE);
 	}
 
-	public ItemDisplay(final Item item, final ItemSelectionHandler itemSelectionHandler) {
+	public ItemDisplay(final Item item,
+					   final ItemSelectionHandler itemSelectionHandler,
+					   final Class<? extends Table> locatedIn) {
 		super(item.getImage());
 		this.item = item;
 		this.itemSelectionHandler = itemSelectionHandler;
+		this.locatedIn = locatedIn;
 		addListener(new InputListener() {
 			@Override
 			public boolean touchDown(final InputEvent event, final float x, final float y, final int pointer, final int button) {

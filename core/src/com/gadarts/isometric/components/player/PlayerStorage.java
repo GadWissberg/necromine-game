@@ -84,7 +84,7 @@ public class PlayerStorage implements EventsNotifier<PlayerStorageEventsSubscrib
 		if (definition.getMask()[row * definition.getWidth() + col] == 1) {
 			int currentCellInStorage = row * WIDTH + col;
 			if (storageMap[currentCellInStorage] == 0) {
-				storageMapSketch[currentCellInStorage] = 1;
+				storageMapSketch[currentCellInStorage] = definition.getId();
 				return true;
 			} else {
 				return false;
@@ -104,5 +104,16 @@ public class PlayerStorage implements EventsNotifier<PlayerStorageEventsSubscrib
 	public void subscribeForEvents(final PlayerStorageEventsSubscriber sub) {
 		if (subscribers.contains(sub)) return;
 		subscribers.add(sub);
+	}
+
+	public void removeItem(final int itemId) {
+		for (int row = 0; row < WIDTH; row++) {
+			for (int col = 0; col < HEIGHT; col++) {
+				int i = row * WIDTH + col;
+				if (storageMap[i] == itemId) {
+					storageMap[i] = 0;
+				}
+			}
+		}
 	}
 }

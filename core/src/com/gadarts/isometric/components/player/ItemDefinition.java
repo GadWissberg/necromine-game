@@ -9,5 +9,7 @@ public interface ItemDefinition {
 
 	int getHeight();
 
+	int getId();
+
 	Assets.UiTextures getImage();
 }
