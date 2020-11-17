@@ -7,19 +7,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.gadarts.isometric.components.player.Weapon;
 import lombok.Getter;
 
-public class PlayerLayout extends Table {
+public class PlayerLayout extends ItemsTable {
 	public static final int WEAPON_POSITION_PARENT_X = 100;
 	public static final int WEAPON_POSITION_PARENT_Y = 200;
 	static final String NAME = "player_layout";
 	private final static Vector2 auxVector = new Vector2();
 	private static final float SPOT_RADIUS = 25;
-	private ItemSelectionHandler itemSelectionHandler;
+	private final ItemSelectionHandler itemSelectionHandler;
 	@Getter
 	private ItemDisplay weaponChoice;
 
@@ -78,13 +77,17 @@ public class PlayerLayout extends Table {
 		GameWindowEventType type = ((GameWindowEvent) event).getType();
 		boolean result = false;
 		if (type == GameWindowEventType.ITEM_PLACED) {
+			ItemsTable itemsTable = (ItemsTable) event.getTarget();
+			ItemDisplay selection = itemSelectionHandler.getSelection();
 			if (event.getTarget() instanceof PlayerLayout) {
-				ItemDisplay selection = itemSelectionHandler.getSelection();
+				itemsTable.removeItem(selection);
 				PlayerLayout.this.weaponChoice = selection;
 				selection.setLocatedIn(PlayerLayout.class);
 				placeWeapon();
 			} else {
-				PlayerLayout.this.weaponChoice = null;
+				if (selection == weaponChoice) {
+					removeItem(selection);
+				}
 			}
 			result = true;
 		}
@@ -120,4 +123,10 @@ public class PlayerLayout extends Table {
 	}
 
 
+	@Override
+	protected void removeItem(final ItemDisplay item) {
+		if (weaponChoice == item) {
+			weaponChoice = null;
+		}
+	}
 }

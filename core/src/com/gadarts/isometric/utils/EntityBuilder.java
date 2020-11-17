@@ -145,8 +145,10 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addPickUpComponent(final ItemDefinition definition, final Texture displayImage) {
-		Item item = Pools.obtain(Item.class);
+	public EntityBuilder addPickUpComponent(final ItemDefinition definition,
+											final Texture displayImage,
+											final Class<? extends Item> itemClass) {
+		Item item = Pools.obtain(itemClass);
 		item.init(definition, 0, 0, displayImage);
 		PickUpComponent pickupComponent = engine.createComponent(PickUpComponent.class);
 		pickupComponent.setItem(item);

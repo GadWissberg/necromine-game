@@ -3,6 +3,7 @@ package com.gadarts.isometric.systems.hud;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.gadarts.isometric.components.player.Item;
+import com.gadarts.isometric.components.player.ItemDefinition;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +32,17 @@ public class ItemDisplay extends Image {
 	public void clearActions() {
 		super.clearActions();
 		setColor(Color.WHITE);
+	}
+
+	@Override
+	public Actor hit(final float x, final float y, final boolean touchable) {
+		if (!isVisible() || (touchable && getTouchable() != Touchable.enabled) || x < 0 || y < 0) return null;
+		ItemDefinition def = item.getDefinition();
+		int col = (int) MathUtils.map(0, getPrefWidth(), 0, def.getWidth(), x);
+		int row = ((int) MathUtils.map(0, getPrefHeight(), 0, def.getHeight(), y));
+		float cellIndex = def.getWidth() * row + col;
+		if (cellIndex < 0 || cellIndex >= def.getWidth() * def.getHeight()) return null;
+		return def.getMask()[(int) cellIndex] == 1 ? this : null;
 	}
 
 	public ItemDisplay(final Item item,

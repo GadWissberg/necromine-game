@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.gadarts.isometric.components.player.Item;
@@ -24,7 +23,7 @@ import static com.gadarts.isometric.systems.hud.GameStage.GRID_CELL_SIZE;
 import static com.gadarts.isometric.systems.hud.GameStage.GRID_SIZE;
 
 @SuppressWarnings("SameParameterValue")
-public class StorageGrid extends Table implements PlayerStorageEventsSubscriber {
+public class StorageGrid extends ItemsTable implements PlayerStorageEventsSubscriber {
 	static final String NAME = "storage_grid";
 	private final static Rectangle auxRectangle_1 = new Rectangle();
 	private final static Rectangle selectedItemRectangle = new Rectangle();
@@ -55,12 +54,11 @@ public class StorageGrid extends Table implements PlayerStorageEventsSubscriber 
 				GameWindowEvent gameWindowEvent = (GameWindowEvent) event;
 				GameWindowEventType type = gameWindowEvent.getType();
 				if (type == GameWindowEventType.ITEM_PLACED) {
-					if (event.getTarget() instanceof StorageGrid) {
+					ItemsTable itemsTable = (ItemsTable) event.getTarget();
+					ItemDisplay selectedItem = itemSelectionHandler.getSelection();
+					if (itemsTable instanceof StorageGrid) {
 						calculateSelectedItemRectangle();
-						ItemDisplay selectedItem = itemSelectionHandler.getSelection();
-						if (selectedItem.getLocatedIn() == StorageGrid.class) {
-							playerStorage.removeItem(selectedItem.getItem().getDefinition().getId());
-						}
+						itemsTable.removeItem(selectedItem);
 						selectedItem.setLocatedIn(StorageGrid.class);
 						Item item = selectedItem.getItem();
 						playerStorage.getItems().add(item);
@@ -83,8 +81,10 @@ public class StorageGrid extends Table implements PlayerStorageEventsSubscriber 
 						);
 						selectedItem.toFront();
 						selectedItem.clearActions();
-						result = true;
+					} else {
+						removeItem(selectedItem);
 					}
+					result = true;
 				}
 			}
 			return result;
@@ -159,10 +159,11 @@ public class StorageGrid extends Table implements PlayerStorageEventsSubscriber 
 		int cellsInRow = GRID_SIZE / GRID_CELL_SIZE;
 		int numberOfCells = cellsInRow * cellsInRow;
 		for (int i = 0; i < numberOfCells; i++) {
-			Color color = checkIfCellIsBehindSelection(i, auxCoords) ? (!invalidLocation ? COLOR_HIGHLIGHT : COLOR_INVALID) : COLOR_REGULAR;
+			boolean cellIsBehindSelection = checkIfCellIsBehindSelection(i, auxCoords);
+			Color color = cellIsBehindSelection ? (!invalidLocation ? COLOR_HIGHLIGHT : COLOR_INVALID) : COLOR_REGULAR;
 			int valueInMap = playerStorage.getStorageMap()[auxCoords.row * PlayerStorage.WIDTH + auxCoords.col];
 			ItemDisplay selection = itemSelectionHandler.getSelection();
-			if (selection != null && valueInMap > 0 && valueInMap != selection.getItem().getDefinition().getId()) {
+			if (selection != null && cellIsBehindSelection && valueInMap > 0 && valueInMap != selection.getItem().getDefinition().getId()) {
 				invalidLocation = true;
 				color = COLOR_INVALID;
 			}
@@ -221,6 +222,11 @@ public class StorageGrid extends Table implements PlayerStorageEventsSubscriber 
 			itemDisplay.setPosition(weaponX, weaponY);
 			StorageGrid.this.getParent().addActor(itemDisplay);
 		});
+	}
+
+	@Override
+	protected void removeItem(final ItemDisplay item) {
+		playerStorage.removeItem(item.getItem().getDefinition().getId());
 	}
 
 	private static class Coords {

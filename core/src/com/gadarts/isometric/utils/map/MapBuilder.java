@@ -75,9 +75,10 @@ public final class MapBuilder {
 	private void addWeaponPickupTest() {
 		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(Assets.Models.COLT));
 		modelInstance.transform.setTranslation(auxVector3_1.set(1.5f, 0, 2.5f));
+		Assets.UiTextures coltImage = WeaponsDefinitions.COLT.getImage();
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true)
-				.addPickUpComponent(WeaponsDefinitions.COLT, assetManager.getTexture(WeaponsDefinitions.COLT.getImage()))
+				.addPickUpComponent(WeaponsDefinitions.COLT, assetManager.getTexture(coltImage), Weapon.class)
 				.finishAndAddToEngine();
 	}
 
