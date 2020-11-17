@@ -66,6 +66,8 @@ public class StorageWindow extends GameWindow {
 					}
 					clearSelectedItem();
 					result = true;
+				} else if (type == GameWindowEventType.CLICK_RIGHT) {
+					result = onRightClick();
 				}
 			}
 			return result;
@@ -106,15 +108,21 @@ public class StorageWindow extends GameWindow {
 									 final int button) {
 				boolean result = super.touchDown(event, x, y, pointer, button);
 				if (button == Input.Buttons.RIGHT) {
-					if (selectedItem.getSelection() != null) {
-						selectedItem.setSelection(null);
-						result = true;
-					}
+					result = onRightClick();
 				}
 				return result;
 			}
 
 		});
+	}
+
+	private boolean onRightClick() {
+		boolean result = false;
+		if (selectedItem.getSelection() != null) {
+			clearSelectedItem();
+			result = true;
+		}
+		return result;
 	}
 
 	private void addPlayerLayout(final GameAssetsManager assetsManager) {

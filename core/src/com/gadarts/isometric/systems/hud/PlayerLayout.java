@@ -18,12 +18,12 @@ public class PlayerLayout extends ItemsTable {
 	static final String NAME = "player_layout";
 	private final static Vector2 auxVector = new Vector2();
 	private static final float SPOT_RADIUS = 25;
-	private final ItemSelectionHandler itemSelectionHandler;
+
 	@Getter
 	private ItemDisplay weaponChoice;
 
 	public PlayerLayout(final Texture texture, final Weapon weaponChoice, final ItemSelectionHandler itemSelectionHandler) {
-		this.itemSelectionHandler = itemSelectionHandler;
+		super(itemSelectionHandler);
 		this.weaponChoice = new ItemDisplay(weaponChoice, this.itemSelectionHandler, PlayerLayout.class);
 		setTouchable(Touchable.enabled);
 		setName(NAME);
@@ -43,17 +43,23 @@ public class PlayerLayout extends ItemsTable {
 									 final int pointer,
 									 final int button) {
 				super.touchDown(event, x, y, pointer, button);
-				boolean result = false;
-				if (button == Input.Buttons.RIGHT) {
-					onRightClick(itemSelectionHandler);
-					result = true;
-				} else if (button == Input.Buttons.LEFT) {
-					result = onLeftClick(x, y);
-				}
+				boolean result;
+				result = onClick(x, y, button);
 				return result;
 			}
 
 		});
+	}
+
+	private boolean onClick(final float x, final float y, final int button) {
+		boolean result = false;
+		if (button == Input.Buttons.RIGHT) {
+			onRightClick();
+			result = true;
+		} else if (button == Input.Buttons.LEFT) {
+			result = onLeftClick(x, y);
+		}
+		return result;
 	}
 
 	private boolean onLeftClick(final float x, final float y) {
@@ -65,12 +71,6 @@ public class PlayerLayout extends ItemsTable {
 			result = true;
 		}
 		return result;
-	}
-
-	private void onRightClick(final ItemSelectionHandler itemSelectionHandler) {
-		if (itemSelectionHandler.getSelection() != null) {
-			itemSelectionHandler.setSelection(null);
-		}
 	}
 
 	private boolean onGameWindowEvent(final com.badlogic.gdx.scenes.scene2d.Event event) {

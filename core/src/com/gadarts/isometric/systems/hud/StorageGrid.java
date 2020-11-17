@@ -34,16 +34,14 @@ public class StorageGrid extends ItemsTable implements PlayerStorageEventsSubscr
 	private final static Coords auxCoords = new Coords();
 	private final Texture gridCellTexture;
 	private final PlayerStorage playerStorage;
-	private final ItemSelectionHandler itemSelectionHandler;
 	private boolean invalidLocation;
 
 	public StorageGrid(final Texture gridTexture,
 					   final PlayerStorage playerStorage,
 					   final Texture gridCellTexture,
 					   final ItemSelectionHandler itemSelectionHandler) {
-		super();
+		super(itemSelectionHandler);
 		setTouchable(Touchable.enabled);
-		this.itemSelectionHandler = itemSelectionHandler;
 		setName(NAME);
 		setBackground(new TextureRegionDrawable(gridTexture));
 		this.playerStorage = playerStorage;
@@ -96,18 +94,14 @@ public class StorageGrid extends ItemsTable implements PlayerStorageEventsSubscr
 				if (button == Input.Buttons.LEFT) {
 					result |= onLeftClick();
 				} else if (button == Input.Buttons.RIGHT) {
-					result |= onRightClick();
+					onRightClick();
+					result = true;
 				}
 				return result;
 			}
 
 		});
 		playerStorage.subscribeForEvents(this);
-	}
-
-	private boolean onRightClick() {
-		itemSelectionHandler.setSelection(null);
-		return true;
 	}
 
 	private boolean onLeftClick() {

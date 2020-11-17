@@ -56,9 +56,9 @@ public class ItemDisplay extends Image {
 			@Override
 			public boolean touchDown(final InputEvent event, final float x, final float y, final int pointer, final int button) {
 				boolean result = false;
-				if (event.getKeyCode() == Input.Buttons.LEFT) {
+				if (button == Input.Buttons.LEFT) {
 					result = onLeftClick(event, x, y);
-				} else if (event.getKeyCode() == Input.Buttons.RIGHT) {
+				} else if (button == Input.Buttons.RIGHT) {
 					onRightClick();
 					result = true;
 				}
@@ -67,10 +67,8 @@ public class ItemDisplay extends Image {
 		});
 	}
 
-	private void onRightClick() {
-		if (itemSelectionHandler.getSelection() != null) {
-			itemSelectionHandler.setSelection(null);
-		}
+	protected void onRightClick() {
+		fire(new GameWindowEvent(this, GameWindowEventType.CLICK_RIGHT));
 	}
 
 	private boolean onLeftClick(final InputEvent event, final float x, final float y) {
