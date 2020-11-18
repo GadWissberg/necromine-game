@@ -28,7 +28,6 @@ public class GameWindow extends Window {
 				if (closeButton.isDisabled()) return;
 				super.clicked(event, x, y);
 				GameWindow.this.fire(new GameWindowEvent(GameWindow.this, GameWindowEventType.WINDOW_CLOSED));
-				GameWindow.this.remove();
 			}
 		});
 	}

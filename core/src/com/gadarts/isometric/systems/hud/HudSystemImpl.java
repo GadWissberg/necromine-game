@@ -326,7 +326,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	@Override
 	public boolean hasOpenWindows() {
-		return !stage.hasOpenWindows();
+		return stage.hasOpenWindows();
 	}
 
 	@Override
