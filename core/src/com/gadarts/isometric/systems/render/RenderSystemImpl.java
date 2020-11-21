@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -104,7 +105,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(entity);
 			Decal decal = characterDecalComponent.getDecal();
 			auxVector2_3.set(1, 0);
-			float playerAngle = characterComponent.getFacingDirection().getDirection(auxVector2_1).angle();
+			CharacterSpriteData characterSpriteData = characterComponent.getCharacterSpriteData();
+			float playerAngle = characterSpriteData.getFacingDirection().getDirection(auxVector2_1).angle();
 			Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
 			Intersector.intersectRayPlane(ray, auxPlane, auxVector3_1);
 			float cameraAngle = auxVector2_2.set(camera.position.x, camera.position.z).sub(auxVector3_1.x, auxVector3_1.z).angle();
@@ -128,8 +130,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			} else {
 				direction = CharacterComponent.Direction.SOUTH_EAST;
 			}
-			SpriteType spriteType = characterComponent.getSpriteType();
-			boolean sameSpriteType = characterComponent.getSpriteType().equals(characterDecalComponent.getSpriteType());
+			SpriteType spriteType = characterSpriteData.getSpriteType();
+			boolean sameSpriteType = characterSpriteData.getSpriteType().equals(characterDecalComponent.getSpriteType());
 			boolean sameDirection = characterDecalComponent.getDirection().equals(direction);
 			if ((!sameSpriteType || !sameDirection) && characterDecalComponent.getSpriteType() != SpriteType.DIE) {
 				characterDecalComponent.initializeSprite(spriteType, direction);

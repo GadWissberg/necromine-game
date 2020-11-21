@@ -140,7 +140,8 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		CharacterComponent characterComponent = ComponentsMapper.character.get(player);
 		Weapon selectedWeapon = ComponentsMapper.player.get(player).getStorage().getSelectedWeapon();
 		WeaponsDefinitions definition = (WeaponsDefinitions) selectedWeapon.getDefinition();
-		characterComponent.setHitFrame(definition.getHitFrameIndex());
+		characterComponent.getCharacterSpriteData().setHitFrameIndex(definition.getHitFrameIndex());
+		characterComponent.setAttackSound(definition.getAttackSound());
 		characterComponent.setTarget(map.getEnemyFromNode(enemies, node));
 		applyShootCommand(node);
 	}

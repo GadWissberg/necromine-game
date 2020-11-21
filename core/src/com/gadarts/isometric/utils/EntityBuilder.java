@@ -2,6 +2,7 @@ package com.gadarts.isometric.utils;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.player.Item;
 import com.gadarts.isometric.components.player.ItemDefinition;
@@ -75,12 +77,11 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addCharacterComponent(final CharacterComponent.Direction direction,
-											   final SpriteType spriteType,
+	public EntityBuilder addCharacterComponent(final CharacterSpriteData characterSpriteData,
 											   final Entity target,
-											   final int hitFrame) {
+											   final Sound attackSound) {
 		CharacterComponent charComponent = engine.createComponent(CharacterComponent.class);
-		charComponent.init(direction, spriteType, hitFrame);
+		charComponent.init(characterSpriteData);
 		charComponent.setTarget(target);
 		currentEntity.add(charComponent);
 		return instance;

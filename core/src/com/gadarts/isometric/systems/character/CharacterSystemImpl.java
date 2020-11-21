@@ -13,11 +13,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.AnimationComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.*;
 import com.gadarts.isometric.components.character.CharacterComponent.Direction;
-import com.gadarts.isometric.components.character.CharacterMode;
-import com.gadarts.isometric.components.character.CharacterRotationData;
-import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.player.Weapon;
+import com.gadarts.isometric.components.player.WeaponsDefinitions;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
@@ -130,7 +129,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		graphData.getCurrentPath().clear();
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		characterComponent.setMode(IDLE);
-		characterComponent.setSpriteType(SpriteType.IDLE);
+		characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.IDLE);
 		currentCommand = null;
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCommandDone(character);
@@ -168,7 +167,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		if (currentCommand != null) {
 			Entity character = currentCommand.getCharacter();
 			CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-			SpriteType spriteType = characterComponent.getSpriteType();
+			SpriteType spriteType = characterComponent.getCharacterSpriteData().getSpriteType();
 			if (spriteType == SpriteType.ATTACK || spriteType == SpriteType.PICKUP) {
 				handleModeWithNonLoopingAnimation(character);
 			} else {
@@ -185,7 +184,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		long lastDamage = characterComponent.getLastDamage();
 		if (characterComponent.getMode() == PAIN && TimeUtils.timeSinceMillis(lastDamage) > CHARACTER_PAIN_DURATION) {
 			characterComponent.setMode(IDLE);
-			characterComponent.setSpriteType(SpriteType.IDLE);
+			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.IDLE);
 		}
 	}
 
@@ -195,14 +194,15 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		if (rotationData.isRotating() && TimeUtils.timeSinceMillis(rotationData.getLastRotation()) > ROT_INTERVAL) {
 			rotationData.setLastRotation(TimeUtils.millis());
 			Direction directionToDest;
+			CharacterSpriteData characterSpriteData = charComponent.getCharacterSpriteData();
 			if (charComponent.getMode() == CharacterMode.ATTACKING) {
 				directionToDest = calculateDirectionToTarget(character);
 			} else if (charComponent.getMode() == PICKING_UP) {
-				directionToDest = charComponent.getFacingDirection();
+				directionToDest = characterSpriteData.getFacingDirection();
 			} else {
 				directionToDest = calculateDirectionToDestination(character);
 			}
-			if (charComponent.getFacingDirection() != directionToDest) {
+			if (characterSpriteData.getFacingDirection() != directionToDest) {
 				rotate(charComponent, directionToDest);
 			} else {
 				rotationData.setRotating(false);
@@ -214,13 +214,14 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				} else {
 					spriteType = SpriteType.RUN;
 				}
-				charComponent.setSpriteType(spriteType);
+				characterSpriteData.setSpriteType(spriteType);
 			}
 		}
 	}
 
 	private void rotate(final CharacterComponent charComponent, final Direction directionToDest) {
-		Vector2 currentDirVector = charComponent.getFacingDirection().getDirection(auxVector2_1);
+		CharacterSpriteData characterSpriteData = charComponent.getCharacterSpriteData();
+		Vector2 currentDirVector = characterSpriteData.getFacingDirection().getDirection(auxVector2_1);
 		int side;
 		float diff = directionToDest.getDirection(auxVector2_2).angle() - currentDirVector.angle();
 		if (auxVector2_3.set(1, 0).setAngle(diff).angle() > 180) {
@@ -228,7 +229,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		} else {
 			side = 1;
 		}
-		charComponent.setFacingDirection(Direction.findDirection(currentDirVector.rotate(45f * side)));
+		characterSpriteData.setFacingDirection(Direction.findDirection(currentDirVector.rotate(45f * side)));
 	}
 
 	private Direction calculateDirectionToDestination(final Entity character) {
@@ -254,7 +255,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		AnimationComponent animationComponent = ComponentsMapper.animation.get(character);
 		Animation<TextureAtlas.AtlasRegion> animation = animationComponent.getAnimation();
 		if (animation.isAnimationFinished(animationComponent.getStateTime())) {
-			SpriteType spriteType = ComponentsMapper.character.get(character).getSpriteType();
+			SpriteType spriteType = ComponentsMapper.character.get(character).getCharacterSpriteData().getSpriteType();
 			if (spriteType.isAddReverse()) {
 				if (animationComponent.isDoReverse()) {
 					commandDone(character);
@@ -275,7 +276,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		characterComponent.dealDamage(1);
 		if (characterComponent.getHp() <= 0) {
-			characterComponent.setSpriteType(SpriteType.DIE);
+			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.DIE);
 			characterComponent.setMode(CharacterMode.DEAD);
 			soundPlayer.playSound(Assets.Sounds.ENEMY_DIE);
 		} else {
@@ -291,7 +292,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 
 	private void applyTargetToDisplayPain(final Entity character) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		characterComponent.setSpriteType(SpriteType.PAIN);
+		characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.PAIN);
 	}
 
 	@Override
@@ -310,13 +311,23 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@Override
 	public void onFrameChanged(final Entity character, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		SpriteType spriteType = characterComponent.getSpriteType();
-		if (spriteType == SpriteType.RUN) {
+		CharacterSpriteData characterSpriteData = characterComponent.getCharacterSpriteData();
+		if (characterSpriteData.getSpriteType() == SpriteType.RUN) {
 			applyRunning(character, newFrame, characterComponent);
-		} else if (spriteType == SpriteType.ATTACK) {
-			if (newFrame.index == characterComponent.getHitFrame()) {
-				soundPlayer.playSound(Assets.Sounds.ATTACK_CLAW);
-				applyDamageToCharacter(characterComponent.getTarget());
+		} else if (characterSpriteData.getSpriteType() == SpriteType.ATTACK) {
+			if (newFrame.index == characterSpriteData.getHitFrameIndex()) {
+				soundPlayer.playSound(characterComponent.getAttackSound());
+				if (ComponentsMapper.player.has(character)) {
+					Weapon weapon = ComponentsMapper.player.get(character).getStorage().getSelectedWeapon();
+					WeaponsDefinitions definition = (WeaponsDefinitions) weapon.getDefinition();
+					if (definition.isMelee()) {
+						applyDamageToCharacter(characterComponent.getTarget());
+					} else {
+
+					}
+				} else {
+					applyDamageToCharacter(characterComponent.getTarget());
+				}
 			}
 		}
 	}

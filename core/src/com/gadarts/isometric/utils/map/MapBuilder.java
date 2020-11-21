@@ -3,6 +3,7 @@ package com.gadarts.isometric.utils.map;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
@@ -21,6 +22,8 @@ import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.CharacterComponent.Direction;
+import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
@@ -164,8 +167,12 @@ public final class MapBuilder {
 									   final Vector3 position,
 									   final Entity target) {
 		CharacterAnimations animations = assetManager.get(atlas.name());
-		entityBuilder.addCharacterComponent(CharacterComponent.Direction.SOUTH, SpriteType.IDLE, target, 1)
-				.addCharacterDecalComponent(animations, SpriteType.IDLE, CharacterComponent.Direction.SOUTH, position)
+		SpriteType spriteType = SpriteType.IDLE;
+		Sound attackSound = assetManager.getSound(Assets.Sounds.ATTACK_CLAW);
+		CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
+		characterSpriteData.init(Direction.SOUTH, spriteType, 1);
+		entityBuilder.addCharacterComponent(characterSpriteData, target, attackSound)
+				.addCharacterDecalComponent(animations, spriteType, Direction.SOUTH, position)
 				.addAnimationComponent();
 	}
 

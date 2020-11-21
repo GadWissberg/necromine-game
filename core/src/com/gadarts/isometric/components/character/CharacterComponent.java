@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.GameComponent;
 import com.gadarts.isometric.utils.Utils;
+import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,12 +23,11 @@ public class CharacterComponent implements GameComponent {
 
 	private Entity target;
 	private CharacterRotationData rotationData = new CharacterRotationData();
-	private SpriteType spriteType;
-	private Direction facingDirection;
 	private int hp;
 	private long lastDamage;
 	private Object modeAdditionalData;
-	private int hitFrame;
+	private Assets.Sounds attackSound;
+	private CharacterSpriteData characterSpriteData;
 
 	public MapGraphNode getDestinationNode() {
 		return destinationNode;
@@ -55,11 +55,9 @@ public class CharacterComponent implements GameComponent {
 		rotationData.reset();
 	}
 
-	public void init(final Direction direction, final SpriteType type, final int hitFrame) {
-		this.facingDirection = direction;
-		this.spriteType = type;
+	public void init(final CharacterSpriteData characterSpriteData) {
+		this.characterSpriteData = characterSpriteData;
 		this.hp = 3;
-		this.hitFrame = hitFrame;
 	}
 
 	public void dealDamage(final int damagePoints) {
