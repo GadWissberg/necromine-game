@@ -323,7 +323,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 					if (definition.isMelee()) {
 						applyDamageToCharacter(characterComponent.getTarget());
 					} else {
-
+						applyDamageToCharacter(characterComponent.getTarget());
 					}
 				} else {
 					applyDamageToCharacter(characterComponent.getTarget());
