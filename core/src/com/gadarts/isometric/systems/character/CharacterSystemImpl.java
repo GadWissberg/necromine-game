@@ -3,6 +3,7 @@ package com.gadarts.isometric.systems.character;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -22,6 +23,7 @@ import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
+import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.map.MapGraphNode;
@@ -323,7 +325,12 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 					if (definition.isMelee()) {
 						applyDamageToCharacter(characterComponent.getTarget());
 					} else {
-						applyDamageToCharacter(characterComponent.getTarget());
+						Decal decal = ComponentsMapper.characterDecal.get(character).getDecal();
+						Vector3 position = auxVector3_1.set(decal.getPosition());
+						EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
+								.addBulletComponent()
+								.addSimpleDecalComponent(position, weapon.getBulletTextureRegion(), true)
+								.finishAndAddToEngine();
 					}
 				} else {
 					applyDamageToCharacter(characterComponent.getTarget());

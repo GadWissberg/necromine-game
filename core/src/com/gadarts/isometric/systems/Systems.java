@@ -1,5 +1,7 @@
 package com.gadarts.isometric.systems;
 
+import com.gadarts.isometric.systems.bullets.BulletsSystemEventsSubscriber;
+import com.gadarts.isometric.systems.bullets.BulletsSystemImpl;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.camera.CameraSystemImpl;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
@@ -32,6 +34,7 @@ public enum Systems {
 	RENDER(new RenderSystemImpl(), RenderSystemEventsSubscriber.class),
 	TURNS(new TurnsSystemImpl(), TurnsSystemEventsSubscriber.class),
 	PICKUPS(new PickUpSystemImpl(), PickupSystemEventsSubscriber.class),
+	BULLETS(new BulletsSystemImpl(), BulletsSystemEventsSubscriber.class),
 	PROFILER(new ProfilerSystem());
 
 	private final GameSystem implementation;

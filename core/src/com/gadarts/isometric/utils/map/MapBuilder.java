@@ -7,6 +7,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -47,6 +48,7 @@ public final class MapBuilder {
 	private static final Vector3 auxVector3_3 = new Vector3();
 	private static final Vector3 auxVector3_4 = new Vector3();
 	private static final Vector3 auxVector3_5 = new Vector3();
+	private static final String REGION_NAME_BULLET = "bullet";
 
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
@@ -78,10 +80,12 @@ public final class MapBuilder {
 	private void addWeaponPickupTest() {
 		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(Assets.Models.COLT));
 		modelInstance.transform.setTranslation(auxVector3_1.set(1.5f, 0, 2.5f));
-		Assets.UiTextures coltImage = WeaponsDefinitions.COLT.getImage();
+		Atlases atlas = Atlases.findByRelatedWeapon(WeaponsDefinitions.COLT);
+		TextureAtlas.AtlasRegion bulletRegion = assetManager.getAtlas(atlas).findRegion(REGION_NAME_BULLET);
+		Texture displayImage = assetManager.getTexture(WeaponsDefinitions.COLT.getImage());
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true)
-				.addPickUpComponent(WeaponsDefinitions.COLT, assetManager.getTexture(coltImage), Weapon.class)
+				.addPickUpComponentAsWeapon(WeaponsDefinitions.COLT, displayImage, bulletRegion)
 				.finishAndAddToEngine();
 	}
 

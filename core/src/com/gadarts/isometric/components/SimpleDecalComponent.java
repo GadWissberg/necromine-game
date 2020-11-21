@@ -18,8 +18,13 @@ public class SimpleDecalComponent implements GameComponent {
 
 	}
 
+	//Optimize this - it creates an object each time.
 	public void init(final Texture texture, final boolean visible) {
-		decal = Decal.newDecal(new TextureRegion(texture), true);//Optimize this - it creates an object each time.
+		init(new TextureRegion(texture), visible);
+	}
+
+	public void init(final TextureRegion textureRegion, final boolean visible) {
+		decal = Decal.newDecal(textureRegion, true);
 		this.visible = visible;
 	}
 }

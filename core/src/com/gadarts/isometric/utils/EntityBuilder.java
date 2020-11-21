@@ -4,6 +4,8 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
@@ -13,10 +15,7 @@ import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
-import com.gadarts.isometric.components.player.Item;
-import com.gadarts.isometric.components.player.ItemDefinition;
-import com.gadarts.isometric.components.player.PlayerComponent;
-import com.gadarts.isometric.components.player.Weapon;
+import com.gadarts.isometric.components.player.*;
 import lombok.AccessLevel;
 import lombok.Setter;
 
@@ -107,6 +106,18 @@ public final class EntityBuilder {
 		return instance;
 	}
 
+	public EntityBuilder addSimpleDecalComponent(final Vector3 position,
+												 final TextureRegion textureRegion,
+												 final boolean visible) {
+		SimpleDecalComponent simpleDecalComponent = engine.createComponent(SimpleDecalComponent.class);
+		simpleDecalComponent.init(textureRegion, visible);
+		Decal decal = simpleDecalComponent.getDecal();
+		decal.setPosition(position);
+		decal.setScale(CharacterDecalComponent.BILLBOARD_SCALE);
+		currentEntity.add(simpleDecalComponent);
+		return instance;
+	}
+
 	public EntityBuilder addEnemyComponent() {
 		EnemyComponent component = engine.createComponent(EnemyComponent.class);
 		component.init();
@@ -143,14 +154,34 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addPickUpComponent(final ItemDefinition definition,
-											final Texture displayImage,
-											final Class<? extends Item> itemClass) {
-		Item item = Pools.obtain(itemClass);
-		item.init(definition, 0, 0, displayImage);
+	public EntityBuilder addPickUpComponentAsWeapon(final WeaponsDefinitions definition,
+													final Texture displayImage,
+													final TextureAtlas.AtlasRegion bulletRegion) {
+		Weapon weapon = (Weapon) addPickUpComponent(Weapon.class, definition, displayImage);
+		weapon.setBulletTextureRegion(bulletRegion);
+		return instance;
+	}
+
+	private Item addPickUpComponent(final Class<? extends Item> type,
+									final ItemDefinition definition,
+									final Texture displayImage) {
+		Item pickup = Pools.obtain(type);
+		pickup.init(definition, 0, 0, displayImage);
 		PickUpComponent pickupComponent = engine.createComponent(PickUpComponent.class);
-		pickupComponent.setItem(item);
+		pickupComponent.setItem(pickup);
 		currentEntity.add(pickupComponent);
+		return pickup;
+	}
+
+	public EntityBuilder addPickUpComponent(final ItemDefinition definition,
+											final Texture displayImage) {
+		addPickUpComponent(Item.class, definition, displayImage);
+		return instance;
+	}
+
+	public EntityBuilder addBulletComponent() {
+		BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
+		currentEntity.add(bulletComponent);
 		return instance;
 	}
 }
