@@ -3,10 +3,12 @@ package com.gadarts.isometric.systems.player;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.CharacterAnimation;
 import com.gadarts.isometric.components.CharacterDecalComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
@@ -42,6 +44,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private final static Vector3 auxVector = new Vector3();
 	private Entity player;
 	private CharacterSystem characterSystem;
+	private ImmutableArray<Entity> enemies;
 
 	@Override
 	public void dispose() {
@@ -53,6 +56,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		super.addedToEngine(engine);
 		player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		ComponentsMapper.player.get(player).getStorage().subscribeForEvents(this);
+		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 	}
 
 	@Override
@@ -112,7 +116,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	@Override
 	public void onItemPickedUp(final Entity itemPickedUp) {
 		PlayerStorage storage = ComponentsMapper.player.get(player).getStorage();
-		boolean added = storage.addItem(ComponentsMapper.pickup.get(itemPickedUp).getItem());
+		storage.addItem(ComponentsMapper.pickup.get(itemPickedUp).getItem());
 	}
 
 
@@ -129,6 +133,16 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	@Override
 	public void onPathCreated(final boolean pathToEnemy) {
 
+	}
+
+	@Override
+	public void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
+		CharacterComponent characterComponent = ComponentsMapper.character.get(player);
+		Weapon selectedWeapon = ComponentsMapper.player.get(player).getStorage().getSelectedWeapon();
+		WeaponsDefinitions definition = (WeaponsDefinitions) selectedWeapon.getDefinition();
+		characterComponent.setHitFrame(definition.getHitFrameIndex());
+		characterComponent.setTarget(map.getEnemyFromNode(enemies, node));
+		applyShootCommand(node);
 	}
 
 	@Override
@@ -178,6 +192,10 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		characterSystem.applyCommand(auxCommand.init(Commands.GO_TO_MELEE, path, player), player);
 	}
 
+	public void applyShootCommand(final MapGraphNode target) {
+		characterSystem.applyCommand(auxCommand.init(Commands.SHOOT, null, player, target), player);
+	}
+
 	@Override
 	public void applyGoToPickupCommand(final MapGraphPath path, final Entity itemToPickup) {
 		characterSystem.applyCommand(auxCommand.init(Commands.GO_TO_PICKUP, path, player, itemToPickup), player);
@@ -198,12 +216,11 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	@Override
 	public void onSelectedWeaponChanged(final Weapon selectedWeapon) {
 		WeaponsDefinitions definition = (WeaponsDefinitions) selectedWeapon.getDefinition();
-		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(player);
+		CharacterDecalComponent cdc = ComponentsMapper.characterDecal.get(player);
 		CharacterAnimations animations = assetsManager.get(Assets.Atlases.findByRelatedWeapon(definition).name());
-		SpriteType spriteType = characterDecalComponent.getSpriteType();
-		CharacterComponent.Direction direction = characterDecalComponent.getDirection();
-		auxVector.set(characterDecalComponent.getDecal().getPosition());
-		characterDecalComponent.init(animations, spriteType, direction, auxVector);
+		SpriteType spriteType = cdc.getSpriteType();
+		CharacterComponent.Direction direction = cdc.getDirection();
+		cdc.init(animations, spriteType, direction, auxVector.set(cdc.getDecal().getPosition()));
 		CharacterAnimation animation = animations.get(spriteType, direction);
 		ComponentsMapper.animation.get(player).init(spriteType.getAnimationDuration(), animation);
 	}

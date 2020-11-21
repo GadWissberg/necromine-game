@@ -258,4 +258,5 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
         return result;
     }
 
+
 }

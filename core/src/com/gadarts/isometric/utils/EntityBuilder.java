@@ -77,9 +77,10 @@ public final class EntityBuilder {
 
 	public EntityBuilder addCharacterComponent(final CharacterComponent.Direction direction,
 											   final SpriteType spriteType,
-											   final Entity target) {
+											   final Entity target,
+											   final int hitFrame) {
 		CharacterComponent charComponent = engine.createComponent(CharacterComponent.class);
-		charComponent.init(direction, spriteType);
+		charComponent.init(direction, spriteType, hitFrame);
 		charComponent.setTarget(target);
 		currentEntity.add(charComponent);
 		return instance;

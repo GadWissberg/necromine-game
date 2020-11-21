@@ -5,6 +5,7 @@ import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
+import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.Getter;
 
@@ -26,9 +27,11 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 	@Override
 	public void onPlayerFinishedTurn() {
 		if (currentTurn == Turns.PLAYER) {
-			currentTurn = Turns.ENEMY;
-			for (TurnsSystemEventsSubscriber subscriber : subscribers) {
-				subscriber.onEnemyTurn();
+			if (!DefaultGameSettings.PARALYZED_ENEMIES) {
+				currentTurn = Turns.ENEMY;
+				for (TurnsSystemEventsSubscriber subscriber : subscribers) {
+					subscriber.onEnemyTurn();
+				}
 			}
 		}
 	}

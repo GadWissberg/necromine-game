@@ -11,6 +11,7 @@ import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
+import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.Getter;
 
 import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
@@ -172,12 +173,17 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	@Override
-	public void onHudSystemReady(HudSystem hudSystem) {
+	public void onHudSystemReady(final HudSystem hudSystem) {
 		addSystem(HudSystem.class, hudSystem);
 	}
 
 	@Override
-	public void onPathCreated(boolean pathToEnemy) {
+	public void onPathCreated(final boolean pathToEnemy) {
+
+	}
+
+	@Override
+	public void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
 
 	}
 }

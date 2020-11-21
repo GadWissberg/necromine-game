@@ -22,6 +22,7 @@ import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.isometric.utils.map.MapGraphNode;
 
 /**
  * Aggregates rendering data.
@@ -176,6 +177,11 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 
 	@Override
 	public void onPathCreated(final boolean pathToEnemy) {
+
+	}
+
+	@Override
+	public void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
 
 	}
 

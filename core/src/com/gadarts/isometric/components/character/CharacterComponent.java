@@ -27,6 +27,7 @@ public class CharacterComponent implements GameComponent {
 	private int hp;
 	private long lastDamage;
 	private Object modeAdditionalData;
+	private int hitFrame;
 
 	public MapGraphNode getDestinationNode() {
 		return destinationNode;
@@ -54,10 +55,11 @@ public class CharacterComponent implements GameComponent {
 		rotationData.reset();
 	}
 
-	public void init(final Direction direction, final SpriteType type) {
+	public void init(final Direction direction, final SpriteType type, final int hitFrame) {
 		this.facingDirection = direction;
 		this.spriteType = type;
 		this.hp = 3;
+		this.hitFrame = hitFrame;
 	}
 
 	public void dealDamage(final int damagePoints) {

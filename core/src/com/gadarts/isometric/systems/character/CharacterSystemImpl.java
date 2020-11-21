@@ -73,10 +73,11 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@SuppressWarnings("JavaDoc")
 	public void applyCommand(final CharacterCommand command, final Entity character) {
 		currentCommand = command;
-		MapGraphPath currentPath = graphData.getCurrentPath();
-		currentPath.clear();
-		currentPath.nodes.addAll(command.getPath().nodes);
-		if (currentPath.nodes.size > 1) {
+		graphData.getCurrentPath().clear();
+		if (command.getType().isRequiresMovement()) {
+			graphData.getCurrentPath().nodes.addAll(command.getPath().nodes);
+		}
+		if (graphData.getCurrentPath().nodes.size > 1) {
 			commandSet(command, character);
 		} else {
 			destinationReached(character);
@@ -171,10 +172,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			if (spriteType == SpriteType.ATTACK || spriteType == SpriteType.PICKUP) {
 				handleModeWithNonLoopingAnimation(character);
 			} else {
-				Commands type = currentCommand.getType();
-				if (type == Commands.GO_TO || type == Commands.GO_TO_MELEE || type == Commands.GO_TO_PICKUP) {
-					handleRotation(character, characterComponent);
-				}
+				handleRotation(character, characterComponent);
 			}
 		}
 		for (Entity character : characters) {
@@ -312,10 +310,11 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@Override
 	public void onFrameChanged(final Entity character, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		if (characterComponent.getSpriteType() == SpriteType.RUN) {
+		SpriteType spriteType = characterComponent.getSpriteType();
+		if (spriteType == SpriteType.RUN) {
 			applyRunning(character, newFrame, characterComponent);
-		} else if (characterComponent.getSpriteType() == SpriteType.ATTACK) {
-			if (newFrame.index == 1) {
+		} else if (spriteType == SpriteType.ATTACK) {
+			if (newFrame.index == characterComponent.getHitFrame()) {
 				soundPlayer.playSound(Assets.Sounds.ATTACK_CLAW);
 				applyDamageToCharacter(characterComponent.getTarget());
 			}

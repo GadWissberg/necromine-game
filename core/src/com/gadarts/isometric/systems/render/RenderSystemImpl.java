@@ -29,6 +29,7 @@ import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
+import com.gadarts.isometric.utils.map.MapGraphNode;
 
 /**
  * Handles rendering.
@@ -242,6 +243,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	@Override
 	public void onPathCreated(final boolean pathToEnemy) {
+
+	}
+
+	@Override
+	public void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
 
 	}
 

@@ -26,6 +26,7 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
 import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.player.PlayerComponent;
+import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
@@ -72,6 +73,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private ImmutableArray<Entity> enemiesEntities;
 	private ModelInstance cursorModelInstance;
 	private GameStage stage;
+	private Entity player;
 
 
 	@Override
@@ -92,6 +94,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
 		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		attackNodesHandler.init(getEngine());
+		player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 	}
 
 	private void createStageAndAddHud() {
@@ -258,10 +261,16 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void enemySelected(final MapGraphNode node, final Entity enemyAtNode) {
-		List<MapGraphNode> availableNodes = map.getAvailableNodesAroundNode(enemiesEntities, node);
-		if (!availableNodes.isEmpty()) {
+		Weapon selectedWeapon = ComponentsMapper.player.get(player).getStorage().getSelectedWeapon();
+		if (selectedWeapon.isMelee()) {
+			List<MapGraphNode> availableNodes = map.getAvailableNodesAroundNode(enemiesEntities, node);
 			attackNodesHandler.setSelectedAttackNode(node);
 			getSystem(PlayerSystem.class).activateAttackMode(enemyAtNode, availableNodes);
+		} else {
+			pathPlanHandler.resetPlan();
+			for (HudSystemEventsSubscriber subscriber : subscribers) {
+				subscriber.onEnemySelectedWithRangeWeapon(node);
+			}
 		}
 	}
 

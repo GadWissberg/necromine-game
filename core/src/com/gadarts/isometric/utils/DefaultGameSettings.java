@@ -14,4 +14,5 @@ public class DefaultGameSettings {
 	public static final boolean MELODY_ENABLED = false;
 	public static final boolean SFX_ENABLED = false;
 	public static final boolean DISPLAY_HUD_OUTLINES = false;
+	public static final boolean PARALYZED_ENEMIES = true;
 }

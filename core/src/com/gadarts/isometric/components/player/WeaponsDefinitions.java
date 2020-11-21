@@ -1,16 +1,17 @@
 package com.gadarts.isometric.components.player;
 
 import com.gadarts.isometric.utils.assets.Assets;
+import lombok.Getter;
 
 public enum WeaponsDefinitions implements ItemDefinition {
-	AXE_PICK(4, 5, Assets.UiTextures.WEAPON_AXE_PICK, new int[]{
+	AXE_PICK(4, 5, 1, Assets.UiTextures.WEAPON_AXE_PICK, new int[]{
 			1, 1, 1, 1,
 			0, 1, 0, 0,
 			0, 1, 0, 0,
 			0, 1, 0, 0,
 			0, 1, 0, 0,
-	}),
-	COLT(2, 2, Assets.UiTextures.WEAPON_COLT, new int[]{
+	}, true),
+	COLT(2, 2, 2, Assets.UiTextures.WEAPON_COLT, new int[]{
 			1, 1,
 			1, 0
 	});
@@ -20,11 +21,27 @@ public enum WeaponsDefinitions implements ItemDefinition {
 	private final Assets.UiTextures image;
 	private final int[] mask;
 
-	WeaponsDefinitions(final int width, final int height, final Assets.UiTextures image, final int[] mask) {
+	@Getter
+	private final boolean melee;
+	@Getter
+	private int hitFrameIndex;
+
+	WeaponsDefinitions(final int width, final int height, final int hitFrameIndex, final Assets.UiTextures image, final int[] mask) {
+		this(width, height, hitFrameIndex, image, mask, false);
+	}
+
+	WeaponsDefinitions(final int width,
+					   final int height,
+					   final int hitFrameIndex,
+					   final Assets.UiTextures image,
+					   final int[] mask,
+					   final boolean melee) {
 		this.width = width;
 		this.height = height;
+		this.hitFrameIndex = hitFrameIndex;
 		this.image = image;
 		this.mask = flipMatrixVertically(mask);
+		this.melee = melee;
 	}
 
 	private int[] flipMatrixVertically(final int[] mask) {

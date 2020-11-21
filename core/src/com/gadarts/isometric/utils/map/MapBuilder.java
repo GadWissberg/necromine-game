@@ -164,7 +164,7 @@ public final class MapBuilder {
 									   final Vector3 position,
 									   final Entity target) {
 		CharacterAnimations animations = assetManager.get(atlas.name());
-		entityBuilder.addCharacterComponent(CharacterComponent.Direction.SOUTH, SpriteType.IDLE, target)
+		entityBuilder.addCharacterComponent(CharacterComponent.Direction.SOUTH, SpriteType.IDLE, target, 1)
 				.addCharacterDecalComponent(animations, SpriteType.IDLE, CharacterComponent.Direction.SOUTH, position)
 				.addAnimationComponent();
 	}

@@ -182,6 +182,11 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 	}
 
 	@Override
+	public void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
+
+	}
+
+	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		addSystem(CameraSystem.class, cameraSystem);
 	}
