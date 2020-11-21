@@ -28,4 +28,7 @@ public class CharacterAnimations {
 		return animations.get(type).get(direction);
 	}
 
+	public boolean contains(SpriteType spriteType) {
+		return animations.containsKey(spriteType);
+	}
 }

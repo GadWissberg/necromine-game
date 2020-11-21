@@ -1,6 +1,7 @@
 package com.gadarts.isometric.components.player;
 
 import com.gadarts.isometric.systems.EventsNotifier;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -9,19 +10,29 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+@Getter
 public class PlayerStorage implements EventsNotifier<PlayerStorageEventsSubscriber> {
 
 	public static final int WIDTH = 8;
 	public static final int HEIGHT = 8;
 	public static final int SIZE = WIDTH * HEIGHT;
-	private final int[] storageMapSketch = new int[SIZE];
-	private final List<PlayerStorageEventsSubscriber> subscribers = new ArrayList<>();
 
-	@Getter
 	private final Set<Item> items = new LinkedHashSet<>();
-
-	@Getter
 	private final int[] storageMap = new int[SIZE];
+	@Getter(AccessLevel.NONE)
+	private final int[] storageMapSketch = new int[SIZE];
+	@Getter(AccessLevel.NONE)
+	private final List<PlayerStorageEventsSubscriber> subscribers = new ArrayList<>();
+	private Weapon selectedWeapon;
+
+	public void setSelectedWeapon(final Weapon selectedWeapon) {
+		if (selectedWeapon != this.selectedWeapon) {
+			this.selectedWeapon = selectedWeapon;
+			for (PlayerStorageEventsSubscriber subscriber : subscribers) {
+				subscriber.onSelectedWeaponChanged(selectedWeapon);
+			}
+		}
+	}
 
 	public void clear() {
 		items.clear();

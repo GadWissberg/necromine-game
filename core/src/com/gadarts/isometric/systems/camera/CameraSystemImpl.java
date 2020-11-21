@@ -44,7 +44,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
-		if (!rotateCamera && getSystem(HudSystem.class).hasOpenWindows()) {
+		if (!rotateCamera && !getSystem(HudSystem.class).hasOpenWindows()) {
 			handleHorizontalScroll();
 			handleVerticalScroll();
 		}

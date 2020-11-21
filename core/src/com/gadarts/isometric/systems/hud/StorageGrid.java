@@ -13,10 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.gadarts.isometric.components.player.Item;
-import com.gadarts.isometric.components.player.ItemDefinition;
-import com.gadarts.isometric.components.player.PlayerStorage;
-import com.gadarts.isometric.components.player.PlayerStorageEventsSubscriber;
+import com.gadarts.isometric.components.player.*;
 import com.gadarts.isometric.utils.Utils;
 
 import static com.gadarts.isometric.systems.hud.GameStage.GRID_CELL_SIZE;
@@ -106,7 +103,7 @@ public class StorageGrid extends ItemsTable implements PlayerStorageEventsSubscr
 
 	private boolean onLeftClick() {
 		boolean result = false;
-		if (!invalidLocation && itemSelectionHandler != null) {
+		if (!invalidLocation && itemSelectionHandler.getSelection() != null) {
 			fire(new GameWindowEvent(StorageGrid.this, GameWindowEventType.ITEM_PLACED));
 			result = true;
 		}
@@ -205,17 +202,24 @@ public class StorageGrid extends ItemsTable implements PlayerStorageEventsSubscr
 
 	@Override
 	public void itemAddedToStorage(final Item item) {
+		addItemToStorage(item);
+	}
+
+	@Override
+	public void onSelectedWeaponChanged(final Weapon selectedWeapon) {
 
 	}
 
 	public void initialize() {
-		playerStorage.getItems().forEach(item -> {
-			ItemDisplay itemDisplay = new ItemDisplay(item, itemSelectionHandler, StorageGrid.class);
-			float weaponX = getX() + item.getCol() * GRID_CELL_SIZE;
-			float weaponY = getY() + item.getRow() * GRID_CELL_SIZE;
-			itemDisplay.setPosition(weaponX, weaponY);
-			StorageGrid.this.getParent().addActor(itemDisplay);
-		});
+		playerStorage.getItems().forEach(this::addItemToStorage);
+	}
+
+	private void addItemToStorage(final Item item) {
+		ItemDisplay itemDisplay = new ItemDisplay(item, itemSelectionHandler, StorageGrid.class);
+		float weaponX = getX() + item.getCol() * GRID_CELL_SIZE;
+		float weaponY = getY() + item.getRow() * GRID_CELL_SIZE;
+		itemDisplay.setPosition(weaponX, weaponY);
+		StorageGrid.this.getParent().addActor(itemDisplay);
 	}
 
 	@Override

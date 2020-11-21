@@ -60,7 +60,9 @@ public class GameAssetsManager extends AssetManager {
 			name = spriteTypeName + "_" + dir.name().toLowerCase();
 		}
 		CharacterAnimation a = createAnimation(atlas, spriteType, name, dir);
-		animations.put(spriteType, dir, a);
+		if (a.getKeyFrames().length > 0) {
+			animations.put(spriteType, dir, a);
+		}
 	}
 
 	private CharacterAnimation createAnimation(final TextureAtlas atlas,

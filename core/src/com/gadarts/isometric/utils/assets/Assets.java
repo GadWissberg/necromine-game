@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.gadarts.isometric.components.player.WeaponsDefinitions;
 import com.gadarts.isometric.utils.assets.definitions.*;
 import lombok.Getter;
 
@@ -15,6 +16,11 @@ import java.util.stream.Collectors;
  * Definitions of the game content.
  */
 public final class Assets {
+
+	public static final String PATH_SEPARATOR = "/";
+
+	private Assets() {
+	}
 
 	@Getter
 	public enum AssetsTypes {
@@ -32,21 +38,34 @@ public final class Assets {
 
 	}
 
-	public static final String PATH_SEPARATOR = "/";
-
-	private Assets() {
-	}
-
 	/**
 	 * Texture atlases.
 	 */
 	@Getter
 	public enum Atlases implements AtlasDefinition {
-		PLAYER, ZEALOT;
-		private final String filePath;
+		PLAYER_GENERIC(WeaponsDefinitions.AXE_PICK),
+		PLAYER_AXE_PICK(WeaponsDefinitions.AXE_PICK),
+		PLAYER_COLT(WeaponsDefinitions.COLT),
+		ZEALOT(WeaponsDefinitions.AXE_PICK);
 
-		Atlases() {
+		private final String filePath;
+		private final WeaponsDefinitions relatedWeapon;
+
+		Atlases(final WeaponsDefinitions relatedWeapon) {
 			this.filePath = AtlasDefinition.FOLDER + PATH_SEPARATOR + name().toLowerCase() + "." + AtlasDefinition.FORMAT;
+			this.relatedWeapon = relatedWeapon;
+		}
+
+		public static Atlases findByRelatedWeapon(final WeaponsDefinitions definition) {
+			Atlases[] atlases = values();
+			Atlases result = null;
+			for (Atlases atlas : atlases) {
+				if (atlas.getRelatedWeapon() == definition) {
+					result = atlas;
+					break;
+				}
+			}
+			return result;
 		}
 
 		@Override

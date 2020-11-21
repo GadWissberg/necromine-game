@@ -215,5 +215,6 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 	public void onItemPickedUp(final Entity itemPickedUp) {
 		PooledEngine engine = (PooledEngine) getEngine();
 		engine.removeEntity(itemPickedUp);
+		itemToPickup = null;
 	}
 }

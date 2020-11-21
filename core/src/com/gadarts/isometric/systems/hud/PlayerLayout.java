@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import lombok.Getter;
 
@@ -18,13 +19,18 @@ public class PlayerLayout extends ItemsTable {
 	static final String NAME = "player_layout";
 	private final static Vector2 auxVector = new Vector2();
 	private static final float SPOT_RADIUS = 25;
+	private final PlayerComponent playerComponent;
 
 	@Getter
 	private ItemDisplay weaponChoice;
 
-	public PlayerLayout(final Texture texture, final Weapon weaponChoice, final ItemSelectionHandler itemSelectionHandler) {
+	public PlayerLayout(final Texture texture,
+						final Weapon weaponChoice,
+						final ItemSelectionHandler itemSelectionHandler,
+						final PlayerComponent playerComponent) {
 		super(itemSelectionHandler);
 		this.weaponChoice = new ItemDisplay(weaponChoice, this.itemSelectionHandler, PlayerLayout.class);
+		this.playerComponent = playerComponent;
 		setTouchable(Touchable.enabled);
 		setName(NAME);
 		setBackground(new TextureRegionDrawable(texture));
@@ -82,6 +88,7 @@ public class PlayerLayout extends ItemsTable {
 			if (event.getTarget() instanceof PlayerLayout) {
 				itemsTable.removeItem(selection);
 				PlayerLayout.this.weaponChoice = selection;
+				playerComponent.getStorage().setSelectedWeapon((Weapon) weaponChoice.getItem());
 				selection.setLocatedIn(PlayerLayout.class);
 				placeWeapon();
 			} else {

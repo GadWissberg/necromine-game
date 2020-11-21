@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gadarts.isometric.components.player.PlayerComponent;
+import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import lombok.Getter;
@@ -127,7 +128,8 @@ public class StorageWindow extends GameWindow {
 
 	private void addPlayerLayout(final GameAssetsManager assetsManager) {
 		Texture texture = assetsManager.getTexture(Assets.UiTextures.PLAYER_LAYOUT);
-		PlayerLayout playerLayout = new PlayerLayout(texture, playerComponent.getSelectedWeapon(), selectedItem);
+		Weapon selectedWeapon = playerComponent.getStorage().getSelectedWeapon();
+		PlayerLayout playerLayout = new PlayerLayout(texture, selectedWeapon, selectedItem, playerComponent);
 		add(playerLayout).pad(PLAYER_LAYOUT_PADDING);
 	}
 

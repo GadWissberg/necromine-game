@@ -19,7 +19,6 @@ import lombok.AccessLevel;
 import lombok.Setter;
 
 public final class EntityBuilder {
-	private static final float BILLBOARD_SCALE = 0.015f;
 	private static final EntityBuilder instance = new EntityBuilder();
 
 	@Setter(AccessLevel.PRIVATE)
@@ -69,9 +68,9 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addPlayerComponent(final Weapon selectedWeapon) {
+	public EntityBuilder addPlayerComponent(final Weapon selectedWeapon, final CharacterAnimations general) {
 		PlayerComponent playerComponent = engine.createComponent(PlayerComponent.class);
-		playerComponent.init(selectedWeapon);
+		playerComponent.init(selectedWeapon, general);
 		currentEntity.add(playerComponent);
 		return instance;
 	}
@@ -91,10 +90,7 @@ public final class EntityBuilder {
 													final CharacterComponent.Direction direction,
 													final Vector3 position) {
 		CharacterDecalComponent characterDecalComponent = engine.createComponent(CharacterDecalComponent.class);
-		characterDecalComponent.init(animations, spriteType, direction);
-		Decal decal = characterDecalComponent.getDecal();
-		decal.setPosition(position);
-		decal.setScale(BILLBOARD_SCALE);
+		characterDecalComponent.init(animations, spriteType, direction, position);
 		currentEntity.add(characterDecalComponent);
 		return instance;
 	}
@@ -104,7 +100,7 @@ public final class EntityBuilder {
 		simpleDecalComponent.init(texture, visible);
 		Decal decal = simpleDecalComponent.getDecal();
 		decal.setPosition(position);
-		decal.setScale(BILLBOARD_SCALE);
+		decal.setScale(CharacterDecalComponent.BILLBOARD_SCALE);
 		currentEntity.add(simpleDecalComponent);
 		return instance;
 	}

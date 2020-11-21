@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
+import com.gadarts.isometric.components.CharacterDecalComponent;
 import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
@@ -36,7 +37,6 @@ import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
  * Creates the map.
  */
 public final class MapBuilder {
-	private static final float BILLBOARD_Y = 0.6f;
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
@@ -144,15 +144,18 @@ public final class MapBuilder {
 		Texture image = assetManager.getTexture(WeaponsDefinitions.AXE_PICK.getImage());
 		Weapon weapon = Pools.obtain(Weapon.class);
 		weapon.init(WeaponsDefinitions.AXE_PICK, 0, 0, image);
-		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon);
-		addCharBaseComponents(entityBuilder, Atlases.PLAYER, auxVector3_1.set(0.5f, BILLBOARD_Y, 0.5f), null);
+		CharacterAnimations general = assetManager.get(Atlases.PLAYER_GENERIC.name());
+		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
+		Vector3 position = auxVector3_1.set(0.5f, CharacterDecalComponent.BILLBOARD_Y, 0.5f);
+		addCharBaseComponents(entityBuilder, Atlases.PLAYER_AXE_PICK, position, null);
 		entityBuilder.finishAndAddToEngine();
 	}
 
 	private void addEnemyTest() {
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent();
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, auxVector3_1.set(2.5f, BILLBOARD_Y, 2.5f), player);
+		Vector3 position = auxVector3_1.set(2.5f, CharacterDecalComponent.BILLBOARD_Y, 2.5f);
+		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player);
 		entityBuilder.finishAndAddToEngine();
 	}
 
@@ -167,7 +170,7 @@ public final class MapBuilder {
 	}
 
 
-	private void addTestFloor(final Vector3 position, Model model) {
+	private void addTestFloor(final Vector3 position, final Model model) {
 		ModelInstance testFloorModelInstance = new ModelInstance(model);
 		testFloorModelInstance.transform.setTranslation(position);
 		EntityBuilder.beginBuildingEntity(engine)
@@ -240,7 +243,7 @@ public final class MapBuilder {
 		return modelBuilder.end();
 	}
 
-	private Model createTestFloorModel(final ModelBuilder modelBuilder, int width, int height, int u, int v) {
+	private Model createTestFloorModel(final ModelBuilder modelBuilder, final int width, final int height, final int u, final int v) {
 		modelBuilder.begin();
 		MeshPartBuilder meshPartBuilder = modelBuilder.part("test_floor",
 				GL20.GL_TRIANGLES,

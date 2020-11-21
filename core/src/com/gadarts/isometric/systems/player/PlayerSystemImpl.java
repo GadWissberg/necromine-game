@@ -3,9 +3,14 @@ package com.gadarts.isometric.systems.player;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.math.Vector3;
+import com.gadarts.isometric.components.CharacterAnimation;
+import com.gadarts.isometric.components.CharacterDecalComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.player.PlayerComponent;
-import com.gadarts.isometric.components.player.PlayerStorage;
+import com.gadarts.isometric.components.character.CharacterAnimations;
+import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.player.*;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
@@ -19,6 +24,7 @@ import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
+import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 
@@ -30,12 +36,12 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		TurnsSystemEventsSubscriber,
 		HudSystemEventsSubscriber,
 		InputSystemEventsSubscriber,
-		CharacterSystemEventsSubscriber {
+		CharacterSystemEventsSubscriber, PlayerStorageEventsSubscriber {
 
 	private static final CharacterCommand auxCommand = new CharacterCommand();
+	private final static Vector3 auxVector = new Vector3();
 	private Entity player;
 	private CharacterSystem characterSystem;
-
 
 	@Override
 	public void dispose() {
@@ -46,6 +52,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 		player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+		ComponentsMapper.player.get(player).getStorage().subscribeForEvents(this);
 	}
 
 	@Override
@@ -181,5 +188,23 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onPlayerSystemReady(this);
 		}
+	}
+
+	@Override
+	public void itemAddedToStorage(final Item item) {
+
+	}
+
+	@Override
+	public void onSelectedWeaponChanged(final Weapon selectedWeapon) {
+		WeaponsDefinitions definition = (WeaponsDefinitions) selectedWeapon.getDefinition();
+		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(player);
+		CharacterAnimations animations = assetsManager.get(Assets.Atlases.findByRelatedWeapon(definition).name());
+		SpriteType spriteType = characterDecalComponent.getSpriteType();
+		CharacterComponent.Direction direction = characterDecalComponent.getDirection();
+		auxVector.set(characterDecalComponent.getDecal().getPosition());
+		characterDecalComponent.init(animations, spriteType, direction, auxVector);
+		CharacterAnimation animation = animations.get(spriteType, direction);
+		ComponentsMapper.animation.get(player).init(spriteType.getAnimationDuration(), animation);
 	}
 }

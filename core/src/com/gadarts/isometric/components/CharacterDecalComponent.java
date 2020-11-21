@@ -10,7 +10,8 @@ import lombok.Getter;
 
 @Getter
 public class CharacterDecalComponent implements GameComponent {
-
+	public static final float BILLBOARD_SCALE = 0.015f;
+	public static final float BILLBOARD_Y = 0.6f;
 	private static final Vector3 auxVector = new Vector3();
 	private Decal decal;
 	private CharacterAnimations animations;
@@ -24,11 +25,14 @@ public class CharacterDecalComponent implements GameComponent {
 
 	public void init(final CharacterAnimations animations,
 					 final SpriteType type,
-					 final CharacterComponent.Direction direction) {
+					 final CharacterComponent.Direction direction,
+					 final Vector3 position) {
 		this.animations = animations;
 		this.direction = direction;
 		this.spriteType = type;
 		decal = Decal.newDecal(animations.get(type, direction).getKeyFrames()[0], true);//Optimize this - it creates an object each time.
+		decal.setScale(BILLBOARD_SCALE);
+		decal.setPosition(position);
 	}
 
 
