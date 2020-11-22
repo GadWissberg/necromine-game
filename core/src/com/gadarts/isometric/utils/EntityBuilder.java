@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.*;
@@ -21,10 +22,9 @@ import lombok.Setter;
 
 public final class EntityBuilder {
 	private static final EntityBuilder instance = new EntityBuilder();
-
+	private final static Vector2 auxVector = new Vector2();
 	@Setter(AccessLevel.PRIVATE)
 	private PooledEngine engine;
-
 	private Entity currentEntity;
 
 	private EntityBuilder() {
@@ -108,14 +108,21 @@ public final class EntityBuilder {
 
 	public EntityBuilder addSimpleDecalComponent(final Vector3 position,
 												 final TextureRegion textureRegion,
-												 final boolean visible) {
+												 final Vector3 rotationAroundAxis) {
 		SimpleDecalComponent simpleDecalComponent = engine.createComponent(SimpleDecalComponent.class);
-		simpleDecalComponent.init(textureRegion, visible);
+		simpleDecalComponent.init(textureRegion, true);
 		Decal decal = simpleDecalComponent.getDecal();
 		decal.setPosition(position);
 		decal.setScale(CharacterDecalComponent.BILLBOARD_SCALE);
+		rotateSimpleDecal(decal, rotationAroundAxis);
 		currentEntity.add(simpleDecalComponent);
 		return instance;
+	}
+
+	private void rotateSimpleDecal(final Decal decal, final Vector3 rotationAroundAxis) {
+		if (!rotationAroundAxis.isZero()) {
+			decal.setRotation(rotationAroundAxis.y, rotationAroundAxis.x, rotationAroundAxis.z);
+		}
 	}
 
 	public EntityBuilder addEnemyComponent() {
@@ -179,9 +186,16 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addBulletComponent() {
+	public EntityBuilder addBulletComponent(final Vector3 initialPosition, final Vector2 direction, final Entity owner) {
 		BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
+		bulletComponent.init(auxVector.set(initialPosition.x, initialPosition.z), direction, owner);
 		currentEntity.add(bulletComponent);
+		return instance;
+	}
+
+	public EntityBuilder addCollisionComponent() {
+		CollisionComponent collisionComponent = engine.createComponent(CollisionComponent.class);
+		currentEntity.add(collisionComponent);
 		return instance;
 	}
 }

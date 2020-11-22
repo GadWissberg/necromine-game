@@ -117,6 +117,7 @@ public final class MapBuilder {
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true)
 				.addObstacleComponent(x, y, blockPath)
+				.addCollisionComponent()
 				.finishAndAddToEngine();
 	}
 
@@ -144,6 +145,7 @@ public final class MapBuilder {
 		EntityBuilder.beginBuildingEntity(engine)
 				.addWallComponent((int) topLeft.x, (int) topLeft.y, (int) bottomRight.x, (int) bottomRight.y)
 				.addModelInstanceComponent(modelInstance, true)
+				.addCollisionComponent()
 				.finishAndAddToEngine();
 	}
 
@@ -177,6 +179,7 @@ public final class MapBuilder {
 		characterSpriteData.init(Direction.SOUTH, spriteType, 1);
 		entityBuilder.addCharacterComponent(characterSpriteData, target, attackSound)
 				.addCharacterDecalComponent(animations, spriteType, Direction.SOUTH, position)
+				.addCollisionComponent()
 				.addAnimationComponent();
 	}
 

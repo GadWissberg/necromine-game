@@ -43,13 +43,17 @@ public final class Assets {
 	 */
 	@Getter
 	public enum Atlases implements AtlasDefinition {
-		PLAYER_GENERIC(WeaponsDefinitions.AXE_PICK),
+		PLAYER_GENERIC(),
 		PLAYER_AXE_PICK(WeaponsDefinitions.AXE_PICK),
 		PLAYER_COLT(WeaponsDefinitions.COLT),
-		ZEALOT(WeaponsDefinitions.AXE_PICK);
+		ZEALOT();
 
 		private final String filePath;
 		private final WeaponsDefinitions relatedWeapon;
+
+		Atlases() {
+			this(null);
+		}
 
 		Atlases(final WeaponsDefinitions relatedWeapon) {
 			this.filePath = AtlasDefinition.FOLDER + PATH_SEPARATOR + name().toLowerCase() + "." + AtlasDefinition.FORMAT;

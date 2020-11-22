@@ -24,4 +24,5 @@ public class EnemyComponent implements GameComponent {
 	public void calculateNextRoamSound() {
 		nextRoamSound = TimeUtils.millis() + MathUtils.random(ROAM_SOUND_INTERVAL_MINIMUM, ROAM_SOUND_INTERVAL_MAXIMUM);
 	}
+
 }

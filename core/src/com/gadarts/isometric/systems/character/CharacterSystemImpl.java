@@ -13,12 +13,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.AnimationComponent;
+import com.gadarts.isometric.components.CharacterDecalComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.*;
 import com.gadarts.isometric.components.character.CharacterComponent.Direction;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.components.player.WeaponsDefinitions;
 import com.gadarts.isometric.systems.GameEntitySystem;
+import com.gadarts.isometric.systems.bullets.BulletsSystemEventsSubscriber;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystem;
@@ -37,9 +39,11 @@ import static com.gadarts.isometric.components.character.CharacterMode.*;
 public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsSubscriber>
 		implements RenderSystemEventsSubscriber,
 		CharacterSystem,
-		PickupSystemEventsSubscriber {
+		PickupSystemEventsSubscriber,
+		BulletsSystemEventsSubscriber {
 
 	private static final Vector3 auxVector3_1 = new Vector3();
+	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector2 auxVector2_3 = new Vector2();
@@ -225,13 +229,13 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterSpriteData characterSpriteData = charComponent.getCharacterSpriteData();
 		Vector2 currentDirVector = characterSpriteData.getFacingDirection().getDirection(auxVector2_1);
 		int side;
-		float diff = directionToDest.getDirection(auxVector2_2).angle() - currentDirVector.angle();
-		if (auxVector2_3.set(1, 0).setAngle(diff).angle() > 180) {
+		float diff = directionToDest.getDirection(auxVector2_2).angleDeg() - currentDirVector.angleDeg();
+		if (auxVector2_3.set(1, 0).setAngleDeg(diff).angleDeg() > 180) {
 			side = -1;
 		} else {
 			side = 1;
 		}
-		characterSpriteData.setFacingDirection(Direction.findDirection(currentDirVector.rotate(45f * side)));
+		characterSpriteData.setFacingDirection(Direction.findDirection(currentDirVector.rotateDeg(45f * side)));
 	}
 
 	private Direction calculateDirectionToDestination(final Entity character) {
@@ -249,7 +253,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		Entity target = characterComponent.getTarget();
 		MapGraphNode targetNode = map.getNode(ComponentsMapper.characterDecal.get(target).getDecal().getPosition());
 		Vector2 destPos = targetNode.getCenterPosition(auxVector2_2);
-		Vector2 directionToDest = destPos.sub(map.getNode(pos).getCenterPosition(auxVector2_1)).nor();
+		Vector2 directionToDest = destPos.sub(pos.x, pos.z).nor();
 		return Direction.findDirection(directionToDest);
 	}
 
@@ -277,6 +281,11 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void applyDamageToCharacter(final Entity character) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		characterComponent.dealDamage(1);
+		handleDeath(character);
+	}
+
+	private void handleDeath(final Entity character) {
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		if (characterComponent.getHp() <= 0) {
 			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.DIE);
 			characterComponent.setMode(CharacterMode.DEAD);
@@ -319,21 +328,26 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		} else if (characterSpriteData.getSpriteType() == SpriteType.ATTACK) {
 			if (newFrame.index == characterSpriteData.getHitFrameIndex()) {
 				soundPlayer.playSound(characterComponent.getAttackSound());
+				Entity target = characterComponent.getTarget();
 				if (ComponentsMapper.player.has(character)) {
 					Weapon weapon = ComponentsMapper.player.get(character).getStorage().getSelectedWeapon();
 					WeaponsDefinitions definition = (WeaponsDefinitions) weapon.getDefinition();
 					if (definition.isMelee()) {
-						applyDamageToCharacter(characterComponent.getTarget());
+						applyDamageToCharacter(target);
 					} else {
-						Decal decal = ComponentsMapper.characterDecal.get(character).getDecal();
-						Vector3 position = auxVector3_1.set(decal.getPosition());
+						CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(character);
+						Decal decal = characterDecalComponent.getDecal();
+						Vector3 position = auxVector3_2.set(decal.getPosition());
+						CharacterDecalComponent targetDecalComponent = ComponentsMapper.characterDecal.get(target);
+						Vector3 targetPosition = targetDecalComponent.getDecal().getPosition();
+						Vector2 direction = auxVector2_1.set(targetPosition.x, targetPosition.z).sub(position.x, position.z);
 						EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
-								.addBulletComponent()
-								.addSimpleDecalComponent(position, weapon.getBulletTextureRegion(), true)
+								.addBulletComponent(position, direction, character)
+								.addSimpleDecalComponent(position, weapon.getBulletTextureRegion(), auxVector3_1.set(-90, 360f - direction.angleDeg(), 0))
 								.finishAndAddToEngine();
 					}
 				} else {
-					applyDamageToCharacter(characterComponent.getTarget());
+					applyDamageToCharacter(target);
 				}
 			}
 		}
@@ -384,5 +398,12 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@Override
 	public void onPickUpSystemReady(final PickUpSystem pickUpSystem) {
 		addSystem(PickUpSystem.class, pickUpSystem);
+	}
+
+	@Override
+	public void onBulletCollision(final Entity bullet, final Entity collidable) {
+		if (ComponentsMapper.character.has(collidable)) {
+			applyDamageToCharacter(collidable);
+		}
 	}
 }
