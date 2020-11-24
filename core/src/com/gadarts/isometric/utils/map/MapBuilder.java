@@ -72,7 +72,7 @@ public final class MapBuilder {
 		testFloorModel1_2 = createTestFloorModel(modelBuilder, 1, 2, 1, 3);
 		createAndAdd3dCursor();
 		addPlayer();
-		addEnemyTest();
+		addEnemyTest(2, 2);
 		addWeaponPickupTest();
 		return createTestMap();
 	}
@@ -160,10 +160,10 @@ public final class MapBuilder {
 		entityBuilder.finishAndAddToEngine();
 	}
 
-	private void addEnemyTest() {
+	private void addEnemyTest(final int x, final int y) {
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent();
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		Vector3 position = auxVector3_1.set(2.5f, CharacterDecalComponent.BILLBOARD_Y, 2.5f);
+		Vector3 position = auxVector3_1.set(x + 0.5f, CharacterDecalComponent.BILLBOARD_Y, y + 0.5f);
 		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player);
 		entityBuilder.finishAndAddToEngine();
 	}

@@ -64,7 +64,6 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 		for (Entity enemy : enemies) {
 			if (ComponentsMapper.character.get(enemy).getHp() > 0) {
 				invokeEnemyTurn(enemy);
-				break;
 			} else {
 				onCommandDone(enemy);
 			}
