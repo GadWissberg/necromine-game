@@ -8,13 +8,14 @@ import lombok.Setter;
 @Getter
 public class CharacterCommand {
 	private Commands type;
-
-	@Setter
-	@Getter
-	private MapGraphPath path;
-
 	private Entity character;
 	private Object additionalData;
+
+	@Setter
+	private boolean started;
+
+	@Setter
+	private MapGraphPath path;
 
 	public CharacterCommand init(final Commands type,
 								 final MapGraphPath path,

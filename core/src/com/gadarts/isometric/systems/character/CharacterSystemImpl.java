@@ -78,14 +78,18 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@SuppressWarnings("JavaDoc")
 	public void applyCommand(final CharacterCommand command, final Entity character) {
 		currentCommand = command;
-		graphData.getCurrentPath().clear();
-		if (command.getType().isRequiresMovement()) {
-			graphData.getCurrentPath().nodes.addAll(command.getPath().nodes);
-		}
-		if (graphData.getCurrentPath().nodes.size > 1) {
-			commandSet(command, character);
-		} else {
-			destinationReached(character);
+		currentCommand.setStarted(false);
+		if (ComponentsMapper.character.get(character).getMode() != PAIN) {
+			currentCommand.setStarted(true);
+			graphData.getCurrentPath().clear();
+			if (command.getType().isRequiresMovement()) {
+				graphData.getCurrentPath().nodes.addAll(command.getPath().nodes);
+			}
+			if (graphData.getCurrentPath().nodes.size > 1) {
+				commandSet(command, character);
+			} else {
+				destinationReached(character);
+			}
 		}
 	}
 
@@ -190,6 +194,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		if (characterComponent.getMode() == PAIN && TimeUtils.timeSinceMillis(lastDamage) > CHARACTER_PAIN_DURATION) {
 			characterComponent.setMode(IDLE);
 			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.IDLE);
+			if (currentCommand != null && !currentCommand.isStarted()) {
+				applyCommand(currentCommand, character);
+			}
 		}
 	}
 
