@@ -133,12 +133,16 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			SpriteType spriteType = characterSpriteData.getSpriteType();
 			boolean sameSpriteType = characterSpriteData.getSpriteType().equals(characterDecalComponent.getSpriteType());
 			boolean sameDirection = characterDecalComponent.getDirection().equals(direction);
-			if ((!sameSpriteType || !sameDirection) && characterDecalComponent.getSpriteType() != SpriteType.DIE) {
+			if ((!sameSpriteType || !sameDirection)) {
 				characterDecalComponent.initializeSprite(spriteType, direction);
 				if (ComponentsMapper.animation.has(entity)) {
 					AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
 					if (spriteType.isSingleAnimation()) {
-						direction = CharacterComponent.Direction.SOUTH;
+						if (!animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime())) {
+							direction = CharacterComponent.Direction.SOUTH;
+						} else if (spriteType == SpriteType.DIE) {
+							spriteType = SpriteType.DEAD;
+						}
 					}
 					CharacterAnimations animations = characterDecalComponent.getAnimations();
 					CharacterAnimation animation = null;

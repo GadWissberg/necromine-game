@@ -181,6 +181,14 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">../sprites/player/dead_east.png</key>
+            <key type="filename">../sprites/player/dead_north.png</key>
+            <key type="filename">../sprites/player/dead_north_east.png</key>
+            <key type="filename">../sprites/player/dead_north_west.png</key>
+            <key type="filename">../sprites/player/dead_south.png</key>
+            <key type="filename">../sprites/player/dead_south_east.png</key>
+            <key type="filename">../sprites/player/dead_south_west.png</key>
+            <key type="filename">../sprites/player/dead_west.png</key>
             <key type="filename">../sprites/player/die_0.png</key>
             <key type="filename">../sprites/player/die_1.png</key>
             <key type="filename">../sprites/player/die_2.png</key>
@@ -188,7 +196,6 @@
             <key type="filename">../sprites/player/die_4.png</key>
             <key type="filename">../sprites/player/die_5.png</key>
             <key type="filename">../sprites/player/die_6.png</key>
-            <key type="filename">../sprites/player/die_7.png</key>
             <key type="filename">../sprites/player/pickup_east0018.png</key>
             <key type="filename">../sprites/player/pickup_east0019.png</key>
             <key type="filename">../sprites/player/pickup_east0020.png</key>
@@ -237,7 +244,6 @@
             <filename>../sprites/player/die_4.png</filename>
             <filename>../sprites/player/die_5.png</filename>
             <filename>../sprites/player/die_6.png</filename>
-            <filename>../sprites/player/die_7.png</filename>
             <filename>../sprites/player/pickup_east0018.png</filename>
             <filename>../sprites/player/pickup_east0019.png</filename>
             <filename>../sprites/player/pickup_east0020.png</filename>
@@ -262,6 +268,14 @@
             <filename>../sprites/player/pickup_west_0.png</filename>
             <filename>../sprites/player/pickup_west_1.png</filename>
             <filename>../sprites/player/pickup_west_2.png</filename>
+            <filename>../sprites/player/dead_east.png</filename>
+            <filename>../sprites/player/dead_north.png</filename>
+            <filename>../sprites/player/dead_north_east.png</filename>
+            <filename>../sprites/player/dead_north_west.png</filename>
+            <filename>../sprites/player/dead_south.png</filename>
+            <filename>../sprites/player/dead_south_east.png</filename>
+            <filename>../sprites/player/dead_south_west.png</filename>
+            <filename>../sprites/player/dead_west.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

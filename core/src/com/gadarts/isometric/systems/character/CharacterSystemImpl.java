@@ -294,6 +294,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		if (characterComponent.getHp() <= 0) {
 			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.DIE);
+			if (ComponentsMapper.animation.has(character)) {
+				ComponentsMapper.animation.get(character).resetStateTime();
+			}
 			characterComponent.setMode(CharacterMode.DEAD);
 			soundPlayer.playSound(Assets.Sounds.ENEMY_DIE);
 		} else {

@@ -205,9 +205,16 @@
             <key type="filename">../sprites/zealot/attack_west_0.png</key>
             <key type="filename">../sprites/zealot/attack_west_1.png</key>
             <key type="filename">../sprites/zealot/attack_west_2.png</key>
+            <key type="filename">../sprites/zealot/dead_east.png</key>
+            <key type="filename">../sprites/zealot/dead_north.png</key>
+            <key type="filename">../sprites/zealot/dead_north_east.png</key>
+            <key type="filename">../sprites/zealot/dead_north_west.png</key>
+            <key type="filename">../sprites/zealot/dead_south.png</key>
+            <key type="filename">../sprites/zealot/dead_south_east.png</key>
+            <key type="filename">../sprites/zealot/dead_south_west.png</key>
+            <key type="filename">../sprites/zealot/dead_west.png</key>
             <key type="filename">../sprites/zealot/die_0.png</key>
             <key type="filename">../sprites/zealot/die_1.png</key>
-            <key type="filename">../sprites/zealot/die_10.png</key>
             <key type="filename">../sprites/zealot/die_2.png</key>
             <key type="filename">../sprites/zealot/die_3.png</key>
             <key type="filename">../sprites/zealot/die_4.png</key>
@@ -371,7 +378,6 @@
             <filename>../sprites/zealot/pain_west.png</filename>
             <filename>../sprites/zealot/die_0.png</filename>
             <filename>../sprites/zealot/die_1.png</filename>
-            <filename>../sprites/zealot/die_10.png</filename>
             <filename>../sprites/zealot/die_2.png</filename>
             <filename>../sprites/zealot/die_3.png</filename>
             <filename>../sprites/zealot/die_4.png</filename>
@@ -380,6 +386,14 @@
             <filename>../sprites/zealot/die_7.png</filename>
             <filename>../sprites/zealot/die_8.png</filename>
             <filename>../sprites/zealot/die_9.png</filename>
+            <filename>../sprites/zealot/dead_east.png</filename>
+            <filename>../sprites/zealot/dead_north.png</filename>
+            <filename>../sprites/zealot/dead_north_east.png</filename>
+            <filename>../sprites/zealot/dead_north_west.png</filename>
+            <filename>../sprites/zealot/dead_south.png</filename>
+            <filename>../sprites/zealot/dead_south_east.png</filename>
+            <filename>../sprites/zealot/dead_south_west.png</filename>
+            <filename>../sprites/zealot/dead_west.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

@@ -10,7 +10,8 @@ public enum SpriteType {
 	ATTACK(0.15f, Animation.PlayMode.NORMAL),
 	PAIN(),
 	PICKUP(0.2f, Animation.PlayMode.NORMAL, false, true),
-	DIE(0.15f, Animation.PlayMode.NORMAL, true);
+	DIE(0.15f, Animation.PlayMode.NORMAL, true),
+	DEAD();
 
 	private final float animationDuration;
 	private final Animation.PlayMode playMode;

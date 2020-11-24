@@ -57,7 +57,7 @@ public class CharacterComponent implements GameComponent {
 
 	public void init(final CharacterSpriteData characterSpriteData) {
 		this.characterSpriteData = characterSpriteData;
-		this.hp = 3;
+		this.hp = 1;
 	}
 
 	public void dealDamage(final int damagePoints) {

@@ -1,221 +1,270 @@
 player_generic.png
-size: 787, 787
+size: 918, 918
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-die
+dead_east
   rotate: false
   xy: 2, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 0
-die
+  index: -1
+dead_north
   rotate: false
   xy: 2, 133
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 1
-die
+  index: -1
+dead_north_east
   rotate: false
   xy: 2, 264
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 2
-die
+  index: -1
+dead_north_west
   rotate: false
   xy: 2, 395
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 3
-die
+  index: -1
+dead_south
   rotate: false
   xy: 2, 526
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 4
-die
+  index: -1
+dead_south_east
   rotate: false
   xy: 2, 657
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 5
-die
+  index: -1
+dead_south_west
+  rotate: false
+  xy: 2, 788
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+dead_west
   rotate: false
   xy: 133, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 6
+  index: -1
 die
-  rotate: false
-  xy: 264, 2
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 7
-pickup_east0018
-  rotate: false
-  xy: 395, 2
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-pickup_east0019
-  rotate: false
-  xy: 526, 2
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-pickup_east0020
-  rotate: false
-  xy: 657, 2
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-pickup_north
   rotate: false
   xy: 133, 133
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-pickup_north
+die
   rotate: false
   xy: 133, 264
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-pickup_north
+die
   rotate: false
   xy: 133, 395
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
-pickup_north_east
+die
   rotate: false
   xy: 133, 526
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 0
-pickup_north_east
+  index: 3
+die
   rotate: false
   xy: 133, 657
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 1
-pickup_north_east
+  index: 4
+die
+  rotate: false
+  xy: 133, 788
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 5
+die
+  rotate: false
+  xy: 264, 2
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 6
+pickup_east0018
   rotate: false
   xy: 264, 133
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 2
-pickup_north_west
-  rotate: false
-  xy: 395, 133
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 0
-pickup_north_west
-  rotate: false
-  xy: 526, 133
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 1
-pickup_north_west
-  rotate: false
-  xy: 657, 133
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 2
-pickup_south
+  index: -1
+pickup_east0019
   rotate: false
   xy: 264, 264
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 0
-pickup_south
+  index: -1
+pickup_east0020
   rotate: false
   xy: 264, 395
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 1
-pickup_south
+  index: -1
+pickup_north
   rotate: false
   xy: 264, 526
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 2
-pickup_south_east
+  index: 0
+pickup_north
   rotate: false
   xy: 264, 657
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
+  index: 1
+pickup_north
+  rotate: false
+  xy: 264, 788
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
+pickup_north_east
+  rotate: false
+  xy: 395, 2
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
   index: 0
-pickup_south_east
+pickup_north_east
+  rotate: false
+  xy: 395, 133
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
+pickup_north_east
   rotate: false
   xy: 395, 264
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
+  index: 2
+pickup_north_west
+  rotate: false
+  xy: 395, 395
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 0
+pickup_north_west
+  rotate: false
+  xy: 395, 526
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
   index: 1
+pickup_north_west
+  rotate: false
+  xy: 395, 657
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
+pickup_south
+  rotate: false
+  xy: 395, 788
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 0
+pickup_south
+  rotate: false
+  xy: 526, 2
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
+pickup_south
+  rotate: false
+  xy: 526, 133
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
 pickup_south_east
   rotate: false
   xy: 526, 264
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
+  index: 0
+pickup_south_east
+  rotate: false
+  xy: 526, 395
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
+pickup_south_east
+  rotate: false
+  xy: 526, 526
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
   index: 2
 pickup_south_west
   rotate: false
-  xy: 657, 264
+  xy: 526, 657
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
 pickup_south_west
   rotate: false
-  xy: 395, 395
+  xy: 526, 788
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
 pickup_south_west
   rotate: false
-  xy: 395, 526
+  xy: 657, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
 pickup_west
   rotate: false
-  xy: 395, 657
+  xy: 657, 133
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
 pickup_west
   rotate: false
-  xy: 526, 395
+  xy: 657, 264
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
