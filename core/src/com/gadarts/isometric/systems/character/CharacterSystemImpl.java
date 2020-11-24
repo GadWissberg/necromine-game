@@ -131,7 +131,6 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void commandDone(final Entity character) {
-		handlePickupOnCommandDone(character);
 		graphData.getCurrentPath().clear();
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		characterComponent.setMode(IDLE);
@@ -142,7 +141,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		}
 	}
 
-	private void handlePickupOnCommandDone(final Entity character) {
+	private void handlePickup(final Entity character) {
 		CharacterMode mode = ComponentsMapper.character.get(character).getMode();
 		if (mode == PICKING_UP && currentCommand.getAdditionalData() != null) {
 			Entity itemPickedUp = (Entity) currentCommand.getAdditionalData();
@@ -263,11 +262,11 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		if (animation.isAnimationFinished(animationComponent.getStateTime())) {
 			SpriteType spriteType = ComponentsMapper.character.get(character).getCharacterSpriteData().getSpriteType();
 			if (spriteType.isAddReverse()) {
-				if (animationComponent.isDoReverse()) {
+				if (animationComponent.isDoingReverse()) {
 					commandDone(character);
-					animationComponent.setDoReverse(false);
+					animationComponent.setDoingReverse(false);
 				} else {
-					animationComponent.setDoReverse(true);
+					animationComponent.setDoingReverse(true);
 					animation.setPlayMode(Animation.PlayMode.REVERSED);
 					animation.setFrameDuration(spriteType.getAnimationDuration());
 					animationComponent.resetStateTime();
@@ -349,6 +348,10 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				} else {
 					applyDamageToCharacter(target);
 				}
+			}
+		} else if (characterSpriteData.getSpriteType() == SpriteType.PICKUP) {
+			if (newFrame.index == 1 && ComponentsMapper.animation.get(character).isDoingReverse()) {
+				handlePickup(character);
 			}
 		}
 	}

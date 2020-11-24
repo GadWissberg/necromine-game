@@ -12,11 +12,11 @@ public class AnimationComponent implements GameComponent {
 
 	@Setter
 	@Getter
-	private boolean doReverse;
+	private boolean doingReverse;
 
 	@Override
 	public void reset() {
-		doReverse = false;
+		doingReverse = false;
 		stateTime = 0;
 	}
 
