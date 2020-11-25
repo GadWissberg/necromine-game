@@ -10,6 +10,7 @@ import com.gadarts.isometric.components.CharacterDecalComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
+import com.gadarts.isometric.components.character.CharacterAttackData;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.player.*;
@@ -141,8 +142,9 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		Weapon selectedWeapon = ComponentsMapper.player.get(player).getStorage().getSelectedWeapon();
 		WeaponsDefinitions definition = (WeaponsDefinitions) selectedWeapon.getDefinition();
 		characterComponent.getCharacterSpriteData().setHitFrameIndex(definition.getHitFrameIndex());
-		characterComponent.setAttackSound(definition.getAttackSound());
-		characterComponent.setTarget(map.getEnemyFromNode(enemies, node));
+		CharacterAttackData attackData = characterComponent.getAttackData();
+		attackData.setAttackSound(definition.getAttackSound());
+		attackData.setTarget(map.getEnemyFromNode(enemies, node));
 		applyShootCommand(node);
 	}
 
@@ -167,7 +169,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	@Override
 	public void activateAttackMode(final Entity enemyAtNode, final List<MapGraphNode> availableNodes) {
-		ComponentsMapper.character.get(player).setTarget(enemyAtNode);
+		ComponentsMapper.character.get(player).getAttackData().setTarget(enemyAtNode);
 		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onAttackModeActivated(availableNodes);
 		}

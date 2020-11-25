@@ -62,7 +62,7 @@ public class PathPlanHandler {
 	private void transformArrowDecal(final MapGraphNode currentNode, final Vector2 directionVector, final Decal decal) {
 		decal.getRotation().idt();
 		decal.rotateX(90);
-		decal.rotateZ(directionVector.angle());
+		decal.rotateZ(directionVector.angleDeg());
 		Vector3 pos = auxVector3_1.set(currentNode.getX() + 0.5f, 0.1f, currentNode.getY() + 0.5f);
 		decal.setPosition(pos.add(directionVector.x, 0, directionVector.y));
 	}

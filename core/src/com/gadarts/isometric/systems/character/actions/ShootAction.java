@@ -16,7 +16,7 @@ public class ShootAction implements ToDoAfterDestinationReached {
 					final SoundPlayer soundPlayer,
 					final Object itemToPickup) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		Entity target = characterComponent.getTarget();
+		Entity target = characterComponent.getAttackData().getTarget();
 		if (target != null) {
 			characterComponent.getRotationData().setRotating(true);
 			characterComponent.setMotivation(CharacterMotivation.TO_ATTACK);

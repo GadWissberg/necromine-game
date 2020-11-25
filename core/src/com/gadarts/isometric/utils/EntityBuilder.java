@@ -81,7 +81,7 @@ public final class EntityBuilder {
 											   final Sound attackSound) {
 		CharacterComponent charComponent = engine.createComponent(CharacterComponent.class);
 		charComponent.init(characterSpriteData);
-		charComponent.setTarget(target);
+		charComponent.getAttackData().setTarget(target);
 		currentEntity.add(charComponent);
 		return instance;
 	}

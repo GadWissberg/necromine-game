@@ -1,10 +1,7 @@
 package com.gadarts.isometric.components.character;
 
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.GameComponent;
-import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,21 +11,18 @@ import lombok.Setter;
 @Setter
 public class CharacterComponent implements GameComponent {
 
-	private static final Vector2 auxVector = new Vector2();
 	public static final int INITIAL_HP = 5;
+	private static final Vector2 auxVector = new Vector2();
 
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private MapGraphNode destinationNode;
 
-	private CharacterMotivation motivation;
-	private Entity target;
+	private CharacterMotivationData motivationData = new CharacterMotivationData();
+	private CharacterAttackData attackData = new CharacterAttackData();
 	private CharacterRotationData rotationData = new CharacterRotationData();
-	private int hp;
-	private long lastDamage;
-	private Object modeAdditionalData;
-	private Assets.Sounds attackSound;
 	private CharacterSpriteData characterSpriteData;
+	private CharacterHealthData healthData = new CharacterHealthData();
 
 	public MapGraphNode getDestinationNode() {
 		return destinationNode;
@@ -38,32 +32,31 @@ public class CharacterComponent implements GameComponent {
 		this.destinationNode = newValue;
 	}
 
-
 	public void setMotivation(final CharacterMotivation characterMotivation) {
 		setMotivation(characterMotivation, null);
 	}
 
 	public void setMotivation(final CharacterMotivation characterMotivation, final Object additionalData) {
-		this.motivation = characterMotivation;
-		this.modeAdditionalData = additionalData;
+		motivationData.setMotivation(characterMotivation);
+		motivationData.setMotivationAdditionalData(additionalData);
 	}
 
 	@Override
 	public void reset() {
 		destinationNode = null;
-		motivation = null;
-		target = null;
+		healthData.reset();
+		motivationData.reset();
+		attackData.reset();
 		rotationData.reset();
 	}
 
 	public void init(final CharacterSpriteData characterSpriteData) {
 		this.characterSpriteData = characterSpriteData;
-		this.hp = INITIAL_HP;
+		this.healthData.setHp(INITIAL_HP);
 	}
 
 	public void dealDamage(final int damagePoints) {
-		hp -= damagePoints;
-		lastDamage = TimeUtils.millis();
+		healthData.dealDamage(damagePoints);
 	}
 
 	public enum Direction {

@@ -62,7 +62,7 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 	@Override
 	public void onEnemyTurn() {
 		for (Entity enemy : enemies) {
-			if (ComponentsMapper.character.get(enemy).getHp() > 0) {
+			if (ComponentsMapper.character.get(enemy).getHealthData().getHp() > 0) {
 				invokeEnemyTurn(enemy);
 			} else {
 				onCommandDone(enemy);
@@ -72,7 +72,7 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 
 	private void invokeEnemyTurn(final Entity enemy) {
 		Vector3 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getCellPosition(auxVector3_1);
-		Entity target = ComponentsMapper.character.get(enemy).getTarget();
+		Entity target = ComponentsMapper.character.get(enemy).getAttackData().getTarget();
 		MapGraphNode enemyNode = map.getNode((int) enemyPosition.x, (int) enemyPosition.z);
 		applyGoToMelee(enemy, enemyNode, target);
 	}

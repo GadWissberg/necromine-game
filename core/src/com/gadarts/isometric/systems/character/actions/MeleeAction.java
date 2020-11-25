@@ -22,7 +22,7 @@ public class MeleeAction implements ToDoAfterDestinationReached {
 					final SoundPlayer soundPlayer,
 					final Object additionalData) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		Entity target = characterComponent.getTarget();
+		Entity target = characterComponent.getAttackData().getTarget();
 		if (target != null) {
 			Vector3 targetPosition = ComponentsMapper.characterDecal.get(target).getCellPosition(auxVector);
 			MapGraphNode targetNode = map.getNode(targetPosition);

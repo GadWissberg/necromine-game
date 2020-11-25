@@ -106,12 +106,12 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			Decal decal = characterDecalComponent.getDecal();
 			auxVector2_3.set(1, 0);
 			CharacterSpriteData characterSpriteData = characterComponent.getCharacterSpriteData();
-			float playerAngle = characterSpriteData.getFacingDirection().getDirection(auxVector2_1).angle();
+			float playerAngle = characterSpriteData.getFacingDirection().getDirection(auxVector2_1).angleDeg();
 			Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
 			Intersector.intersectRayPlane(ray, auxPlane, auxVector3_1);
-			float cameraAngle = auxVector2_2.set(camera.position.x, camera.position.z).sub(auxVector3_1.x, auxVector3_1.z).angle();
-			auxVector2_3.setAngle(playerAngle - cameraAngle);
-			float angleDiff = auxVector2_3.angle();
+			float cameraAngle = auxVector2_2.set(camera.position.x, camera.position.z).sub(auxVector3_1.x, auxVector3_1.z).angleDeg();
+			auxVector2_3.setAngleDeg(playerAngle - cameraAngle);
+			float angleDiff = auxVector2_3.angleDeg();
 			CharacterComponent.Direction direction;
 			if ((angleDiff >= 0 && angleDiff <= 22.5) || (angleDiff > 337.5f && angleDiff <= 360)) {
 				direction = CharacterComponent.Direction.SOUTH;
@@ -201,9 +201,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 			if (ComponentsMapper.wall.has(entity)) {
 				float angleAround = MathUtils.round(modelInstanceComponent.getModelInstance().transform.getRotation(auxQuat).getAngleAround(Vector3.Y));
-				Vector2 modelAngle = auxVector2_1.set(1, 0).setAngle(angleAround).rotate90((angleAround < 90 || angleAround > 270) || angleAround == 180 ? 1 : -1);
+				Vector2 modelAngle = auxVector2_1.set(1, 0).setAngleDeg(angleAround).rotate90((angleAround < 90 || angleAround > 270) || angleAround == 180 ? 1 : -1);
 				Vector2 cameraAngle = auxVector2_2.set(camera.direction.x, camera.direction.z);
-				float angle = auxVector2_3.set(1, 0).setAngle(modelAngle.angle(cameraAngle)).angle();
+				float angle = auxVector2_3.set(1, 0).setAngleDeg(modelAngle.angleDeg(cameraAngle)).angleDeg();
 				if (angle < 90 || angle > 270) {
 					continue;
 				}

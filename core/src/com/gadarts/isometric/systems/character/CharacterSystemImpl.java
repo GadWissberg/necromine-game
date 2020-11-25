@@ -81,16 +81,20 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		currentCommand = command;
 		currentCommand.setStarted(false);
 		if (ComponentsMapper.character.get(character).getCharacterSpriteData().getSpriteType() != PAIN) {
-			currentCommand.setStarted(true);
-			graphData.getCurrentPath().clear();
-			if (command.getType().isRequiresMovement()) {
-				graphData.getCurrentPath().nodes.addAll(command.getPath().nodes);
-			}
-			if (graphData.getCurrentPath().nodes.size > 1) {
-				commandSet(command, character);
-			} else {
-				destinationReached(character);
-			}
+			beginProcessingCommand(command, character);
+		}
+	}
+
+	private void beginProcessingCommand(final CharacterCommand command, final Entity character) {
+		currentCommand.setStarted(true);
+		graphData.getCurrentPath().clear();
+		if (command.getType().isRequiresMovement()) {
+			graphData.getCurrentPath().nodes.addAll(command.getPath().nodes);
+		}
+		if (graphData.getCurrentPath().nodes.size > 1) {
+			commandSet(command, character);
+		} else {
+			destinationReached(character);
 		}
 	}
 
@@ -147,7 +151,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void handlePickup(final Entity character) {
-		CharacterMotivation mode = ComponentsMapper.character.get(character).getMotivation();
+		CharacterMotivation mode = ComponentsMapper.character.get(character).getMotivationData().getMotivation();
 		if (mode == TO_PICK_UP && currentCommand.getAdditionalData() != null) {
 			Entity itemPickedUp = (Entity) currentCommand.getAdditionalData();
 			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
@@ -191,7 +195,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 
 	private void handlePain(final Entity character) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		long lastDamage = characterComponent.getLastDamage();
+		long lastDamage = characterComponent.getHealthData().getLastDamage();
 		CharacterSpriteData spriteData = characterComponent.getCharacterSpriteData();
 		if (spriteData.getSpriteType() == PAIN && TimeUtils.timeSinceMillis(lastDamage) > CHARACTER_PAIN_DURATION) {
 			characterComponent.setMotivation(null);
@@ -209,9 +213,11 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			rotationData.setLastRotation(TimeUtils.millis());
 			Direction directionToDest;
 			CharacterSpriteData characterSpriteData = charComponent.getCharacterSpriteData();
-			if (charComponent.getMotivation() == CharacterMotivation.TO_ATTACK) {
+			CharacterMotivationData motivationData = charComponent.getMotivationData();
+			CharacterMotivation motivation = motivationData.getMotivation();
+			if (motivation == CharacterMotivation.TO_ATTACK) {
 				directionToDest = calculateDirectionToTarget(character);
-			} else if (charComponent.getMotivation() == TO_PICK_UP) {
+			} else if (motivation == TO_PICK_UP) {
 				directionToDest = characterSpriteData.getFacingDirection();
 			} else {
 				directionToDest = calculateDirectionToDestination(character);
@@ -221,9 +227,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			} else {
 				rotationData.setRotating(false);
 				SpriteType spriteType;
-				if (charComponent.getMotivation() == CharacterMotivation.TO_ATTACK) {
+				if (motivation == CharacterMotivation.TO_ATTACK) {
 					spriteType = SpriteType.ATTACK;
-				} else if (charComponent.getMotivation() == CharacterMotivation.TO_PICK_UP) {
+				} else if (motivation == CharacterMotivation.TO_PICK_UP) {
 					spriteType = SpriteType.PICKUP;
 				} else {
 					spriteType = SpriteType.RUN;
@@ -258,7 +264,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private Direction calculateDirectionToTarget(final Entity character) {
 		Vector3 pos = auxVector3_1.set(ComponentsMapper.characterDecal.get(character).getDecal().getPosition());
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		Entity target = characterComponent.getTarget();
+		Entity target = characterComponent.getAttackData().getTarget();
 		MapGraphNode targetNode = map.getNode(ComponentsMapper.characterDecal.get(target).getDecal().getPosition());
 		Vector2 destPos = targetNode.getCenterPosition(auxVector2_2);
 		Vector2 directionToDest = destPos.sub(pos.x, pos.z).nor();
@@ -294,7 +300,8 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 
 	private void handleDeath(final Entity character) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		if (characterComponent.getHp() <= 0) {
+		CharacterHealthData healthData = characterComponent.getHealthData();
+		if (healthData.getHp() <= 0) {
 			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.DIE);
 			if (ComponentsMapper.animation.has(character)) {
 				ComponentsMapper.animation.get(character).resetStateTime();
@@ -306,7 +313,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 				subscriber.onCharacterGotDamage(character);
 			}
-			if (characterComponent.getHp() > 0) {
+			if (healthData.getHp() > 0) {
 				characterComponent.setMotivation(null);
 			}
 		}
@@ -338,8 +345,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			applyRunning(character, newFrame, characterComponent);
 		} else if (characterSpriteData.getSpriteType() == SpriteType.ATTACK) {
 			if (newFrame.index == characterSpriteData.getHitFrameIndex()) {
-				soundPlayer.playSound(characterComponent.getAttackSound());
-				Entity target = characterComponent.getTarget();
+				CharacterAttackData attackData = characterComponent.getAttackData();
+				soundPlayer.playSound(attackData.getAttackSound());
+				Entity target = attackData.getTarget();
 				if (ComponentsMapper.player.has(character)) {
 					Weapon weapon = ComponentsMapper.player.get(character).getStorage().getSelectedWeapon();
 					WeaponsDefinitions definition = (WeaponsDefinitions) weapon.getDefinition();
