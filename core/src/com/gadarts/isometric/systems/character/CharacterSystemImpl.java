@@ -31,7 +31,8 @@ import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 
-import static com.gadarts.isometric.components.character.CharacterMode.*;
+import static com.gadarts.isometric.components.character.CharacterMotivation.TO_PICK_UP;
+import static com.gadarts.isometric.components.character.SpriteType.PAIN;
 
 /**
  * Handles characters behaviour.
@@ -79,7 +80,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	public void applyCommand(final CharacterCommand command, final Entity character) {
 		currentCommand = command;
 		currentCommand.setStarted(false);
-		if (ComponentsMapper.character.get(character).getMode() != PAIN) {
+		if (ComponentsMapper.character.get(character).getCharacterSpriteData().getSpriteType() != PAIN) {
 			currentCommand.setStarted(true);
 			graphData.getCurrentPath().clear();
 			if (command.getType().isRequiresMovement()) {
@@ -137,7 +138,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void commandDone(final Entity character) {
 		graphData.getCurrentPath().clear();
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		characterComponent.setMode(IDLE);
+		characterComponent.setMotivation(null);
 		characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.IDLE);
 		currentCommand = null;
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
@@ -146,8 +147,8 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void handlePickup(final Entity character) {
-		CharacterMode mode = ComponentsMapper.character.get(character).getMode();
-		if (mode == PICKING_UP && currentCommand.getAdditionalData() != null) {
+		CharacterMotivation mode = ComponentsMapper.character.get(character).getMotivation();
+		if (mode == TO_PICK_UP && currentCommand.getAdditionalData() != null) {
 			Entity itemPickedUp = (Entity) currentCommand.getAdditionalData();
 			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 				subscriber.onItemPickedUp(itemPickedUp);
@@ -191,9 +192,10 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void handlePain(final Entity character) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		long lastDamage = characterComponent.getLastDamage();
-		if (characterComponent.getMode() == PAIN && TimeUtils.timeSinceMillis(lastDamage) > CHARACTER_PAIN_DURATION) {
-			characterComponent.setMode(IDLE);
-			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.IDLE);
+		CharacterSpriteData spriteData = characterComponent.getCharacterSpriteData();
+		if (spriteData.getSpriteType() == PAIN && TimeUtils.timeSinceMillis(lastDamage) > CHARACTER_PAIN_DURATION) {
+			characterComponent.setMotivation(null);
+			spriteData.setSpriteType(SpriteType.IDLE);
 			if (currentCommand != null && !currentCommand.isStarted()) {
 				applyCommand(currentCommand, character);
 			}
@@ -201,15 +203,15 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void handleRotation(final Entity character, final CharacterComponent charComponent) {
-		if (charComponent.getMode() == CharacterMode.PAIN) return;
+		if (charComponent.getCharacterSpriteData().getSpriteType() == PAIN) return;
 		CharacterRotationData rotationData = charComponent.getRotationData();
 		if (rotationData.isRotating() && TimeUtils.timeSinceMillis(rotationData.getLastRotation()) > ROT_INTERVAL) {
 			rotationData.setLastRotation(TimeUtils.millis());
 			Direction directionToDest;
 			CharacterSpriteData characterSpriteData = charComponent.getCharacterSpriteData();
-			if (charComponent.getMode() == CharacterMode.ATTACKING) {
+			if (charComponent.getMotivation() == CharacterMotivation.TO_ATTACK) {
 				directionToDest = calculateDirectionToTarget(character);
-			} else if (charComponent.getMode() == PICKING_UP) {
+			} else if (charComponent.getMotivation() == TO_PICK_UP) {
 				directionToDest = characterSpriteData.getFacingDirection();
 			} else {
 				directionToDest = calculateDirectionToDestination(character);
@@ -219,9 +221,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			} else {
 				rotationData.setRotating(false);
 				SpriteType spriteType;
-				if (charComponent.getMode() == CharacterMode.ATTACKING) {
+				if (charComponent.getMotivation() == CharacterMotivation.TO_ATTACK) {
 					spriteType = SpriteType.ATTACK;
-				} else if (charComponent.getMode() == CharacterMode.PICKING_UP) {
+				} else if (charComponent.getMotivation() == CharacterMotivation.TO_PICK_UP) {
 					spriteType = SpriteType.PICKUP;
 				} else {
 					spriteType = SpriteType.RUN;
@@ -297,7 +299,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			if (ComponentsMapper.animation.has(character)) {
 				ComponentsMapper.animation.get(character).resetStateTime();
 			}
-			characterComponent.setMode(CharacterMode.DEAD);
+			characterComponent.setMotivation(null);
 			soundPlayer.playSound(Assets.Sounds.ENEMY_DIE);
 		} else {
 			applyTargetToDisplayPain(character);
@@ -305,14 +307,14 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				subscriber.onCharacterGotDamage(character);
 			}
 			if (characterComponent.getHp() > 0) {
-				characterComponent.setMode(CharacterMode.PAIN);
+				characterComponent.setMotivation(null);
 			}
 		}
 	}
 
 	private void applyTargetToDisplayPain(final Entity character) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.PAIN);
+		characterComponent.getCharacterSpriteData().setSpriteType(PAIN);
 	}
 
 	@Override

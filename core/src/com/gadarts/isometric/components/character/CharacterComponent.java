@@ -15,12 +15,13 @@ import lombok.Setter;
 public class CharacterComponent implements GameComponent {
 
 	private static final Vector2 auxVector = new Vector2();
+	public static final int INITIAL_HP = 5;
 
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private MapGraphNode destinationNode;
 
-	private CharacterMode mode = CharacterMode.IDLE;
+	private CharacterMotivation motivation;
 	private Entity target;
 	private CharacterRotationData rotationData = new CharacterRotationData();
 	private int hp;
@@ -38,31 +39,30 @@ public class CharacterComponent implements GameComponent {
 	}
 
 
-	public void setMode(final CharacterMode mode) {
-		setMode(mode, null);
+	public void setMotivation(final CharacterMotivation characterMotivation) {
+		setMotivation(characterMotivation, null);
 	}
 
-	public void setMode(final CharacterMode mode, final Object additionalData) {
-		this.mode = mode;
+	public void setMotivation(final CharacterMotivation characterMotivation, final Object additionalData) {
+		this.motivation = characterMotivation;
 		this.modeAdditionalData = additionalData;
 	}
 
 	@Override
 	public void reset() {
 		destinationNode = null;
-		mode = CharacterMode.IDLE;
+		motivation = null;
 		target = null;
 		rotationData.reset();
 	}
 
 	public void init(final CharacterSpriteData characterSpriteData) {
 		this.characterSpriteData = characterSpriteData;
-		this.hp = 1;
+		this.hp = INITIAL_HP;
 	}
 
 	public void dealDamage(final int damagePoints) {
 		hp -= damagePoints;
-		mode = CharacterMode.PAIN;
 		lastDamage = TimeUtils.millis();
 	}
 
