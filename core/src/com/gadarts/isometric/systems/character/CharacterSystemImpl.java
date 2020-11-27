@@ -234,6 +234,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				} else {
 					spriteType = SpriteType.RUN;
 				}
+				ComponentsMapper.animation.get(character).resetStateTime();
 				characterSpriteData.setSpriteType(spriteType);
 			}
 		}
@@ -280,6 +281,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				if (animationComponent.isDoingReverse()) {
 					commandDone(character);
 					animationComponent.setDoingReverse(false);
+					animation.setPlayMode(Animation.PlayMode.NORMAL);
 				} else {
 					animationComponent.setDoingReverse(true);
 					animation.setPlayMode(Animation.PlayMode.REVERSED);

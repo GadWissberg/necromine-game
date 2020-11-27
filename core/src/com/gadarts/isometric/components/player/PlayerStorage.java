@@ -45,7 +45,7 @@ public class PlayerStorage implements EventsNotifier<PlayerStorageEventsSubscrib
 		boolean result = false;
 		while (index < SIZE) {
 			if (tryToFillItemArea(index, item.getDefinition())) {
-				applyItemAddition(item);
+				applyItemAddition(item, index);
 				result = true;
 				break;
 			} else {
@@ -60,8 +60,10 @@ public class PlayerStorage implements EventsNotifier<PlayerStorageEventsSubscrib
 		return result;
 	}
 
-	private void applyItemAddition(final Item item) {
+	private void applyItemAddition(final Item item, final int index) {
 		initializeStorageArray(storageMapSketch, storageMap);
+		item.setRow(index / WIDTH);
+		item.setCol(index % WIDTH);
 		items.add(item);
 	}
 
@@ -92,7 +94,7 @@ public class PlayerStorage implements EventsNotifier<PlayerStorageEventsSubscrib
 	}
 
 	private boolean tryToFillCell(final ItemDefinition definition, final int row, final int col) {
-		if (definition.getMask()[row * definition.getWidth() + col] == 1) {
+		if (definition.getMask()[row * (definition.getWidth() - 1) + col] == 1) {
 			int currentCellInStorage = row * WIDTH + col;
 			if (storageMap[currentCellInStorage] == 0) {
 				storageMapSketch[currentCellInStorage] = definition.getId();

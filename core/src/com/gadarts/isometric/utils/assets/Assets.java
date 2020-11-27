@@ -46,6 +46,7 @@ public final class Assets {
 		PLAYER_GENERIC(),
 		PLAYER_AXE_PICK(WeaponsDefinitions.AXE_PICK),
 		PLAYER_COLT(WeaponsDefinitions.COLT),
+		PLAYER_HAMMER(WeaponsDefinitions.HAMMER),
 		ZEALOT();
 
 		private final String filePath;
@@ -128,6 +129,7 @@ public final class Assets {
 		WALL_1,
 		WALL_2,
 		COLT,
+		HAMMER,
 		PILLAR,
 		CAVE_SUPPORTER_1,
 		CAVE_SUPPORTER_2,
@@ -201,6 +203,7 @@ public final class Assets {
 		BUTTON_CLOSE_HOVER(null, "buttons"),
 		NINEPATCHES("ninepatches.9"),
 		WEAPON_AXE_PICK(null, "weapons"),
+		WEAPON_HAMMER(null, "weapons"),
 		WEAPON_COLT(null, "weapons"),
 		PLAYER_LAYOUT;
 

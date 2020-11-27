@@ -73,19 +73,27 @@ public final class MapBuilder {
 		createAndAdd3dCursor();
 		addPlayer();
 		addEnemyTest(2, 2);
-		addWeaponPickupTest();
+		addWeaponPickupTest(1, 2, Assets.Models.COLT, WeaponsDefinitions.COLT, REGION_NAME_BULLET);
+		addWeaponPickupTest(2, 3, Assets.Models.HAMMER, WeaponsDefinitions.HAMMER, null);
 		return createTestMap();
 	}
 
-	private void addWeaponPickupTest() {
-		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(Assets.Models.COLT));
-		modelInstance.transform.setTranslation(auxVector3_1.set(1.5f, 0, 2.5f));
-		Atlases atlas = Atlases.findByRelatedWeapon(WeaponsDefinitions.COLT);
-		TextureAtlas.AtlasRegion bulletRegion = assetManager.getAtlas(atlas).findRegion(REGION_NAME_BULLET);
-		Texture displayImage = assetManager.getTexture(WeaponsDefinitions.COLT.getImage());
+	private void addWeaponPickupTest(final int x,
+									 final int y,
+									 final Assets.Models model,
+									 final WeaponsDefinitions definition,
+									 final String regionNameBullet) {
+		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(model));
+		modelInstance.transform.setTranslation(auxVector3_1.set(x + 0.5f, 0, y + 0.5f));
+		Atlases atlas = Atlases.findByRelatedWeapon(definition);
+		TextureAtlas.AtlasRegion bulletRegion = null;
+		if (regionNameBullet != null) {
+			bulletRegion = assetManager.getAtlas(atlas).findRegion(regionNameBullet);
+		}
+		Texture displayImage = assetManager.getTexture(definition.getImage());
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true)
-				.addPickUpComponentAsWeapon(WeaponsDefinitions.COLT, displayImage, bulletRegion)
+				.addPickUpComponentAsWeapon(definition, displayImage, bulletRegion)
 				.finishAndAddToEngine();
 	}
 
