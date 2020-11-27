@@ -2,7 +2,6 @@ package com.gadarts.isometric.utils;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -17,6 +16,7 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.player.*;
+import com.gadarts.isometric.utils.assets.Assets;
 import lombok.AccessLevel;
 import lombok.Setter;
 
@@ -78,10 +78,11 @@ public final class EntityBuilder {
 
 	public EntityBuilder addCharacterComponent(final CharacterSpriteData characterSpriteData,
 											   final Entity target,
-											   final Sound attackSound) {
+											   final Assets.Sounds painSound,
+											   final Assets.Sounds deathSound) {
 		CharacterComponent charComponent = engine.createComponent(CharacterComponent.class);
-		charComponent.init(characterSpriteData);
-		charComponent.getAttackData().setTarget(target);
+		charComponent.init(characterSpriteData, painSound, deathSound);
+		charComponent.setTarget(target);
 		currentEntity.add(charComponent);
 		return instance;
 	}
@@ -125,9 +126,9 @@ public final class EntityBuilder {
 		}
 	}
 
-	public EntityBuilder addEnemyComponent() {
+	public EntityBuilder addEnemyComponent(final Assets.Sounds attackSound) {
 		EnemyComponent component = engine.createComponent(EnemyComponent.class);
-		component.init();
+		component.init(attackSound);
 		currentEntity.add(component);
 		return instance;
 	}

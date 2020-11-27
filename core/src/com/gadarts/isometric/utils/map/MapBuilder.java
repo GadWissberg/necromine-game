@@ -3,7 +3,6 @@ package com.gadarts.isometric.utils.map;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
@@ -33,6 +32,7 @@ import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.Assets.Atlases;
+import com.gadarts.isometric.utils.assets.Assets.Sounds;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
@@ -164,28 +164,29 @@ public final class MapBuilder {
 		CharacterAnimations general = assetManager.get(Atlases.PLAYER_GENERIC.name());
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
 		Vector3 position = auxVector3_1.set(0.5f, CharacterDecalComponent.BILLBOARD_Y, 0.5f);
-		addCharBaseComponents(entityBuilder, Atlases.PLAYER_AXE_PICK, position, null);
+		addCharBaseComponents(entityBuilder, Atlases.PLAYER_AXE_PICK, position, null, Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH);
 		entityBuilder.finishAndAddToEngine();
 	}
 
 	private void addEnemyTest(final int x, final int y) {
-		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent();
+		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(Sounds.ATTACK_CLAW);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		Vector3 position = auxVector3_1.set(x + 0.5f, CharacterDecalComponent.BILLBOARD_Y, y + 0.5f);
-		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player);
+		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player, Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH);
 		entityBuilder.finishAndAddToEngine();
 	}
 
 	private void addCharBaseComponents(final EntityBuilder entityBuilder,
 									   final Atlases atlas,
 									   final Vector3 position,
-									   final Entity target) {
+									   final Entity target,
+									   final Sounds painSound,
+									   final Sounds deathSound) {
 		CharacterAnimations animations = assetManager.get(atlas.name());
 		SpriteType spriteType = SpriteType.IDLE;
-		Sound attackSound = assetManager.getSound(Assets.Sounds.ATTACK_CLAW);
 		CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
 		characterSpriteData.init(Direction.SOUTH, spriteType, 1);
-		entityBuilder.addCharacterComponent(characterSpriteData, target, attackSound)
+		entityBuilder.addCharacterComponent(characterSpriteData, target, painSound, deathSound)
 				.addCharacterDecalComponent(animations, spriteType, Direction.SOUTH, position)
 				.addCollisionComponent()
 				.addAnimationComponent();

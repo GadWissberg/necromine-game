@@ -4,15 +4,19 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.EnemyComponent;
+import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterCommand;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.Commands;
+import com.gadarts.isometric.systems.render.RenderSystem;
+import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.assets.Assets;
@@ -22,8 +26,9 @@ import com.gadarts.isometric.utils.map.MapGraphPath;
 /**
  * Handles enemy AI.
  */
-public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> implements
+public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscriber> implements
 		TurnsSystemEventsSubscriber,
+		RenderSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber {
 
 	private static final Vector3 auxVector3_1 = new Vector3();
@@ -32,7 +37,6 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
-
 
 
 	@Override
@@ -72,7 +76,7 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 
 	private void invokeEnemyTurn(final Entity enemy) {
 		Vector3 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getCellPosition(auxVector3_1);
-		Entity target = ComponentsMapper.character.get(enemy).getAttackData().getTarget();
+		Entity target = ComponentsMapper.character.get(enemy).getTarget();
 		MapGraphNode enemyNode = map.getNode((int) enemyPosition.x, (int) enemyPosition.z);
 		applyGoToMelee(enemy, enemyNode, target);
 	}
@@ -132,6 +136,22 @@ public class EnemySystem extends GameEntitySystem<EnemySystemEventsSubscriber> i
 
 	@Override
 	public void activate() {
+
+	}
+
+	@Override
+	public void onFrameChanged(final Entity entity, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
+		if (ComponentsMapper.enemy.has(entity)) {
+			if (ComponentsMapper.character.get(entity).getCharacterSpriteData().getSpriteType() == SpriteType.ATTACK) {
+				if (newFrame.index == ComponentsMapper.character.get(entity).getCharacterSpriteData().getHitFrameIndex()) {
+					soundPlayer.playSound(ComponentsMapper.enemy.get(entity).getAttackSound());
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onRenderSystemReady(final RenderSystem renderSystem) {
 
 	}
 }

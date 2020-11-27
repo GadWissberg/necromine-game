@@ -106,13 +106,29 @@ public final class Assets {
 		STEP_2,
 		STEP_3,
 		ENEMY_ROAM,
+		ENEMY_PAIN,
+		ENEMY_DEATH,
 		ATTACK_CLAW,
-		ENEMY_DIE;
+		ATTACK_AXE_PICK,
+		ATTACK_COLT,
+		ATTACK_HAMMER,
+		PICKUP,
+		PLAYER_PAIN,
+		PLAYER_DEATH,
+		UI_CLICK(false),
+		UI_ITEM_SELECT(false),
+		UI_ITEM_PLACED(false);
 
 		private final String filePath;
+		private final boolean randomPitch;
 
 		Sounds() {
+			this(true);
+		}
+
+		Sounds(final boolean randomPitch) {
 			this.filePath = SoundDefinition.FOLDER + PATH_SEPARATOR + name().toLowerCase() + "." + SoundDefinition.FORMAT;
+			this.randomPitch = randomPitch;
 		}
 
 		@Override

@@ -265,7 +265,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private Direction calculateDirectionToTarget(final Entity character) {
 		Vector3 pos = auxVector3_1.set(ComponentsMapper.characterDecal.get(character).getDecal().getPosition());
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		Entity target = characterComponent.getAttackData().getTarget();
+		Entity target = characterComponent.getTarget();
 		MapGraphNode targetNode = map.getNode(ComponentsMapper.characterDecal.get(target).getDecal().getPosition());
 		Vector2 destPos = targetNode.getCenterPosition(auxVector2_2);
 		Vector2 directionToDest = destPos.sub(pos.x, pos.z).nor();
@@ -309,8 +309,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				ComponentsMapper.animation.get(character).resetStateTime();
 			}
 			characterComponent.setMotivation(null);
-			soundPlayer.playSound(Assets.Sounds.ENEMY_DIE);
+			soundPlayer.playSound(characterComponent.getDeathSound());
 		} else {
+			soundPlayer.playSound(characterComponent.getPainSound());
 			applyTargetToDisplayPain(character);
 			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 				subscriber.onCharacterGotDamage(character);
@@ -347,9 +348,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			applyRunning(character, newFrame, characterComponent);
 		} else if (characterSpriteData.getSpriteType() == SpriteType.ATTACK) {
 			if (newFrame.index == characterSpriteData.getHitFrameIndex()) {
-				CharacterAttackData attackData = characterComponent.getAttackData();
-				soundPlayer.playSound(attackData.getAttackSound());
-				Entity target = attackData.getTarget();
+				Entity target = characterComponent.getTarget();
 				if (ComponentsMapper.player.has(character)) {
 					Weapon weapon = ComponentsMapper.player.get(character).getStorage().getSelectedWeapon();
 					WeaponsDefinitions definition = (WeaponsDefinitions) weapon.getDefinition();

@@ -29,6 +29,7 @@ public class SoundPlayer {
 
 	public void playSound(final Assets.Sounds sound) {
 		if (!DefaultGameSettings.SFX_ENABLED) return;
-		assetManager.getSound(sound).play(1f, 1 + (MathUtils.randomBoolean() ? 1 : -1) * PITCH_OFFSET, 0);
+		float pitch = 1 + (sound.isRandomPitch() ? (MathUtils.randomBoolean() ? 1 : -1) : 0) * PITCH_OFFSET;
+		assetManager.getSound(sound).play(1f, pitch, 0);
 	}
 }

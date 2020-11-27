@@ -85,7 +85,7 @@ public class PlayerStorage implements EventsNotifier<PlayerStorageEventsSubscrib
 		int leftMost = index % (WIDTH);
 		int rightMost = leftMost + definition.getWidth();
 		for (int col = leftMost; col < rightMost; col++) {
-			if (!tryToFillCell(definition, row, col)) {
+			if (!tryToFillCell(definition, row, col, leftMost)) {
 				initializeStorageArray(storageMap, storageMapSketch);
 				return false;
 			}
@@ -93,8 +93,8 @@ public class PlayerStorage implements EventsNotifier<PlayerStorageEventsSubscrib
 		return true;
 	}
 
-	private boolean tryToFillCell(final ItemDefinition definition, final int row, final int col) {
-		if (definition.getMask()[row * (definition.getWidth() - 1) + col] == 1) {
+	private boolean tryToFillCell(final ItemDefinition definition, final int row, final int col, final int leftMost) {
+		if (definition.getMask()[row * (definition.getWidth()) + (col - leftMost)] == 1) {
 			int currentCellInStorage = row * WIDTH + col;
 			if (storageMap[currentCellInStorage] == 0) {
 				storageMapSketch[currentCellInStorage] = definition.getId();

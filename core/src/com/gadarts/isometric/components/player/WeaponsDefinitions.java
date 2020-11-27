@@ -4,20 +4,20 @@ import com.gadarts.isometric.utils.assets.Assets;
 import lombok.Getter;
 
 public enum WeaponsDefinitions implements ItemDefinition {
-	AXE_PICK(4, 5, 1, Assets.UiTextures.WEAPON_AXE_PICK, Assets.Sounds.ATTACK_CLAW, new int[]{
+	AXE_PICK(4, 5, 1, Assets.UiTextures.WEAPON_AXE_PICK, Assets.Sounds.ATTACK_AXE_PICK, new int[]{
 			1, 1, 1, 1,
 			0, 1, 0, 0,
 			0, 1, 0, 0,
 			0, 1, 0, 0,
 			0, 1, 0, 0,
 	}, true),
-	HAMMER(2, 4, 1, Assets.UiTextures.WEAPON_HAMMER, Assets.Sounds.ATTACK_CLAW, new int[]{
+	HAMMER(2, 4, 1, Assets.UiTextures.WEAPON_HAMMER, Assets.Sounds.ATTACK_HAMMER, new int[]{
 			1, 1,
 			1, 1,
 			1, 1,
 			1, 1,
 	}, true),
-	COLT(2, 2, 2, Assets.UiTextures.WEAPON_COLT, Assets.Sounds.ATTACK_CLAW, new int[]{
+	COLT(2, 2, 2, Assets.UiTextures.WEAPON_COLT, Assets.Sounds.ATTACK_COLT, new int[]{
 			1, 1,
 			1, 0
 	});

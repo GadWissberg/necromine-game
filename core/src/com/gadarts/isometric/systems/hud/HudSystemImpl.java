@@ -100,7 +100,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private void createStageAndAddHud() {
 		Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
-		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player));
+		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), soundPlayer);
 		Table table = new Table();
 		stage.setDebugAll(Gdx.app.getLogLevel() == LOG_DEBUG && DefaultGameSettings.DISPLAY_HUD_OUTLINES);
 		table.setFillParent(true);
@@ -119,6 +119,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 			public void clicked(final InputEvent event, final float x, final float y) {
 				super.clicked(event, x, y);
 				stage.openStorageWindow(assetsManager);
+				soundPlayer.playSound(Assets.Sounds.UI_CLICK);
 			}
 		});
 		table.add(button).expand().left().bottom().pad(BUTTON_PADDING);

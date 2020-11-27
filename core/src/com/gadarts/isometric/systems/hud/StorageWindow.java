@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
+import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import lombok.Getter;
@@ -36,11 +37,11 @@ public class StorageWindow extends GameWindow {
 	@Getter
 	private final ItemSelectionHandler selectedItem = new ItemSelectionHandler();
 
-	public StorageWindow(final String windowNameStorage,
-						 final WindowStyle windowStyle,
+	public StorageWindow(final WindowStyle windowStyle,
 						 final GameAssetsManager assetsManager,
-						 final PlayerComponent playerComponent) {
-		super(windowNameStorage, windowStyle, assetsManager);
+						 final PlayerComponent playerComponent,
+						 final SoundPlayer soundPlayer) {
+		super(StorageWindow.NAME, windowStyle, assetsManager);
 		this.gridTexture = createGridTexture();
 		this.gridCellTexture = createGridCellTexture();
 		this.playerComponent = playerComponent;
@@ -53,6 +54,7 @@ public class StorageWindow extends GameWindow {
 				GameWindowEvent gameWindowEvent = (GameWindowEvent) event;
 				GameWindowEventType type = gameWindowEvent.getType();
 				if (type == GameWindowEventType.ITEM_SELECTED) {
+					soundPlayer.playSound(Assets.Sounds.UI_ITEM_SELECT);
 					ItemDisplay target = (ItemDisplay) event.getTarget();
 					if (selectedItem.getSelection() != target) {
 						applySelectedItem(target);
@@ -60,6 +62,7 @@ public class StorageWindow extends GameWindow {
 						clearSelectedItem();
 					}
 				} else if (type == GameWindowEventType.ITEM_PLACED) {
+					soundPlayer.playSound(Assets.Sounds.UI_ITEM_PLACED);
 					if (event.getTarget() instanceof PlayerLayout) {
 						findActor(StorageGrid.NAME).notify(event, false);
 					} else {

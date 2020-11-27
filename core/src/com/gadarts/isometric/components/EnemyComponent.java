@@ -2,6 +2,7 @@ package com.gadarts.isometric.components;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.gadarts.isometric.utils.assets.Assets;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,8 +12,10 @@ public class EnemyComponent implements GameComponent {
 	public static final int ROAM_SOUND_INTERVAL_MINIMUM = 5000;
 	public static final int ROAM_SOUND_INTERVAL_MAXIMUM = 10000;
 	private long nextRoamSound;
+	private Assets.Sounds attackSound;
 
-	public void init() {
+	public void init(final Assets.Sounds attackSound) {
+		this.attackSound = attackSound;
 		calculateNextRoamSound();
 	}
 

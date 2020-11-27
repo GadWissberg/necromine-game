@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gadarts.isometric.components.player.PlayerComponent;
+import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 
@@ -22,10 +23,12 @@ public class GameStage extends Stage {
 	public static final int GRID_CELL_SIZE = 32;
 	private final List<GameWindow> windows = new ArrayList<>();
 	private final PlayerComponent playerComponent;
+	private final SoundPlayer soundPlayer;
 
-	public GameStage(final FitViewport fitViewport, final PlayerComponent playerComponent) {
+	public GameStage(final FitViewport fitViewport, final PlayerComponent playerComponent, final SoundPlayer soundPlayer) {
 		super(fitViewport);
 		this.playerComponent = playerComponent;
+		this.soundPlayer = soundPlayer;
 		addListener(event -> {
 			boolean result = false;
 			if (event instanceof GameWindowEvent) {
@@ -65,7 +68,7 @@ public class GameStage extends Stage {
 		Texture ninePatchTexture = assetsManager.getTexture(Assets.UiTextures.NINEPATCHES);
 		NinePatch patch = new NinePatch(ninePatchTexture, 12, 12, 12, 12);
 		Window.WindowStyle style = new Window.WindowStyle(new BitmapFont(), Color.BLACK, new NinePatchDrawable(patch));
-		StorageWindow window = new StorageWindow(StorageWindow.NAME, style, assetsManager, playerComponent);
+		StorageWindow window = new StorageWindow(style, assetsManager, playerComponent, soundPlayer);
 		defineStorageWindow(window);
 		addActor(window);
 		windows.add(window);

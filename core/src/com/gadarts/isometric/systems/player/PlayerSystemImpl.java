@@ -4,13 +4,13 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.CharacterAnimation;
 import com.gadarts.isometric.components.CharacterDecalComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
-import com.gadarts.isometric.components.character.CharacterAttackData;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.player.*;
@@ -25,6 +25,8 @@ import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
+import com.gadarts.isometric.systems.render.RenderSystem;
+import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.assets.Assets;
@@ -39,7 +41,9 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		TurnsSystemEventsSubscriber,
 		HudSystemEventsSubscriber,
 		InputSystemEventsSubscriber,
-		CharacterSystemEventsSubscriber, PlayerStorageEventsSubscriber {
+		CharacterSystemEventsSubscriber,
+		RenderSystemEventsSubscriber,
+		PlayerStorageEventsSubscriber {
 
 	private static final CharacterCommand auxCommand = new CharacterCommand();
 	private final static Vector3 auxVector = new Vector3();
@@ -118,6 +122,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	public void onItemPickedUp(final Entity itemPickedUp) {
 		PlayerStorage storage = ComponentsMapper.player.get(player).getStorage();
 		storage.addItem(ComponentsMapper.pickup.get(itemPickedUp).getItem());
+		soundPlayer.playSound(Assets.Sounds.PICKUP);
 	}
 
 
@@ -142,9 +147,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		Weapon selectedWeapon = ComponentsMapper.player.get(player).getStorage().getSelectedWeapon();
 		WeaponsDefinitions definition = (WeaponsDefinitions) selectedWeapon.getDefinition();
 		characterComponent.getCharacterSpriteData().setHitFrameIndex(definition.getHitFrameIndex());
-		CharacterAttackData attackData = characterComponent.getAttackData();
-		attackData.setAttackSound(definition.getAttackSound());
-		attackData.setTarget(map.getEnemyFromNode(enemies, node));
+		characterComponent.setTarget(map.getEnemyFromNode(enemies, node));
 		applyShootCommand(node);
 	}
 
@@ -169,7 +172,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	@Override
 	public void activateAttackMode(final Entity enemyAtNode, final List<MapGraphNode> availableNodes) {
-		ComponentsMapper.character.get(player).getAttackData().setTarget(enemyAtNode);
+		ComponentsMapper.character.get(player).setTarget(enemyAtNode);
 		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onAttackModeActivated(availableNodes);
 		}
@@ -226,5 +229,23 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		cdc.init(animations, spriteType, direction, auxVector.set(cdc.getDecal().getPosition()));
 		CharacterAnimation animation = animations.get(spriteType, direction);
 		ComponentsMapper.animation.get(player).init(spriteType.getAnimationDuration(), animation);
+	}
+
+	@Override
+	public void onFrameChanged(final Entity entity, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
+		if (ComponentsMapper.player.has(entity)) {
+			if (ComponentsMapper.character.get(entity).getCharacterSpriteData().getSpriteType() == SpriteType.ATTACK) {
+				if (newFrame.index == ComponentsMapper.character.get(entity).getCharacterSpriteData().getHitFrameIndex()) {
+					PlayerStorage storage = ComponentsMapper.player.get(entity).getStorage();
+					WeaponsDefinitions definition = (WeaponsDefinitions) storage.getSelectedWeapon().getDefinition();
+					soundPlayer.playSound(definition.getAttackSound());
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onRenderSystemReady(final RenderSystem renderSystem) {
+
 	}
 }
