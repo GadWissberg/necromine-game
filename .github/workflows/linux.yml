@@ -42,7 +42,7 @@ jobs:
 
       - run: ./butler push necromine_linux.jar gadarts/necromine:linux-jar
 
-      - run: ./butler push desktop/build/jpackage/necromine gadarts/necromine:linux-image
+      - run: ./butler push desktop/build/jpackage/desktop gadarts/necromine:linux-image
 
       - run: ./butler push necromine.deb gadarts/necromine:linux-deb
       - run: ./butler push necromine.rpm gadarts/necromine:linux-rpm
