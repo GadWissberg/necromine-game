@@ -1,0 +1,41 @@
+name: Build necromine and upload it to itch.io
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  BUTLER_API_KEY: Mx366LJQuD6dFVzMb7I9sKcZQHyZcbZrvtNgyIaL
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 14
+        uses: actions/setup-java@v1
+        with:
+          java-version: 14
+
+
+      - name: Build jar
+        run: ./gradlew lwjgl3:jar
+
+      - name: Build package image
+        run: ./gradlew lwjgl3:jpackageImage
+
+      - name: Build deb/rpm
+        run: ./gradlew lwjgl3:jpackage
+
+      - name: Fix file names
+        run: mv lwjgl3/build/lib/*.jar necromine_linux-0-2.jar && mv lwjgl3/build/jpackage/*.deb necromine-0-2.deb && mv lwjgl3/build/jpackage/*.rpm necromine-0-2.rpm
+
+
+      - run: ./butler push necromine_linux-0-2.jar gadarts/necromine:linux-jar
+
+      - run: ./butler push lwjgl3/build/jpackage/necromine gadarts/necromine:linux-image
+
+      - run: ./butler push necromine-0-2.deb gadarts/necromine:linux-deb
+      - run: ./butler push necromine-0-2.rpm gadarts/necromine:linux-rpm
