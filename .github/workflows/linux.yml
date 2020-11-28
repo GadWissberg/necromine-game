@@ -29,20 +29,20 @@ jobs:
         run: chmod +x butler && chmod +x gradlew
 
       - name: Build jar
-        run: ./gradlew lwjgl3:jar
+        run: ./gradlew desktop:jar
 
       - name: Build package image
-        run: ./gradlew lwjgl3:jpackageImage
+        run: ./gradlew desktop:jpackageImage
 
       - name: Build deb/rpm
-        run: ./gradlew lwjgl3:jpackage
+        run: ./gradlew desktop:jpackage
 
       - name: Fix file names
-        run: mv lwjgl3/build/lib/*.jar necromine_linux.jar && mv lwjgl3/build/jpackage/*.deb necromine.deb && mv lwjgl3/build/jpackage/*.rpm necromine.rpm
+        run: mv desktop/build/lib/*.jar necromine_linux.jar && mv desktop/build/jpackage/*.deb necromine.deb && mv desktop/build/jpackage/*.rpm necromine.rpm
 
       - run: ./butler push necromine_linux.jar gadarts/necromine:linux-jar
 
-      - run: ./butler push lwjgl3/build/jpackage/necromine gadarts/necromine:linux-image
+      - run: ./butler push desktop/build/jpackage/necromine gadarts/necromine:linux-image
 
       - run: ./butler push necromine.deb gadarts/necromine:linux-deb
       - run: ./butler push necromine.rpm gadarts/necromine:linux-rpm
