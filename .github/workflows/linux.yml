@@ -3,7 +3,7 @@ name: Build necromine and upload it to itch.io
 on:
   push:
     branches:
-      - master
+      - deploy
 
 env:
   BUTLER_API_KEY: Mx366LJQuD6dFVzMb7I9sKcZQHyZcbZrvtNgyIaL

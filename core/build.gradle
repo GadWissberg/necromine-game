@@ -7,7 +7,7 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 
 task currentVersion() {
     doLast {
-        def file = new File("core/assets/version.txt")
+        def file = rootProject.file("core/assets/version.txt")
         file.text = project.version + "\n" + project.versionNumber
     }
 }
