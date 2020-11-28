@@ -19,6 +19,14 @@ jobs:
         with:
           java-version: 14
 
+      - name: Download butler
+        run: wget https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default -O butler.zip
+
+      - name: Unzip buttler
+        run: unzip butler.zip
+
+      - name: Fix permissions
+        run: chmod +x butler && chmod +x gradlew
 
       - name: Build jar
         run: ./gradlew lwjgl3:jar
@@ -30,12 +38,11 @@ jobs:
         run: ./gradlew lwjgl3:jpackage
 
       - name: Fix file names
-        run: mv lwjgl3/build/lib/*.jar necromine_linux-0-2.jar && mv lwjgl3/build/jpackage/*.deb necromine-0-2.deb && mv lwjgl3/build/jpackage/*.rpm necromine-0-2.rpm
+        run: mv lwjgl3/build/lib/*.jar necromine_linux.jar && mv lwjgl3/build/jpackage/*.deb necromine.deb && mv lwjgl3/build/jpackage/*.rpm necromine.rpm
 
-
-      - run: ./butler push necromine_linux-0-2.jar gadarts/necromine:linux-jar
+      - run: ./butler push necromine_linux.jar gadarts/necromine:linux-jar
 
       - run: ./butler push lwjgl3/build/jpackage/necromine gadarts/necromine:linux-image
 
-      - run: ./butler push necromine-0-2.deb gadarts/necromine:linux-deb
-      - run: ./butler push necromine-0-2.rpm gadarts/necromine:linux-rpm
+      - run: ./butler push necromine.deb gadarts/necromine:linux-deb
+      - run: ./butler push necromine.rpm gadarts/necromine:linux-rpm
