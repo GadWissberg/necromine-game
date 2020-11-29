@@ -410,12 +410,14 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void takeStep(final Entity entity) {
-		MapGraphNode oldDest = ComponentsMapper.character.get(entity).getDestinationNode();
-		oldDest.getCenterPosition(auxVector2_2);
-		Decal decal = ComponentsMapper.characterDecal.get(entity).getDecal();
+		ComponentsMapper.character.get(entity).getDestinationNode().getCenterPosition(auxVector2_2);
+		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(entity);
+		Decal decal = characterDecalComponent.getDecal();
+		Decal shadowDecal = characterDecalComponent.getShadowDecal();
 		auxVector2_1.set(decal.getX(), decal.getZ());
 		Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(CHARACTER_STEP_SIZE);
 		decal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));
+		shadowDecal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));
 	}
 
 

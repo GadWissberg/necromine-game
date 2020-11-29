@@ -11,8 +11,8 @@ public class DefaultGameSettings {
 	public static final boolean HIDE_GROUND = false;
 	public static final boolean HIDE_ENEMIES = false;
 	public static final Color BACKGROUND_COLOR = Color.BLACK;
-	public static final boolean MELODY_ENABLED = true;
-	public static final boolean SFX_ENABLED = true;
+	public static final boolean MELODY_ENABLED = false;
+	public static final boolean SFX_ENABLED = false;
 	public static final boolean DISPLAY_HUD_OUTLINES = false;
 	public static final boolean PARALYZED_ENEMIES = false;
 }

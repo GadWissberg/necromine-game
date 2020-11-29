@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
@@ -21,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.CharacterComponent.Direction;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.EventsNotifier;
@@ -100,51 +102,54 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
 		OrthographicCamera camera = cameraSystem.getCamera();
 		renderModels(camera);
+		DecalBatch decalBatch = renderBatches.getDecalBatch();
 		for (Entity entity : characterDecalsEntities) {
 			CharacterComponent characterComponent = ComponentsMapper.character.get(entity);
 			CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(entity);
-			Decal decal = characterDecalComponent.getDecal();
 			auxVector2_3.set(1, 0);
 			CharacterSpriteData characterSpriteData = characterComponent.getCharacterSpriteData();
-			float playerAngle = characterSpriteData.getFacingDirection().getDirection(auxVector2_1).angleDeg();
+			Direction facingDirection = characterSpriteData.getFacingDirection();
+			float playerAngle = facingDirection.getDirection(auxVector2_1).angleDeg();
 			Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
 			Intersector.intersectRayPlane(ray, auxPlane, auxVector3_1);
 			float cameraAngle = auxVector2_2.set(camera.position.x, camera.position.z).sub(auxVector3_1.x, auxVector3_1.z).angleDeg();
 			auxVector2_3.setAngleDeg(playerAngle - cameraAngle);
 			float angleDiff = auxVector2_3.angleDeg();
-			CharacterComponent.Direction direction;
+			Direction direction;
 			if ((angleDiff >= 0 && angleDiff <= 22.5) || (angleDiff > 337.5f && angleDiff <= 360)) {
-				direction = CharacterComponent.Direction.SOUTH;
+				direction = Direction.SOUTH;
 			} else if (angleDiff > 22.5 && angleDiff <= 67.5) {
-				direction = CharacterComponent.Direction.SOUTH_WEST;
+				direction = Direction.SOUTH_WEST;
 			} else if (angleDiff > 67.5 && angleDiff <= 112.5) {
-				direction = CharacterComponent.Direction.WEST;
+				direction = Direction.WEST;
 			} else if (angleDiff > 112.5 && angleDiff <= 157.5) {
-				direction = CharacterComponent.Direction.NORTH_WEST;
+				direction = Direction.NORTH_WEST;
 			} else if (angleDiff > 157.5 && angleDiff <= 202.5) {
-				direction = CharacterComponent.Direction.NORTH;
+				direction = Direction.NORTH;
 			} else if (angleDiff > 202.5 && angleDiff <= 247.5) {
-				direction = CharacterComponent.Direction.NORTH_EAST;
+				direction = Direction.NORTH_EAST;
 			} else if (angleDiff > 247.5 && angleDiff <= 292.5) {
-				direction = CharacterComponent.Direction.EAST;
+				direction = Direction.EAST;
 			} else {
-				direction = CharacterComponent.Direction.SOUTH_EAST;
+				direction = Direction.SOUTH_EAST;
 			}
 			SpriteType spriteType = characterSpriteData.getSpriteType();
 			boolean sameSpriteType = characterSpriteData.getSpriteType().equals(characterDecalComponent.getSpriteType());
 			boolean sameDirection = characterDecalComponent.getDirection().equals(direction);
+			Decal decal = characterDecalComponent.getDecal();
+			CharacterAnimations animations = characterDecalComponent.getAnimations();
+			Decal shadowDecal = characterDecalComponent.getShadowDecal();
 			if ((!sameSpriteType || !sameDirection)) {
 				characterDecalComponent.initializeSprite(spriteType, direction);
 				if (ComponentsMapper.animation.has(entity)) {
 					AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
 					if (spriteType.isSingleAnimation()) {
 						if (!animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime())) {
-							direction = CharacterComponent.Direction.SOUTH;
+							direction = Direction.SOUTH;
 						} else if (spriteType == SpriteType.DIE) {
 							spriteType = SpriteType.DEAD;
 						}
 					}
-					CharacterAnimations animations = characterDecalComponent.getAnimations();
 					CharacterAnimation animation = null;
 					if (animations.contains(spriteType)) {
 						animation = animations.get(spriteType, direction);
@@ -170,6 +175,14 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 					}
 					if (characterDecalComponent.getSpriteType() == spriteType && currentFrame != newFrame) {
 						decal.setTextureRegion(newFrame);
+						CharacterAnimation southAnimation;
+						if (animations.contains(spriteType)) {
+							southAnimation = animations.get(spriteType, facingDirection);
+						} else {
+							CharacterAnimations generalAnim = ComponentsMapper.player.get(entity).getGeneralAnimations();
+							southAnimation = generalAnim.get(spriteType, facingDirection);
+						}
+						shadowDecal.setTextureRegion(southAnimation.getKeyFrames()[Math.max(newFrame.index, 0)]);
 					} else if (characterSpriteData.getSpriteType() == SpriteType.DIE) {
 						if (animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime())) {
 							characterSpriteData.setSpriteType(SpriteType.DEAD);
@@ -179,17 +192,18 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			}
 			if (!DefaultGameSettings.HIDE_ENEMIES || !ComponentsMapper.enemy.has(entity)) {
 				decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
-				renderBatches.getDecalBatch().add(decal);
+				decalBatch.add(decal);
+				decalBatch.add(shadowDecal);
 			}
 		}
 		for (Entity entity : simpleDecalsEntities) {
 			SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
 			if (simpleDecalComponent.isVisible()) {
-				renderBatches.getDecalBatch().add(simpleDecalComponent.getDecal());
+				decalBatch.add(simpleDecalComponent.getDecal());
 			}
 		}
 		Gdx.gl.glDepthMask(false);
-		renderBatches.getDecalBatch().flush();
+		decalBatch.flush();
 		stage.draw();
 	}
 
