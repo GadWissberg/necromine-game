@@ -8,6 +8,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.gadarts.isometric.components.CharacterAnimation;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
@@ -32,6 +33,15 @@ public class GameAssetsManager extends AssetManager {
 					addAsset(atlas.name(), CharacterAnimations.class, animations);
 				}
 		);
+	}
+
+	@Override
+	protected <T> void addAsset(final String fileName, final Class<T> type, final T asset) {
+		super.addAsset(fileName, type, asset);
+		if (type == Model.class) {
+			Model model = (Model) asset;
+			model.materials.forEach(material -> material.remove(ColorAttribute.Specular));
+		}
 	}
 
 	private CharacterAnimations createCharacterAnimations(final Atlases zealot) {

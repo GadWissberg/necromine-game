@@ -8,13 +8,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
@@ -50,6 +48,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
 	private static final Quaternion auxQuat = new Quaternion();
+	private static final Color ambientLightColor = new Color(0.4f, 0.4f, 0.4f, 1);
+	private static final Vector3 directionalLightDirection = new Vector3(Vector3.Z).scl(-1);
+	private static final Color directionalLightColor = new Color(0.7f, 0.7f, 0.7f, 1f);
+
+	private final Environment environment = new Environment();
 	private RenderBatches renderBatches;
 	private ImmutableArray<Entity> modelInstanceEntities;
 	private ImmutableArray<Entity> characterDecalsEntities;
@@ -57,7 +60,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private CameraSystem cameraSystem;
 	private Stage stage;
 	private ImmutableArray<Entity> simpleDecalsEntities;
-
 
 	private void resetDisplay(final Color color) {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -74,6 +76,14 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		modelInstanceEntities = engine.getEntitiesFor(Family.all(ModelInstanceComponent.class).get());
 		characterDecalsEntities = engine.getEntitiesFor(Family.all(CharacterDecalComponent.class).get());
 		simpleDecalsEntities = engine.getEntitiesFor(Family.all(SimpleDecalComponent.class).get());
+		initializeEnvironment();
+	}
+
+	private void initializeEnvironment() {
+		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, ambientLightColor));
+		DirectionalLight directionalLight = new DirectionalLight();
+		directionalLight.set(directionalLightColor, directionalLightDirection);
+		environment.add(directionalLight);
 	}
 
 	private void createAxis(final Engine engine) {
@@ -224,7 +234,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			}
 			if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
 				ModelInstance modelInstance = modelInstanceComponent.getModelInstance();
-				modelBatch.render(modelInstance);
+				modelBatch.render(modelInstance, environment);
 			}
 		}
 		modelBatch.end();
