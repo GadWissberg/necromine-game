@@ -186,6 +186,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 					if (characterDecalComponent.getSpriteType() == spriteType && currentFrame != newFrame) {
 						decal.setTextureRegion(newFrame);
 						CharacterAnimation southAnimation;
+						if (spriteType.isSingleAnimation()) {
+							facingDirection = Direction.SOUTH;
+						}
 						if (animations.contains(spriteType)) {
 							southAnimation = animations.get(spriteType, facingDirection);
 						} else {
