@@ -252,8 +252,8 @@ void main() {
     #endif
 
     gl_Position = u_projViewTrans * pos;
-    v_test_frag = vec3(u_projViewTrans * vec4(pos.x, pos.y, pos.z, 1.0));
-    v_test_normal = a_test_normal;
+    v_test_frag = vec3(u_worldTrans * vec4(a_position.x, a_position.y, a_position.z, 1.0));
+    v_test_normal = normalize(mat3(u_worldTrans) * a_test_normal);
 
     #ifdef shadowMapFlag
     vec4 spos = u_shadowMapProjViewTrans * pos;

@@ -168,10 +168,12 @@ void main() {
     #ifdef shadowMapFlag
     gl_FragColor.rgb = getShadow() * (diffuse.rgb * v_lightDiffuse) + emissive.rgb;
     #else
-    vec3 lightDir = normalize(u_test_light - gl_FragCoord.xyz);
-    float diff = max(dot(vec3(0.0, -1.0, 0.0), lightDir), 0.0);
-    vec3 test_diffuse = diff * vec3(0.1);
-    gl_FragColor.rgb = (diffuse.rgb * v_lightDiffuse) + emissive.rgb + test_diffuse;
+    vec3 sub = u_test_light - v_test_frag.xyz;
+    vec3 lightDir = normalize(sub);
+    float distance = length(sub);
+    float attenuation = 1.0 / ( 0.1 + (0.1*distance) + (0.1*distance*distance) );
+    float intensity = max(dot(vec3(0.0, 1.0, 0.0), lightDir), 0.0);
+    gl_FragColor.rgb = (diffuse.rgb * v_lightDiffuse * attenuation * intensity) + emissive.rgb;
     #endif//shadowMapFlag
     #endif
     #else

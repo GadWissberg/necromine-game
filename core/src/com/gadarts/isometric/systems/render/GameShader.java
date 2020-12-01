@@ -24,7 +24,7 @@ public class GameShader extends DefaultShader {
 	@Override
 	public void begin(final Camera camera, final RenderContext context) {
 		super.begin(camera, context);
-		program.setUniformf(testLocation, 1f, 0.1f, 2f);
+		program.setUniformf(testLocation, 1f, 2f, 2f);
 	}
 
 	@Override
