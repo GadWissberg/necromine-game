@@ -117,7 +117,9 @@ uniform vec4 u_fogColor;
 varying float v_fog;
 #endif// fogFlag
 
-uniform float u_highlight;
+varying vec3 v_test_normal;
+varying vec3 v_test_frag;
+uniform vec3 u_test_light;
 
 void main() {
     #if defined(normalFlag)
@@ -127,7 +129,7 @@ void main() {
     #if defined(diffuseTextureFlag) && defined(diffuseColorFlag) && defined(colorFlag)
     vec4 diffuse = texture2D(u_diffuseTexture, v_diffuseUV) * u_diffuseColor * v_color;
     #elif defined(diffuseTextureFlag) && defined(diffuseColorFlag)
-    vec4 diffuse = texture2D(u_diffuseTexture, v_diffuseUV) * u_diffuseColor + u_highlight;
+    vec4 diffuse = texture2D(u_diffuseTexture, v_diffuseUV) * u_diffuseColor;
     #elif defined(diffuseTextureFlag) && defined(colorFlag)
     vec4 diffuse = texture2D(u_diffuseTexture, v_diffuseUV) * v_color;
     #elif defined(diffuseTextureFlag)
@@ -166,7 +168,10 @@ void main() {
     #ifdef shadowMapFlag
     gl_FragColor.rgb = getShadow() * (diffuse.rgb * v_lightDiffuse) + emissive.rgb;
     #else
-    gl_FragColor.rgb = (diffuse.rgb * v_lightDiffuse) + emissive.rgb;
+    vec3 lightDir = normalize(u_test_light - gl_FragCoord.xyz);
+    float diff = max(dot(vec3(0.0, -1.0, 0.0), lightDir), 0.0);
+    vec3 test_diffuse = diff * vec3(0.1);
+    gl_FragColor.rgb = (diffuse.rgb * v_lightDiffuse) + emissive.rgb + test_diffuse;
     #endif//shadowMapFlag
     #endif
     #else

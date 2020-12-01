@@ -189,7 +189,9 @@ varying vec3 v_ambientLight;
 
 #endif// lightingFlag
 
-uniform float u_highlight;
+attribute vec3 a_test_normal;
+varying vec3 v_test_normal;
+varying vec3 v_test_frag;
 
 void main() {
     #ifdef diffuseTextureFlag
@@ -250,6 +252,8 @@ void main() {
     #endif
 
     gl_Position = u_projViewTrans * pos;
+    v_test_frag = vec3(u_projViewTrans * vec4(pos.x, pos.y, pos.z, 1.0));
+    v_test_normal = a_test_normal;
 
     #ifdef shadowMapFlag
     vec4 spos = u_shadowMapProjViewTrans * pos;
