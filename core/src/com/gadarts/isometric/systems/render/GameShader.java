@@ -6,8 +6,9 @@ import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 
 public class GameShader extends DefaultShader {
-	public static final String UNIFORM_TEST = "u_test_light";
-	private int testLocation;
+	public static final String UNIFORM_LIGHTS = "u_lights[0]";
+	private final float[] lights = {1.5f, 2f, 2.5f, 2.5f, 2f, 4.5f};
+	private int lightsLocation;
 
 	public GameShader(final Renderable renderable, final Config shaderConfig) {
 		super(renderable, shaderConfig);
@@ -16,15 +17,20 @@ public class GameShader extends DefaultShader {
 	@Override
 	public void init() {
 		super.init();
-		testLocation = program.getUniformLocation(UNIFORM_TEST);
+		lightsLocation = program.getUniformLocation(UNIFORM_LIGHTS);
 		if (program.getLog().length() != 0)
 			System.out.println(program.getLog());
 	}
 
 	@Override
+	public void render(final Renderable renderable) {
+		super.render(renderable);
+	}
+
+	@Override
 	public void begin(final Camera camera, final RenderContext context) {
 		super.begin(camera, context);
-		program.setUniformf(testLocation, 1f, 2f, 2f);
+		program.setUniform3fv(lightsLocation, lights, 0, lights.length);
 	}
 
 	@Override

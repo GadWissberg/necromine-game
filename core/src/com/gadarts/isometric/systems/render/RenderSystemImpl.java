@@ -60,6 +60,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private CameraSystem cameraSystem;
 	private Stage stage;
 	private ImmutableArray<Entity> simpleDecalsEntities;
+	private ImmutableArray<Entity> lightsEntities;
 
 	private void resetDisplay(final Color color) {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -76,6 +77,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		modelInstanceEntities = engine.getEntitiesFor(Family.all(ModelInstanceComponent.class).get());
 		characterDecalsEntities = engine.getEntitiesFor(Family.all(CharacterDecalComponent.class).get());
 		simpleDecalsEntities = engine.getEntitiesFor(Family.all(SimpleDecalComponent.class).get());
+		lightsEntities = engine.getEntitiesFor(Family.all(LightComponent.class).get());
 		initializeEnvironment();
 	}
 

@@ -75,7 +75,13 @@ public final class MapBuilder {
 		addEnemyTest(2, 2);
 		addWeaponPickupTest(1, 2, Assets.Models.COLT, WeaponsDefinitions.COLT, REGION_NAME_BULLET);
 		addWeaponPickupTest(2, 3, Assets.Models.HAMMER, WeaponsDefinitions.HAMMER, null);
+		addTestLights();
 		return createTestMap();
+	}
+
+	private void addTestLights() {
+		EntityBuilder.beginBuildingEntity(engine).addLightComponent(0.5f, 2f, 1.5f, 2f).finishAndAddToEngine();
+		EntityBuilder.beginBuildingEntity(engine).addLightComponent(3.5f, 2f, 4.5f, 1f).finishAndAddToEngine();
 	}
 
 	private void addWeaponPickupTest(final int x,

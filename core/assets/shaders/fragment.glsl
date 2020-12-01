@@ -117,9 +117,8 @@ uniform vec4 u_fogColor;
 varying float v_fog;
 #endif// fogFlag
 
-varying vec3 v_test_normal;
-varying vec3 v_test_frag;
-uniform vec3 u_test_light;
+varying vec3 v_frag_pos;
+uniform vec3 u_lights[2];
 
 float ramp(float value, float max, float high, float low){
     float ramped = value;
@@ -180,17 +179,21 @@ void main() {
     #ifdef shadowMapFlag
     gl_FragColor.rgb = getShadow() * (diffuse.rgb * v_lightDiffuse) + emissive.rgb;
     #else
-    vec3 sub = u_test_light - v_test_frag.xyz;
-    vec3 lightDir = normalize(sub);
-    float distance = length(sub);
-    float attenuation = 1.0 / (0.1 + (0.1*distance) + (0.1*distance*distance));
-    float dot_value = dot(vec3(0.0, 1.0, 0.0), lightDir);
-    float intensity = max(ramp(dot_value, 1.0, 0.6, 0.3), 0.0);
-    gl_FragColor.rgb = (diffuse.rgb * v_lightDiffuse * attenuation * intensity) + emissive.rgb;
-    #endif//shadowMapFlag
-    #endif
-    #else
-    #if defined(specularTextureFlag) && defined(specularColorFlag)
+
+    gl_FragColor.rgb = vec3(0.0);
+    for (int i = 0; i< 2; i++){
+        vec3 sub = u_lights[i] - v_frag_pos.xyz;
+        vec3 lightDir = normalize(sub);
+        float distance = length(sub);
+        float attenuation = 1.0 / (0.1 + (0.1*distance) + (0.1*distance*distance));
+        float dot_value = dot(v_normal, lightDir);
+        float intensity = max(ramp(dot_value, 1.0, 0.6, 0.3), 0.0);
+        gl_FragColor.rgb += (diffuse.rgb * v_lightDiffuse * attenuation * intensity) + emissive.rgb;
+    }
+        #endif//shadowMapFlag
+        #endif
+        #else
+        #if defined(specularTextureFlag) && defined(specularColorFlag)
     vec3 specular = texture2D(u_specularTexture, v_specularUV).rgb * u_specularColor.rgb * v_lightSpecular;
     #elif defined(specularTextureFlag)
     vec3 specular = texture2D(u_specularTexture, v_specularUV).rgb * v_lightSpecular;
