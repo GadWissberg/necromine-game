@@ -121,6 +121,18 @@ varying vec3 v_test_normal;
 varying vec3 v_test_frag;
 uniform vec3 u_test_light;
 
+float ramp(float value, float max, float high, float low){
+    float ramped = value;
+    if (value >= high && value < max){
+        ramped = high;
+    } else if (value >= low){
+        ramped = low;
+    } else if (value >= 0.0){
+        ramped = 0.0;
+    }
+    return ramped;
+}
+
 void main() {
     #if defined(normalFlag)
     vec3 normal = v_normal;
@@ -171,8 +183,9 @@ void main() {
     vec3 sub = u_test_light - v_test_frag.xyz;
     vec3 lightDir = normalize(sub);
     float distance = length(sub);
-    float attenuation = 1.0 / ( 0.1 + (0.1*distance) + (0.1*distance*distance) );
-    float intensity = max(dot(vec3(0.0, 1.0, 0.0), lightDir), 0.0);
+    float attenuation = 1.0 / (0.1 + (0.1*distance) + (0.1*distance*distance));
+    float dot_value = dot(vec3(0.0, 1.0, 0.0), lightDir);
+    float intensity = max(ramp(dot_value, 1.0, 0.6, 0.3), 0.0);
     gl_FragColor.rgb = (diffuse.rgb * v_lightDiffuse * attenuation * intensity) + emissive.rgb;
     #endif//shadowMapFlag
     #endif
