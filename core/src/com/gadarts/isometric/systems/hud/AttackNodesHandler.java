@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.ModelInstanceComponent;
+import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.Getter;
@@ -66,7 +67,7 @@ public class AttackNodesHandler implements Disposable {
 	private void createAttackNodesEntities() {
 		IntStream.range(0, ATTACK_NODES_POOL_SIZE).forEach(i ->
 				attackNodesEntities.add(EntityBuilder.beginBuildingEntity((PooledEngine) engine)
-						.addModelInstanceComponent(new ModelInstance(attackNodeModel), false)
+						.addModelInstanceComponent(new GameModelInstance(attackNodeModel), false)
 						.finishAndAddToEngine()
 				));
 	}

@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -15,6 +14,7 @@ import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.*;
 import com.gadarts.isometric.utils.assets.Assets;
 import lombok.AccessLevel;
@@ -40,7 +40,7 @@ public final class EntityBuilder {
 		this.currentEntity = engine.createEntity();
 	}
 
-	public EntityBuilder addModelInstanceComponent(final ModelInstance modelInstance, final boolean visible) {
+	public EntityBuilder addModelInstanceComponent(final GameModelInstance modelInstance, final boolean visible) {
 		ModelInstanceComponent component = engine.createComponent(ModelInstanceComponent.class);
 		component.init(modelInstance, visible);
 		currentEntity.add(component);

@@ -118,7 +118,8 @@ varying float v_fog;
 #endif// fogFlag
 
 varying vec3 v_frag_pos;
-uniform vec3 u_lights[2];
+uniform vec3 u_lights[8];
+uniform float u_number_of_lights;
 
 float ramp(float value, float max, float high, float low){
     float ramped = value;
@@ -181,7 +182,7 @@ void main() {
     #else
 
     gl_FragColor.rgb = vec3(0.0);
-    for (int i = 0; i< 2; i++){
+    for (int i = 0; i< u_number_of_lights; i++){
         vec3 sub = u_lights[i] - v_frag_pos.xyz;
         vec3 lightDir = normalize(sub);
         float distance = length(sub);

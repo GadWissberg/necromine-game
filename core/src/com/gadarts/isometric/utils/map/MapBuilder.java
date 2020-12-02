@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
@@ -25,6 +24,7 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterComponent.Direction;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.components.player.WeaponsDefinitions;
@@ -89,7 +89,7 @@ public final class MapBuilder {
 									 final Assets.Models model,
 									 final WeaponsDefinitions definition,
 									 final String regionNameBullet) {
-		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(model));
+		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(model));
 		modelInstance.transform.setTranslation(auxVector3_1.set(x + 0.5f, 0, y + 0.5f));
 		Atlases atlas = Atlases.findByRelatedWeapon(definition);
 		TextureAtlas.AtlasRegion bulletRegion = null;
@@ -125,7 +125,7 @@ public final class MapBuilder {
 	}
 
 	private void addTestObstacle(final int x, final int y, final Assets.Models model, final int rotation, final boolean blockPath) {
-		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(model));
+		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(model));
 		modelInstance.transform.setTranslation(x, 0, y);
 		modelInstance.transform.rotate(Vector3.Y, rotation);
 		EntityBuilder.beginBuildingEntity(engine)
@@ -153,7 +153,7 @@ public final class MapBuilder {
 							 final Vector2 topLeft,
 							 final Vector2 bottomRight,
 							 final Assets.Models model) {
-		ModelInstance modelInstance = new ModelInstance(assetManager.getModel(model));
+		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(model));
 		modelInstance.transform.setTranslation(position);
 		modelInstance.transform.rotate(Vector3.Y, rotation);
 		EntityBuilder.beginBuildingEntity(engine)
@@ -200,7 +200,7 @@ public final class MapBuilder {
 
 
 	private void addTestFloor(final Vector3 position, final Model model) {
-		ModelInstance testFloorModelInstance = new ModelInstance(model);
+		GameModelInstance testFloorModelInstance = new GameModelInstance(model);
 		testFloorModelInstance.transform.setTranslation(position);
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(testFloorModelInstance, true)
@@ -211,7 +211,7 @@ public final class MapBuilder {
 	private void createAndAdd3dCursor() {
 		Model model = modelTestCursor();
 		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(new ModelInstance(model), true)
+				.addModelInstanceComponent(new GameModelInstance(model), true)
 				.addCursorComponent()
 				.finishAndAddToEngine();
 	}
