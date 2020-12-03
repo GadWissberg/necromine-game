@@ -118,8 +118,7 @@ varying float v_fog;
 #endif// fogFlag
 
 varying vec3 v_frag_pos;
-uniform vec3 u_lights[8];
-uniform vec2 u_lights_data[8];
+uniform vec4 u_lights[8];
 uniform int u_number_of_lights;
 
 float ramp(float value, float max, float high, float low){
@@ -182,15 +181,15 @@ void main() {
     gl_FragColor.rgb = getShadow() * (diffuse.rgb * v_lightDiffuse) + emissive.rgb;
     #else
 
-    gl_FragColor.rgb = vec3(0.0);
+    gl_FragColor.rgb = diffuse.rgb * v_lightDiffuse;
     for (int i = 0; i< u_number_of_lights; i++){
-        vec3 sub = u_lights[i] - v_frag_pos.xyz;
+        vec3 sub = u_lights[i].xyz - v_frag_pos.xyz;
         vec3 lightDir = normalize(sub);
         float distance = length(sub);
-        float attenuation = 1.0 / (0.1 + (0.1*distance) + (0.1*distance*distance));
+        float attenuation = 2.0 / (1.0 + (0.1*distance) + (0.44*distance*distance));
         float dot_value = dot(v_normal, lightDir);
         float intensity = max(ramp(dot_value, 1.0, 0.6, 0.3), 0.0);
-        gl_FragColor.rgb += (diffuse.rgb * v_lightDiffuse * attenuation * intensity) + emissive.rgb;
+        gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
     }
         #endif//shadowMapFlag
         #endif
