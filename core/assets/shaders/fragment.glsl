@@ -119,7 +119,8 @@ varying float v_fog;
 
 varying vec3 v_frag_pos;
 uniform vec3 u_lights[8];
-uniform float u_number_of_lights;
+uniform vec2 u_lights_data[8];
+uniform int u_number_of_lights;
 
 float ramp(float value, float max, float high, float low){
     float ramped = value;

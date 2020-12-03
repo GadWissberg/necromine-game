@@ -200,9 +200,9 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addLightComponent(final float x, final float y, final float z, final float radius) {
+	public EntityBuilder addLightComponent(final Vector3 position, final float radius, final float intensity) {
 		LightComponent lightComponent = engine.createComponent(LightComponent.class);
-		lightComponent.init(x, y, z, radius);
+		lightComponent.init(position, radius, intensity);
 		currentEntity.add(lightComponent);
 		return instance;
 	}

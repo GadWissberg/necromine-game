@@ -246,10 +246,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
             if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
                 GameModelInstance modelInstance = modelInstanceComponent.getModelInstance();
                 List<Entity> nearbyLights = modelInstance.getNearbyLights();
+                nearbyLights.clear();
                 for (Entity light : lightsEntities) {
                     LightComponent lightComponent = ComponentsMapper.light.get(light);
-                    float distance = lightComponent.getPosition(auxVector3_1).dst2(modelInstance.transform.getTranslation(auxVector3_2));
-                    if (distance <= Math.pow(lightComponent.getRadius(), 2)) {
+                    float distance = lightComponent.getPosition(auxVector3_1).dst(modelInstance.transform.getTranslation(auxVector3_2));
+                    if (distance <= Math.pow(lightComponent.getRadius(), 4)) {
                         nearbyLights.add(light);
                     }
                 }
