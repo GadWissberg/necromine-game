@@ -10,13 +10,16 @@ import com.gadarts.isometric.components.LightComponent;
 import java.util.List;
 
 public class GameShader extends DefaultShader {
-	public static final String UNIFORM_LIGHTS = "u_lights[0]";
+	public static final String UNIFORM_LIGHTS_POSITIONS = "u_lights_positions[0]";
+	public static final String UNIFORM_LIGHTS_EXTRA_DATA = "u_lights_extra_data[0]";
 	public static final String UNIFORM_NUMBER_OF_LIGHTS = "u_number_of_lights";
 	public static final int MAX_LIGHTS = 8;
-	public static final int LIGHT_NUMBER_OF_ATTRIBUTES = 4;
+	public static final int LIGHT_EXTRA_DATA_SIZE = 2;
 	private static final Vector3 auxVector = new Vector3();
-	private final float[] lights = new float[MAX_LIGHTS * LIGHT_NUMBER_OF_ATTRIBUTES];
-	private int lightsLocation;
+	private final float[] lightsPositions = new float[MAX_LIGHTS * 3];
+	private final float[] lightsExtraData = new float[MAX_LIGHTS * LIGHT_EXTRA_DATA_SIZE];
+	private int lightsPositionsLocation;
+	private int lightsExtraDataLocation;
 	private int numberOfLightsLocation;
 
 	public GameShader(final Renderable renderable, final Config shaderConfig) {
@@ -26,7 +29,8 @@ public class GameShader extends DefaultShader {
 	@Override
 	public void init() {
 		super.init();
-		lightsLocation = program.getUniformLocation(UNIFORM_LIGHTS);
+		lightsPositionsLocation = program.getUniformLocation(UNIFORM_LIGHTS_POSITIONS);
+		lightsExtraDataLocation = program.getUniformLocation(UNIFORM_LIGHTS_EXTRA_DATA);
 		numberOfLightsLocation = program.getUniformLocation(UNIFORM_NUMBER_OF_LIGHTS);
 		if (program.getLog().length() != 0) {
 			System.out.println(program.getLog());
@@ -43,26 +47,27 @@ public class GameShader extends DefaultShader {
 			for (int i = 0; i < size; i++) {
 				insertToLightsArray(nearbyLights, i);
 			}
-			program.setUniform4fv(lightsLocation, lights, 0, size * LIGHT_NUMBER_OF_ATTRIBUTES);
+			program.setUniform3fv(lightsPositionsLocation, lightsPositions, 0, size * 3);
+			program.setUniform2fv(lightsExtraDataLocation, lightsExtraData, 0, size * LIGHT_EXTRA_DATA_SIZE);
 		}
 	}
 
 	private void insertToLightsArray(final List<Entity> nearbyLights, final int i) {
 		insertLightPositionToArray(nearbyLights, i);
+		LightComponent lightComponent = ComponentsMapper.light.get(nearbyLights.get(i));
+		int extraDataIndex = i * LIGHT_EXTRA_DATA_SIZE;
+		lightsExtraData[extraDataIndex] = lightComponent.getIntensity();
+		lightsExtraData[extraDataIndex + 1] = lightComponent.getRadius();
 	}
 
 	private void insertLightPositionToArray(final List<Entity> nearbyLights, final int i) {
 		LightComponent lightComponent = ComponentsMapper.light.get(nearbyLights.get(i));
 		Vector3 position = lightComponent.getPosition(auxVector);
-		int positionIndex = i * LIGHT_NUMBER_OF_ATTRIBUTES;
-		lights[positionIndex] = position.x;
-		lights[positionIndex + 1] = position.y;
-		lights[positionIndex + 2] = position.z;
-		lights[positionIndex + 3] = lightComponent.getIntensity();
+		int positionIndex = i * 3;
+		lightsPositions[positionIndex] = position.x;
+		lightsPositions[positionIndex + 1] = position.y;
+		lightsPositions[positionIndex + 2] = position.z;
+		lightsPositions[positionIndex + 3] = lightComponent.getIntensity();
 	}
 
-	@Override
-	public boolean canRender(final Renderable renderable) {
-		return super.canRender(renderable);
-	}
 }
