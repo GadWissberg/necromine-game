@@ -80,8 +80,8 @@ public final class MapBuilder {
 	}
 
 	private void addTestLights() {
-		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(0.5f, 2f, 1.5f), 0.1f, 2f).finishAndAddToEngine();
-		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(3.5f, 2f, 4.5f), 0.2f, 1f).finishAndAddToEngine();
+		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(0.5f, 2f, 1.5f), 1f, 3f).finishAndAddToEngine();
+		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(3.5f, 2f, 4.5f), 0.4f, 2f).finishAndAddToEngine();
 	}
 
 	private void addWeaponPickupTest(final int x,

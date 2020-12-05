@@ -34,6 +34,9 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 
 import java.util.List;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 /**
  * Handles rendering.
  */
@@ -52,6 +55,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
 	private static final Quaternion auxQuat = new Quaternion();
 	private static final Color ambientLightColor = new Color(0.1f, 0.1f, 0.1f, 1);
+	private static final float DECAL_DARKEST_COLOR = 0.2f;
+	private static final float DECAL_LIGHT_OFFSET = 1.5f;
 	private final Environment environment = new Environment();
 	private RenderBatches renderBatches;
 	private ImmutableArray<Entity> modelInstanceEntities;
@@ -194,7 +199,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 							CharacterAnimations generalAnim = ComponentsMapper.player.get(entity).getGeneralAnimations();
 							southAnimation = generalAnim.get(spriteType, facingDirection);
 						}
-						shadowDecal.setTextureRegion(southAnimation.getKeyFrames()[Math.max(newFrame.index, 0)]);
+						shadowDecal.setTextureRegion(southAnimation.getKeyFrames()[max(newFrame.index, 0)]);
 					} else if (characterSpriteData.getSpriteType() == SpriteType.DIE) {
 						if (animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime())) {
 							characterSpriteData.setSpriteType(SpriteType.DEAD);
@@ -203,6 +208,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				}
 			}
 			if (!DefaultGameSettings.HIDE_ENEMIES || !ComponentsMapper.enemy.has(entity)) {
+				applyLightsOnDecal(decal);
 				decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
 				decalBatch.add(decal);
 				decalBatch.add(shadowDecal);
@@ -217,6 +223,45 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		Gdx.gl.glDepthMask(false);
 		decalBatch.flush();
 		stage.draw();
+	}
+
+	private void applyLightsOnDecal(final Decal decal) {
+		float minDistance = Float.MAX_VALUE;
+		for (Entity light : lightsEntities) {
+			float distance = ComponentsMapper.light.get(light).getPosition(auxVector3_1).dst(decal.getPosition());
+			float maxLightDistanceForDecal = ComponentsMapper.light.get(light).getRadius() * 2;
+			if (distance <= maxLightDistanceForDecal) {
+				minDistance = calculateDecalColorAffectedByLight(decal, minDistance, distance, maxLightDistanceForDecal);
+			}
+		}
+		if (minDistance == Float.MAX_VALUE) {
+			decal.setColor(DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, 1f);
+		}
+	}
+
+	private float calculateDecalColorAffectedByLight(final Decal d,
+													 float minDistance,
+													 final float distance,
+													 final float maxLightDistanceForDecal) {
+		float newC = convertDistanceToColorValueForDecal(maxLightDistanceForDecal, distance);
+		Color c = d.getColor();
+		if (minDistance == Float.MAX_VALUE) {
+			d.setColor(min(newC, 1f), min(newC, 1f), min(newC, 1f), 1f);
+		} else {
+			d.setColor(min(max(c.r, newC), 1f), min(max(c.g, newC), 1f), min(max(c.b, newC), 1f), 1f);
+		}
+		minDistance = min(minDistance, distance);
+		return minDistance;
+	}
+
+	private float convertDistanceToColorValueForDecal(final float maxLightDistanceForDecal, final float distance) {
+		return MathUtils.map(
+				0,
+				(maxLightDistanceForDecal - DECAL_LIGHT_OFFSET),
+				DECAL_DARKEST_COLOR,
+				1f,
+				maxLightDistanceForDecal - distance
+		);
 	}
 
 	private void renderModels(final OrthographicCamera camera) {
