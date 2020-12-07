@@ -1,4 +1,4 @@
-package com.gadarts.isometric.systems.render;
+package com.gadarts.isometric.systems.render.shaders.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.Renderable;
@@ -6,10 +6,10 @@ import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 
-public class GameShaderProvider extends DefaultShaderProvider {
+public class MainShaderProvider extends DefaultShaderProvider {
 	private final DefaultShader.Config mainShaderConfig;
 
-	public GameShaderProvider() {
+	public MainShaderProvider() {
 		mainShaderConfig = new DefaultShader.Config();
 		mainShaderConfig.vertexShader = Gdx.files.internal("shaders/vertex.glsl").readString();
 		mainShaderConfig.fragmentShader = Gdx.files.internal("shaders/fragment.glsl").readString();
@@ -17,6 +17,6 @@ public class GameShaderProvider extends DefaultShaderProvider {
 
 	@Override
 	protected Shader createShader(final Renderable renderable) {
-		return new GameShader(renderable, mainShaderConfig);
+		return new MainShader(renderable, mainShaderConfig);
 	}
 }

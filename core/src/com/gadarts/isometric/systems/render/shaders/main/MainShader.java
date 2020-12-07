@@ -1,4 +1,4 @@
-package com.gadarts.isometric.systems.render;
+package com.gadarts.isometric.systems.render.shaders.main;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g3d.Renderable;
@@ -9,7 +9,7 @@ import com.gadarts.isometric.components.LightComponent;
 
 import java.util.List;
 
-public class GameShader extends DefaultShader {
+public class MainShader extends DefaultShader {
 	public static final String UNIFORM_LIGHTS_POSITIONS = "u_lights_positions[0]";
 	public static final String UNIFORM_LIGHTS_EXTRA_DATA = "u_lights_extra_data[0]";
 	public static final String UNIFORM_NUMBER_OF_LIGHTS = "u_number_of_lights";
@@ -22,7 +22,7 @@ public class GameShader extends DefaultShader {
 	private int lightsExtraDataLocation;
 	private int numberOfLightsLocation;
 
-	public GameShader(final Renderable renderable, final Config shaderConfig) {
+	public MainShader(final Renderable renderable, final Config shaderConfig) {
 		super(renderable, shaderConfig);
 	}
 
