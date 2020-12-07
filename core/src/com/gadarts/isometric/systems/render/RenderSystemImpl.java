@@ -3,16 +3,14 @@ package com.gadarts.isometric.systems.render;
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -27,6 +25,7 @@ import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
+import com.gadarts.isometric.systems.camera.CameraSystemImpl;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
@@ -57,6 +56,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
     private static final Color ambientLightColor = new Color(0.1f, 0.1f, 0.1f, 1);
     private static final float DECAL_DARKEST_COLOR = 0.2f;
     private static final float DECAL_LIGHT_OFFSET = 1.5f;
+    private static final int DEPTH_MAP_SIZE = 1024;
     private final Environment environment = new Environment();
     private RenderBatches renderBatches;
     private ImmutableArray<Entity> modelInstanceEntities;
@@ -66,6 +66,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
     private Stage stage;
     private ImmutableArray<Entity> simpleDecalsEntities;
     private ImmutableArray<Entity> lightsEntities;
+    private OrthographicCamera cameraGlobalLight;
+    private FrameBuffer globalLightFrameBuffer;
 
     private void resetDisplay(final Color color) {
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -86,8 +88,25 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
         initializeEnvironment();
     }
 
+    public void renderGlobalLight(ModelBatch modelBatch) {
+        globalLightFrameBuffer.begin();
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        modelBatch.begin(cameraGlobalLight);
+        renderModels(cameraGlobalLight);
+        modelBatch.end();
+        globalLightFrameBuffer.end();
+    }
+
     private void initializeEnvironment() {
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, ambientLightColor));
+        cameraGlobalLight = new OrthographicCamera(CameraSystemImpl.VIEWPORT_WIDTH, CameraSystemImpl.VIEWPORT_HEIGHT);
+        cameraGlobalLight.near = 0.01f;
+        cameraGlobalLight.far = 100;
+        cameraGlobalLight.position.set(4, CameraSystemImpl.CAMERA_HEIGHT, 4);
+        cameraGlobalLight.lookAt(0, 0, 0);
+        cameraGlobalLight.update();
+        globalLightFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, DEPTH_MAP_SIZE, DEPTH_MAP_SIZE, true);
     }
 
     private void createAxis(final Engine engine) {
@@ -114,7 +133,12 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
         super.update(deltaTime);
         if (!ready) return;
         resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
-        OrthographicCamera camera = cameraSystem.getCamera();
+        renderGlobalLight(renderBatches.getModelBatch());
+        renderWorld(deltaTime, cameraSystem.getCamera());
+        stage.draw();
+    }
+
+    private void renderWorld(float deltaTime, OrthographicCamera camera) {
         renderModels(camera);
         DecalBatch decalBatch = renderBatches.getDecalBatch();
         for (Entity entity : characterDecalsEntities) {
@@ -222,7 +246,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
         }
         Gdx.gl.glDepthMask(false);
         decalBatch.flush();
-        stage.draw();
     }
 
     private void applyLightsOnDecal(final Decal decal) {
