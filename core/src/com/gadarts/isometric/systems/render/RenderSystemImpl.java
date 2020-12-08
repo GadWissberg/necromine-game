@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -28,7 +27,6 @@ import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
-import com.gadarts.isometric.systems.camera.CameraSystemImpl;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
@@ -69,8 +67,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private Stage stage;
 	private ImmutableArray<Entity> simpleDecalsEntities;
 	private ImmutableArray<Entity> lightsEntities;
-	private OrthographicCamera cameraGlobalLight;
-	private FrameBuffer globalLightFrameBuffer;
 
 	private void resetDisplay(final Color color) {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -90,34 +86,12 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		lightsEntities = engine.getEntitiesFor(Family.all(LightComponent.class).get());
 	}
 
-	public void renderGlobalLight(final ModelBatch modelBatch) {
-		globalLightFrameBuffer.begin();
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		renderModels(cameraGlobalLight, modelBatch, false, false);
-		globalLightFrameBuffer.end();
-	}
 
 
 	private void initializeEnvironment() {
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, ambientLightColor));
-		initializeGlobalLightShadow();
 	}
 
-	private void initializeGlobalLightShadow() {
-		renderBatches.initializeModelBatchDepthMap();
-		initializeGlobalLightShadowCamera();
-		globalLightFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, DEPTH_MAP_SIZE, DEPTH_MAP_SIZE, true);
-	}
-
-	private void initializeGlobalLightShadowCamera() {
-		cameraGlobalLight = new OrthographicCamera(CameraSystemImpl.VIEWPORT_WIDTH, CameraSystemImpl.VIEWPORT_HEIGHT);
-		cameraGlobalLight.near = 0.01f;
-		cameraGlobalLight.far = 100;
-		cameraGlobalLight.position.set(4, CameraSystemImpl.CAMERA_HEIGHT, 4);
-		cameraGlobalLight.lookAt(0, 0, 0);
-		cameraGlobalLight.update();
-	}
 
 	private void createAxis(final Engine engine) {
 		ModelBuilder modelBuilder = new ModelBuilder();
@@ -143,7 +117,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		super.update(deltaTime);
 		if (!ready) return;
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
-		renderGlobalLight(renderBatches.getModelBatchDepthMap());
 		renderWorld(deltaTime, cameraSystem.getCamera());
 		stage.draw();
 	}
