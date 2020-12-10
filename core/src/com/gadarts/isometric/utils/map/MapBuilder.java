@@ -120,7 +120,7 @@ public final class MapBuilder {
 
 	private void addObstacles() {
 		addTestObstacle(1, 1, Assets.Models.PILLAR, 0, true);
-		addTestObstacle(1, 3, Assets.Models.PILLAR, 0, true);
+		addTestObstacle(0, 3, Assets.Models.PILLAR, 0, true);
 		addTestObstacle(2, 6, Assets.Models.CAVE_SUPPORTER_3, 90, false);
 	}
 

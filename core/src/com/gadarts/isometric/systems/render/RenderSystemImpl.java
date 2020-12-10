@@ -100,7 +100,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				1f,
 				300
 		);
-		shadowLight.set(0.1f, 0.1f, 0.1f, -1f, -1f, -1f);
+		shadowLight.set(0.1f, 0.1f, 0.1f, 0, -1f, -1f);
 		environment.add(shadowLight);
 		environment.shadowMap = shadowLight;
 	}
