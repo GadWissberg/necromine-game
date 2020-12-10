@@ -17,4 +17,5 @@ public class DefaultGameSettings {
 	public static final boolean DISPLAY_HUD_OUTLINES = false;
 	public static final boolean PARALYZED_ENEMIES = false;
 	public static final boolean DISABLE_LIGHTS = false;
+	public static final boolean SKIP_DRAW_SHADOWS = false;
 }

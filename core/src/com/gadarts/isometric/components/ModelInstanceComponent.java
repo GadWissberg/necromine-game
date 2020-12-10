@@ -13,17 +13,28 @@ public class ModelInstanceComponent implements Component, Pool.Poolable {
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 
-	private GameModelInstance modelInstance;
-	private ColorAttribute colorAttribute;
-
 	@Setter
 	private boolean visible;
 
+	private GameModelInstance modelInstance;
+	private ColorAttribute colorAttribute;
+	private boolean castShadow;
+	private boolean affectedByLight;
+
 
 	public void init(final GameModelInstance modelInstance, final boolean visible) {
+		init(modelInstance, visible, true, true);
+	}
+
+	public void init(final GameModelInstance modelInstance,
+					 final boolean visible,
+					 final boolean castShadow,
+					 final boolean affectedByLight) {
 		this.modelInstance = modelInstance;
 		this.visible = visible;
 		this.colorAttribute = null;
+		this.castShadow = castShadow;
+		this.affectedByLight = affectedByLight;
 	}
 
 	public ColorAttribute getColorAttribute() {

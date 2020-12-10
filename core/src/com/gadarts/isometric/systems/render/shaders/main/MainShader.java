@@ -49,6 +49,8 @@ public class MainShader extends DefaultShader {
 			}
 			program.setUniform3fv(lightsPositionsLocation, lightsPositions, 0, size * 3);
 			program.setUniform2fv(lightsExtraDataLocation, lightsExtraData, 0, size * LIGHT_EXTRA_DATA_SIZE);
+		} else {
+			program.setUniformi(numberOfLightsLocation, -1);
 		}
 	}
 

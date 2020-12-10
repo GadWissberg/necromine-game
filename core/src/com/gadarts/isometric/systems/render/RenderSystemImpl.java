@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
@@ -27,6 +28,7 @@ import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
+import com.gadarts.isometric.systems.camera.CameraSystemImpl;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
@@ -57,7 +59,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Color ambientLightColor = new Color(0.1f, 0.1f, 0.1f, 1);
 	private static final float DECAL_DARKEST_COLOR = 0.2f;
 	private static final float DECAL_LIGHT_OFFSET = 1.5f;
-	private static final int DEPTH_MAP_SIZE = 1024;
 	private final Environment environment = new Environment();
 	private RenderBatches renderBatches;
 	private ImmutableArray<Entity> modelInstanceEntities;
@@ -67,12 +68,14 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private Stage stage;
 	private ImmutableArray<Entity> simpleDecalsEntities;
 	private ImmutableArray<Entity> lightsEntities;
+	private DirectionalShadowLight shadowLight;
+
 
 	private void resetDisplay(final Color color) {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		int sam = Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0;
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | sam);
 		Gdx.gl.glClearColor(color.r, color.g, color.b, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | sam);
 	}
 
 	@Override
@@ -87,9 +90,19 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 
-
 	private void initializeEnvironment() {
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, ambientLightColor));
+		shadowLight = new DirectionalShadowLight(
+				1024,
+				1024,
+				CameraSystemImpl.VIEWPORT_WIDTH,
+				CameraSystemImpl.VIEWPORT_HEIGHT,
+				1f,
+				300
+		);
+		shadowLight.set(0.1f, 0.1f, 0.1f, -1f, -1f, -1f);
+		environment.add(shadowLight);
+		environment.shadowMap = shadowLight;
 	}
 
 
@@ -108,7 +121,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		Model model = modelBuilder.createArrow(Vector3.Zero, direction, material, attributes);
 		PooledEngine engine = (PooledEngine) getEngine();
 		ModelInstanceComponent modelInsComp = engine.createComponent(ModelInstanceComponent.class);
-		modelInsComp.init(new GameModelInstance(model), true);
+		modelInsComp.init(new GameModelInstance(model), true, false, false);
 		return engine.createEntity().add(modelInsComp);
 	}
 
@@ -122,6 +135,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	private void renderWorld(final float deltaTime, final OrthographicCamera camera) {
+		shadowLight.begin(Vector3.Zero, camera.direction);
+		renderModels(shadowLight.getCamera(), renderBatches.getShadowBatch(), false, false);
+		shadowLight.end();
+		resetDisplay(Color.BLACK);
 		renderModels(camera, renderBatches.getModelBatch(), true, true);
 		DecalBatch decalBatch = renderBatches.getDecalBatch();
 		for (Entity entity : characterDecalsEntities) {
@@ -278,7 +295,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		modelBatch.begin(camera);
 		for (Entity entity : modelInstanceEntities) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
-			if (DefaultGameSettings.HIDE_ENVIRONMENT_OBJECTS && ComponentsMapper.obstacle.has(entity)) {
+			if ((DefaultGameSettings.HIDE_ENVIRONMENT_OBJECTS && ComponentsMapper.obstacle.has(entity))
+					|| (camera == shadowLight.getCamera() && !modelInstanceComponent.isCastShadow())) {
 				continue;
 			}
 			boolean isWall = ComponentsMapper.wall.has(entity);
@@ -300,16 +318,20 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				nearbyLights.clear();
 				if (!DefaultGameSettings.DISABLE_LIGHTS) {
 					if (renderLight) {
-						for (Entity light : lightsEntities) {
-							LightComponent lightComponent = ComponentsMapper.light.get(light);
-							Vector3 lightPosition = lightComponent.getPosition(auxVector3_1);
-							float distance = lightPosition.dst(modelInstance.transform.getTranslation(auxVector3_2));
-							if (distance <= LightComponent.LIGHT_RADIUS) {
-								nearbyLights.add(light);
+						if (modelInstanceComponent.isAffectedByLight()) {
+							for (Entity light : lightsEntities) {
+								LightComponent lightComponent = ComponentsMapper.light.get(light);
+								Vector3 lightPosition = lightComponent.getPosition(auxVector3_1);
+								float distance = lightPosition.dst(modelInstance.transform.getTranslation(auxVector3_2));
+								if (distance <= LightComponent.LIGHT_RADIUS) {
+									nearbyLights.add(light);
+								}
 							}
+							modelInstance.userData = nearbyLights;
+						} else {
+							modelInstance.userData = null;
 						}
 					}
-					modelInstance.userData = !nearbyLights.isEmpty() ? nearbyLights : null;
 					modelBatch.render(modelInstance, environment);
 				}
 				if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
@@ -324,6 +346,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void dispose() {
 		renderBatches.dispose();
+		shadowLight.dispose();
 	}
 
 	@Override

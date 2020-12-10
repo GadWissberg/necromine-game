@@ -98,7 +98,7 @@ float getShadowness(vec2 offset)
 
 float getShadow()
 {
-    return (//getShadowness(vec2(0,0)) +
+    return (
     getShadowness(vec2(u_shadowPCFOffset, u_shadowPCFOffset)) +
     getShadowness(vec2(-u_shadowPCFOffset, u_shadowPCFOffset)) +
     getShadowness(vec2(u_shadowPCFOffset, -u_shadowPCFOffset)) +
@@ -172,32 +172,36 @@ void main() {
     #elif (!defined(specularFlag))
     #if defined(ambientFlag) && defined(separateAmbientFlag)
     #ifdef shadowMapFlag
-    gl_FragColor.rgb = (diffuse.rgb * (v_ambientLight + getShadow() * v_lightDiffuse)) + emissive.rgb;
-    //gl_FragColor.rgb = texture2D(u_shadowTexture, v_shadowMapUv.xy);
-    #else
+    if (u_number_of_lights > -1){
+        gl_FragColor.rgb = diffuse.rgb * v_lightDiffuse;
+        for (int i = 0; i< u_number_of_lights; i++){
+            vec3 light =u_lights_positions[i];
+            vec3 sub = light.xyz - v_frag_pos.xyz;
+            vec3 lightDir = normalize(sub);
+            float distance = length(sub);
+            vec2 extra = u_lights_extra_data[i];
+            float attenuation = 6.0 * extra.x / (1.0 + (0.1*distance) + (0.44*distance*distance));
+            float dot_value = dot(v_normal, lightDir);
+            float intensity = max(ramp(dot_value, 1.0, 1.0 - extra.y/10.0, 1.0 - extra.y/10.0-0.2), 0.0);
+            gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
+        }
+        gl_FragColor.rgb = getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb;
+    } else {
+        gl_FragColor.rgb = diffuse.rgb;
+    }
+        #else
     gl_FragColor.rgb = (diffuse.rgb * (v_ambientLight + v_lightDiffuse)) + emissive.rgb;
     #endif//shadowMapFlag
     #else
     #ifdef shadowMapFlag
-    gl_FragColor.rgb = getShadow() * (diffuse.rgb * v_lightDiffuse) + emissive.rgb;
+    //    gl_FragColor.rgb = getShadow() * (diffuse.rgb * v_lightDiffuse) + emissive.rgb;
     #else
 
-    gl_FragColor.rgb = diffuse.rgb * v_lightDiffuse;
-    for (int i = 0; i< u_number_of_lights; i++){
-        vec3 light =u_lights_positions[i];
-        vec3 sub = light.xyz - v_frag_pos.xyz;
-        vec3 lightDir = normalize(sub);
-        float distance = length(sub);
-        vec2 extra = u_lights_extra_data[i];
-        float attenuation = 6.0 * extra.x / (1.0 + (0.1*distance) + (0.44*distance*distance));
-        float dot_value = dot(v_normal, lightDir);
-        float intensity = max(ramp(dot_value, 1.0, 1.0 - extra.y/10.0, 1.0 - extra.y/10.0-0.2), 0.0);
-        gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
-    }
-        #endif//shadowMapFlag
-        #endif
-        #else
-        #if defined(specularTextureFlag) && defined(specularColorFlag)
+
+    #endif//shadowMapFlag
+    #endif
+    #else
+    #if defined(specularTextureFlag) && defined(specularColorFlag)
     vec3 specular = texture2D(u_specularTexture, v_specularUV).rgb * u_specularColor.rgb * v_lightSpecular;
     #elif defined(specularTextureFlag)
     vec3 specular = texture2D(u_specularTexture, v_specularUV).rgb * v_lightSpecular;
