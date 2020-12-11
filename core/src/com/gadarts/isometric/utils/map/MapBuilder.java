@@ -24,6 +24,7 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterComponent.Direction;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.enemy.Enemies;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
@@ -81,7 +82,6 @@ public final class MapBuilder {
 
 	private void addTestLights() {
 		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(0.5f, 2f, 1.5f), 1f, 3f).finishAndAddToEngine();
-		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(3.5f, 2f, 4.5f), 0.4f, 2f).finishAndAddToEngine();
 	}
 
 	private void addWeaponPickupTest(final int x,
@@ -175,7 +175,7 @@ public final class MapBuilder {
 	}
 
 	private void addEnemyTest(final int x, final int y) {
-		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(Sounds.ATTACK_CLAW);
+		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(Enemies.ZEALOT);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		Vector3 position = auxVector3_1.set(x + 0.5f, CharacterDecalComponent.BILLBOARD_Y, y + 0.5f);
 		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player, Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH);

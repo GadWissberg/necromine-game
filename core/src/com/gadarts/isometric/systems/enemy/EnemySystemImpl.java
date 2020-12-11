@@ -144,7 +144,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		if (ComponentsMapper.enemy.has(entity)) {
 			if (ComponentsMapper.character.get(entity).getCharacterSpriteData().getSpriteType() == SpriteType.ATTACK) {
 				if (newFrame.index == ComponentsMapper.character.get(entity).getCharacterSpriteData().getHitFrameIndex()) {
-					soundPlayer.playSound(ComponentsMapper.enemy.get(entity).getAttackSound());
+					soundPlayer.playSound(ComponentsMapper.enemy.get(entity).getEnemyDefinition().getAttackSound());
 				}
 			}
 		}

@@ -14,6 +14,7 @@ import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.enemy.Enemies;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.*;
 import com.gadarts.isometric.utils.assets.Assets;
@@ -133,9 +134,9 @@ public final class EntityBuilder {
 		}
 	}
 
-	public EntityBuilder addEnemyComponent(final Assets.Sounds attackSound) {
+	public EntityBuilder addEnemyComponent(final Enemies enemyDefinition) {
 		EnemyComponent component = engine.createComponent(EnemyComponent.class);
-		component.init(attackSound);
+		component.init(enemyDefinition);
 		currentEntity.add(component);
 		return instance;
 	}

@@ -251,15 +251,20 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private void applyLightsOnDecal(final Decal decal) {
 		float minDistance = Float.MAX_VALUE;
 		for (Entity light : lightsEntities) {
-			float distance = ComponentsMapper.light.get(light).getPosition(auxVector3_1).dst(decal.getPosition());
-			float maxLightDistanceForDecal = ComponentsMapper.light.get(light).getRadius() * 2;
-			if (distance <= maxLightDistanceForDecal) {
-				minDistance = calculateDecalColorAffectedByLight(decal, minDistance, distance, maxLightDistanceForDecal);
-			}
+			minDistance = applyLightOnDecal(decal, minDistance, light);
 		}
 		if (minDistance == Float.MAX_VALUE) {
 			decal.setColor(DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, 1f);
 		}
+	}
+
+	private float applyLightOnDecal(Decal decal, float minDistance, Entity light) {
+		float distance = ComponentsMapper.light.get(light).getPosition(auxVector3_1).dst(decal.getPosition());
+		float maxLightDistanceForDecal = ComponentsMapper.light.get(light).getRadius() * 2;
+		if (distance <= maxLightDistanceForDecal) {
+			minDistance = calculateDecalColorAffectedByLight(decal, minDistance, distance, maxLightDistanceForDecal);
+		}
+		return minDistance;
 	}
 
 	private float calculateDecalColorAffectedByLight(final Decal d,
