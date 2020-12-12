@@ -7,7 +7,7 @@ import com.gadarts.isometric.utils.assets.GameAssetsManager;
 
 public class SoundPlayer {
 	private static final float MELODY_VOLUME = 0.7f;
-	private static final float PITCH_OFFSET = 0.2f;
+	private static final float PITCH_OFFSET = 0.1f;
 	private final GameAssetsManager assetManager;
 
 	public SoundPlayer(final GameAssetsManager assetManager) {
@@ -29,7 +29,9 @@ public class SoundPlayer {
 
 	public void playSound(final Assets.Sounds sound) {
 		if (!DefaultGameSettings.SFX_ENABLED) return;
-		float pitch = 1 + (sound.isRandomPitch() ? (MathUtils.randomBoolean() ? 1 : -1) : 0) * PITCH_OFFSET;
+		boolean randPitch = sound.isRandomPitch();
+		boolean randomBoolean = MathUtils.randomBoolean();
+		float pitch = 1 + (randPitch ? (randomBoolean ? 1 : -1) : 0) * MathUtils.random(-PITCH_OFFSET, PITCH_OFFSET);
 		assetManager.getSound(sound).play(1f, pitch, 0);
 	}
 }
