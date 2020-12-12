@@ -1,4 +1,4 @@
-package com.gadarts.isometric.systems.hud;
+package com.gadarts.isometric.systems.hud.window.storage.item;
 
 import lombok.Getter;
 import lombok.Setter;

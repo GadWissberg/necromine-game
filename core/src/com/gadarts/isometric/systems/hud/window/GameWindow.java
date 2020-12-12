@@ -1,4 +1,4 @@
-package com.gadarts.isometric.systems.hud;
+package com.gadarts.isometric.systems.hud.window;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -10,7 +10,7 @@ import com.gadarts.isometric.utils.assets.GameAssetsManager;
 
 public class GameWindow extends Window {
 
-	final Button closeButton;
+	protected final Button closeButton;
 
 	public GameWindow(final String windowNameStorage,
 					  final WindowStyle windowStyle,

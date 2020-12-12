@@ -1,4 +1,4 @@
-package com.gadarts.isometric.systems.hud;
+package com.gadarts.isometric.systems.hud.window.storage;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,12 +11,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
+import com.gadarts.isometric.systems.hud.window.GameWindowEvent;
+import com.gadarts.isometric.systems.hud.window.GameWindowEventType;
+import com.gadarts.isometric.systems.hud.window.storage.item.ItemDisplay;
+import com.gadarts.isometric.systems.hud.window.storage.item.ItemSelectionHandler;
+import com.gadarts.isometric.systems.hud.window.storage.item.ItemsTable;
 import lombok.Getter;
 
 public class PlayerLayout extends ItemsTable {
 	public static final int WEAPON_POSITION_PARENT_X = 100;
 	public static final int WEAPON_POSITION_PARENT_Y = 200;
-	static final String NAME = "player_layout";
+	public static final String NAME = "player_layout";
 	private final static Vector2 auxVector = new Vector2();
 	private static final float SPOT_RADIUS = 25;
 	private final PlayerComponent playerComponent;
@@ -86,11 +91,7 @@ public class PlayerLayout extends ItemsTable {
 			ItemsTable itemsTable = (ItemsTable) event.getTarget();
 			ItemDisplay selection = itemSelectionHandler.getSelection();
 			if (event.getTarget() instanceof PlayerLayout) {
-				itemsTable.removeItem(selection);
-				PlayerLayout.this.weaponChoice = selection;
-				playerComponent.getStorage().setSelectedWeapon((Weapon) weaponChoice.getItem());
-				selection.setLocatedIn(PlayerLayout.class);
-				placeWeapon();
+				applySelectionToSelectedWeapon(itemsTable, selection);
 			} else {
 				if (selection == weaponChoice) {
 					removeItem(selection);
@@ -99,6 +100,14 @@ public class PlayerLayout extends ItemsTable {
 			result = true;
 		}
 		return result;
+	}
+
+	void applySelectionToSelectedWeapon(final ItemsTable itemsTableToRemoveFrom, final ItemDisplay selection) {
+		itemsTableToRemoveFrom.removeItem(selection);
+		PlayerLayout.this.weaponChoice = selection;
+		playerComponent.getStorage().setSelectedWeapon((Weapon) weaponChoice.getItem());
+		selection.setLocatedIn(PlayerLayout.class);
+		placeWeapon();
 	}
 
 	@Override
@@ -131,7 +140,7 @@ public class PlayerLayout extends ItemsTable {
 
 
 	@Override
-	protected void removeItem(final ItemDisplay item) {
+	public void removeItem(final ItemDisplay item) {
 		if (weaponChoice == item) {
 			weaponChoice = null;
 		}

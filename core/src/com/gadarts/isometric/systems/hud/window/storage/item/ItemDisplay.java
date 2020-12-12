@@ -1,4 +1,4 @@
-package com.gadarts.isometric.systems.hud;
+package com.gadarts.isometric.systems.hud.window.storage.item;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -14,13 +14,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.gadarts.isometric.components.player.Item;
 import com.gadarts.isometric.components.player.ItemDefinition;
+import com.gadarts.isometric.systems.hud.window.GameWindowEvent;
+import com.gadarts.isometric.systems.hud.window.GameWindowEventType;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 public class ItemDisplay extends Image {
 
-	static final float FLICKER_DURATION = 0.2f;
+	public static final float FLICKER_DURATION = 0.2f;
 	private final Item item;
 	private static final Vector2 auxVector = new Vector2();
 	private final ItemSelectionHandler itemSelectionHandler;

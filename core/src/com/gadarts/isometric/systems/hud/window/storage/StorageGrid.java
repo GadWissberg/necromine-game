@@ -1,4 +1,4 @@
-package com.gadarts.isometric.systems.hud;
+package com.gadarts.isometric.systems.hud.window.storage;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -8,13 +8,23 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.gadarts.isometric.components.player.*;
+import com.gadarts.isometric.systems.hud.GameStage;
+import com.gadarts.isometric.systems.hud.window.GameWindowEvent;
+import com.gadarts.isometric.systems.hud.window.GameWindowEventType;
+import com.gadarts.isometric.systems.hud.window.storage.item.ItemDisplay;
+import com.gadarts.isometric.systems.hud.window.storage.item.ItemSelectionHandler;
+import com.gadarts.isometric.systems.hud.window.storage.item.ItemsTable;
 import com.gadarts.isometric.utils.Utils;
+
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static com.gadarts.isometric.systems.hud.GameStage.GRID_CELL_SIZE;
 import static com.gadarts.isometric.systems.hud.GameStage.GRID_SIZE;
@@ -223,8 +233,20 @@ public class StorageGrid extends ItemsTable implements PlayerStorageEventsSubscr
 	}
 
 	@Override
-	protected void removeItem(final ItemDisplay item) {
+	public void removeItem(final ItemDisplay item) {
 		playerStorage.removeItem(item.getItem().getDefinition().getId());
+	}
+
+	public ItemDisplay findItemDisplay(final int id) {
+		Actor[] items = StorageGrid.this.getParent().getChildren().items;
+		Optional<ItemDisplay> item = IntStream.range(0, items.length)
+				.filter(i -> {
+					Actor actor = items[i];
+					return actor instanceof ItemDisplay && ((ItemDisplay) actor).getItem().getDefinition().getId() == id;
+				})
+				.mapToObj(value -> ((ItemDisplay) items[value]))
+				.findFirst();
+		return item.orElse(null);
 	}
 
 	private static class Coords {

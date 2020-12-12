@@ -1,4 +1,4 @@
-package com.gadarts.isometric.systems.hud;
+package com.gadarts.isometric.systems.hud.window.storage;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -15,6 +15,12 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
+import com.gadarts.isometric.components.player.WeaponsDefinitions;
+import com.gadarts.isometric.systems.hud.window.GameWindow;
+import com.gadarts.isometric.systems.hud.window.GameWindowEvent;
+import com.gadarts.isometric.systems.hud.window.GameWindowEventType;
+import com.gadarts.isometric.systems.hud.window.storage.item.ItemDisplay;
+import com.gadarts.isometric.systems.hud.window.storage.item.ItemSelectionHandler;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
@@ -27,15 +33,16 @@ import static com.gadarts.isometric.systems.hud.GameStage.GRID_SIZE;
 
 public class StorageWindow extends GameWindow {
 	public static final int PLAYER_LAYOUT_PADDING = 40;
-	static final String NAME = "storage";
+	public static final String NAME = "storage";
+
+	@Getter
+	private final ItemSelectionHandler selectedItem = new ItemSelectionHandler();
 
 	private final Texture gridTexture;
 	private final Texture gridCellTexture;
 	private final PlayerComponent playerComponent;
-	private StorageGrid grid;
-
-	@Getter
-	private final ItemSelectionHandler selectedItem = new ItemSelectionHandler();
+	private StorageGrid storageGrid;
+	private PlayerLayout playerLayout;
 
 	public StorageWindow(final WindowStyle windowStyle,
 						 final GameAssetsManager assetsManager,
@@ -72,6 +79,13 @@ public class StorageWindow extends GameWindow {
 					result = true;
 				} else if (type == GameWindowEventType.CLICK_RIGHT) {
 					result = onRightClick();
+				} else if (type == GameWindowEventType.WINDOW_CLOSED) {
+					if (event.getTarget() == StorageWindow.this) {
+						if (playerLayout.getWeaponChoice() == null) {
+							ItemDisplay itemDisplay = storageGrid.findItemDisplay(WeaponsDefinitions.AXE_PICK.getId());
+							playerLayout.applySelectionToSelectedWeapon(storageGrid, itemDisplay);
+						}
+					}
 				}
 			}
 			return result;
@@ -132,7 +146,7 @@ public class StorageWindow extends GameWindow {
 	private void addPlayerLayout(final GameAssetsManager assetsManager) {
 		Texture texture = assetsManager.getTexture(Assets.UiTextures.PLAYER_LAYOUT);
 		Weapon selectedWeapon = playerComponent.getStorage().getSelectedWeapon();
-		PlayerLayout playerLayout = new PlayerLayout(texture, selectedWeapon, selectedItem, playerComponent);
+		playerLayout = new PlayerLayout(texture, selectedWeapon, selectedItem, playerComponent);
 		add(playerLayout).pad(PLAYER_LAYOUT_PADDING);
 	}
 
@@ -194,8 +208,8 @@ public class StorageWindow extends GameWindow {
 	}
 
 	private void addStorageGrid() {
-		grid = new StorageGrid(gridTexture, playerComponent.getStorage(), gridCellTexture, selectedItem);
-		add(grid);
+		storageGrid = new StorageGrid(gridTexture, playerComponent.getStorage(), gridCellTexture, selectedItem);
+		add(storageGrid);
 	}
 
 	private void clearSelectedItem() {
@@ -206,6 +220,6 @@ public class StorageWindow extends GameWindow {
 	}
 
 	public void initialize() {
-		grid.initialize();
+		storageGrid.initialize();
 	}
 }
