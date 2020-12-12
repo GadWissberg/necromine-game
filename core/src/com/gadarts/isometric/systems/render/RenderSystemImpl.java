@@ -177,6 +177,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			Decal decal = characterDecalComponent.getDecal();
 			CharacterAnimations animations = characterDecalComponent.getAnimations();
 			Decal shadowDecal = characterDecalComponent.getShadowDecal();
+			Vector3 decalPosition = decal.getPosition();
 			if ((!sameSpriteType || !sameDirection)) {
 				characterDecalComponent.initializeSprite(spriteType, direction);
 				if (ComponentsMapper.animation.has(entity)) {
@@ -226,6 +227,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 						shadowDecal.setTextureRegion(southAnimation.getKeyFrames()[max(newFrame.index, 0)]);
 					} else if (characterSpriteData.getSpriteType() == SpriteType.DIE) {
 						if (animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime())) {
+							characterComponent.getCharacterSpriteData().setFacingDirection(Direction.findDirection(auxVector2_1.set(camera.position.x, camera.position.z).sub(decalPosition.x, decalPosition.z).nor()));
 							characterSpriteData.setSpriteType(SpriteType.DEAD);
 						}
 					}
@@ -233,7 +235,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			}
 			if (!DefaultGameSettings.HIDE_ENEMIES || !ComponentsMapper.enemy.has(entity)) {
 				applyLightsOnDecal(decal);
-				decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
+				decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
 				decalBatch.add(decal);
 				decalBatch.add(shadowDecal);
 			}

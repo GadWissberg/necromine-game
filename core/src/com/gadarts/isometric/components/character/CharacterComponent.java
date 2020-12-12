@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 public class CharacterComponent implements GameComponent {
 
-	public static final int INITIAL_HP = 5;
+	public static final int INITIAL_HP = 1;
 	private static final Vector2 auxVector = new Vector2();
 
 	@Getter(AccessLevel.NONE)
