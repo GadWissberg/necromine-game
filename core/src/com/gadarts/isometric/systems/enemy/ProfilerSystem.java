@@ -5,7 +5,6 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -33,7 +32,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 
 	public static final String WARNING_COLOR = "[RED]";
 	private static final String LABEL_FPS = "FPS: ";
-	private static final String LABEL_UI_BATCH_RENDER_CALLS = "UI batch render calls: ";
+	private static final String LABEL_MEMORY_USAGE = "Memory usage: ";
 	private static final String LABEL_GL_CALL = "Total openGL calls: ";
 	private static final String LABEL_GL_DRAW_CALL = "Draw calls: ";
 	private static final String LABEL_GL_SHADER_SWITCHES = "Shader switches: ";
@@ -42,6 +41,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	private static final String VISIBLE_OBJECTS_STRING = "Visible objects: ";
 	private static final String LABEL_VERSION = "Version: ";
 	private static final int VERTEX_COUNT_WARNING_LIMIT = 30000;
+	private static final String SUFFIX_MB = "MB";
 	private GLProfiler glProfiler;
 	private StringBuilder stringBuilder;
 	private Stage stage;
@@ -65,17 +65,18 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
 		if (Gdx.app.getLogLevel() == Application.LOG_DEBUG && glProfiler.isEnabled()) {
-			stringBuilder.setLength(0);
-			displayLine(LABEL_FPS, Gdx.graphics.getFramesPerSecond());
-			displayGlProfiling();
-			displayBatchCalls();
-			stringBuilder.append("\n").append(LABEL_VERSION).append(NecromineGame.getVersionName());
-			label.setText(stringBuilder);
+			displayLabels();
 		}
 	}
 
-	private void displayBatchCalls() {
-		displayLine(LABEL_UI_BATCH_RENDER_CALLS, ((SpriteBatch) stage.getBatch()).renderCalls);
+	private void displayLabels() {
+		stringBuilder.setLength(0);
+		displayLine(LABEL_FPS, Gdx.graphics.getFramesPerSecond());
+		displayLine(LABEL_MEMORY_USAGE, Gdx.app.getJavaHeap() / (1024L * 1024L), false);
+		stringBuilder.append(' ').append(SUFFIX_MB).append('\n');
+		displayGlProfiling();
+		stringBuilder.append("\n").append(LABEL_VERSION).append(NecromineGame.getVersionName());
+		label.setText(stringBuilder);
 	}
 
 	private void displayGlProfiling() {
@@ -98,10 +99,16 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		stringBuilder.append('\n');
 	}
 
-	private void displayLine(final String label, final Object value) {
+	private void displayLine(final String label, final Object value, final boolean addEndOfLine) {
 		stringBuilder.append(label);
 		stringBuilder.append(value);
-		stringBuilder.append('\n');
+		if (addEndOfLine) {
+			stringBuilder.append('\n');
+		}
+	}
+
+	private void displayLine(final String label, final Object value) {
+		displayLine(label, value, true);
 	}
 
 	private void displayLine(final String label, final Object value, final int warningThreshold) {
