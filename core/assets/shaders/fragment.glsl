@@ -185,9 +185,9 @@ void main() {
             float intensity = max(ramp(dot_value, 1.0, 1.0 - extra.y/10.0, 1.0 - extra.y/10.0-0.2), 0.0);
             gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
         }
-        gl_FragColor.rgb = getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb;
+        gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;
     } else {
-        gl_FragColor.rgb = diffuse.rgb;
+        gl_FragColor.rgb = diffuse.rgb + emissive.rgb;
     }
         #else
     gl_FragColor.rgb = (diffuse.rgb * (v_ambientLight + v_lightDiffuse)) + emissive.rgb;
