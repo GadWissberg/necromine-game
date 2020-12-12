@@ -135,9 +135,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	private void renderWorld(final float deltaTime, final OrthographicCamera camera) {
-		shadowLight.begin(Vector3.Zero, camera.direction);
-		renderModels(shadowLight.getCamera(), renderBatches.getShadowBatch(), false, false);
-		shadowLight.end();
+		if (!DefaultGameSettings.DISABLE_SHADOWS) {
+			shadowLight.begin(Vector3.Zero, camera.direction);
+			renderModels(shadowLight.getCamera(), renderBatches.getShadowBatch(), false, false);
+			shadowLight.end();
+		}
 		resetDisplay(Color.BLACK);
 		renderModels(camera, renderBatches.getModelBatch(), true, true);
 		DecalBatch decalBatch = renderBatches.getDecalBatch();
