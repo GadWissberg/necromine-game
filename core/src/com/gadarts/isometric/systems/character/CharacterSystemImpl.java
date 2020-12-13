@@ -52,8 +52,8 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private static final int ROT_INTERVAL = 125;
 	private static final long CHARACTER_PAIN_DURATION = 1000;
 
+	private CommandsHandler commandsHandler;
 	private CharacterSystemGraphData graphData;
-	private CharacterCommand currentCommand;
 	private ImmutableArray<Entity> characters;
 
 	@Override
@@ -65,36 +65,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@Override
 	public void activate() {
 		this.graphData = new CharacterSystemGraphData(map);
+		commandsHandler = new CommandsHandler(graphData, subscribers, soundPlayer, map);
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCharacterSystemReady(this);
-		}
-	}
-
-	/**
-	 * Applies a given command on the given character.
-	 *
-	 * @param command
-	 * @param character
-	 */
-	@SuppressWarnings("JavaDoc")
-	public void applyCommand(final CharacterCommand command, final Entity character) {
-		currentCommand = command;
-		currentCommand.setStarted(false);
-		if (ComponentsMapper.character.get(character).getCharacterSpriteData().getSpriteType() != PAIN) {
-			beginProcessingCommand(command, character);
-		}
-	}
-
-	private void beginProcessingCommand(final CharacterCommand command, final Entity character) {
-		currentCommand.setStarted(true);
-		graphData.getCurrentPath().clear();
-		if (command.getType().isRequiresMovement()) {
-			graphData.getCurrentPath().nodes.addAll(command.getPath().nodes);
-		}
-		if (graphData.getCurrentPath().nodes.size > 1) {
-			commandSet(command, character);
-		} else {
-			destinationReached(character);
 		}
 	}
 
@@ -124,34 +97,10 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		);
 	}
 
-	private void commandSet(final CharacterCommand command, final Entity character) {
-		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onNewCommandSet(command);
-		}
-		initDestinationNode(ComponentsMapper.character.get(character), graphData.getCurrentPath().get(1));
-	}
-
-	public void destinationReached(final Entity character) {
-		if (currentCommand.getType().getToDoAfterDestinationReached() != null) {
-			executeActionsAfterDestinationReached(character);
-		} else {
-			commandDone(character);
-		}
-	}
-
-	private void commandDone(final Entity character) {
-		graphData.getCurrentPath().clear();
-		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		characterComponent.setMotivation(null);
-		characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.IDLE);
-		currentCommand = null;
-		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onCommandDone(character);
-		}
-	}
 
 	private void handlePickup(final Entity character) {
 		CharacterMotivation mode = ComponentsMapper.character.get(character).getMotivationData().getMotivation();
+		CharacterCommand currentCommand = commandsHandler.getCurrentCommand();
 		if (mode == TO_PICK_UP && currentCommand.getAdditionalData() != null) {
 			Entity itemPickedUp = (Entity) currentCommand.getAdditionalData();
 			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
@@ -160,24 +109,11 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		}
 	}
 
-	private void executeActionsAfterDestinationReached(final Entity character) {
-		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onDestinationReached(character);
-		}
-		currentCommand.getType()
-				.getToDoAfterDestinationReached()
-				.run(character, map, soundPlayer, currentCommand.getAdditionalData());
-	}
-
-	private void initDestinationNode(final CharacterComponent characterComponent,
-									 final MapGraphNode destNode) {
-		characterComponent.getRotationData().setRotating(true);
-		characterComponent.setDestinationNode(destNode);
-	}
 
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
+		CharacterCommand currentCommand = commandsHandler.getCurrentCommand();
 		if (currentCommand != null) {
 			Entity character = currentCommand.getCharacter();
 			CharacterComponent characterComponent = ComponentsMapper.character.get(character);
@@ -200,6 +136,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		if (spriteData.getSpriteType() == PAIN && TimeUtils.timeSinceMillis(lastDamage) > CHARACTER_PAIN_DURATION) {
 			characterComponent.setMotivation(null);
 			spriteData.setSpriteType(SpriteType.IDLE);
+			CharacterCommand currentCommand = commandsHandler.getCurrentCommand();
 			if (currentCommand != null && !currentCommand.isStarted()) {
 				applyCommand(currentCommand, character);
 			}
@@ -279,7 +216,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			SpriteType spriteType = ComponentsMapper.character.get(character).getCharacterSpriteData().getSpriteType();
 			if (spriteType.isAddReverse()) {
 				if (animationComponent.isDoingReverse()) {
-					commandDone(character);
+					commandsHandler.commandDone(character);
 					animationComponent.setDoingReverse(false);
 					animation.setPlayMode(Animation.PlayMode.NORMAL);
 				} else {
@@ -289,7 +226,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 					animationComponent.resetStateTime();
 				}
 			} else {
-				commandDone(character);
+				commandsHandler.commandDone(character);
 			}
 		}
 	}
@@ -337,7 +274,12 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	 * @return Whether a command is being processed.
 	 */
 	public boolean isProcessingCommand() {
-		return currentCommand != null;
+		return commandsHandler.getCurrentCommand() != null;
+	}
+
+	@Override
+	public void applyCommand(final CharacterCommand command, final Entity character) {
+		commandsHandler.applyCommand(command, character);
 	}
 
 	@Override
@@ -402,10 +344,10 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		MapGraphNode newDest = graphData.getCurrentPath().getNextOf(oldDest);
 		if (newDest != null) {
-			initDestinationNode(characterComponent, newDest);
+			commandsHandler.initDestinationNode(characterComponent, newDest);
 			takeStep(character);
 		} else {
-			destinationReached(character);
+			commandsHandler.destinationReached(character);
 		}
 	}
 

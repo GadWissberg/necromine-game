@@ -83,8 +83,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 
-
-
 	private void createAxis(final Engine engine) {
 		ModelBuilder modelBuilder = new ModelBuilder();
 		engine.addEntity(createArrowEntity(modelBuilder, Color.RED, auxVector3_1.set(1, 0, 0)));
