@@ -22,6 +22,7 @@ public class PathPlanHandler {
 	public static final int ARROWS_POOL_SIZE = 20;
 	private static final Vector2 auxVector2 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
+	public static final float ARROW_HEIGHT = 0.2f;
 	private final GameAssetsManager assetManager;
 	private final List<Entity> arrowsEntities = new ArrayList<>();
 
@@ -63,7 +64,7 @@ public class PathPlanHandler {
 		decal.getRotation().idt();
 		decal.rotateX(90);
 		decal.rotateZ(directionVector.angleDeg());
-		Vector3 pos = auxVector3_1.set(currentNode.getX() + 0.5f, 0.1f, currentNode.getY() + 0.5f);
+		Vector3 pos = auxVector3_1.set(currentNode.getX() + 0.5f, ARROW_HEIGHT, currentNode.getY() + 0.5f);
 		decal.setPosition(pos.add(directionVector.x, 0, directionVector.y));
 	}
 

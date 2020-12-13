@@ -67,7 +67,11 @@ public class AttackNodesHandler implements Disposable {
 	private void createAttackNodesEntities() {
 		IntStream.range(0, ATTACK_NODES_POOL_SIZE).forEach(i ->
 				attackNodesEntities.add(EntityBuilder.beginBuildingEntity((PooledEngine) engine)
-						.addModelInstanceComponent(new GameModelInstance(attackNodeModel), false)
+						.addModelInstanceComponent(
+								new GameModelInstance(attackNodeModel),
+								false,
+								false,
+								false)
 						.finishAndAddToEngine()
 				));
 	}
