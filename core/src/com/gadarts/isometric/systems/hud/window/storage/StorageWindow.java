@@ -15,15 +15,14 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
-import com.gadarts.isometric.components.player.WeaponsDefinitions;
 import com.gadarts.isometric.systems.hud.window.GameWindow;
 import com.gadarts.isometric.systems.hud.window.GameWindowEvent;
-import com.gadarts.isometric.systems.hud.window.GameWindowEventType;
 import com.gadarts.isometric.systems.hud.window.storage.item.ItemDisplay;
 import com.gadarts.isometric.systems.hud.window.storage.item.ItemSelectionHandler;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.stream.IntStream;
@@ -41,7 +40,11 @@ public class StorageWindow extends GameWindow {
 	private final Texture gridTexture;
 	private final Texture gridCellTexture;
 	private final PlayerComponent playerComponent;
+
+	@Getter(AccessLevel.PACKAGE)
 	private StorageGrid storageGrid;
+
+	@Getter(AccessLevel.PACKAGE)
 	private PlayerLayout playerLayout;
 
 	public StorageWindow(final WindowStyle windowStyle,
@@ -59,34 +62,7 @@ public class StorageWindow extends GameWindow {
 			boolean result = false;
 			if (event instanceof GameWindowEvent) {
 				GameWindowEvent gameWindowEvent = (GameWindowEvent) event;
-				GameWindowEventType type = gameWindowEvent.getType();
-				if (type == GameWindowEventType.ITEM_SELECTED) {
-					soundPlayer.playSound(Assets.Sounds.UI_ITEM_SELECT);
-					ItemDisplay target = (ItemDisplay) event.getTarget();
-					if (selectedItem.getSelection() != target) {
-						applySelectedItem(target);
-					} else {
-						clearSelectedItem();
-					}
-				} else if (type == GameWindowEventType.ITEM_PLACED) {
-					soundPlayer.playSound(Assets.Sounds.UI_ITEM_PLACED);
-					if (event.getTarget() instanceof PlayerLayout) {
-						findActor(StorageGrid.NAME).notify(event, false);
-					} else {
-						findActor(PlayerLayout.NAME).notify(event, false);
-					}
-					clearSelectedItem();
-					result = true;
-				} else if (type == GameWindowEventType.CLICK_RIGHT) {
-					result = onRightClick();
-				} else if (type == GameWindowEventType.WINDOW_CLOSED) {
-					if (event.getTarget() == StorageWindow.this) {
-						if (playerLayout.getWeaponChoice() == null) {
-							ItemDisplay itemDisplay = storageGrid.findItemDisplay(WeaponsDefinitions.AXE_PICK.getId());
-							playerLayout.applySelectionToSelectedWeapon(storageGrid, itemDisplay);
-						}
-					}
-				}
+				result = StorageWindowOnEvents.execute(gameWindowEvent, soundPlayer, selectedItem, StorageWindow.this);
 			}
 			return result;
 		});
@@ -134,7 +110,7 @@ public class StorageWindow extends GameWindow {
 		});
 	}
 
-	private boolean onRightClick() {
+	boolean onRightClick() {
 		boolean result = false;
 		if (selectedItem.getSelection() != null) {
 			clearSelectedItem();
@@ -196,7 +172,7 @@ public class StorageWindow extends GameWindow {
 		batch.setColor(1f, 1f, 1f, 1f);
 	}
 
-	private void applySelectedItem(final ItemDisplay itemDisplay) {
+	void applySelectedItem(final ItemDisplay itemDisplay) {
 		if (itemDisplay != null) {
 			itemDisplay.clearActions();
 		}
@@ -212,7 +188,7 @@ public class StorageWindow extends GameWindow {
 		add(storageGrid);
 	}
 
-	private void clearSelectedItem() {
+	void clearSelectedItem() {
 		if (selectedItem.getSelection() != null) {
 			closeButton.setDisabled(false);
 			selectedItem.setSelection(null);
