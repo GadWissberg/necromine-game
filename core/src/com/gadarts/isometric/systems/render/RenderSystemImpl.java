@@ -208,7 +208,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				if (ComponentsMapper.animation.has(entity)) {
 					AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
 					TextureAtlas.AtlasRegion currentFrame = (TextureAtlas.AtlasRegion) decal.getTextureRegion();
-					TextureAtlas.AtlasRegion newFrame = animationComponent.calculateFrame(deltaTime);
+					TextureAtlas.AtlasRegion newFrame = animationComponent.calculateFrame();
 					if (currentFrame.index != newFrame.index) {
 						for (RenderSystemEventsSubscriber subscriber : subscribers) {
 							subscriber.onFrameChanged(entity, deltaTime, newFrame);
