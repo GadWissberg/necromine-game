@@ -254,11 +254,11 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private Direction calculateDirectionToDestination(final Entity character) {
-		Vector3 pos = auxVector3_1.set(ComponentsMapper.characterDecal.get(character).getDecal().getPosition());
+		Vector3 characterPos = auxVector3_1.set(ComponentsMapper.characterDecal.get(character).getDecal().getPosition());
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		MapGraphNode destinationNode = characterComponent.getDestinationNode();
 		Vector2 destPos = destinationNode.getCenterPosition(auxVector2_2);
-		Vector2 directionToDest = destPos.sub(map.getNode(pos).getCenterPosition(auxVector2_1)).nor();
+		Vector2 directionToDest = destPos.sub(characterPos.x, characterPos.z).nor();
 		return Direction.findDirection(directionToDest);
 	}
 
