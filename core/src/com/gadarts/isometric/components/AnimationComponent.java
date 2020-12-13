@@ -30,14 +30,17 @@ public class AnimationComponent implements GameComponent {
 
 	public TextureAtlas.AtlasRegion calculateFrame() {
 		float frameDuration = animation.getFrameDuration();
+		boolean looping = animation.getPlayMode() == Animation.PlayMode.LOOP;
+		TextureAtlas.AtlasRegion result = animation.getKeyFrame(stateTime, looping);
 		if (TimeUtils.timeSinceMillis(lastFrameChange) >= frameDuration * 1000f) {
 			lastFrameChange = TimeUtils.millis();
 			stateTime += frameDuration;
 		}
-		return animation.getKeyFrame(stateTime, animation.getPlayMode() == Animation.PlayMode.LOOP);
+		return result;
 	}
 
 	public void resetStateTime() {
 		stateTime = 0;
+		lastFrameChange = TimeUtils.millis();
 	}
 }

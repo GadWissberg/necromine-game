@@ -30,9 +30,16 @@ import java.util.stream.IntStream;
 import static com.gadarts.isometric.systems.hud.GameStage.GRID_CELL_SIZE;
 import static com.gadarts.isometric.systems.hud.GameStage.GRID_SIZE;
 
+/**
+ * The player's storage management GUI.
+ */
 public class StorageWindow extends GameWindow {
-	public static final int PLAYER_LAYOUT_PADDING = 40;
+
+	/**
+	 * Window identifier.
+	 */
 	public static final String NAME = "storage";
+	private static final int PLAYER_LAYOUT_PADDING = 40;
 
 	@Getter
 	private final ItemSelectionHandler selectedItem = new ItemSelectionHandler();
@@ -58,6 +65,10 @@ public class StorageWindow extends GameWindow {
 		addPlayerLayout(assetsManager);
 		setTouchable(Touchable.enabled);
 		addStorageGrid();
+		initializeListeners(soundPlayer);
+	}
+
+	private void initializeListeners(final SoundPlayer soundPlayer) {
 		addListener(event -> {
 			boolean result = false;
 			if (event instanceof GameWindowEvent) {
@@ -195,6 +206,9 @@ public class StorageWindow extends GameWindow {
 		}
 	}
 
+	/**
+	 * Initializes the storage grid.
+	 */
 	public void initialize() {
 		storageGrid.initialize();
 	}

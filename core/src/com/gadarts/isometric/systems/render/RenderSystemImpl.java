@@ -1,11 +1,12 @@
 package com.gadarts.isometric.systems.render;
 
-import com.badlogic.ashley.core.*;
-import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntityListener;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -28,7 +29,6 @@ import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
-import com.gadarts.isometric.systems.camera.CameraSystemImpl;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
@@ -56,19 +56,15 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
 	private static final Quaternion auxQuat = new Quaternion();
-	private static final Color ambientLightColor = new Color(0.1f, 0.1f, 0.1f, 1);
 	private static final float DECAL_DARKEST_COLOR = 0.2f;
 	private static final float DECAL_LIGHT_OFFSET = 1.5f;
-	private final Environment environment = new Environment();
+
+	private final WorldEnvironment environment = new WorldEnvironment();
 	private RenderBatches renderBatches;
-	private ImmutableArray<Entity> modelInstanceEntities;
-	private ImmutableArray<Entity> characterDecalsEntities;
+	private RenderSystemRelatedEntities renderSystemRelatedEntities;
 	private boolean ready;
 	private CameraSystem cameraSystem;
 	private Stage stage;
-	private ImmutableArray<Entity> simpleDecalsEntities;
-	private ImmutableArray<Entity> lightsEntities;
-	private DirectionalShadowLight shadowLight;
 
 
 	private void resetDisplay(final Color color) {
@@ -83,27 +79,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		super.addedToEngine(engine);
 		engine.addEntityListener(this);
 		createAxis(engine);
-		modelInstanceEntities = engine.getEntitiesFor(Family.all(ModelInstanceComponent.class).get());
-		characterDecalsEntities = engine.getEntitiesFor(Family.all(CharacterDecalComponent.class).get());
-		simpleDecalsEntities = engine.getEntitiesFor(Family.all(SimpleDecalComponent.class).get());
-		lightsEntities = engine.getEntitiesFor(Family.all(LightComponent.class).get());
+		renderSystemRelatedEntities = new RenderSystemRelatedEntities(engine);
 	}
 
 
-	private void initializeEnvironment() {
-		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, ambientLightColor));
-		shadowLight = new DirectionalShadowLight(
-				1024,
-				1024,
-				CameraSystemImpl.VIEWPORT_WIDTH,
-				CameraSystemImpl.VIEWPORT_HEIGHT,
-				1f,
-				300
-		);
-		shadowLight.set(0.1f, 0.1f, 0.1f, 0, -1f, -1f);
-		environment.add(shadowLight);
-		environment.shadowMap = shadowLight;
-	}
 
 
 	private void createAxis(final Engine engine) {
@@ -136,6 +115,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	private void renderWorld(final float deltaTime, final OrthographicCamera camera) {
 		if (!DefaultGameSettings.DISABLE_SHADOWS) {
+			DirectionalShadowLight shadowLight = environment.getShadowLight();
 			shadowLight.begin(Vector3.Zero, camera.direction);
 			renderModels(shadowLight.getCamera(), renderBatches.getShadowBatch(), false, false);
 			shadowLight.end();
@@ -143,7 +123,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		resetDisplay(Color.BLACK);
 		renderModels(camera, renderBatches.getModelBatch(), true, true);
 		DecalBatch decalBatch = renderBatches.getDecalBatch();
-		for (Entity entity : characterDecalsEntities) {
+		for (Entity entity : renderSystemRelatedEntities.getCharacterDecalsEntities()) {
 			CharacterComponent characterComponent = ComponentsMapper.character.get(entity);
 			CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(entity);
 			auxVector2_3.set(1, 0);
@@ -242,7 +222,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				decalBatch.add(shadowDecal);
 			}
 		}
-		for (Entity entity : simpleDecalsEntities) {
+		for (Entity entity : renderSystemRelatedEntities.getSimpleDecalsEntities()) {
 			SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
 			if (simpleDecalComponent.isVisible()) {
 				decalBatch.add(simpleDecalComponent.getDecal());
@@ -254,7 +234,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	private void applyLightsOnDecal(final Decal decal) {
 		float minDistance = Float.MAX_VALUE;
-		for (Entity light : lightsEntities) {
+		for (Entity light : renderSystemRelatedEntities.getLightsEntities()) {
 			minDistance = applyLightOnDecal(decal, minDistance, light);
 		}
 		if (minDistance == Float.MAX_VALUE) {
@@ -262,7 +242,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		}
 	}
 
-	private float applyLightOnDecal(Decal decal, float minDistance, Entity light) {
+	private float applyLightOnDecal(final Decal decal, float minDistance, final Entity light) {
 		float distance = ComponentsMapper.light.get(light).getPosition(auxVector3_1).dst(decal.getPosition());
 		float maxLightDistanceForDecal = ComponentsMapper.light.get(light).getRadius() * 2;
 		if (distance <= maxLightDistanceForDecal) {
@@ -302,10 +282,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 							  final boolean renderLight) {
 		Gdx.gl.glDepthMask(true);
 		modelBatch.begin(camera);
-		for (Entity entity : modelInstanceEntities) {
+		for (Entity entity : renderSystemRelatedEntities.getModelInstanceEntities()) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 			if ((DefaultGameSettings.HIDE_ENVIRONMENT_OBJECTS && ComponentsMapper.obstacle.has(entity))
-					|| (camera == shadowLight.getCamera() && !modelInstanceComponent.isCastShadow())) {
+					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())) {
 				continue;
 			}
 			boolean isWall = ComponentsMapper.wall.has(entity);
@@ -328,7 +308,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				if (!DefaultGameSettings.DISABLE_LIGHTS) {
 					if (renderLight) {
 						if (modelInstanceComponent.isAffectedByLight()) {
-							for (Entity light : lightsEntities) {
+							for (Entity light : renderSystemRelatedEntities.getLightsEntities()) {
 								LightComponent lightComponent = ComponentsMapper.light.get(light);
 								Vector3 lightPosition = lightComponent.getPosition(auxVector3_1);
 								float distance = lightPosition.dst(modelInstance.transform.getTranslation(auxVector3_2));
@@ -355,14 +335,14 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void dispose() {
 		renderBatches.dispose();
-		shadowLight.dispose();
+		environment.dispose();
 	}
 
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		this.cameraSystem = cameraSystem;
 		this.renderBatches = new RenderBatches(cameraSystem.getCamera());
-		initializeEnvironment();
+		environment.initialize();
 		systemReady();
 	}
 
