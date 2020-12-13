@@ -23,7 +23,8 @@ void main()
     && abs(textureColor.r - u_colorNotAffectedByLight.r) < 0.01
     && abs(textureColor.g - u_colorNotAffectedByLight.g) < 0.01
     && abs(textureColor.b - u_colorNotAffectedByLight.b) < 0.01){
-        v_color = vec4(1.0);
+        gl_FragColor = textureColor;
+    } else {
+        gl_FragColor = v_color * textureColor;
     }
-    gl_FragColor = v_color * textureColor;
 }
