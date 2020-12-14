@@ -1,10 +1,7 @@
-#if defined(diffuseTextureFlag) || defined(specularTextureFlag) || defined(emissiveTextureFlag)
+#if defined(diffuseTextureFlag) || defined(emissiveTextureFlag)
 #define textureFlag
 #endif
 
-#if defined(specularTextureFlag) || defined(specularColorFlag)
-#define specularFlag
-#endif
 
 #if defined(specularFlag) || defined(fogFlag)
 #define cameraPositionFlag
@@ -38,10 +35,6 @@ uniform vec4 u_emissiveUVTransform;
 varying vec2 v_emissiveUV;
 #endif
 
-#ifdef specularTextureFlag
-uniform vec4 u_specularUVTransform;
-varying vec2 v_specularUV;
-#endif
 
 #ifdef boneWeight0Flag
 #define boneWeightsFlag
@@ -200,9 +193,6 @@ void main() {
     v_emissiveUV = u_emissiveUVTransform.xy + a_texCoord0 * u_emissiveUVTransform.zw;
     #endif//emissiveTextureFlag
 
-    #ifdef specularTextureFlag
-    v_specularUV = u_specularUVTransform.xy + a_texCoord0 * u_specularUVTransform.zw;
-    #endif//specularTextureFlag
 
     #if defined(colorFlag)
     v_color = a_color;
