@@ -340,12 +340,12 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	@Override
-	public void onEnemyTurn() {
+	public void onEnemyTurn(long currentTurnId) {
 
 	}
 
 	@Override
-	public void onPlayerTurn() {
+	public void onPlayerTurn(long currentTurnId) {
 
 	}
 

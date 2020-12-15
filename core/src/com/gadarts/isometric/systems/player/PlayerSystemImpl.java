@@ -152,12 +152,12 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	@Override
-	public void onEnemyTurn() {
+	public void onEnemyTurn(long currentTurnId) {
 
 	}
 
 	@Override
-	public void onPlayerTurn() {
+	public void onPlayerTurn(long currentTurnId) {
 
 	}
 

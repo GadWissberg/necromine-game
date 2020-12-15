@@ -1,8 +1,7 @@
 package com.gadarts.isometric.systems.enemy;
 
-import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
 
 public interface EnemySystemEventsSubscriber extends SystemEventsSubscriber {
-	void onEnemyFinishedTurn(Entity character);
+	void onEnemyFinishedTurn();
 }

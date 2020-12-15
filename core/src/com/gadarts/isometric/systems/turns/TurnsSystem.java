@@ -4,4 +4,6 @@ import com.gadarts.isometric.systems.GameSystem;
 
 public interface TurnsSystem extends GameSystem {
 	Turns getCurrentTurn();
+
+	long getCurrentTurnId();
 }

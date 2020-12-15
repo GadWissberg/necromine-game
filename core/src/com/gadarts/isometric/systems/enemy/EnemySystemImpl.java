@@ -4,11 +4,17 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.EnemyComponent;
+import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterCommand;
@@ -32,12 +38,16 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		CharacterSystemEventsSubscriber {
 
 	private static final Vector3 auxVector3_1 = new Vector3();
+	private static final Vector2 auxVector2_1 = new Vector2();
+	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final MapGraphPath auxPath = new MapGraphPath();
 	private static final CharacterCommand auxCommand = new CharacterCommand();
-
+	private static final float MAX_SIGHT = 10;
+	private static final Rectangle auxRect = new Rectangle();
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
-
+	private TurnsSystem turnsSystem;
+	private ImmutableArray<Entity> walls;
 
 	@Override
 	public void update(final float deltaTime) {
@@ -60,18 +70,23 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
+		walls = engine.getEntitiesFor(Family.all(WallComponent.class).get());
 	}
 
 
 	@Override
-	public void onEnemyTurn() {
+	public void onEnemyTurn(final long currentTurnId) {
 		for (Entity enemy : enemies) {
-			if (ComponentsMapper.character.get(enemy).getHealthData().getHp() > 0) {
-				invokeEnemyTurn(enemy);
-			} else {
-				onCommandDone(enemy);
+			int hp = ComponentsMapper.character.get(enemy).getHealthData().getHp();
+			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
+			if (enemyComponent.getLastTurn() < currentTurnId) {
+				if (hp > 0 && enemyComponent.isAwaken()) {
+					invokeEnemyTurn(enemy);
+					return;
+				}
 			}
 		}
+		enemyFinishedTurn();
 	}
 
 	private void invokeEnemyTurn(final Entity enemy) {
@@ -92,13 +107,13 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	@Override
-	public void onPlayerTurn() {
+	public void onPlayerTurn(final long currentTurnId) {
 
 	}
 
 	@Override
 	public void onTurnsSystemReady(final TurnsSystem turnsSystem) {
-
+		this.turnsSystem = turnsSystem;
 	}
 
 	@Override
@@ -108,9 +123,13 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	@Override
 	public void onCommandDone(final Entity character) {
 		if (ComponentsMapper.enemy.has(character)) {
-			for (EnemySystemEventsSubscriber subscriber : subscribers) {
-				subscriber.onEnemyFinishedTurn(character);
-			}
+			onEnemyTurn(turnsSystem.getCurrentTurnId());
+		}
+	}
+
+	private void enemyFinishedTurn() {
+		for (EnemySystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onEnemyFinishedTurn();
 		}
 	}
 
@@ -141,13 +160,53 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	@Override
 	public void onFrameChanged(final Entity entity, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
+		SpriteType spriteType = ComponentsMapper.character.get(entity).getCharacterSpriteData().getSpriteType();
 		if (ComponentsMapper.enemy.has(entity)) {
-			if (ComponentsMapper.character.get(entity).getCharacterSpriteData().getSpriteType() == SpriteType.ATTACK) {
+			if (spriteType == SpriteType.ATTACK) {
 				if (newFrame.index == ComponentsMapper.character.get(entity).getCharacterSpriteData().getHitFrameIndex()) {
 					soundPlayer.playSound(ComponentsMapper.enemy.get(entity).getEnemyDefinition().getAttackSound());
 				}
 			}
+		} else if (ComponentsMapper.player.has(entity) && spriteType == SpriteType.RUN) {
+			checkLineOfSightForEnemies(entity);
 		}
+	}
+
+	private void checkLineOfSightForEnemies(final Entity entity) {
+		for (Entity enemy : enemies) {
+			if (!ComponentsMapper.enemy.get(enemy).isAwaken()) {
+				Decal enemyDecal = ComponentsMapper.characterDecal.get(enemy).getDecal();
+				Vector3 enemyPosition = auxVector3_1.set(enemyDecal.getPosition());
+				Vector3 playerPosition = ComponentsMapper.characterDecal.get(entity).getDecal().getPosition();
+				if (enemyPosition.dst2(playerPosition) <= Math.pow(MAX_SIGHT, 2)) {
+					checkLineOfSightForEnemy(enemy);
+				}
+			}
+		}
+	}
+
+	private void checkLineOfSightForEnemy(final Entity enemy) {
+		for (Entity wall : walls) {
+			if (checkIfWallBlocksLineOfSightToTarget(enemy, wall)) {
+				return;
+			}
+		}
+		ComponentsMapper.enemy.get(enemy).setAwaken(true);
+		Gdx.app.log("!", "!!");
+	}
+
+	private boolean checkIfWallBlocksLineOfSightToTarget(final Entity enemy, final Entity wall) {
+		WallComponent wallComponent = ComponentsMapper.wall.get(wall);
+		auxRect.set(wallComponent.getTopLeftX(), wallComponent.getTopLeftY(),
+				Math.abs(wallComponent.getTopLeftX() - (wallComponent.getBottomRightX() + 1)),
+				Math.abs(wallComponent.getTopLeftY() - (wallComponent.getBottomRightY() + 1))
+		);
+		Vector3 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition();
+		Entity target = ComponentsMapper.character.get(enemy).getTarget();
+		Vector3 targetPosition = ComponentsMapper.characterDecal.get(target).getDecal().getPosition();
+		auxVector2_1.set(enemyPosition.x, enemyPosition.z);
+		auxVector2_2.set(targetPosition.x, targetPosition.z);
+		return Intersector.intersectSegmentRectangle(auxVector2_1, auxVector2_2, auxRect);
 	}
 
 	@Override

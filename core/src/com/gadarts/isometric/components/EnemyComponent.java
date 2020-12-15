@@ -13,6 +13,8 @@ public class EnemyComponent implements GameComponent {
 	public static final int ROAM_SOUND_INTERVAL_MAXIMUM = 10000;
 	private long nextRoamSound;
 	private Enemies enemyDefinition;
+	private boolean awaken;
+	private long lastTurn = -1;
 
 	public void init(final Enemies enemyDefinition) {
 		this.enemyDefinition = enemyDefinition;
@@ -21,7 +23,7 @@ public class EnemyComponent implements GameComponent {
 
 	@Override
 	public void reset() {
-
+		lastTurn = -1;
 	}
 
 	public void calculateNextRoamSound() {

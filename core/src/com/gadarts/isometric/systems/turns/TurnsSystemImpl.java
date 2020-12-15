@@ -1,6 +1,5 @@
 package com.gadarts.isometric.systems.turns;
 
-import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystem;
@@ -18,6 +17,12 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 		EnemySystemEventsSubscriber {
 
 	private Turns currentTurn = Turns.PLAYER;
+	private long currentTurnId;
+
+	@Override
+	public long getCurrentTurnId() {
+		return currentTurnId;
+	}
 
 	@Override
 	public void dispose() {
@@ -27,10 +32,11 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 	@Override
 	public void onPlayerFinishedTurn() {
 		if (currentTurn == Turns.PLAYER) {
+			currentTurnId++;
 			if (!DefaultGameSettings.PARALYZED_ENEMIES) {
 				currentTurn = Turns.ENEMY;
 				for (TurnsSystemEventsSubscriber subscriber : subscribers) {
-					subscriber.onEnemyTurn();
+					subscriber.onEnemyTurn(currentTurnId);
 				}
 			}
 		}
@@ -52,11 +58,12 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 	}
 
 	@Override
-	public void onEnemyFinishedTurn(final Entity character) {
+	public void onEnemyFinishedTurn() {
 		if (currentTurn == Turns.ENEMY) {
+			currentTurnId++;
 			currentTurn = Turns.PLAYER;
 			for (TurnsSystemEventsSubscriber subscriber : subscribers) {
-				subscriber.onPlayerTurn();
+				subscriber.onPlayerTurn(currentTurnId);
 			}
 		}
 	}

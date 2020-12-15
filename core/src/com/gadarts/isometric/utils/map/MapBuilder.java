@@ -73,7 +73,7 @@ public final class MapBuilder {
 		testFloorModel1_2 = createTestFloorModel(modelBuilder, 1, 2, 1, 3);
 		createAndAdd3dCursor();
 		addPlayer();
-		addEnemyTest(2, 2);
+		addEnemyTest(7, 2);
 		addWeaponPickupTest(1, 2, Assets.Models.COLT, WeaponsDefinitions.COLT, REGION_NAME_BULLET);
 		addWeaponPickupTest(2, 3, Assets.Models.HAMMER, WeaponsDefinitions.HAMMER, null);
 		addTestLights();
