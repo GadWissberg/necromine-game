@@ -106,6 +106,7 @@ public final class Assets {
 		STEP_2,
 		STEP_3,
 		ENEMY_ROAM,
+		ENEMY_AWAKE,
 		ENEMY_PAIN,
 		ENEMY_DEATH,
 		ATTACK_CLAW,

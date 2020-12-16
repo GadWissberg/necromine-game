@@ -19,11 +19,8 @@ import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.CharacterDecalComponent;
 import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.WallComponent;
-import com.gadarts.isometric.components.character.CharacterAnimations;
-import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.*;
 import com.gadarts.isometric.components.character.CharacterComponent.Direction;
-import com.gadarts.isometric.components.character.CharacterSpriteData;
-import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.enemy.Enemies;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.PlayerComponent;
@@ -42,6 +39,7 @@ import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
  * Creates the map.
  */
 public final class MapBuilder {
+	private static final CharacterSoundData auxCharacterSoundData = new CharacterSoundData();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
@@ -73,7 +71,8 @@ public final class MapBuilder {
 		testFloorModel1_2 = createTestFloorModel(modelBuilder, 1, 2, 1, 3);
 		createAndAdd3dCursor();
 		addPlayer();
-		addEnemyTest(7, 2);
+		addEnemyTest(4, 2, Direction.NORTH_EAST);
+		addEnemyTest(5, 4, Direction.SOUTH);
 		addWeaponPickupTest(1, 2, Assets.Models.COLT, WeaponsDefinitions.COLT, REGION_NAME_BULLET);
 		addWeaponPickupTest(2, 3, Assets.Models.HAMMER, WeaponsDefinitions.HAMMER, null);
 		addTestLights();
@@ -170,15 +169,15 @@ public final class MapBuilder {
 		CharacterAnimations general = assetManager.get(Atlases.PLAYER_GENERIC.name());
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
 		Vector3 position = auxVector3_1.set(0.5f, CharacterDecalComponent.BILLBOARD_Y, 0.5f);
-		addCharBaseComponents(entityBuilder, Atlases.PLAYER_AXE_PICK, position, null, Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH);
+		addCharBaseComponents(entityBuilder, Atlases.PLAYER_AXE_PICK, position, null, Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH, Direction.WEST, 5);
 		entityBuilder.finishAndAddToEngine();
 	}
 
-	private void addEnemyTest(final int x, final int y) {
+	private void addEnemyTest(final int x, final int y, final Direction direction) {
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(Enemies.ZEALOT);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		Vector3 position = auxVector3_1.set(x + 0.5f, CharacterDecalComponent.BILLBOARD_Y, y + 0.5f);
-		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player, Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH);
+		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player, Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH, direction, 2);
 		entityBuilder.finishAndAddToEngine();
 	}
 
@@ -187,12 +186,14 @@ public final class MapBuilder {
 									   final Vector3 position,
 									   final Entity target,
 									   final Sounds painSound,
-									   final Sounds deathSound) {
+									   final Sounds deathSound,
+									   final Direction direction, final int health) {
 		CharacterAnimations animations = assetManager.get(atlas.name());
 		SpriteType spriteType = SpriteType.IDLE;
 		CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
-		characterSpriteData.init(Direction.SOUTH, spriteType, 1);
-		entityBuilder.addCharacterComponent(characterSpriteData, target, painSound, deathSound)
+		characterSpriteData.init(direction, spriteType, 1);
+		auxCharacterSoundData.set(painSound, deathSound);
+		entityBuilder.addCharacterComponent(characterSpriteData, target, auxCharacterSoundData, health)
 				.addCharacterDecalComponent(animations, spriteType, Direction.SOUTH, position)
 				.addCollisionComponent()
 				.addAnimationComponent();

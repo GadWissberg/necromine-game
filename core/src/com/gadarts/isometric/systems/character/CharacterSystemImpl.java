@@ -240,15 +240,16 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void handleDeath(final Entity character) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		CharacterHealthData healthData = characterComponent.getHealthData();
+		CharacterSoundData soundData = characterComponent.getSoundData();
 		if (healthData.getHp() <= 0) {
 			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.DIE);
 			if (ComponentsMapper.animation.has(character)) {
 				ComponentsMapper.animation.get(character).resetStateTime();
 			}
 			characterComponent.setMotivation(null);
-			soundPlayer.playSound(characterComponent.getDeathSound());
+			soundPlayer.playSound(soundData.getDeathSound());
 		} else {
-			soundPlayer.playSound(characterComponent.getPainSound());
+			soundPlayer.playSound(soundData.getPainSound());
 			applyTargetToDisplayPain(character);
 			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 				subscriber.onCharacterGotDamage(character);

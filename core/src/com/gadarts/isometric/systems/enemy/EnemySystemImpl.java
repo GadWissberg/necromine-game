@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Intersector;
@@ -15,6 +14,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.WallComponent;
+import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterCommand;
@@ -44,6 +44,8 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private static final CharacterCommand auxCommand = new CharacterCommand();
 	private static final float MAX_SIGHT = 10;
 	private static final Rectangle auxRect = new Rectangle();
+	private static final float ENEMY_HALF_FOV_ANGLE = 75f;
+
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
 	private TurnsSystem turnsSystem;
@@ -123,7 +125,9 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	@Override
 	public void onCommandDone(final Entity character) {
 		if (ComponentsMapper.enemy.has(character)) {
-			onEnemyTurn(turnsSystem.getCurrentTurnId());
+			long currentTurnId = turnsSystem.getCurrentTurnId();
+			ComponentsMapper.enemy.get(character).setLastTurn(currentTurnId);
+			onEnemyTurn(currentTurnId);
 		}
 	}
 
@@ -144,8 +148,10 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	@Override
-	public void onCharacterGotDamage(final Entity target) {
-
+	public void onCharacterGotDamage(final Entity entity) {
+		if (ComponentsMapper.enemy.has(entity)) {
+			ComponentsMapper.enemy.get(entity).setAwaken(true);
+		}
 	}
 
 	@Override
@@ -186,13 +192,26 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	private void checkLineOfSightForEnemy(final Entity enemy) {
+		if (!isTargetInFov(enemy)) return;
 		for (Entity wall : walls) {
 			if (checkIfWallBlocksLineOfSightToTarget(enemy, wall)) {
 				return;
 			}
 		}
 		ComponentsMapper.enemy.get(enemy).setAwaken(true);
-		Gdx.app.log("!", "!!");
+		soundPlayer.playSound(Assets.Sounds.ENEMY_AWAKE);
+	}
+
+	private boolean isTargetInFov(final Entity enemy) {
+		Vector3 enemyPos = ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition();
+		CharacterComponent charComponent = ComponentsMapper.character.get(enemy);
+		Vector3 targetPosition = ComponentsMapper.characterDecal.get(charComponent.getTarget()).getDecal().getPosition();
+		Vector2 directionToTarget = auxVector2_2.set(targetPosition.x, targetPosition.z).sub(enemyPos.x, enemyPos.z).nor();
+		Vector2 enemyDirection = charComponent.getCharacterSpriteData().getFacingDirection().getDirection(auxVector2_1);
+		if (Math.abs(directionToTarget.angleDeg() - enemyDirection.angleDeg()) > ENEMY_HALF_FOV_ANGLE) {
+			return false;
+		}
+		return true;
 	}
 
 	private boolean checkIfWallBlocksLineOfSightToTarget(final Entity enemy, final Entity wall) {

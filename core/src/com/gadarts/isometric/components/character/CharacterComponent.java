@@ -3,7 +3,6 @@ package com.gadarts.isometric.components.character;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import com.gadarts.isometric.components.GameComponent;
-import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,8 +24,7 @@ public class CharacterComponent implements GameComponent {
 	private CharacterRotationData rotationData = new CharacterRotationData();
 	private CharacterSpriteData characterSpriteData;
 	private CharacterHealthData healthData = new CharacterHealthData();
-	private Assets.Sounds painSound;
-	private Assets.Sounds deathSound;
+	private CharacterSoundData soundData = new CharacterSoundData();
 
 	public MapGraphNode getDestinationNode() {
 		return destinationNode;
@@ -55,12 +53,11 @@ public class CharacterComponent implements GameComponent {
 	}
 
 	public void init(final CharacterSpriteData characterSpriteData,
-					 final Assets.Sounds painSound,
-					 final Assets.Sounds deathSound) {
+					 final CharacterSoundData soundData,
+					 final int initialHp) {
 		this.characterSpriteData = characterSpriteData;
-		this.healthData.setHp(INITIAL_HP);
-		this.painSound = painSound;
-		this.deathSound = deathSound;
+		this.healthData.setHp(initialHp);
+		this.soundData.set(soundData);
 	}
 
 	public void dealDamage(final int damagePoints) {

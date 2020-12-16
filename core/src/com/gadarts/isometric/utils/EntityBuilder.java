@@ -10,22 +10,20 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.*;
-import com.gadarts.isometric.components.character.CharacterAnimations;
-import com.gadarts.isometric.components.character.CharacterComponent;
-import com.gadarts.isometric.components.character.CharacterSpriteData;
-import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.character.*;
 import com.gadarts.isometric.components.enemy.Enemies;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.*;
-import com.gadarts.isometric.utils.assets.Assets;
 import lombok.AccessLevel;
 import lombok.Setter;
 
 public final class EntityBuilder {
 	private static final EntityBuilder instance = new EntityBuilder();
 	private final static Vector2 auxVector = new Vector2();
+
 	@Setter(AccessLevel.PRIVATE)
 	private PooledEngine engine;
+
 	private Entity currentEntity;
 
 	private EntityBuilder() {
@@ -86,10 +84,10 @@ public final class EntityBuilder {
 
 	public EntityBuilder addCharacterComponent(final CharacterSpriteData characterSpriteData,
 											   final Entity target,
-											   final Assets.Sounds painSound,
-											   final Assets.Sounds deathSound) {
+											   final CharacterSoundData characterSoundData,
+											   final int health) {
 		CharacterComponent charComponent = engine.createComponent(CharacterComponent.class);
-		charComponent.init(characterSpriteData, painSound, deathSound);
+		charComponent.init(characterSpriteData, characterSoundData, health);
 		charComponent.setTarget(target);
 		currentEntity.add(charComponent);
 		return instance;
