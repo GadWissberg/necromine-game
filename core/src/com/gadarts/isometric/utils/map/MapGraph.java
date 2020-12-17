@@ -6,7 +6,7 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -115,7 +115,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		return result;
 	}
 
-	public MapGraphNode getRayNode(final int screenX, final int screenY, final OrthographicCamera camera) {
+	public MapGraphNode getRayNode(final int screenX, final int screenY, final Camera camera) {
 		Vector3 output = Utils.calculateGridPositionFromMouse(camera, screenX, screenY, auxVector);
 		output.set(Math.max(output.x, 0), Math.max(output.y, 0), Math.max(output.z, 0));
 		return getNode(output);

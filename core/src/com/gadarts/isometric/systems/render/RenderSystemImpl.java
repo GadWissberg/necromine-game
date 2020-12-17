@@ -5,7 +5,10 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -16,6 +19,7 @@ import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.gadarts.isometric.components.*;
@@ -58,6 +62,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Quaternion auxQuat = new Quaternion();
 	private static final float DECAL_DARKEST_COLOR = 0.2f;
 	private static final float DECAL_LIGHT_OFFSET = 1.5f;
+	private final static BoundingBox auxBoundingBox = new BoundingBox();
 
 	private final WorldEnvironment environment = new WorldEnvironment();
 	private RenderBatches renderBatches;
@@ -65,7 +70,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private boolean ready;
 	private CameraSystem cameraSystem;
 	private Stage stage;
-
+	private int numberOfVisible;
 
 	private void resetDisplay(final Color color) {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -106,12 +111,13 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
 		if (!ready) return;
+		numberOfVisible = 0;
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
 		renderWorld(deltaTime, cameraSystem.getCamera());
 		stage.draw();
 	}
 
-	private void renderWorld(final float deltaTime, final OrthographicCamera camera) {
+	private void renderWorld(final float deltaTime, final Camera camera) {
 		if (!DefaultGameSettings.DISABLE_SHADOWS) {
 			DirectionalShadowLight shadowLight = environment.getShadowLight();
 			shadowLight.begin(Vector3.Zero, camera.direction);
@@ -274,6 +280,17 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		);
 	}
 
+	private boolean isVisible(final Camera camera, final Entity entity) {
+		ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
+		modelInstanceComponent.getModelInstance().transform.getTranslation(auxVector3_1);
+		auxVector3_1.add(modelInstanceComponent.getBoundingBox(auxBoundingBox).getCenter(auxVector3_2));
+		auxBoundingBox.getDimensions(auxVector3_2);
+		auxVector3_2.x = Math.max(auxVector3_2.x, Math.max(auxVector3_2.y, auxVector3_2.z));
+		auxVector3_2.y = Math.max(auxVector3_2.x, Math.max(auxVector3_2.y, auxVector3_2.z));
+		auxVector3_2.z = Math.max(auxVector3_2.x, Math.max(auxVector3_2.y, auxVector3_2.z));
+		return camera.frustum.boundsInFrustum(auxVector3_1, auxVector3_2);
+	}
+
 	private void renderModels(final Camera camera,
 							  final ModelBatch modelBatch,
 							  final boolean renderWallsAndFloor,
@@ -282,12 +299,12 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		modelBatch.begin(camera);
 		for (Entity entity : renderSystemRelatedEntities.getModelInstanceEntities()) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
-			if ((DefaultGameSettings.HIDE_ENVIRONMENT_OBJECTS && ComponentsMapper.obstacle.has(entity))
-					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())) {
-				continue;
-			}
 			boolean isWall = ComponentsMapper.wall.has(entity);
-			if (!renderWallsAndFloor && (isWall || ComponentsMapper.floor.has(entity))) {
+			if ((DefaultGameSettings.HIDE_ENVIRONMENT_OBJECTS && ComponentsMapper.obstacle.has(entity))
+					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())
+					|| (!renderWallsAndFloor && (isWall || ComponentsMapper.floor.has(entity)))
+					|| (DefaultGameSettings.HIDE_CURSOR && ComponentsMapper.cursor.has(entity))
+					|| !isVisible(cameraSystem.getCamera(), entity)) {
 				continue;
 			}
 			if (isWall) {
@@ -303,26 +320,26 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				GameModelInstance modelInstance = modelInstanceComponent.getModelInstance();
 				List<Entity> nearbyLights = modelInstance.getNearbyLights();
 				nearbyLights.clear();
-				if (!DefaultGameSettings.DISABLE_LIGHTS) {
-					if (renderLight) {
-						if (modelInstanceComponent.isAffectedByLight()) {
-							for (Entity light : renderSystemRelatedEntities.getLightsEntities()) {
-								LightComponent lightComponent = ComponentsMapper.light.get(light);
-								Vector3 lightPosition = lightComponent.getPosition(auxVector3_1);
-								float distance = lightPosition.dst(modelInstance.transform.getTranslation(auxVector3_2));
-								if (distance <= LightComponent.LIGHT_RADIUS) {
-									nearbyLights.add(light);
+				if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
+					if (!DefaultGameSettings.DISABLE_LIGHTS) {
+						if (renderLight) {
+							if (modelInstanceComponent.isAffectedByLight()) {
+								for (Entity light : renderSystemRelatedEntities.getLightsEntities()) {
+									LightComponent lightComponent = ComponentsMapper.light.get(light);
+									Vector3 lightPosition = lightComponent.getPosition(auxVector3_1);
+									float distance = lightPosition.dst(modelInstance.transform.getTranslation(auxVector3_2));
+									if (distance <= LightComponent.LIGHT_RADIUS) {
+										nearbyLights.add(light);
+									}
 								}
+								modelInstance.userData = nearbyLights;
+							} else {
+								modelInstance.userData = null;
 							}
-							modelInstance.userData = nearbyLights;
-						} else {
-							modelInstance.userData = null;
 						}
 					}
-					modelBatch.render(modelInstance, environment);
-				}
-				if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
 					modelInstance = modelInstanceComponent.getModelInstance();
+					numberOfVisible++;
 					modelBatch.render(modelInstance, environment);
 				}
 			}
@@ -381,5 +398,15 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void entityRemoved(final Entity entity) {
 
+	}
+
+	@Override
+	public int getNumberOfVisible() {
+		return numberOfVisible;
+	}
+
+	@Override
+	public int getNumberOfModelInstances() {
+		return renderSystemRelatedEntities.getModelInstanceEntities().size();
 	}
 }

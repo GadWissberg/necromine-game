@@ -29,8 +29,8 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		implements RenderSystemEventsSubscriber,
 		HudSystemEventsSubscriber {
-
 	public static final String WARNING_COLOR = "[RED]";
+	private static final char SEPARATOR = '/';
 	private static final String LABEL_FPS = "FPS: ";
 	private static final String LABEL_MEMORY_USAGE = "Memory usage: ";
 	private static final String LABEL_GL_CALL = "Total openGL calls: ";
@@ -92,10 +92,10 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	}
 
 	private void displayNumberOfVisibleObjects() {
-//		stringBuilder.append(VISIBLE_OBJECTS_STRING);
-//		stringBuilder.append(renderSystem.getNumberOfVisible());
-//		stringBuilder.append(SEPARATOR);
-//		stringBuilder.append(renderSystem.getNumberOfModelInstances());
+		stringBuilder.append(VISIBLE_OBJECTS_STRING);
+		stringBuilder.append(renderSystem.getNumberOfVisible());
+		stringBuilder.append(SEPARATOR);
+		stringBuilder.append(renderSystem.getNumberOfModelInstances());
 		stringBuilder.append('\n');
 	}
 

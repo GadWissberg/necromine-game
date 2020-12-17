@@ -1,6 +1,6 @@
 package com.gadarts.isometric.systems.camera;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Camera;
 import com.gadarts.isometric.systems.GameSystem;
 
 /**
@@ -11,7 +11,7 @@ public interface CameraSystem extends GameSystem {
 	/**
 	 * @return The orthographic camera object.
 	 */
-	OrthographicCamera getCamera();
+	Camera getCamera();
 
 	/**
 	 * @return Whether the camera is in the middle of the rotation process.
