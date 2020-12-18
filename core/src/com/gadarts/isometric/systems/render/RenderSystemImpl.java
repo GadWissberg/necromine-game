@@ -356,7 +356,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		this.cameraSystem = cameraSystem;
-		this.renderBatches = new RenderBatches(cameraSystem.getCamera());
+		this.renderBatches = new RenderBatches(cameraSystem.getCamera(), assetsManager);
 		environment.initialize();
 		systemReady();
 	}

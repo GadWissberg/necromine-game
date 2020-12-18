@@ -21,6 +21,9 @@ import com.gadarts.isometric.utils.assets.definitions.TextureDefinition;
 import java.util.Arrays;
 
 public class GameAssetsManager extends AssetManager {
+	public GameAssetsManager() {
+		setLoader(String.class, new ShaderLoader(getFileHandleResolver()));
+	}
 
 	public void loadGameFiles() {
 		Arrays.stream(Assets.AssetsTypes.values()).forEach(type ->
@@ -29,8 +32,8 @@ public class GameAssetsManager extends AssetManager {
 		);
 		finishLoading();
 		Arrays.stream(Atlases.values()).forEach(atlas -> {
-					CharacterAnimations animations = createCharacterAnimations(atlas);
-					addAsset(atlas.name(), CharacterAnimations.class, animations);
+			CharacterAnimations animations = createCharacterAnimations(atlas);
+			addAsset(atlas.name(), CharacterAnimations.class, animations);
 				}
 		);
 	}
@@ -105,5 +108,9 @@ public class GameAssetsManager extends AssetManager {
 
 	public Sound getSound(final Assets.Sounds sound) {
 		return get(sound.getFilePath(), Sound.class);
+	}
+
+	public String getShader(final Assets.Shaders shaders) {
+		return get(shaders.getFilePath(), String.class);
 	}
 }

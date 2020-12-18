@@ -28,6 +28,7 @@ public final class Assets {
 		MELODY(Melody.values()),
 		SOUND(Sounds.values()),
 		MODEL(Models.values()),
+		SHADER(Shaders.values()),
 		TEXTURE(TexturesTypes.getAllDefinitionsInSingleArray());
 
 		private final AssetDefinition[] assetDefinitions;
@@ -94,6 +95,28 @@ public final class Assets {
 		@Override
 		public Class<Music> getTypeClass() {
 			return Music.class;
+		}
+	}
+
+	/**
+	 * Shader files.
+	 */
+	@Getter
+	public enum Shaders implements ShaderDefinition {
+		VERTEX,
+		FRAGMENT,
+		DECAL_VERTEX,
+		DECAL_FRAGMENT;
+
+		private final String filePath;
+
+		Shaders() {
+			this.filePath = FOLDER + PATH_SEPARATOR + name().toLowerCase() + "." + FORMAT;
+		}
+
+		@Override
+		public Class<String> getTypeClass() {
+			return String.class;
 		}
 	}
 

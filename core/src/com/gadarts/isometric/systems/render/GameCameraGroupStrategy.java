@@ -12,11 +12,14 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Pool;
+import com.gadarts.isometric.utils.assets.Assets;
+import com.gadarts.isometric.utils.assets.GameAssetsManager;
 
 import java.util.Comparator;
 
 public class GameCameraGroupStrategy implements GroupStrategy, Disposable {
 	public static final String UNIFORM_COLOR_NOT_AFFECTED_BY_LIGHT = "u_colorNotAffectedByLight";
+	public static final String MSG_FAILED_TO_COMPILE = "couldn't compile shader: %s";
 	private static final int GROUP_OPAQUE = 0;
 	private static final int GROUP_BLEND = 1;
 	private static final Color colorNotAffectedByLight = Color.valueOf("E3E700");
@@ -37,19 +40,20 @@ public class GameCameraGroupStrategy implements GroupStrategy, Disposable {
 	Camera camera;
 	ShaderProgram shader;
 
-	public GameCameraGroupStrategy(final Camera camera) {
-		this(camera, (o1, o2) -> {
+	public GameCameraGroupStrategy(final Camera camera, final GameAssetsManager assetsManager) {
+		this(camera, assetsManager, (o1, o2) -> {
 			float dist1 = camera.position.dst(o1.getPosition());
 			float dist2 = camera.position.dst(o2.getPosition());
 			return (int) Math.signum(dist2 - dist1);
 		});
 	}
 
-	public GameCameraGroupStrategy(final Camera camera, final Comparator<Decal> sorter) {
+	public GameCameraGroupStrategy(final Camera camera,
+								   final GameAssetsManager assetsManager,
+								   final Comparator<Decal> sorter) {
 		this.camera = camera;
 		this.cameraSorter = sorter;
-		createDefaultShader();
-
+		createDefaultShader(assetsManager);
 	}
 
 	public Camera getCamera() {
@@ -121,11 +125,12 @@ public class GameCameraGroupStrategy implements GroupStrategy, Disposable {
 		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 	}
 
-	private void createDefaultShader() {
-		String vertexShader = Gdx.files.internal("shaders/decal_vertex.glsl").readString();
-		String fragmentShader = Gdx.files.internal("shaders/decal_fragment.glsl").readString();
+	private void createDefaultShader(final GameAssetsManager assetsManager) {
+		String vertexShader = assetsManager.getShader(Assets.Shaders.DECAL_VERTEX);
+		String fragmentShader = assetsManager.getShader(Assets.Shaders.DECAL_FRAGMENT);
 		shader = new ShaderProgram(vertexShader, fragmentShader);
-		if (!shader.isCompiled()) throw new IllegalArgumentException("couldn't compile shader: " + shader.getLog());
+		if (!shader.isCompiled())
+			throw new IllegalArgumentException(String.format(MSG_FAILED_TO_COMPILE, shader.getLog()));
 	}
 
 	@Override

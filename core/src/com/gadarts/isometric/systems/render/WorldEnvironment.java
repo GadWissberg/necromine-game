@@ -9,7 +9,7 @@ import com.gadarts.isometric.systems.camera.CameraSystemImpl;
 import lombok.Getter;
 
 public class WorldEnvironment extends Environment implements Disposable {
-	public static final float AMBIENT = 0.6f;
+	public static final float AMBIENT = 0.1f;
 	private static final Color ambientLightColor = new Color(AMBIENT, AMBIENT, AMBIENT, 1);
 
 	@Getter
