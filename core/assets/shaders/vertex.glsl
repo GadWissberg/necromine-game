@@ -36,10 +36,6 @@ varying vec2 v_emissiveUV;
 #endif
 
 
-#ifdef boneWeight0Flag
-#define boneWeightsFlag
-attribute vec2 a_boneWeight0;
-#endif//boneWeight0Flag
 
 #ifdef boneWeight1Flag
 #ifndef boneWeightsFlag
@@ -207,9 +203,6 @@ void main() {
 
     #ifdef skinningFlag
     mat4 skinning = mat4(0.0);
-    #ifdef boneWeight0Flag
-    skinning += (a_boneWeight0.y) * u_bones[int(a_boneWeight0.x)];
-    #endif//boneWeight0Flag
     #ifdef boneWeight1Flag
     skinning += (a_boneWeight1.y) * u_bones[int(a_boneWeight1.x)];
     #endif//boneWeight1Flag
