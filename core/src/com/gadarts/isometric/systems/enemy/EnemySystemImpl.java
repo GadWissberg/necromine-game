@@ -56,9 +56,11 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		super.update(deltaTime);
 		for (Entity enemy : enemies) {
 			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
-			if (TimeUtils.timeSinceMillis(enemyComponent.getNextRoamSound()) >= 0) {
-				enemyComponent.calculateNextRoamSound();
-				soundPlayer.playSound(Assets.Sounds.ENEMY_ROAM);
+			if (enemyComponent.isAwaken()) {
+				if (TimeUtils.timeSinceMillis(enemyComponent.getNextRoamSound()) >= 0) {
+					enemyComponent.calculateNextRoamSound();
+					soundPlayer.playSound(Assets.Sounds.ENEMY_ROAM);
+				}
 			}
 		}
 	}
@@ -160,6 +162,13 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	@Override
+	public void onCharacterDies(final Entity character) {
+		if (ComponentsMapper.enemy.has(character)) {
+			ComponentsMapper.enemy.get(character).setAwaken(false);
+		}
+	}
+
+	@Override
 	public void activate() {
 
 	}
@@ -180,7 +189,8 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	private void checkLineOfSightForEnemies(final Entity entity) {
 		for (Entity enemy : enemies) {
-			if (!ComponentsMapper.enemy.get(enemy).isAwaken()) {
+			int hp = ComponentsMapper.character.get(enemy).getHealthData().getHp();
+			if (hp > 0 && !ComponentsMapper.enemy.get(enemy).isAwaken()) {
 				Decal enemyDecal = ComponentsMapper.characterDecal.get(enemy).getDecal();
 				Vector3 enemyPosition = auxVector3_1.set(enemyDecal.getPosition());
 				Vector3 playerPosition = ComponentsMapper.characterDecal.get(entity).getDecal().getPosition();
@@ -208,10 +218,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		Vector3 targetPosition = ComponentsMapper.characterDecal.get(charComponent.getTarget()).getDecal().getPosition();
 		Vector2 directionToTarget = auxVector2_2.set(targetPosition.x, targetPosition.z).sub(enemyPos.x, enemyPos.z).nor();
 		Vector2 enemyDirection = charComponent.getCharacterSpriteData().getFacingDirection().getDirection(auxVector2_1);
-		if (Math.abs(directionToTarget.angleDeg() - enemyDirection.angleDeg()) > ENEMY_HALF_FOV_ANGLE) {
-			return false;
-		}
-		return true;
+		return !(Math.abs(directionToTarget.angleDeg() - enemyDirection.angleDeg()) > ENEMY_HALF_FOV_ANGLE);
 	}
 
 	private boolean checkIfWallBlocksLineOfSightToTarget(final Entity enemy, final Entity wall) {

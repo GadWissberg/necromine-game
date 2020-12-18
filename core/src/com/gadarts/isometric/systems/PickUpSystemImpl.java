@@ -222,4 +222,9 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 		engine.removeEntity(itemPickedUp);
 		itemToPickup = null;
 	}
+
+	@Override
+	public void onCharacterDies(final Entity character) {
+
+	}
 }

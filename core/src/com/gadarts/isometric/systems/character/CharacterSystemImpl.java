@@ -248,6 +248,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			}
 			characterComponent.setMotivation(null);
 			soundPlayer.playSound(soundData.getDeathSound());
+			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+				subscriber.onCharacterDies(character);
+			}
 		} else {
 			soundPlayer.playSound(soundData.getPainSound());
 			applyTargetToDisplayPain(character);

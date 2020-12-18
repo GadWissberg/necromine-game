@@ -125,6 +125,11 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		soundPlayer.playSound(Assets.Sounds.PICKUP);
 	}
 
+	@Override
+	public void onCharacterDies(final Entity character) {
+
+	}
+
 
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
@@ -152,12 +157,12 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	@Override
-	public void onEnemyTurn(long currentTurnId) {
+	public void onEnemyTurn(final long currentTurnId) {
 
 	}
 
 	@Override
-	public void onPlayerTurn(long currentTurnId) {
+	public void onPlayerTurn(final long currentTurnId) {
 
 	}
 

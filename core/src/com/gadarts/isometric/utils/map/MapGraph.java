@@ -257,6 +257,11 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
 	}
 
+	@Override
+	public void onCharacterDies(final Entity character) {
+
+	}
+
 	public Entity getPickupFromNode(final MapGraphNode node) {
 		Entity result = null;
 		for (Entity pickup : pickupEntities) {
