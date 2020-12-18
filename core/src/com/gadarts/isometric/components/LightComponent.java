@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class LightComponent implements GameComponent {
-	public static final float LIGHT_RADIUS = 7f;
+	public static final float LIGHT_RADIUS = 8f;
 
 	private float intensity;
 	private float radius;

@@ -91,7 +91,8 @@ public class LightsRenderer {
 								 final Entity light) {
 		LightComponent lightComponent = ComponentsMapper.light.get(light);
 		Vector3 lightPosition = lightComponent.getPosition(auxVector3_1);
-		float distance = lightPosition.dst(modelInstance.transform.getTranslation(auxVector3_2));
+		Vector3 modelPosition = modelInstance.transform.getTranslation(auxVector3_2);
+		float distance = lightPosition.dst(modelPosition);
 		if (distance <= LightComponent.LIGHT_RADIUS) {
 			nearbyLights.add(light);
 		}

@@ -49,8 +49,10 @@ public class MainShader extends DefaultShader {
 			for (int i = 0; i < size; i++) {
 				insertToLightsArray(nearbyLights, i);
 			}
-			program.setUniform3fv(lightsPositionsLocation, lightsPositions, 0, size * 3);
-			program.setUniform2fv(lightsExtraDataLocation, lightsExtraData, 0, size * LIGHT_EXTRA_DATA_SIZE);
+			if (size > 0) {
+				program.setUniform3fv(lightsPositionsLocation, lightsPositions, 0, size * 3);
+				program.setUniform2fv(lightsExtraDataLocation, lightsExtraData, 0, size * LIGHT_EXTRA_DATA_SIZE);
+			}
 		} else {
 			program.setUniformi(numberOfLightsLocation, -1);
 		}
@@ -71,7 +73,6 @@ public class MainShader extends DefaultShader {
 		lightsPositions[positionIndex] = position.x;
 		lightsPositions[positionIndex + 1] = position.y;
 		lightsPositions[positionIndex + 2] = position.z;
-		lightsPositions[positionIndex + 3] = lightComponent.getIntensity();
 	}
 
 }

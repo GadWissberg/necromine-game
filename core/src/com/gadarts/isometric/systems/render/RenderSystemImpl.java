@@ -22,6 +22,7 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterComponent.Direction;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
@@ -232,8 +233,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 					|| !isVisible(getSystem(CameraSystem.class).getCamera(), entity)) {
 				continue;
 			}
+			GameModelInstance modelInstance = modelInstanceComponent.getModelInstance();
 			if (isWall) {
-				float angleAround = MathUtils.round(modelInstanceComponent.getModelInstance().transform.getRotation(auxQuat).getAngleAround(Vector3.Y));
+				float angleAround = MathUtils.round(modelInstance.transform.getRotation(auxQuat).getAngleAround(Vector3.Y));
 				Vector2 modelAngle = auxVector2_1.set(1, 0).setAngleDeg(angleAround).rotate90((angleAround < 90 || angleAround > 270) || angleAround == 180 ? 1 : -1);
 				Vector2 cameraAngle = auxVector2_2.set(camera.direction.x, camera.direction.z);
 				float angle = auxVector2_3.set(1, 0).setAngleDeg(modelAngle.angleDeg(cameraAngle)).angleDeg();
@@ -242,13 +244,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				}
 			}
 			if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
-				if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
-					if (renderLight) {
-						lightsHandler.applyLightsOnModel(modelInstanceComponent);
-					}
-					numberOfVisible++;
-					modelBatch.render(modelInstanceComponent.getModelInstance(), environment);
+				if (renderLight) {
+					lightsHandler.applyLightsOnModel(modelInstanceComponent);
 				}
+				numberOfVisible++;
+				modelBatch.render(modelInstance, environment);
 			}
 		}
 		modelBatch.end();

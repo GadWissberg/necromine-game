@@ -54,6 +54,7 @@ public final class MapBuilder {
 	private final ModelBuilder modelBuilder;
 	private Model testFloorModel3_3;
 	private Model testFloorModel1_2;
+	private Model testFloorModel2_1;
 
 	public MapBuilder(final GameAssetsManager assetManager, final PooledEngine engine) {
 		this.assetManager = assetManager;
@@ -68,7 +69,8 @@ public final class MapBuilder {
 	 */
 	public MapGraph createAndAddTestMap() {
 		testFloorModel3_3 = createTestFloorModel(modelBuilder, 3, 3, 3, 3);
-		testFloorModel1_2 = createTestFloorModel(modelBuilder, 1, 2, 1, 3);
+		testFloorModel1_2 = createTestFloorModel(modelBuilder, 1, 2, 1, 2);
+		testFloorModel2_1 = createTestFloorModel(modelBuilder, 2, 1, 2, 1);
 		createAndAdd3dCursor();
 		addPlayer();
 		addEnemyTest(4, 2, Direction.NORTH_EAST);
@@ -80,7 +82,9 @@ public final class MapBuilder {
 	}
 
 	private void addTestLights() {
-		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(0.5f, 2f, 1.5f), 1f, 3f).finishAndAddToEngine();
+		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(3, 2f, 3), 1f, 3f).finishAndAddToEngine();
+		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(10, 2f, 2), 1f, 3f).finishAndAddToEngine();
+		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(3, 2f, 12), 1f, 3f).finishAndAddToEngine();
 	}
 
 	private void addWeaponPickupTest(final int x,
@@ -110,6 +114,12 @@ public final class MapBuilder {
 		addTestFloor(auxVector3_1.set(3, 0, 0), testFloorModel3_3);
 		addTestFloor(auxVector3_1.set(3, 0, 3), testFloorModel3_3);
 		addTestFloor(auxVector3_1.set(2, 0, 6), testFloorModel1_2);
+		addTestFloor(auxVector3_1.set(2, 0, 8), testFloorModel1_2);
+		addTestFloor(auxVector3_1.set(2, 0, 10), testFloorModel3_3);
+		addTestFloor(auxVector3_1.set(6, 0, 2), testFloorModel2_1);
+		addTestFloor(auxVector3_1.set(8, 0, 2), testFloorModel2_1);
+		addTestFloor(auxVector3_1.set(10, 0, 2), testFloorModel3_3);
+		addTestFloor(auxVector3_1.set(10, 0, 5), testFloorModel3_3);
 		return new MapGraph(
 				engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
 				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
