@@ -14,7 +14,7 @@ public class AnimationComponent implements GameComponent {
 	private boolean doingReverse;
 
 	private CharacterAnimation animation;
-	private float stateTime;
+	private double stateTime;
 	private long lastFrameChange;
 
 	@Override
@@ -29,11 +29,12 @@ public class AnimationComponent implements GameComponent {
 	}
 
 	public TextureAtlas.AtlasRegion calculateFrame() {
-		float frameDuration = animation.getFrameDuration();
+		double frameDuration = animation.getFrameDuration();
 		boolean looping = animation.getPlayMode() == Animation.PlayMode.LOOP;
-		TextureAtlas.AtlasRegion result = animation.getKeyFrame(stateTime, looping);
-		if (TimeUtils.timeSinceMillis(lastFrameChange) >= frameDuration * 1000f) {
-			lastFrameChange = TimeUtils.millis();
+		TextureAtlas.AtlasRegion result = animation.getKeyFrame((float) stateTime, looping);
+		long now = TimeUtils.millis();
+		if (now - lastFrameChange >= frameDuration * 1000f) {
+			lastFrameChange = now;
 			stateTime += frameDuration;
 		}
 		return result;

@@ -169,7 +169,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				if (ComponentsMapper.animation.has(entity)) {
 					AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
 					if (spriteType.isSingleAnimation()) {
-						if (!animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime())) {
+						if (!animationComponent.getAnimation().isAnimationFinished((float) animationComponent.getStateTime())) {
 							direction = Direction.SOUTH;
 						} else if (spriteType == SpriteType.DIE) {
 							spriteType = SpriteType.DEAD;
@@ -212,7 +212,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 						}
 						shadowDecal.setTextureRegion(southAnimation.getKeyFrames()[max(newFrame.index, 0)]);
 					} else if (characterSpriteData.getSpriteType() == SpriteType.DIE) {
-						if (animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime())) {
+						if (animationComponent.getAnimation().isAnimationFinished((float) animationComponent.getStateTime())) {
 							characterComponent.getCharacterSpriteData().setFacingDirection(Direction.findDirection(auxVector2_1.set(camera.position.x, camera.position.z).sub(decalPosition.x, decalPosition.z).nor()));
 							characterSpriteData.setSpriteType(SpriteType.DEAD);
 						}

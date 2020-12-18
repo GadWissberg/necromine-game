@@ -177,7 +177,7 @@ public final class MapBuilder {
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(Enemies.ZEALOT);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		Vector3 position = auxVector3_1.set(x + 0.5f, CharacterDecalComponent.BILLBOARD_Y, y + 0.5f);
-		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player, Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH, direction, 2);
+		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player, Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH, direction, 1);
 		entityBuilder.finishAndAddToEngine();
 	}
 

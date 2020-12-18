@@ -212,7 +212,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void handleModeWithNonLoopingAnimation(final Entity character) {
 		AnimationComponent animationComponent = ComponentsMapper.animation.get(character);
 		Animation<TextureAtlas.AtlasRegion> animation = animationComponent.getAnimation();
-		if (animation.isAnimationFinished(animationComponent.getStateTime())) {
+		if (animation.isAnimationFinished((float) animationComponent.getStateTime())) {
 			SpriteType spriteType = ComponentsMapper.character.get(character).getCharacterSpriteData().getSpriteType();
 			if (spriteType.isAddReverse()) {
 				if (animationComponent.isDoingReverse()) {

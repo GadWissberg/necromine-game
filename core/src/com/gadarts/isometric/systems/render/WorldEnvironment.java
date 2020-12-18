@@ -9,7 +9,8 @@ import com.gadarts.isometric.systems.camera.CameraSystemImpl;
 import lombok.Getter;
 
 public class WorldEnvironment extends Environment implements Disposable {
-	private static final Color ambientLightColor = new Color(0.1f, 0.1f, 0.1f, 1);
+	public static final float AMBIENT = 0.6f;
+	private static final Color ambientLightColor = new Color(AMBIENT, AMBIENT, AMBIENT, 1);
 
 	@Getter
 	private DirectionalShadowLight shadowLight;

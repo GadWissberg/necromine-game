@@ -293,12 +293,12 @@ void main() {
     #ifdef ambientFlag
     #ifdef separateAmbientFlag
     v_ambientLight = ambientLight;
-    v_lightDiffuse = vec3(0.0);
+    v_lightDiffuse = ambientLight;
     #else
     v_lightDiffuse = ambientLight;
     #endif//separateAmbientFlag
     #else
-    v_lightDiffuse = vec3(0.0);
+    v_lightDiffuse = ambientLight;
     #endif//ambientFlag
 
 
