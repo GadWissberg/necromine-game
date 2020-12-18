@@ -3,21 +3,15 @@ package com.gadarts.isometric.systems.render;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
-import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
@@ -28,7 +22,6 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterComponent.Direction;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
-import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
@@ -38,10 +31,7 @@ import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 
-import java.util.List;
-
 import static java.lang.Math.max;
-import static java.lang.Math.min;
 
 /**
  * Handles rendering.
@@ -60,8 +50,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
 	private static final Quaternion auxQuat = new Quaternion();
-	private static final float DECAL_DARKEST_COLOR = 0.2f;
-	private static final float DECAL_LIGHT_OFFSET = 1.5f;
 	private final static BoundingBox auxBoundingBox = new BoundingBox();
 
 	private final WorldEnvironment environment = new WorldEnvironment();
@@ -70,6 +58,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private boolean ready;
 	private Stage stage;
 	private int numberOfVisible;
+	private LightsRenderer lightsHandler;
 
 	private void resetDisplay(final Color color) {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -82,28 +71,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 		engine.addEntityListener(this);
-		createAxis(engine);
 		renderSystemRelatedEntities = new RenderSystemRelatedEntities(engine);
-	}
-
-
-	private void createAxis(final Engine engine) {
-		ModelBuilder modelBuilder = new ModelBuilder();
-		engine.addEntity(createArrowEntity(modelBuilder, Color.RED, auxVector3_1.set(1, 0, 0)));
-		engine.addEntity(createArrowEntity(modelBuilder, Color.GREEN, auxVector3_1.set(0, 1, 0)));
-		engine.addEntity(createArrowEntity(modelBuilder, Color.BLUE, auxVector3_1.set(0, 0, 1)));
-	}
-
-	private Entity createArrowEntity(final ModelBuilder modelBuilder,
-									 final Color color,
-									 final Vector3 direction) {
-		Material material = new Material(ColorAttribute.createDiffuse(color));
-		int attributes = VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal;
-		Model model = modelBuilder.createArrow(Vector3.Zero, direction, material, attributes);
-		PooledEngine engine = (PooledEngine) getEngine();
-		ModelInstanceComponent modelInsComp = engine.createComponent(ModelInstanceComponent.class);
-		modelInsComp.init(new GameModelInstance(model), true, false, false);
-		return engine.createEntity().add(modelInsComp);
+		lightsHandler = new LightsRenderer(renderSystemRelatedEntities.getLightsEntities());
 	}
 
 	@Override
@@ -219,7 +188,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				}
 			}
 			if (!DefaultGameSettings.HIDE_ENEMIES || !ComponentsMapper.enemy.has(entity)) {
-				applyLightsOnDecal(decal);
+				lightsHandler.applyLightsOnDecal(decal);
 				decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
 				decalBatch.add(decal);
 				decalBatch.add(shadowDecal);
@@ -235,49 +204,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		decalBatch.flush();
 	}
 
-	private void applyLightsOnDecal(final Decal decal) {
-		float minDistance = Float.MAX_VALUE;
-		for (Entity light : renderSystemRelatedEntities.getLightsEntities()) {
-			minDistance = applyLightOnDecal(decal, minDistance, light);
-		}
-		if (minDistance == Float.MAX_VALUE) {
-			decal.setColor(DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, 1f);
-		}
-	}
-
-	private float applyLightOnDecal(final Decal decal, float minDistance, final Entity light) {
-		float distance = ComponentsMapper.light.get(light).getPosition(auxVector3_1).dst(decal.getPosition());
-		float maxLightDistanceForDecal = ComponentsMapper.light.get(light).getRadius() * 2;
-		if (distance <= maxLightDistanceForDecal) {
-			minDistance = calculateDecalColorAffectedByLight(decal, minDistance, distance, maxLightDistanceForDecal);
-		}
-		return minDistance;
-	}
-
-	private float calculateDecalColorAffectedByLight(final Decal d,
-													 float minDistance,
-													 final float distance,
-													 final float maxLightDistanceForDecal) {
-		float newC = convertDistanceToColorValueForDecal(maxLightDistanceForDecal, distance);
-		Color c = d.getColor();
-		if (minDistance == Float.MAX_VALUE) {
-			d.setColor(min(newC, 1f), min(newC, 1f), min(newC, 1f), 1f);
-		} else {
-			d.setColor(min(max(c.r, newC), 1f), min(max(c.g, newC), 1f), min(max(c.b, newC), 1f), 1f);
-		}
-		minDistance = min(minDistance, distance);
-		return minDistance;
-	}
-
-	private float convertDistanceToColorValueForDecal(final float maxLightDistanceForDecal, final float distance) {
-		return MathUtils.map(
-				0,
-				(maxLightDistanceForDecal - DECAL_LIGHT_OFFSET),
-				DECAL_DARKEST_COLOR,
-				1f,
-				maxLightDistanceForDecal - distance
-		);
-	}
 
 	private boolean isVisible(final Camera camera, final Entity entity) {
 		ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
@@ -316,30 +242,12 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				}
 			}
 			if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
-				GameModelInstance modelInstance = modelInstanceComponent.getModelInstance();
-				List<Entity> nearbyLights = modelInstance.getNearbyLights();
-				nearbyLights.clear();
 				if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
-					if (!DefaultGameSettings.DISABLE_LIGHTS) {
-						if (renderLight) {
-							if (modelInstanceComponent.isAffectedByLight()) {
-								for (Entity light : renderSystemRelatedEntities.getLightsEntities()) {
-									LightComponent lightComponent = ComponentsMapper.light.get(light);
-									Vector3 lightPosition = lightComponent.getPosition(auxVector3_1);
-									float distance = lightPosition.dst(modelInstance.transform.getTranslation(auxVector3_2));
-									if (distance <= LightComponent.LIGHT_RADIUS) {
-										nearbyLights.add(light);
-									}
-								}
-								modelInstance.userData = nearbyLights;
-							} else {
-								modelInstance.userData = null;
-							}
-						}
+					if (renderLight) {
+						lightsHandler.applyLightsOnModel(modelInstanceComponent);
 					}
-					modelInstance = modelInstanceComponent.getModelInstance();
 					numberOfVisible++;
-					modelBatch.render(modelInstance, environment);
+					modelBatch.render(modelInstanceComponent.getModelInstance(), environment);
 				}
 			}
 		}
