@@ -207,6 +207,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 
 	private boolean isVisible(final Camera camera, final Entity entity) {
+		if (DefaultGameSettings.DISABLE_FRUSTUM_CULLING) return true;
 		ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 		modelInstanceComponent.getModelInstance().transform.getTranslation(auxVector3_1);
 		auxVector3_1.add(modelInstanceComponent.getBoundingBox(auxBoundingBox).getCenter(auxVector3_2));
@@ -226,7 +227,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		for (Entity entity : renderSystemRelatedEntities.getModelInstanceEntities()) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 			boolean isWall = ComponentsMapper.wall.has(entity);
-			if ((DefaultGameSettings.HIDE_ENVIRONMENT_OBJECTS && ComponentsMapper.obstacle.has(entity))
+			if ((!modelInstanceComponent.isVisible())
+					|| (DefaultGameSettings.HIDE_ENVIRONMENT_OBJECTS && ComponentsMapper.obstacle.has(entity))
 					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())
 					|| (!renderWallsAndFloor && (isWall || ComponentsMapper.floor.has(entity)))
 					|| (DefaultGameSettings.HIDE_CURSOR && ComponentsMapper.cursor.has(entity))
@@ -243,7 +245,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 					continue;
 				}
 			}
-			if (modelInstanceComponent.isVisible() && (!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
+			if ((!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
 				if (renderLight) {
 					lightsHandler.applyLightsOnModel(modelInstanceComponent);
 				}
