@@ -36,7 +36,8 @@ public abstract class GameEntitySystem<T extends SystemEventsSubscriber> extends
 		subscribers.add(sub);
 	}
 
-	protected <V> V getSystem(final Class<V> systemClass) {
+	@SuppressWarnings("unchecked")
+	protected <V extends GameSystem> V getSystem(final Class<V> systemClass) {
 		return (V) mySystems.get(systemClass);
 	}
 

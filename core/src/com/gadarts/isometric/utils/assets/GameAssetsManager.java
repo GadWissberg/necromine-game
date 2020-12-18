@@ -20,11 +20,17 @@ import com.gadarts.isometric.utils.assets.definitions.TextureDefinition;
 
 import java.util.Arrays;
 
+/**
+ * Assets loader and manager.
+ */
 public class GameAssetsManager extends AssetManager {
 	public GameAssetsManager() {
 		setLoader(String.class, new ShaderLoader(getFileHandleResolver()));
 	}
 
+	/**
+	 * Loads all defined assets and inflating animations.
+	 */
 	public void loadGameFiles() {
 		Arrays.stream(Assets.AssetsTypes.values()).forEach(type ->
 				Arrays.stream(type.getAssetDefinitions()).forEach(def ->
@@ -32,8 +38,8 @@ public class GameAssetsManager extends AssetManager {
 		);
 		finishLoading();
 		Arrays.stream(Atlases.values()).forEach(atlas -> {
-			CharacterAnimations animations = createCharacterAnimations(atlas);
-			addAsset(atlas.name(), CharacterAnimations.class, animations);
+					CharacterAnimations animations = createCharacterAnimations(atlas);
+					addAsset(atlas.name(), CharacterAnimations.class, animations);
 				}
 		);
 	}
@@ -65,13 +71,8 @@ public class GameAssetsManager extends AssetManager {
 										   final TextureAtlas atlas,
 										   final SpriteType spriteType,
 										   final CharacterComponent.Direction dir) {
-		String name;
 		String spriteTypeName = spriteType.name().toLowerCase();
-		if (spriteType.isSingleAnimation()) {
-			name = spriteTypeName;
-		} else {
-			name = spriteTypeName + "_" + dir.name().toLowerCase();
-		}
+		String name = (spriteType.isSingleAnimation()) ? spriteTypeName : spriteTypeName + "_" + dir.name().toLowerCase();
 		CharacterAnimation a = createAnimation(atlas, spriteType, name, dir);
 		if (a.getKeyFrames().length > 0) {
 			animations.put(spriteType, dir, a);

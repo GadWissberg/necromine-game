@@ -37,6 +37,7 @@ public class MainShader extends DefaultShader {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void render(final Renderable renderable) {
 		super.render(renderable);

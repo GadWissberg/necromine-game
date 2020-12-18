@@ -17,6 +17,7 @@ public class SystemsHandler implements Disposable {
 	@SuppressWarnings("rawtypes")
 	private final Map<Class<? extends SystemEventsSubscriber>, Class<? extends GameEntitySystem>> subscribersInterfaces = new HashMap<>();
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public SystemsHandler(final PooledEngine engine,
 						  final MapGraph map,
 						  final SoundPlayer soundPlayer,
