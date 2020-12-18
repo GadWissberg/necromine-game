@@ -16,6 +16,7 @@ public class MainShader extends DefaultShader {
 	public static final int MAX_LIGHTS = 8;
 	public static final int LIGHT_EXTRA_DATA_SIZE = 2;
 	private static final Vector3 auxVector = new Vector3();
+
 	private final float[] lightsPositions = new float[MAX_LIGHTS * 3];
 	private final float[] lightsExtraData = new float[MAX_LIGHTS * LIGHT_EXTRA_DATA_SIZE];
 	private int lightsPositionsLocation;

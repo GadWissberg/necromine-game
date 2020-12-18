@@ -68,7 +68,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private RenderBatches renderBatches;
 	private RenderSystemRelatedEntities renderSystemRelatedEntities;
 	private boolean ready;
-	private CameraSystem cameraSystem;
 	private Stage stage;
 	private int numberOfVisible;
 
@@ -113,7 +112,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		if (!ready) return;
 		numberOfVisible = 0;
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
-		renderWorld(deltaTime, cameraSystem.getCamera());
+		renderWorld(deltaTime, getSystem(CameraSystem.class).getCamera());
 		stage.draw();
 	}
 
@@ -304,7 +303,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())
 					|| (!renderWallsAndFloor && (isWall || ComponentsMapper.floor.has(entity)))
 					|| (DefaultGameSettings.HIDE_CURSOR && ComponentsMapper.cursor.has(entity))
-					|| !isVisible(cameraSystem.getCamera(), entity)) {
+					|| !isVisible(getSystem(CameraSystem.class).getCamera(), entity)) {
 				continue;
 			}
 			if (isWall) {
@@ -355,14 +354,14 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
-		this.cameraSystem = cameraSystem;
+		addSystem(CameraSystem.class, cameraSystem);
 		this.renderBatches = new RenderBatches(cameraSystem.getCamera(), assetsManager);
 		environment.initialize();
 		systemReady();
 	}
 
 	private void systemReady() {
-		if (stage == null || cameraSystem == null) return;
+		if (stage == null || getSystem(CameraSystem.class) == null) return;
 		ready = true;
 		for (RenderSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onRenderSystemReady(this);

@@ -28,6 +28,7 @@ public class GameCameraGroupStrategy implements GroupStrategy, Disposable {
 			colorNotAffectedByLight.g,
 			colorNotAffectedByLight.b
 	};
+
 	private final Comparator<Decal> cameraSorter;
 	Pool<Array<Decal>> arrayPool = new Pool<>(16) {
 		@Override
