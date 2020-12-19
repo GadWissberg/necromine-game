@@ -17,7 +17,7 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 
 	private final static Vector2 auxVector2_1 = new Vector2();
 	private final static Vector3 auxVector3 = new Vector3();
-	private static final float BULLET_SPEED = 1f;
+	private static final float BULLET_SPEED = 0.8f;
 	private static final float BULLET_MAX_DISTANCE = 10;
 	private static final float CHAR_RAD = 0.3f;
 	private static final float OBST_RAD = 0.5f;

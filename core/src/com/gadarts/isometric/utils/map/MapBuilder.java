@@ -73,18 +73,21 @@ public final class MapBuilder {
 		testFloorModel2_1 = createTestFloorModel(modelBuilder, 2, 1, 2, 1);
 		createAndAdd3dCursor();
 		addPlayer();
-		addEnemyTest(4, 2, Direction.NORTH_EAST);
-		addEnemyTest(5, 4, Direction.SOUTH);
-		addWeaponPickupTest(1, 2, Assets.Models.COLT, WeaponsDefinitions.COLT, REGION_NAME_BULLET);
-		addWeaponPickupTest(2, 3, Assets.Models.HAMMER, WeaponsDefinitions.HAMMER, null);
+		addEnemyTest(4, 3, Direction.EAST);
+		addEnemyTest(2, 5, Direction.SOUTH);
+		addEnemyTest(11, 6, Direction.NORTH);
+		addEnemyTest(12, 6, Direction.NORTH_WEST);
+		addEnemyTest(4, 10, Direction.WEST);
+		addWeaponPickupTest(2, 2, Assets.Models.COLT, WeaponsDefinitions.COLT, REGION_NAME_BULLET);
+		addWeaponPickupTest(3, 12, Assets.Models.HAMMER, WeaponsDefinitions.HAMMER, null);
 		addTestLights();
 		return createTestMap();
 	}
 
 	private void addTestLights() {
 		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(3, 2f, 3), 1f, 3f).finishAndAddToEngine();
-		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(10, 2f, 2), 1f, 3f).finishAndAddToEngine();
-		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(3, 2f, 12), 1f, 3f).finishAndAddToEngine();
+		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(11, 2f, 4), 0.5f, 3f).finishAndAddToEngine();
+		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(3, 2f, 12), 1f, 2f).finishAndAddToEngine();
 	}
 
 	private void addWeaponPickupTest(final int x,
@@ -128,9 +131,11 @@ public final class MapBuilder {
 	}
 
 	private void addObstacles() {
-		addTestObstacle(1, 1, Assets.Models.PILLAR, 0, true);
-		addTestObstacle(0, 3, Assets.Models.PILLAR, 0, true);
+		addTestObstacle(12, 3, Assets.Models.PILLAR, 0, true);
+		addTestObstacle(3, 1, Assets.Models.PILLAR, 0, true);
 		addTestObstacle(2, 6, Assets.Models.CAVE_SUPPORTER_3, 90, false);
+		addTestObstacle(6, 3, Assets.Models.CAVE_SUPPORTER_1, 180, false);
+		addTestObstacle(10, 3, Assets.Models.CAVE_SUPPORTER_2, 180, false);
 	}
 
 	private void addTestObstacle(final int x, final int y, final Assets.Models model, final int rotation, final boolean blockPath) {
@@ -150,11 +155,24 @@ public final class MapBuilder {
 		addTestWall(auxVector3_1.set(4, 0, 0), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_2);
 		addTestWall(auxVector3_1.set(0, 0, 4), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
 		addTestWall(auxVector3_1.set(0, 0, 6), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(2, 0, 8), 90, auxVector2_1.set(1, 6), auxVector2_1.set(1, 7), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(2, 0, 8), 90, auxVector2_1.set(0, 6), auxVector2_2.set(1, 12), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(2, 0, 11), 90, auxVector2_1.set(1, 8), auxVector2_2.set(1, 10), Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(2, 0, 13), 90, auxVector2_1.set(1, 11), auxVector2_2.set(1, 12), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(5, 0, 13), 180, auxVector2_1.set(2, 13), auxVector2_2.set(2, 14), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(5, 0, 11), 270, auxVector2_1.set(2, 13), auxVector2_2.set(2, 14), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(3, 0, 10), 0, auxVector2_1.set(2, 13), auxVector2_2.set(2, 14), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(3, 0, 6), 270, auxVector2_1.set(2, 13), auxVector2_2.set(2, 14), Assets.Models.WALL_1);
 		addTestWall(auxVector3_1.set(2, 0, 6), 180, auxVector2_1.set(0, 6), auxVector2_2.set(1, 6), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(5, 0, 6), 180, auxVector2_1.set(3, 6), auxVector2_2.set(5, 8), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(6, 0, 4), 270, auxVector2_1.set(6, 4), auxVector2_2.set(6, 6), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(6, 0, 0), 270, auxVector2_1.set(6, 0), auxVector2_2.set(6, 4), Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(5, 0, 6), 180, auxVector2_1.set(3, 6), auxVector2_2.set(5, 9), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(6, 0, 3), 270, auxVector2_1.set(5, 10), auxVector2_2.set(6, 12), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(6, 0, 0), 270, auxVector2_1.set(2, 13), auxVector2_2.set(5, 14), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(6, 0, 2), 0, auxVector2_1.set(6, 3), auxVector2_2.set(9, 7), Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(10, 0, 2), 0, auxVector2_1.set(6, 0), auxVector2_2.set(12, 1), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(13, 0, 2), 270, auxVector2_1.set(13, 2), auxVector2_2.set(14, 7), Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(13, 0, 6), 270, auxVector2_1.set(10, 8), auxVector2_2.set(12, 9), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(13, 0, 8), 180, auxVector2_1.set(6, 3), auxVector2_2.set(9, 7), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(10, 0, 8), 90, auxVector2_1.set(6, 3), auxVector2_2.set(9, 7), Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(10, 0, 3), 180, auxVector2_1.set(6, 3), auxVector2_2.set(9, 7), Assets.Models.WALL_1);
 	}
 
 	private void addTestWall(final Vector3 position,
@@ -179,7 +197,7 @@ public final class MapBuilder {
 		CharacterAnimations general = assetManager.get(Atlases.PLAYER_GENERIC.name());
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
 		Vector3 position = auxVector3_1.set(0.5f, CharacterDecalComponent.BILLBOARD_Y, 0.5f);
-		addCharBaseComponents(entityBuilder, Atlases.PLAYER_AXE_PICK, position, null, Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH, Direction.WEST, 5);
+		addCharBaseComponents(entityBuilder, Atlases.PLAYER_AXE_PICK, position, null, Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH, Direction.SOUTH_EAST, 8);
 		entityBuilder.finishAndAddToEngine();
 	}
 
@@ -187,7 +205,7 @@ public final class MapBuilder {
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(Enemies.ZEALOT);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		Vector3 position = auxVector3_1.set(x + 0.5f, CharacterDecalComponent.BILLBOARD_Y, y + 0.5f);
-		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player, Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH, direction, 1);
+		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player, Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH, direction, 2);
 		entityBuilder.finishAndAddToEngine();
 	}
 
@@ -204,7 +222,7 @@ public final class MapBuilder {
 		characterSpriteData.init(direction, spriteType, 1);
 		auxCharacterSoundData.set(painSound, deathSound);
 		entityBuilder.addCharacterComponent(characterSpriteData, target, auxCharacterSoundData, health)
-				.addCharacterDecalComponent(animations, spriteType, Direction.SOUTH, position)
+				.addCharacterDecalComponent(animations, spriteType, direction, position)
 				.addCollisionComponent()
 				.addAnimationComponent();
 	}
