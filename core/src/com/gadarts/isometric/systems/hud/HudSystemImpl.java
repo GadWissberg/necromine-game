@@ -8,6 +8,11 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -15,10 +20,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.components.CharacterDecalComponent;
@@ -68,17 +75,26 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final float BUTTON_PADDING = 40;
+	public static final Color TOOL_TIP_BACKGROUND_COLOR = Color.FOREST;
+	private static final long TOOLTIP_DELAY = 1000;
+	private static final float TOOLTIP_PADDING = 2f;
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
 	private PathPlanHandler pathPlanHandler;
 	private ImmutableArray<Entity> enemiesEntities;
 	private ModelInstance cursorModelInstance;
 	private GameStage stage;
 	private Entity player;
+	private long lastHighlightNodeChange;
+	private Texture toolTipBackgroundColor;
+	private Table tooltipTable;
+	private GlyphLayout toolTipLayout;
+	private BitmapFont toolTipFont;
 
 
 	@Override
 	public void dispose() {
 		attackNodesHandler.dispose();
+		toolTipBackgroundColor.dispose();
 	}
 
 	@Override
@@ -101,11 +117,43 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
 		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), soundPlayer);
-		Table table = new Table();
+		addHudTable();
+		addToolTipTable();
+	}
+
+	private void addHudTable() {
+		Table hudTable = new Table();
 		stage.setDebugAll(Gdx.app.getLogLevel() == LOG_DEBUG && DefaultGameSettings.DISPLAY_HUD_OUTLINES);
-		table.setFillParent(true);
-		addStorageButton(table);
-		stage.addActor(table);
+		hudTable.setFillParent(true);
+		addStorageButton(hudTable);
+		stage.addActor(hudTable);
+	}
+
+	private void addToolTipTable() {
+		tooltipTable = new Table();
+		setToolTipBackground();
+		stage.addActor(tooltipTable);
+		toolTipFont = new BitmapFont();
+		toolTipLayout = new GlyphLayout();
+		resizeToolTip("");
+		tooltipTable.add(new Label("TEST", new Label.LabelStyle(toolTipFont, Color.BLACK))).row();
+		tooltipTable.setVisible(false);
+	}
+
+	private void resizeToolTip(CharSequence text) {
+		toolTipLayout.setText(toolTipFont, text);
+		float width = toolTipLayout.width + TOOLTIP_PADDING * 2;
+		float height = toolTipLayout.height + TOOLTIP_PADDING * 2;
+		tooltipTable.setSize(width, height);
+	}
+
+	private void setToolTipBackground() {
+		Pixmap bgPixmap = new Pixmap(1, 1, Pixmap.Format.RGB565);
+		bgPixmap.setColor(TOOL_TIP_BACKGROUND_COLOR);
+		bgPixmap.fill();
+		toolTipBackgroundColor = new Texture(bgPixmap);
+		bgPixmap.dispose();
+		tooltipTable.setBackground(new TextureRegionDrawable(new TextureRegion(toolTipBackgroundColor)));
 	}
 
 	private void addStorageButton(final Table table) {
@@ -131,6 +179,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		MapGraphNode newNode = map.getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
 		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
 		if (!newNode.equals(oldNode)) {
+			lastHighlightNodeChange = TimeUtils.millis();
 			cursorModelInstance.transform.setTranslation(newNode.getX(), 0, newNode.getY());
 			colorizeCursor(newNode);
 		}
@@ -138,7 +187,8 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 
 	private void colorizeCursor(final MapGraphNode newNode) {
-		if (map.getEnemyFromNode(enemiesEntities, newNode) != null) {
+		Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, newNode);
+		if (enemyAtNode != null) {
 			setCursorColor(CURSOR_ATTACK);
 		} else {
 			setCursorColor(CURSOR_REGULAR);
@@ -279,6 +329,30 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
 		stage.act();
+		handleToolTip();
+	}
+
+	private void handleToolTip() {
+		if (lastHighlightNodeChange != -1 && TimeUtils.timeSinceMillis(lastHighlightNodeChange) >= TOOLTIP_DELAY) {
+			Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, getCursorNode());
+			if (enemyAtNode != null) {
+				displayToolTip(ComponentsMapper.enemy.get(enemyAtNode).getEnemyDefinition().getDisplayName());
+			} else {
+				displayToolTip(null);
+			}
+			lastHighlightNodeChange = -1;
+		}
+	}
+
+	private void displayToolTip(final String text) {
+		if (text != null) {
+			((Label) tooltipTable.getChild(0)).setText(text);
+			tooltipTable.setVisible(true);
+			tooltipTable.setPosition(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
+			resizeToolTip(text);
+		} else {
+			tooltipTable.setVisible(false);
+		}
 	}
 
 
@@ -338,6 +412,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	public boolean hasOpenWindows() {
 		return stage.hasOpenWindows();
 	}
+
 
 	@Override
 	public void onEnemyTurn(final long currentTurnId) {

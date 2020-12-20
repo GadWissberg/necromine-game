@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
@@ -57,7 +56,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private RenderBatches renderBatches;
 	private RenderSystemRelatedEntities renderSystemRelatedEntities;
 	private boolean ready;
-	private Stage stage;
 	private int numberOfVisible;
 	private LightsRenderer lightsHandler;
 
@@ -83,7 +81,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		numberOfVisible = 0;
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
 		renderWorld(deltaTime, getSystem(CameraSystem.class).getCamera());
-		stage.draw();
+		getSystem(HudSystem.class).getStage().draw();
 	}
 
 	private void renderWorld(final float deltaTime, final Camera camera) {
@@ -271,7 +269,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	private void systemReady() {
-		if (stage == null || getSystem(CameraSystem.class) == null) return;
+		if (getSystem(CameraSystem.class) == null) return;
 		ready = true;
 		for (RenderSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onRenderSystemReady(this);
@@ -280,7 +278,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	@Override
 	public void onHudSystemReady(final HudSystem hudSystem) {
-		this.stage = hudSystem.getStage();
+		addSystem(HudSystem.class, hudSystem);
 		systemReady();
 	}
 

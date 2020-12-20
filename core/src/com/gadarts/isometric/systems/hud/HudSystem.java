@@ -10,4 +10,5 @@ public interface HudSystem extends GameSystem {
 	ModelInstance getCursorModelInstance();
 
 	boolean hasOpenWindows();
+
 }
