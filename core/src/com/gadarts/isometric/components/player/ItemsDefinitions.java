@@ -1,7 +1,9 @@
 package com.gadarts.isometric.components.player;
 
 import com.gadarts.isometric.utils.assets.Assets;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public enum ItemsDefinitions implements ItemDefinition {
 	;
 
@@ -9,12 +11,7 @@ public enum ItemsDefinitions implements ItemDefinition {
 	private final int width;
 	private final int height;
 	private final Assets.UiTextures image;
-
-	ItemsDefinitions(final int width, final int height, final Assets.UiTextures image) {
-		this.width = width;
-		this.height = height;
-		this.image = image;
-	}
+	private final String displayName;
 
 	@Override
 	public int getWidth() {
@@ -39,6 +36,11 @@ public enum ItemsDefinitions implements ItemDefinition {
 	@Override
 	public Assets.UiTextures getImage() {
 		return image;
+	}
+
+	@Override
+	public String getDisplayName() {
+		return displayName;
 	}
 
 

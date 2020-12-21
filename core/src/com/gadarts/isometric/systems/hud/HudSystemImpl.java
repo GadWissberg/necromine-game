@@ -77,7 +77,8 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private static final float BUTTON_PADDING = 40;
 	public static final Color TOOL_TIP_BACKGROUND_COLOR = Color.FOREST;
 	private static final long TOOLTIP_DELAY = 1000;
-	private static final float TOOLTIP_PADDING = 2f;
+	public static final Color TOOL_TIP_FONT_COLOR = Color.WHITE;
+	private static final float TOOLTIP_PADDING = 4f;
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
 	private PathPlanHandler pathPlanHandler;
 	private ImmutableArray<Entity> enemiesEntities;
@@ -136,11 +137,11 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		toolTipFont = new BitmapFont();
 		toolTipLayout = new GlyphLayout();
 		resizeToolTip("");
-		tooltipTable.add(new Label("TEST", new Label.LabelStyle(toolTipFont, Color.BLACK))).row();
+		tooltipTable.add(new Label(null, new Label.LabelStyle(toolTipFont, TOOL_TIP_FONT_COLOR))).row();
 		tooltipTable.setVisible(false);
 	}
 
-	private void resizeToolTip(CharSequence text) {
+	private void resizeToolTip(final CharSequence text) {
 		toolTipLayout.setText(toolTipFont, text);
 		float width = toolTipLayout.width + TOOLTIP_PADDING * 2;
 		float height = toolTipLayout.height + TOOLTIP_PADDING * 2;
@@ -179,6 +180,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		MapGraphNode newNode = map.getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
 		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
 		if (!newNode.equals(oldNode)) {
+			displayToolTip(null);
 			lastHighlightNodeChange = TimeUtils.millis();
 			cursorModelInstance.transform.setTranslation(newNode.getX(), 0, newNode.getY());
 			colorizeCursor(newNode);
@@ -334,13 +336,31 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void handleToolTip() {
 		if (lastHighlightNodeChange != -1 && TimeUtils.timeSinceMillis(lastHighlightNodeChange) >= TOOLTIP_DELAY) {
-			Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, getCursorNode());
-			if (enemyAtNode != null) {
-				displayToolTip(ComponentsMapper.enemy.get(enemyAtNode).getEnemyDefinition().getDisplayName());
-			} else {
-				displayToolTip(null);
-			}
+			String text = calculateToolTipText();
+			displayToolTip(text);
 			lastHighlightNodeChange = -1;
+		}
+	}
+
+	private String calculateToolTipText() {
+		MapGraphNode cursorNode = getCursorNode();
+		Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, cursorNode);
+		String result;
+		if (enemyAtNode != null) {
+			result = ComponentsMapper.enemy.get(enemyAtNode).getEnemyDefinition().getDisplayName();
+		} else {
+			result = checkIfToolTipIsPickupOrObstacle(cursorNode);
+		}
+		return result;
+	}
+
+	private String checkIfToolTipIsPickupOrObstacle(final MapGraphNode cursorNode) {
+		Entity pickup = map.getPickupFromNode(cursorNode);
+		if (pickup != null) {
+			return ComponentsMapper.pickup.get(pickup).getItem().getDefinition().getDisplayName();
+		} else {
+			Entity obstacle = map.getObstacleFromNode(cursorNode);
+			return obstacle != null ? ComponentsMapper.obstacle.get(obstacle).getDefinition().getDisplayName() : null;
 		}
 	}
 

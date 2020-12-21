@@ -35,6 +35,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private final Array<MapGraphNode> nodes;
 	private final ImmutableArray<Entity> characterEntities;
 	private final ImmutableArray<Entity> pickupEntities;
+	private final ImmutableArray<Entity> obstacleEntities;
 
 	@Setter(AccessLevel.PACKAGE)
 	@Getter(AccessLevel.PACKAGE)
@@ -45,6 +46,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 					final ImmutableArray<Entity> obstacleEntities,
 					final PooledEngine engine) {
 		this.pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
+		this.obstacleEntities = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
 		this.characterEntities = characterEntities;
 		this.nodes = new Array<>(MAP_SIZE * MAP_SIZE);
 		int[][] map = new int[MAP_SIZE][MAP_SIZE];
@@ -64,7 +66,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		});
 		obstacleEntities.forEach(obstacle -> {
 			ObstacleComponent obstacleComponent = ComponentsMapper.obstacle.get(obstacle);
-			if (obstacleComponent.isBlockPath()) {
+			if (obstacleComponent.getDefinition().isBlocksPath()) {
 				map[obstacleComponent.getY()][obstacleComponent.getX()] = 1;
 			}
 		});
@@ -269,6 +271,19 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 			MapGraphNode pickupNode = getNode(modelInstance.transform.getTranslation(auxVector));
 			if (pickupNode.equals(node)) {
 				result = pickup;
+				break;
+			}
+		}
+		return result;
+	}
+
+	public Entity getObstacleFromNode(final MapGraphNode node) {
+		Entity result = null;
+		for (Entity obstacle : obstacleEntities) {
+			ModelInstance modelInstance = ComponentsMapper.modelInstance.get(obstacle).getModelInstance();
+			MapGraphNode pickupNode = getNode(modelInstance.transform.getTranslation(auxVector));
+			if (pickupNode.equals(node)) {
+				result = obstacle;
 				break;
 			}
 		}

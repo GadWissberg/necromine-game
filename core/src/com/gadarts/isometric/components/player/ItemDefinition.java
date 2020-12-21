@@ -12,4 +12,6 @@ public interface ItemDefinition {
 	int getId();
 
 	Assets.UiTextures getImage();
+
+	String getDisplayName();
 }

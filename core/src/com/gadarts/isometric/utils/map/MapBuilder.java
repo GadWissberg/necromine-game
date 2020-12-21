@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.CharacterDecalComponent;
 import com.gadarts.isometric.components.ObstacleComponent;
+import com.gadarts.isometric.components.Obstacles;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.*;
 import com.gadarts.isometric.components.character.CharacterComponent.Direction;
@@ -131,20 +132,23 @@ public final class MapBuilder {
 	}
 
 	private void addObstacles() {
-		addTestObstacle(12, 3, Assets.Models.PILLAR, 0, true);
-		addTestObstacle(3, 1, Assets.Models.PILLAR, 0, true);
-		addTestObstacle(2, 6, Assets.Models.CAVE_SUPPORTER_3, 90, false);
-		addTestObstacle(6, 3, Assets.Models.CAVE_SUPPORTER_1, 180, false);
-		addTestObstacle(10, 3, Assets.Models.CAVE_SUPPORTER_2, 180, false);
+		addTestObstacle(12, 3, 0, Obstacles.PILLAR);
+		addTestObstacle(3, 1, 0, Obstacles.PILLAR);
+		addTestObstacle(2, 6, 90, Obstacles.CAVE_SUPPORTER_3);
+		addTestObstacle(6, 3, 180, Obstacles.CAVE_SUPPORTER_1);
+		addTestObstacle(10, 3, 180, Obstacles.CAVE_SUPPORTER_2);
 	}
 
-	private void addTestObstacle(final int x, final int y, final Assets.Models model, final int rotation, final boolean blockPath) {
-		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(model));
+	private void addTestObstacle(final int x,
+								 final int y,
+								 final int rotation,
+								 final Obstacles definition) {
+		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(definition.getModel()));
 		modelInstance.transform.setTranslation(x, 0, y);
 		modelInstance.transform.rotate(Vector3.Y, rotation);
 		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(modelInstance, true, model.isCastShadow(), true)
-				.addObstacleComponent(x, y, blockPath)
+				.addModelInstanceComponent(modelInstance, true, definition.getModel().isCastShadow(), true)
+				.addObstacleComponent(x, y, definition)
 				.addCollisionComponent()
 				.finishAndAddToEngine();
 	}
