@@ -17,13 +17,11 @@ buildscript {
 
 allprojects {
 
-    version = '0.3'
+    version = '0.4'
     ext {
-        versionNumber = 4
+        versionNumber = 5
         appName = "necromine"
         gdxVersion = '1.9.12'
-        roboVMVersion = '2.3.8'
-        box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.0'
         aiVersion = '1.8.0'
     }
