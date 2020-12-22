@@ -210,9 +210,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		modelInstanceComponent.getModelInstance().transform.getTranslation(auxVector3_1);
 		auxVector3_1.add(modelInstanceComponent.getBoundingBox(auxBoundingBox).getCenter(auxVector3_2));
 		auxBoundingBox.getDimensions(auxVector3_2);
-		auxVector3_2.x = Math.max(auxVector3_2.x, Math.max(auxVector3_2.y, auxVector3_2.z));
-		auxVector3_2.y = Math.max(auxVector3_2.x, Math.max(auxVector3_2.y, auxVector3_2.z));
-		auxVector3_2.z = Math.max(auxVector3_2.x, Math.max(auxVector3_2.y, auxVector3_2.z));
+		float max = max(auxVector3_2.x, max(auxVector3_2.y, auxVector3_2.z)) * 2;
+		auxVector3_2.set(max, max, max);
 		return camera.frustum.boundsInFrustum(auxVector3_1, auxVector3_2);
 	}
 

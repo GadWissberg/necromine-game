@@ -120,7 +120,7 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 		Vector3 cen = mic.transform.getTranslation(auxVector3_1);
 		ColorAttribute attr = (ColorAttribute) mic.materials.get(0).get(ColorAttribute.Emissive);
 		boolean rayCheck = Intersector.intersectRayBoundsFast(ray, cen, auxVector3_2.set(0.5f, 0.5f, 0.5f));
-		if (rayCheck && map.getEnemyFromNode(enemiesEntities, currentNode) == null) {
+		if (rayCheck && map.getAliveEnemyFromNode(enemiesEntities, currentNode) == null) {
 			attr.color.set(1, 1, 1, 1);
 			return true;
 		} else {

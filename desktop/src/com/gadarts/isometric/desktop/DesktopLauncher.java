@@ -4,22 +4,29 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.gadarts.isometric.NecromineGame;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DesktopLauncher {
 
 
-    public static void main(final String[] arg) {
+	public static void main(final String[] arg) {
 		LwjglApplicationConfiguration config = createGameConfig();
-		String versionName = "0.3";
-		int versionNumber = 4;
+		String versionName = "0.0";
+		int versionNumber = 0;
 		try {
-			String path = "core" + File.separator + "assets" + File.separator + "version.txt";
-			List<String> lines = Files.readAllLines(Paths.get(path));
+			InputStream res = DesktopLauncher.class.getClassLoader().getResourceAsStream("version.txt");
+			BufferedReader versionFile = new BufferedReader(new InputStreamReader(Objects.requireNonNull(res)));
+			String line;
+			List<String> lines = new ArrayList<>();
+			while ((line = versionFile.readLine()) != null) {
+				lines.add(line);
+			}
 			versionName = lines.get(0);
 			versionNumber = Integer.parseInt(lines.get(1));
 		} catch (IOException e) {
@@ -28,7 +35,7 @@ public class DesktopLauncher {
 		new LwjglApplication(new NecromineGame(versionName, versionNumber), config);
 	}
 
-    private static LwjglApplicationConfiguration createGameConfig() {
+	private static LwjglApplicationConfiguration createGameConfig() {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = NecromineGame.RESOLUTION_WIDTH;
 		config.height = NecromineGame.RESOLUTION_HEIGHT;

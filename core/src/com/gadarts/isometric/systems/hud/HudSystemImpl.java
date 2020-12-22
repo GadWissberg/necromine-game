@@ -189,7 +189,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 
 	private void colorizeCursor(final MapGraphNode newNode) {
-		Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, newNode);
+		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, newNode);
 		if (enemyAtNode != null) {
 			setCursorColor(CURSOR_ATTACK);
 		} else {
@@ -232,7 +232,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void planPath(final MapGraphNode cursorNode) {
-		Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, cursorNode);
+		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, cursorNode);
 		if (calculatePathAccordingToSelection(cursorNode, enemyAtNode)) {
 			MapGraphNode selectedAttackNode = attackNodesHandler.getSelectedAttackNode();
 			if (getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null || (selectedAttackNode != null && !isNodeInAvailableNodes(cursorNode, map.getAvailableNodesAroundNode(enemiesEntities, selectedAttackNode)))) {
@@ -258,7 +258,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		MapGraphNode playerNode = map.getNode(characterDecalComponent.getCellPosition(auxVector3_1));
 		CharacterSystem characterSystem = getSystem(CharacterSystem.class);
 		MapGraphPath plannedPath = pathPlanHandler.getPath();
-		return (enemyAtNode != null && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
+		return (enemyAtNode != null && ComponentsMapper.character.get(enemyAtNode).getHealthData().getHp() > 0 && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
 				|| getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath)
 				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath);
 	}
@@ -282,7 +282,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		result |= isNodeInAvailableNodes(targetNode, map.getAvailableNodesAroundNode(enemiesEntities, attackNode));
 		result |= targetNode.equals(attackNode) && playerNode.isConnectedNeighbour(attackNode);
 		if (result) {
-			if (map.getEnemyFromNode(enemiesEntities, targetNode) != null) {
+			if (map.getAliveEnemyFromNode(enemiesEntities, targetNode) != null) {
 				Array<MapGraphNode> nodes = pathPlanHandler.getPath().nodes;
 				nodes.removeIndex(nodes.size - 1);
 			}
@@ -344,7 +344,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private String calculateToolTipText() {
 		MapGraphNode cursorNode = getCursorNode();
-		Entity enemyAtNode = map.getEnemyFromNode(enemiesEntities, cursorNode);
+		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, cursorNode);
 		String result;
 		if (enemyAtNode != null) {
 			result = ComponentsMapper.enemy.get(enemyAtNode).getEnemyDefinition().getDisplayName();

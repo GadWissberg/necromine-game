@@ -98,18 +98,18 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		List<MapGraphNode> nodesAround = getNodesAround(node, auxNodesList_1);
 		List<MapGraphNode> availableNodes = auxNodesList_2;
 		for (MapGraphNode nearbyNode : nodesAround) {
-			if (nearbyNode.getType() == 0 && getEnemyFromNode(enemiesEntities, nearbyNode) == null) {
+			if (nearbyNode.getType() == 0 && getAliveEnemyFromNode(enemiesEntities, nearbyNode) == null) {
 				availableNodes.add(nearbyNode);
 			}
 		}
 		return availableNodes;
 	}
 
-	public Entity getEnemyFromNode(final ImmutableArray<Entity> enemiesEntities, final MapGraphNode node) {
+	public Entity getAliveEnemyFromNode(final ImmutableArray<Entity> enemiesEntities, final MapGraphNode node) {
 		Entity result = null;
 		for (Entity enemy : enemiesEntities) {
 			MapGraphNode enemyNode = getNode(ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition());
-			if (enemyNode.equals(node)) {
+			if (ComponentsMapper.character.get(enemy).getHealthData().getHp() > 0 && enemyNode.equals(node)) {
 				result = enemy;
 				break;
 			}
@@ -173,7 +173,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private boolean checkIfNodeIsAvailable(final Connection<MapGraphNode> connection) {
 		for (Entity character : characterEntities) {
 			MapGraphNode node = getNode(ComponentsMapper.characterDecal.get(character).getCellPosition(auxVector));
-			if (currentDestination == node) {
+			if (currentDestination == node || ComponentsMapper.character.get(character).getHealthData().getHp() <= 0) {
 				continue;
 			}
 			if (node.equals(connection.getToNode())) {
