@@ -1,6 +1,8 @@
 package com.gadarts.isometric.systems.render;
 
-public interface RenderSystem {
+import com.gadarts.isometric.systems.GameSystem;
+
+public interface RenderSystem extends GameSystem {
 	int getNumberOfVisible();
 
 	int getNumberOfModelInstances();

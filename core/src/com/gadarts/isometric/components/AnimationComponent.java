@@ -33,7 +33,7 @@ public class AnimationComponent implements GameComponent {
 		boolean looping = animation.getPlayMode() == Animation.PlayMode.LOOP;
 		TextureAtlas.AtlasRegion result = animation.getKeyFrame((float) stateTime, looping);
 		long now = TimeUtils.millis();
-		if (now - lastFrameChange >= frameDuration * 1000f) {
+		if (now - lastFrameChange >= frameDuration * 1000.0) {
 			lastFrameChange = now;
 			stateTime += frameDuration;
 		}

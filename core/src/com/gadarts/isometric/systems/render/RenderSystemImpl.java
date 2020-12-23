@@ -77,11 +77,12 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
-		if (!ready) return;
-		numberOfVisible = 0;
-		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
-		renderWorld(deltaTime, getSystem(CameraSystem.class).getCamera());
-		getSystem(HudSystem.class).getStage().draw();
+		if (ready) {
+			numberOfVisible = 0;
+			resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
+			renderWorld(deltaTime, getSystem(CameraSystem.class).getCamera());
+			getSystem(HudSystem.class).getStage().draw();
+		}
 	}
 
 	private void renderWorld(final float deltaTime, final Camera camera) {
@@ -93,6 +94,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		}
 		resetDisplay(Color.BLACK);
 		renderModels(camera, renderBatches.getModelBatch(), true, true);
+		renderDecals(deltaTime, camera);
+	}
+
+	private void renderDecals(final float deltaTime, final Camera camera) {
 		DecalBatch decalBatch = renderBatches.getDecalBatch();
 		for (Entity entity : renderSystemRelatedEntities.getCharacterDecalsEntities()) {
 			CharacterComponent characterComponent = ComponentsMapper.character.get(entity);

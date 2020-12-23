@@ -171,7 +171,6 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				} else {
 					spriteType = SpriteType.RUN;
 				}
-				ComponentsMapper.animation.get(character).resetStateTime();
 				characterSpriteData.setSpriteType(spriteType);
 			}
 		}
