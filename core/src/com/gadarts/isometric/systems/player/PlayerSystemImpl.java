@@ -229,11 +229,10 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		WeaponsDefinitions definition = (WeaponsDefinitions) selectedWeapon.getDefinition();
 		CharacterDecalComponent cdc = ComponentsMapper.characterDecal.get(player);
 		CharacterAnimations animations = assetsManager.get(Assets.Atlases.findByRelatedWeapon(definition).name());
-		SpriteType spriteType = cdc.getSpriteType();
 		CharacterComponent.Direction direction = cdc.getDirection();
-		cdc.init(animations, spriteType, direction, auxVector.set(cdc.getDecal().getPosition()));
-		CharacterAnimation animation = animations.get(spriteType, direction);
-		ComponentsMapper.animation.get(player).init(spriteType.getAnimationDuration(), animation);
+		cdc.init(animations, cdc.getSpriteType(), direction, auxVector.set(cdc.getDecal().getPosition()));
+		CharacterAnimation animation = animations.get(cdc.getSpriteType(), direction);
+		ComponentsMapper.animation.get(player).init(cdc.getSpriteType().getAnimationDuration(), animation);
 	}
 
 	@Override

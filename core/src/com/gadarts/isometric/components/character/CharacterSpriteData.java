@@ -8,12 +8,13 @@ import lombok.Setter;
 @Getter
 public class CharacterSpriteData implements Pool.Poolable {
 	private CharacterComponent.Direction facingDirection;
+	private int frameIndexNotAffectedByLight;
 	private SpriteType spriteType;
 	private int hitFrameIndex;
 
 	@Override
 	public void reset() {
-
+		frameIndexNotAffectedByLight = -1;
 	}
 
 	public void init(final CharacterComponent.Direction direction, final SpriteType spriteType, final int hitFrameIndex) {

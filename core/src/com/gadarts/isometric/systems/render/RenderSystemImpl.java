@@ -192,7 +192,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				}
 			}
 			if (!DefaultGameSettings.HIDE_ENEMIES || !ComponentsMapper.enemy.has(entity)) {
-				lightsHandler.applyLightsOnDecal(decal);
+				lightsHandler.applyLightsOnDecal(entity);
 				decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
 				decalBatch.add(decal);
 				decalBatch.add(shadowDecal);

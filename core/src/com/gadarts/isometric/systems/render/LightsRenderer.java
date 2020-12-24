@@ -3,12 +3,16 @@ package com.gadarts.isometric.systems.render;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.LightComponent;
 import com.gadarts.isometric.components.ModelInstanceComponent;
+import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.CharacterSpriteData;
+import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 
@@ -62,14 +66,30 @@ public class LightsRenderer {
 		);
 	}
 
-	void applyLightsOnDecal(final Decal decal) {
-		float minDistance = Float.MAX_VALUE;
-		for (Entity light : lightsEntities) {
-			minDistance = applyLightOnDecal(decal, minDistance, light);
+	void applyLightsOnDecal(final Entity entity) {
+		CharacterComponent characterComponent = ComponentsMapper.character.get(entity);
+		Decal decal = ComponentsMapper.characterDecal.get(entity).getDecal();
+		CharacterSpriteData spriteData = characterComponent.getCharacterSpriteData();
+		if (shouldApplyLightsOnDecal(entity, spriteData)) {
+			float minDistance = Float.MAX_VALUE;
+			for (Entity light : lightsEntities) {
+				minDistance = applyLightOnDecal(decal, minDistance, light);
+			}
+			if (minDistance == Float.MAX_VALUE) {
+				decal.setColor(DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, 1f);
+			}
+		} else {
+			decal.setColor(Color.WHITE);
 		}
-		if (minDistance == Float.MAX_VALUE) {
-			decal.setColor(DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, 1f);
-		}
+	}
+
+	private boolean shouldApplyLightsOnDecal(final Entity entity,
+											 final CharacterSpriteData spriteData) {
+		Decal decal = ComponentsMapper.characterDecal.get(entity).getDecal();
+		TextureAtlas.AtlasRegion textureRegion = (TextureAtlas.AtlasRegion) decal.getTextureRegion();
+		return ComponentsMapper.enemy.has(entity)
+				|| spriteData.getSpriteType() != SpriteType.ATTACK
+				|| textureRegion.index != spriteData.getHitFrameIndex();
 	}
 
 	public void applyLightsOnModel(final ModelInstanceComponent mic) {
