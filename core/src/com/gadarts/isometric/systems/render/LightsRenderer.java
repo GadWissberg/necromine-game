@@ -113,11 +113,8 @@ public class LightsRenderer {
 		Vector3 lightPosition = lightComponent.getPosition(auxVector3_1);
 		Vector3 modelPosition = modelInstance.transform.getTranslation(auxVector3_2);
 		float distance = lightPosition.dst(modelPosition);
-//		if (distance <= LightComponent.LIGHT_RADIUS) {
-//			if (ComponentsMapper.floor.has(entity) && modelPosition.isZero()) {
-//				Gdx.app.log("!",""+distance);
-//			}
-		nearbyLights.add(light);
-//		}
+		if (distance <= LightComponent.LIGHT_RADIUS) {
+			nearbyLights.add(light);
+		}
 	}
 }

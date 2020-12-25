@@ -41,7 +41,6 @@ public class MainShader extends DefaultShader {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void render(final Renderable renderable) {
-		super.render(renderable);
 		if (renderable.userData != null) {
 			List<Entity> nearbyLights = (List<Entity>) renderable.userData;
 			int size = nearbyLights.size();
@@ -56,6 +55,7 @@ public class MainShader extends DefaultShader {
 		} else {
 			program.setUniformi(numberOfLightsLocation, -1);
 		}
+		super.render(renderable);
 	}
 
 	private void insertToLightsArray(final List<Entity> nearbyLights, final int i) {
