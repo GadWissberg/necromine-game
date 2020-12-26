@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.StringBuilder;
 import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.AttackNodesHandler;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystem;
@@ -183,14 +184,10 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	}
 
 	@Override
-	public void onPathCreated(final boolean pathToEnemy) {
+	public void onUserSelectedNodeToApplyTurn(final MapGraphNode cursorNode, final AttackNodesHandler attackNodesHandler) {
 
 	}
 
-	@Override
-	public void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
-
-	}
 
 	@Override
 	public void activate() {

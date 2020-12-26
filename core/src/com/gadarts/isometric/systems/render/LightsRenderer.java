@@ -10,7 +10,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.LightComponent;
 import com.gadarts.isometric.components.ModelInstanceComponent;
-import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.model.GameModelInstance;
@@ -21,11 +20,15 @@ import java.util.List;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+/**
+ * Responsible to gather nearby lights to entity and apply them on it.
+ */
 public class LightsRenderer {
 	private static final float DECAL_DARKEST_COLOR = 0.2f;
 	private static final float DECAL_LIGHT_OFFSET = 1.5f;
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
+
 	private final ImmutableArray<Entity> lightsEntities;
 
 	public LightsRenderer(final ImmutableArray<Entity> lightsEntities) {
@@ -66,21 +69,24 @@ public class LightsRenderer {
 		);
 	}
 
-	void applyLightsOnDecal(final Entity entity) {
-		CharacterComponent characterComponent = ComponentsMapper.character.get(entity);
+	void setDecalColorAccordingToLights(final Entity entity) {
 		Decal decal = ComponentsMapper.characterDecal.get(entity).getDecal();
-		CharacterSpriteData spriteData = characterComponent.getCharacterSpriteData();
-		if (shouldApplyLightsOnDecal(entity, spriteData)) {
+		if (shouldApplyLightsOnDecal(entity, ComponentsMapper.character.get(entity).getCharacterSpriteData())) {
 			float minDistance = Float.MAX_VALUE;
-			for (Entity light : lightsEntities) {
-				minDistance = applyLightOnDecal(decal, minDistance, light);
-			}
+			minDistance = applyLightsOnDecal(decal, minDistance);
 			if (minDistance == Float.MAX_VALUE) {
 				decal.setColor(DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, 1f);
 			}
 		} else {
 			decal.setColor(Color.WHITE);
 		}
+	}
+
+	private float applyLightsOnDecal(final Decal decal, float minDistance) {
+		for (Entity light : lightsEntities) {
+			minDistance = applyLightOnDecal(decal, minDistance, light);
+		}
+		return minDistance;
 	}
 
 	private boolean shouldApplyLightsOnDecal(final Entity entity,
@@ -92,6 +98,11 @@ public class LightsRenderer {
 				|| textureRegion.index != spriteData.getHitFrameIndex();
 	}
 
+	/**
+	 * Finds nearby lights to the given model instance and caches them in its list.
+	 *
+	 * @param mic The model-instance to apply the lights on.
+	 */
 	public void applyLightsOnModel(final ModelInstanceComponent mic) {
 		mic.getModelInstance().getNearbyLights().clear();
 		if (!DefaultGameSettings.DISABLE_LIGHTS) {

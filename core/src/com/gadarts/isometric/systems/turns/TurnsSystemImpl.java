@@ -43,6 +43,16 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 	}
 
 	@Override
+	public void onPathCreated(final boolean pathToEnemy) {
+
+	}
+
+	@Override
+	public void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
+
+	}
+
+	@Override
 	public void onPlayerSystemReady(final PlayerSystem playerSystem) {
 
 	}

@@ -30,16 +30,16 @@ public class GameCameraGroupStrategy implements GroupStrategy, Disposable {
 	};
 
 	private final Comparator<Decal> cameraSorter;
-	Pool<Array<Decal>> arrayPool = new Pool<>(16) {
+	private final Pool<Array<Decal>> arrayPool = new Pool<>(16) {
 		@Override
 		protected Array<Decal> newObject() {
 			return new Array<>();
 		}
 	};
-	Array<Array<Decal>> usedArrays = new Array<>();
-	ObjectMap<DecalMaterial, Array<Decal>> materialGroups = new ObjectMap<>();
-	Camera camera;
-	ShaderProgram shader;
+	private final Array<Array<Decal>> usedArrays = new Array<>();
+	private final ObjectMap<DecalMaterial, Array<Decal>> materialGroups = new ObjectMap<>();
+	private Camera camera;
+	private ShaderProgram shader;
 
 	public GameCameraGroupStrategy(final Camera camera, final GameAssetsManager assetsManager) {
 		this(camera, assetsManager, (o1, o2) -> {

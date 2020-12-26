@@ -20,16 +20,22 @@ import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.CharacterCommand;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.AttackNodesHandler;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
+import com.gadarts.isometric.systems.player.PlayerSystem;
+import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.utils.map.MapGraphNode;
+
+import java.util.List;
 
 public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscriber>
 		implements PickUpSystem,
+		PlayerSystemEventsSubscriber,
 		InputSystemEventsSubscriber,
 		HudSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
@@ -175,6 +181,16 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 	}
 
 	@Override
+	public void onUserSelectedNodeToApplyTurn(final MapGraphNode cursorNode, final AttackNodesHandler attackNodesHandler) {
+
+	}
+
+	@Override
+	public void onPlayerFinishedTurn() {
+
+	}
+
+	@Override
 	public void onPathCreated(final boolean pathToEnemy) {
 		if (!pathToEnemy && getCurrentHighLightedPickup() != null) {
 			itemToPickup = currentHighLightedPickup;
@@ -183,6 +199,21 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 
 	@Override
 	public void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
+
+	}
+
+	@Override
+	public void onPlayerSystemReady(final PlayerSystem playerSystem) {
+
+	}
+
+	@Override
+	public void onAttackModeActivated(final List<MapGraphNode> availableNodes) {
+
+	}
+
+	@Override
+	public void onAttackModeDeactivated() {
 
 	}
 

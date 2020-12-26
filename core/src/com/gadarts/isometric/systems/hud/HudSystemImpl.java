@@ -3,16 +3,10 @@ package com.gadarts.isometric.systems.hud;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -20,20 +14,16 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gadarts.isometric.NecromineGame;
-import com.gadarts.isometric.components.CharacterDecalComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
 import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.player.PlayerComponent;
-import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
@@ -55,14 +45,12 @@ import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
-import com.gadarts.isometric.utils.map.MapGraphPath;
 
 import java.util.List;
 
 import static com.badlogic.gdx.Application.LOG_DEBUG;
 
-public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> implements
-		HudSystem,
+public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> implements HudSystem,
 		InputSystemEventsSubscriber,
 		PlayerSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
@@ -75,27 +63,18 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final float BUTTON_PADDING = 40;
-	public static final Color TOOL_TIP_BACKGROUND_COLOR = Color.FOREST;
-	private static final long TOOLTIP_DELAY = 1000;
-	public static final Color TOOL_TIP_FONT_COLOR = Color.WHITE;
-	private static final float TOOLTIP_PADDING = 4f;
+
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
-	private PathPlanHandler pathPlanHandler;
 	private ImmutableArray<Entity> enemiesEntities;
 	private ModelInstance cursorModelInstance;
 	private GameStage stage;
-	private Entity player;
-	private long lastHighlightNodeChange;
-	private Texture toolTipBackgroundColor;
-	private Table tooltipTable;
-	private GlyphLayout toolTipLayout;
-	private BitmapFont toolTipFont;
+	private ToolTipHandler toolTipHandler;
 
 
 	@Override
 	public void dispose() {
 		attackNodesHandler.dispose();
-		toolTipBackgroundColor.dispose();
+		toolTipHandler.dispose();
 	}
 
 	@Override
@@ -111,7 +90,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
 		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		attackNodesHandler.init(getEngine());
-		player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 	}
 
 	private void createStageAndAddHud() {
@@ -119,7 +97,8 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
 		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), soundPlayer);
 		addHudTable();
-		addToolTipTable();
+		toolTipHandler = new ToolTipHandler(stage);
+		toolTipHandler.addToolTipTable();
 	}
 
 	private void addHudTable() {
@@ -130,32 +109,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		stage.addActor(hudTable);
 	}
 
-	private void addToolTipTable() {
-		tooltipTable = new Table();
-		setToolTipBackground();
-		stage.addActor(tooltipTable);
-		toolTipFont = new BitmapFont();
-		toolTipLayout = new GlyphLayout();
-		resizeToolTip("");
-		tooltipTable.add(new Label(null, new Label.LabelStyle(toolTipFont, TOOL_TIP_FONT_COLOR))).row();
-		tooltipTable.setVisible(false);
-	}
-
-	private void resizeToolTip(final CharSequence text) {
-		toolTipLayout.setText(toolTipFont, text);
-		float width = toolTipLayout.width + TOOLTIP_PADDING * 2;
-		float height = toolTipLayout.height + TOOLTIP_PADDING * 2;
-		tooltipTable.setSize(width, height);
-	}
-
-	private void setToolTipBackground() {
-		Pixmap bgPixmap = new Pixmap(1, 1, Pixmap.Format.RGB565);
-		bgPixmap.setColor(TOOL_TIP_BACKGROUND_COLOR);
-		bgPixmap.fill();
-		toolTipBackgroundColor = new Texture(bgPixmap);
-		bgPixmap.dispose();
-		tooltipTable.setBackground(new TextureRegionDrawable(new TextureRegion(toolTipBackgroundColor)));
-	}
 
 	private void addStorageButton(final Table table) {
 		Button.ButtonStyle buttonStyle = new Button.ButtonStyle();
@@ -180,13 +133,12 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		MapGraphNode newNode = map.getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
 		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
 		if (!newNode.equals(oldNode)) {
-			displayToolTip(null);
-			lastHighlightNodeChange = TimeUtils.millis();
+			toolTipHandler.displayToolTip(null);
+			toolTipHandler.setLastHighlightNodeChange(TimeUtils.millis());
 			cursorModelInstance.transform.setTranslation(newNode.getX(), 0, newNode.getY());
 			colorizeCursor(newNode);
 		}
 	}
-
 
 	private void colorizeCursor(final MapGraphNode newNode) {
 		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, newNode);
@@ -215,115 +167,15 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		Turns currentTurn = getSystem(TurnsSystem.class).getCurrentTurn();
 		if (currentTurn == Turns.PLAYER && ComponentsMapper.character.get(player).getHealthData().getHp() > 0) {
 			if (button == Input.Buttons.LEFT && !getSystem(CharacterSystem.class).isProcessingCommand()) {
-				applyPlayerTurn();
+				userSelectedNodeToApplyTurn();
 			}
 		}
 	}
 
-
-	private void applyPlayerTurn() {
+	private void userSelectedNodeToApplyTurn() {
 		MapGraphNode cursorNode = getCursorNode();
-		int pathSize = pathPlanHandler.getPath().getCount();
-		if (!pathPlanHandler.getPath().nodes.isEmpty() && pathPlanHandler.getPath().get(pathSize - 1).equals(cursorNode)) {
-			applyPlayerCommandAccordingToPlan(cursorNode);
-		} else {
-			planPath(cursorNode);
-		}
-	}
-
-	private void planPath(final MapGraphNode cursorNode) {
-		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, cursorNode);
-		if (calculatePathAccordingToSelection(cursorNode, enemyAtNode)) {
-			MapGraphNode selectedAttackNode = attackNodesHandler.getSelectedAttackNode();
-			if (getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null || (selectedAttackNode != null && !isNodeInAvailableNodes(cursorNode, map.getAvailableNodesAroundNode(enemiesEntities, selectedAttackNode)))) {
-				attackNodesHandler.reset();
-			}
-			pathHasCreated(cursorNode, enemyAtNode);
-		}
-	}
-
-	private void pathHasCreated(final MapGraphNode cursorNode, final Entity enemyAtNode) {
-		if (enemyAtNode != null) {
-			enemySelected(cursorNode, enemyAtNode);
-		}
-		for (HudSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onPathCreated(enemyAtNode != null);
-		}
-		pathPlanHandler.displayPathPlan();
-	}
-
-	private boolean calculatePathAccordingToSelection(final MapGraphNode cursorNode, final Entity enemyAtNode) {
-		PlayerSystem system = getSystem(PlayerSystem.class);
-		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(system.getPlayer());
-		MapGraphNode playerNode = map.getNode(characterDecalComponent.getCellPosition(auxVector3_1));
-		CharacterSystem characterSystem = getSystem(CharacterSystem.class);
-		MapGraphPath plannedPath = pathPlanHandler.getPath();
-		return (enemyAtNode != null && ComponentsMapper.character.get(enemyAtNode).getHealthData().getHp() > 0 && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
-				|| getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath)
-				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath);
-	}
-
-
-	private void applyPlayerCommandAccordingToPlan(final MapGraphNode cursorNode) {
-		pathPlanHandler.hideAllArrows();
-		PlayerSystem playerSystem = getSystem(PlayerSystem.class);
-		CharacterDecalComponent charDecalComp = ComponentsMapper.characterDecal.get(playerSystem.getPlayer());
-		MapGraphNode playerNode = map.getNode(charDecalComp.getCellPosition(auxVector3_1));
-		if (attackNodesHandler.getSelectedAttackNode() == null) {
-			applyCommandWhenNoAttackNodeSelected();
-		} else {
-			applyPlayerAttackCommand(cursorNode, playerNode);
-		}
-	}
-
-	private void applyPlayerAttackCommand(final MapGraphNode targetNode, final MapGraphNode playerNode) {
-		MapGraphNode attackNode = attackNodesHandler.getSelectedAttackNode();
-		boolean result = targetNode.equals(attackNode);
-		result |= isNodeInAvailableNodes(targetNode, map.getAvailableNodesAroundNode(enemiesEntities, attackNode));
-		result |= targetNode.equals(attackNode) && playerNode.isConnectedNeighbour(attackNode);
-		if (result) {
-			if (map.getAliveEnemyFromNode(enemiesEntities, targetNode) != null) {
-				Array<MapGraphNode> nodes = pathPlanHandler.getPath().nodes;
-				nodes.removeIndex(nodes.size - 1);
-			}
-			getSystem(PlayerSystem.class).applyGoToMeleeCommand(pathPlanHandler.getPath());
-		}
-		attackNodesHandler.setSelectedAttackNode(null);
-		getSystem(PlayerSystem.class).deactivateAttackMode();
-	}
-
-	private boolean isNodeInAvailableNodes(final MapGraphNode node, final List<MapGraphNode> availableNodes) {
-		boolean result = false;
-		for (MapGraphNode availableNode : availableNodes) {
-			if (availableNode.equals(node)) {
-				result = true;
-				break;
-			}
-		}
-		return result;
-	}
-
-	private void applyCommandWhenNoAttackNodeSelected() {
-		MapGraphPath plannedPath = pathPlanHandler.getPath();
-		Entity itemToPickup = getSystem(PickUpSystem.class).getItemToPickup();
-		if (itemToPickup != null) {
-			getSystem(PlayerSystem.class).applyGoToPickupCommand(plannedPath, itemToPickup);
-		} else {
-			getSystem(PlayerSystem.class).applyGoToCommand(plannedPath);
-		}
-	}
-
-	private void enemySelected(final MapGraphNode node, final Entity enemyAtNode) {
-		Weapon selectedWeapon = ComponentsMapper.player.get(player).getStorage().getSelectedWeapon();
-		if (selectedWeapon.isMelee()) {
-			List<MapGraphNode> availableNodes = map.getAvailableNodesAroundNode(enemiesEntities, node);
-			attackNodesHandler.setSelectedAttackNode(node);
-			getSystem(PlayerSystem.class).activateAttackMode(enemyAtNode, availableNodes);
-		} else {
-			pathPlanHandler.resetPlan();
-			for (HudSystemEventsSubscriber subscriber : subscribers) {
-				subscriber.onEnemySelectedWithRangeWeapon(node);
-			}
+		for (HudSystemEventsSubscriber sub : subscribers) {
+			sub.onUserSelectedNodeToApplyTurn(cursorNode, attackNodesHandler);
 		}
 	}
 
@@ -331,48 +183,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
 		stage.act();
-		handleToolTip();
-	}
-
-	private void handleToolTip() {
-		if (lastHighlightNodeChange != -1 && TimeUtils.timeSinceMillis(lastHighlightNodeChange) >= TOOLTIP_DELAY) {
-			String text = calculateToolTipText();
-			displayToolTip(text);
-			lastHighlightNodeChange = -1;
-		}
-	}
-
-	private String calculateToolTipText() {
-		MapGraphNode cursorNode = getCursorNode();
-		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, cursorNode);
-		String result;
-		if (enemyAtNode != null) {
-			result = ComponentsMapper.enemy.get(enemyAtNode).getEnemyDefinition().getDisplayName();
-		} else {
-			result = checkIfToolTipIsPickupOrObstacle(cursorNode);
-		}
-		return result;
-	}
-
-	private String checkIfToolTipIsPickupOrObstacle(final MapGraphNode cursorNode) {
-		Entity pickup = map.getPickupFromNode(cursorNode);
-		if (pickup != null) {
-			return ComponentsMapper.pickup.get(pickup).getItem().getDefinition().getDisplayName();
-		} else {
-			Entity obstacle = map.getObstacleFromNode(cursorNode);
-			return obstacle != null ? ComponentsMapper.obstacle.get(obstacle).getDefinition().getDisplayName() : null;
-		}
-	}
-
-	private void displayToolTip(final String text) {
-		if (text != null) {
-			((Label) tooltipTable.getChild(0)).setText(text);
-			tooltipTable.setVisible(true);
-			tooltipTable.setPosition(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
-			resizeToolTip(text);
-		} else {
-			tooltipTable.setVisible(false);
-		}
+		toolTipHandler.handleToolTip(map, getCursorNode(), enemiesEntities);
 	}
 
 
@@ -393,6 +204,16 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	@Override
 	public void onPlayerFinishedTurn() {
+
+	}
+
+	@Override
+	public void onPathCreated(final boolean pathToEnemy) {
+
+	}
+
+	@Override
+	public void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
 
 	}
 
@@ -486,8 +307,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	@Override
 	public void activate() {
-		pathPlanHandler = new PathPlanHandler(assetsManager);
-		pathPlanHandler.init((PooledEngine) getEngine());
 		for (HudSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onHudSystemReady(this);
 		}

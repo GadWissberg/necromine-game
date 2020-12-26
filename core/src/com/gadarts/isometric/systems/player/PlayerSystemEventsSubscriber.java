@@ -8,6 +8,10 @@ import java.util.List;
 public interface PlayerSystemEventsSubscriber extends SystemEventsSubscriber {
 	void onPlayerFinishedTurn();
 
+	void onPathCreated(boolean pathToEnemy);
+
+	void onEnemySelectedWithRangeWeapon(MapGraphNode node);
+
 	void onPlayerSystemReady(PlayerSystem playerSystem);
 
 	void onAttackModeActivated(List<MapGraphNode> availableNodes);
