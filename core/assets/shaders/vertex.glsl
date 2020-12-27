@@ -2,11 +2,6 @@
 #define textureFlag
 #endif
 
-
-#if defined(specularFlag) || defined(fogFlag)
-#define cameraPositionFlag
-#endif
-
 attribute vec3 a_position;
 uniform mat4 u_projViewTrans;
 
@@ -135,9 +130,6 @@ uniform vec3 u_sphericalHarmonics[9];
 varying vec3 v_lightSpecular;
 #endif// specularFlag
 
-#ifdef cameraPositionFlag
-uniform vec4 u_cameraPosition;
-#endif// cameraPositionFlag
 
 #ifdef fogFlag
 varying float v_fog;
@@ -249,12 +241,6 @@ void main() {
     #endif
     v_normal = normal;
     #endif// normalFlag
-
-    #ifdef fogFlag
-    vec3 flen = u_cameraPosition.xyz - pos.xyz;
-    float fog = dot(flen, flen) * u_cameraPosition.w;
-    v_fog = min(fog, 1.0);
-    #endif
 
     #ifdef lightingFlag
     #if    defined(ambientLightFlag)
