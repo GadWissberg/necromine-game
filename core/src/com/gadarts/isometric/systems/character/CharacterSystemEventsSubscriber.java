@@ -2,6 +2,7 @@ package com.gadarts.isometric.systems.character;
 
 import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
+import com.gadarts.isometric.utils.map.MapGraphNode;
 
 public interface CharacterSystemEventsSubscriber extends SystemEventsSubscriber {
 	void onDestinationReached(Entity character);
@@ -17,4 +18,6 @@ public interface CharacterSystemEventsSubscriber extends SystemEventsSubscriber 
 	void onItemPickedUp(Entity itemPickedUp);
 
 	void onCharacterDies(Entity character);
+
+	void onCharacterNodeChanged(Entity entity, MapGraphNode oldNode, MapGraphNode newNode);
 }

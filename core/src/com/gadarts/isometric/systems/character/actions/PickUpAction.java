@@ -1,7 +1,7 @@
 package com.gadarts.isometric.systems.character.actions;
 
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Vector2;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterMotivation;
@@ -16,7 +16,7 @@ public class PickUpAction implements ToDoAfterDestinationReached {
 					final MapGraph map,
 					final SoundPlayer soundPlayer,
 					final Object itemToPickup) {
-		Vector3 charPos = ComponentsMapper.characterDecal.get(character).getCellPosition(auxVector);
+		Vector2 charPos = ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2);
 		Entity pickup = map.getPickupFromNode(map.getNode(charPos));
 		if (pickup != null) {
 			CharacterComponent characterComponent = ComponentsMapper.character.get(character);

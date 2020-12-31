@@ -89,9 +89,10 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 											final Entity character,
 											final MapGraphPath outputPath) {
 		outputPath.clear();
+		Vector2 cellPosition = ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2_1);
 		return graphData.getPathFinder().searchNodePathBeforeCommand(
 				sourceNode,
-				map.getNode(ComponentsMapper.characterDecal.get(character).getCellPosition(auxVector3_1)),
+				map.getNode((int) cellPosition.x, (int) cellPosition.y),
 				graphData.getHeuristic(),
 				outputPath
 		);
@@ -355,14 +356,23 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void takeStep(final Entity entity) {
-		ComponentsMapper.character.get(entity).getDestinationNode().getCenterPosition(auxVector2_2);
 		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(entity);
+		MapGraphNode oldNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_3));
+		translateCharacter(entity, characterDecalComponent);
+		MapGraphNode newNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_3));
+		if (oldNode != newNode) {
+			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+				subscriber.onCharacterNodeChanged(entity, oldNode, newNode);
+			}
+		}
+	}
+
+	private void translateCharacter(final Entity entity, final CharacterDecalComponent characterDecalComponent) {
+		ComponentsMapper.character.get(entity).getDestinationNode().getCenterPosition(auxVector2_2);
 		Decal decal = characterDecalComponent.getDecal();
-		Decal shadowDecal = characterDecalComponent.getShadowDecal();
-		auxVector2_1.set(decal.getX(), decal.getZ());
-		Vector2 velocity = auxVector2_2.sub(auxVector2_1).nor().scl(CHARACTER_STEP_SIZE);
+		Vector2 velocity = auxVector2_2.sub(auxVector2_1.set(decal.getX(), decal.getZ())).nor().scl(CHARACTER_STEP_SIZE);
 		decal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));
-		shadowDecal.translate(auxVector3_1.set(velocity.x, 0, velocity.y));
+		characterDecalComponent.getShadowDecal().translate(auxVector3_1.set(velocity.x, 0, velocity.y));
 	}
 
 

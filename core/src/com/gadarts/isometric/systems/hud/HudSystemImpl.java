@@ -306,6 +306,11 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	@Override
+	public void onCharacterNodeChanged(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
+
+	}
+
+	@Override
 	public void activate() {
 		for (HudSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onHudSystemReady(this);

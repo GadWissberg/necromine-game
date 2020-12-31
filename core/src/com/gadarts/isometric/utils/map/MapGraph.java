@@ -8,6 +8,7 @@ import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.ComponentsMapper;
@@ -28,7 +29,8 @@ import java.util.List;
 public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEventsSubscriber {
 	public static final int MAP_SIZE = 20;
 	private static final Array<Connection<MapGraphNode>> auxConnectionsList = new Array<>();
-	private static final Vector3 auxVector = new Vector3();
+	private static final Vector3 auxVector3 = new Vector3();
+	private static final Vector2 auxVector2 = new Vector2();
 	private static final List<MapGraphNode> auxNodesList_1 = new ArrayList<>();
 	private static final List<MapGraphNode> auxNodesList_2 = new ArrayList<>();
 
@@ -36,6 +38,9 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private final ImmutableArray<Entity> characterEntities;
 	private final ImmutableArray<Entity> pickupEntities;
 	private final ImmutableArray<Entity> obstacleEntities;
+
+	@Getter
+	private final int[][] fow;
 
 	@Setter(AccessLevel.PACKAGE)
 	@Getter(AccessLevel.PACKAGE)
@@ -49,6 +54,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		this.obstacleEntities = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
 		this.characterEntities = characterEntities;
 		this.nodes = new Array<>(MAP_SIZE * MAP_SIZE);
+		this.fow = new int[MAP_SIZE][MAP_SIZE];
 		int[][] map = new int[MAP_SIZE][MAP_SIZE];
 		wallEntities.forEach(wall -> {
 			WallComponent wallComponent = ComponentsMapper.wall.get(wall);
@@ -118,7 +124,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	public MapGraphNode getRayNode(final int screenX, final int screenY, final Camera camera) {
-		Vector3 output = Utils.calculateGridPositionFromMouse(camera, screenX, screenY, auxVector);
+		Vector3 output = Utils.calculateGridPositionFromMouse(camera, screenX, screenY, auxVector3);
 		output.set(Math.max(output.x, 0), Math.max(output.y, 0), Math.max(output.z, 0));
 		return getNode(output);
 	}
@@ -172,7 +178,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
 	private boolean checkIfNodeIsAvailable(final Connection<MapGraphNode> connection) {
 		for (Entity character : characterEntities) {
-			MapGraphNode node = getNode(ComponentsMapper.characterDecal.get(character).getCellPosition(auxVector));
+			MapGraphNode node = getNode(ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2));
 			if (currentDestination == node || ComponentsMapper.character.get(character).getHealthData().getHp() <= 0) {
 				continue;
 			}
@@ -228,6 +234,10 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		return getNode((int) position.x, (int) position.z);
 	}
 
+	public MapGraphNode getNode(final Vector2 position) {
+		return getNode((int) position.x, (int) position.y);
+	}
+
 	@Override
 	public void onDestinationReached(final Entity character) {
 
@@ -264,11 +274,16 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
 	}
 
+	@Override
+	public void onCharacterNodeChanged(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
+
+	}
+
 	public Entity getPickupFromNode(final MapGraphNode node) {
 		Entity result = null;
 		for (Entity pickup : pickupEntities) {
 			ModelInstance modelInstance = ComponentsMapper.modelInstance.get(pickup).getModelInstance();
-			MapGraphNode pickupNode = getNode(modelInstance.transform.getTranslation(auxVector));
+			MapGraphNode pickupNode = getNode(modelInstance.transform.getTranslation(auxVector3));
 			if (pickupNode.equals(node)) {
 				result = pickup;
 				break;
@@ -281,7 +296,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		Entity result = null;
 		for (Entity obstacle : obstacleEntities) {
 			ModelInstance modelInstance = ComponentsMapper.modelInstance.get(obstacle).getModelInstance();
-			MapGraphNode pickupNode = getNode(modelInstance.transform.getTranslation(auxVector));
+			MapGraphNode pickupNode = getNode(modelInstance.transform.getTranslation(auxVector3));
 			if (pickupNode.equals(node)) {
 				result = obstacle;
 				break;

@@ -31,7 +31,6 @@ public class SystemsHandler implements Disposable {
 		});
 		engine.getSystems().forEach((system) -> Arrays.stream(system.getClass().getInterfaces()).forEach(i -> {
 			if (subscribersInterfaces.containsKey(i)) {
-				//noinspection unchecked
 				EventsNotifier<SystemEventsSubscriber> s = engine.getSystem(subscribersInterfaces.get(i));
 				s.subscribeForEvents((SystemEventsSubscriber) system);
 			}

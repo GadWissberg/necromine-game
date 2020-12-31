@@ -94,9 +94,9 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	private void invokeEnemyTurn(final Entity enemy) {
-		Vector3 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getCellPosition(auxVector3_1);
+		Vector2 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 		Entity target = ComponentsMapper.character.get(enemy).getTarget();
-		MapGraphNode enemyNode = map.getNode((int) enemyPosition.x, (int) enemyPosition.z);
+		MapGraphNode enemyNode = map.getNode(enemyPosition);
 		applyGoToMelee(enemy, enemyNode, target);
 	}
 
@@ -166,6 +166,11 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		if (ComponentsMapper.enemy.has(character)) {
 			ComponentsMapper.enemy.get(character).setAwaken(false);
 		}
+	}
+
+	@Override
+	public void onCharacterNodeChanged(Entity entity, MapGraphNode oldNode, MapGraphNode newNode) {
+
 	}
 
 	@Override

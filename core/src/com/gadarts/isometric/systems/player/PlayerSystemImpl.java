@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.CharacterAnimation;
@@ -52,7 +53,10 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		PlayerStorageEventsSubscriber {
 
 	private static final CharacterCommand auxCommand = new CharacterCommand();
-	private final static Vector3 auxVector = new Vector3();
+	private final static Vector3 auxVector3 = new Vector3();
+	private final static Vector2 auxVector2_1 = new Vector2();
+	private final static Vector2 auxVector2_2 = new Vector2();
+	private static final float PLAYER_VISION_RAD = 3f;
 	private Entity player;
 	private ImmutableArray<Entity> enemies;
 	private PathPlanHandler pathPlanHandler;
@@ -89,7 +93,8 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	private boolean calculatePathAccordingToSelection(final MapGraphNode cursorNode, final Entity enemyAtNode) {
 		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(player);
-		MapGraphNode playerNode = map.getNode(characterDecalComponent.getCellPosition(auxVector));
+		Vector2 cellPosition = characterDecalComponent.getNodePosition(auxVector2_1);
+		MapGraphNode playerNode = map.getNode(cellPosition);
 		CharacterSystem characterSystem = getSystem(CharacterSystem.class);
 		MapGraphPath plannedPath = pathPlanHandler.getPath();
 		return (enemyAtNode != null && ComponentsMapper.character.get(enemyAtNode).getHealthData().getHp() > 0 && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
@@ -101,7 +106,8 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private void applyPlayerCommandAccordingToPlan(final MapGraphNode cursorNode, final AttackNodesHandler attackNodesHandler) {
 		pathPlanHandler.hideAllArrows();
 		CharacterDecalComponent charDecalComp = ComponentsMapper.characterDecal.get(player);
-		MapGraphNode playerNode = map.getNode(charDecalComp.getCellPosition(auxVector));
+		Vector2 cellPosition = charDecalComp.getNodePosition(auxVector2_1);
+		MapGraphNode playerNode = map.getNode(cellPosition);
 		if (attackNodesHandler.getSelectedAttackNode() == null) {
 			applyCommandWhenNoAttackNodeSelected();
 		} else {
@@ -250,6 +256,13 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	}
 
+	@Override
+	public void onCharacterNodeChanged(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
+		if (ComponentsMapper.player.has(entity)) {
+			revealRadius();
+		}
+	}
+
 
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
@@ -327,8 +340,29 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	public void activate() {
 		pathPlanHandler = new PathPlanHandler(assetsManager);
 		pathPlanHandler.init((PooledEngine) getEngine());
+		revealRadius();
 		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onPlayerSystemReady(this);
+		}
+	}
+
+	private void revealRadius() {
+		Vector2 cellPosition = ComponentsMapper.characterDecal.get(player).getNodePosition(auxVector2_1);
+		cellPosition.add(0.5f, 0.5f);
+		int[][] fow = map.getFow();
+		for (int row = (int) (cellPosition.y - PLAYER_VISION_RAD); row < cellPosition.y + PLAYER_VISION_RAD; row++) {
+			for (int col = (int) (cellPosition.x - PLAYER_VISION_RAD); col < cellPosition.x + PLAYER_VISION_RAD; col++) {
+				tryToRevealCell(cellPosition, fow, row, col);
+			}
+		}
+	}
+
+	private void tryToRevealCell(final Vector2 cellPosition, final int[][] fow, final int row, final int col) {
+		int currentCellRow = Math.min(Math.max(row, 0), fow.length);
+		int currentCellCol = Math.min(Math.max(col, 0), map.getFow()[0].length);
+		Vector2 currentCell = auxVector2_2.set(currentCellRow + 0.5f, currentCellCol + 0.5f);
+		if (cellPosition.dst(currentCell) <= PLAYER_VISION_RAD) {
+			fow[currentCellRow][currentCellCol] = 1;
 		}
 	}
 
@@ -343,7 +377,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		CharacterDecalComponent cdc = ComponentsMapper.characterDecal.get(player);
 		CharacterAnimations animations = assetsManager.get(Assets.Atlases.findByRelatedWeapon(definition).name());
 		CharacterComponent.Direction direction = cdc.getDirection();
-		cdc.init(animations, cdc.getSpriteType(), direction, auxVector.set(cdc.getDecal().getPosition()));
+		cdc.init(animations, cdc.getSpriteType(), direction, auxVector3.set(cdc.getDecal().getPosition()));
 		CharacterAnimation animation = animations.get(cdc.getSpriteType(), direction);
 		ComponentsMapper.animation.get(player).init(cdc.getSpriteType().getAnimationDuration(), animation);
 	}

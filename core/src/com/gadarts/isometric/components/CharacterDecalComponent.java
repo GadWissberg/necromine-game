@@ -2,6 +2,7 @@ package com.gadarts.isometric.components;
 
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
@@ -12,7 +13,8 @@ import lombok.Getter;
 public class CharacterDecalComponent implements GameComponent {
 	public static final float BILLBOARD_SCALE = 0.015f;
 	public static final float BILLBOARD_Y = 0.7f;
-	private static final Vector3 auxVector = new Vector3();
+	private static final Vector3 auxVector3 = new Vector3();
+	private static final Vector2 auxVector2 = new Vector2();
 	public static final float SHADOW_OPACITY = 0.6f;
 	public static final float SHADOW_OFFSET_Z = 0.4f;
 	private static final float SHADOW_OFFSET_Y = BILLBOARD_Y - 0.1f;
@@ -50,10 +52,10 @@ public class CharacterDecalComponent implements GameComponent {
 								   final CharacterComponent.Direction direction,
 								   final Vector3 position) {
 		shadowDecal = Decal.newDecal(animations.get(type, direction).getKeyFrames()[0], true);//Optimize this - it creates an object each time.
-		shadowDecal.setPosition(auxVector.set(position).set(
-				auxVector.x,
-				auxVector.y - SHADOW_OFFSET_Y,
-				auxVector.z - SHADOW_OFFSET_Z
+		shadowDecal.setPosition(auxVector3.set(position).set(
+				auxVector3.x,
+				auxVector3.y - SHADOW_OFFSET_Y,
+				auxVector3.z - SHADOW_OFFSET_Z
 		));
 		shadowDecal.rotateX(-90);
 		shadowDecal.setScale(BILLBOARD_SCALE);
@@ -75,8 +77,9 @@ public class CharacterDecalComponent implements GameComponent {
 		this.direction = direction;
 	}
 
-	public Vector3 getCellPosition(final Vector3 output) {
-		Vector3 decalPosition = auxVector.set(decal.getPosition());
-		return output.set(decalPosition.set(MathUtils.floor(auxVector.x), auxVector.y, MathUtils.floor(auxVector.z)));
+	public Vector2 getNodePosition(final Vector2 output) {
+		Vector3 position = decal.getPosition();
+		Vector2 decalPosition = auxVector2.set(position.x, position.z);
+		return output.set(decalPosition.set(MathUtils.floor(auxVector2.x), MathUtils.floor(auxVector2.y)));
 	}
 }

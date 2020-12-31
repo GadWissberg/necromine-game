@@ -1,7 +1,7 @@
 package com.gadarts.isometric.systems.character.actions;
 
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Vector2;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterMotivation;
@@ -24,9 +24,9 @@ public class MeleeAction implements ToDoAfterDestinationReached {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		Entity target = characterComponent.getTarget();
 		if (target != null) {
-			Vector3 targetPosition = ComponentsMapper.characterDecal.get(target).getCellPosition(auxVector);
+			Vector2 targetPosition = ComponentsMapper.characterDecal.get(target).getNodePosition(auxVector2);
 			MapGraphNode targetNode = map.getNode(targetPosition);
-			MapGraphNode myNode = map.getNode(ComponentsMapper.characterDecal.get(character).getCellPosition(auxVector));
+			MapGraphNode myNode = map.getNode(ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2));
 			List<MapGraphNode> nearbyNodes = map.getNodesAround(myNode, auxNodesList);
 			for (MapGraphNode nearbyNode : nearbyNodes) {
 				if (nearbyNode.equals(targetNode)) {

@@ -258,4 +258,9 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 	public void onCharacterDies(final Entity character) {
 
 	}
+
+	@Override
+	public void onCharacterNodeChanged(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
+
+	}
 }
