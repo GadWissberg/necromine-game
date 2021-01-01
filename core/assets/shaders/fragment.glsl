@@ -121,6 +121,11 @@ varying vec3 v_frag_pos;
 uniform vec3 u_lights_positions[8];
 uniform vec2 u_lights_extra_data[8];
 uniform int u_number_of_lights;
+uniform int u_model_width;
+uniform int u_model_height;
+uniform float u_fow_map[16];
+uniform int u_model_x;
+uniform int u_model_y;
 
 float ramp(float value, float max, float high, float low){
     float ramped = value;
@@ -172,22 +177,28 @@ void main() {
     #elif (!defined(specularFlag))
     #if defined(ambientFlag) && defined(separateAmbientFlag)
     #ifdef shadowMapFlag
-    if (u_number_of_lights > -1){
-        gl_FragColor.rgb = diffuse.rgb * v_lightDiffuse;
-        for (int i = 0; i< u_number_of_lights; i++){
-            vec3 light =u_lights_positions[i];
-            vec3 sub = light.xyz - v_frag_pos.xyz;
-            vec3 lightDir = normalize(sub);
-            float distance = length(sub);
-            vec2 extra = u_lights_extra_data[i];
-            float attenuation = 6.0 * extra.x / (1.0 + (0.1*distance) + (0.44*distance*distance));
-            float dot_value = dot(v_normal, lightDir);
-            float intensity = max(ramp(dot_value, 1.0, 1.0 - extra.y/10.0, 1.0 - extra.y/10.0-0.2), 0.0);
-            gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
+
+    int fragPosInModel = int(max(v_frag_pos.z, 0.0) - u_model_y)*u_model_width + int(max(v_frag_pos.x, 0.0)-u_model_x);
+    if (u_fow_map[fragPosInModel] == 1.0){
+        if (u_number_of_lights > -1){
+            gl_FragColor.rgb = diffuse.rgb * v_lightDiffuse;
+            for (int i = 0; i< u_number_of_lights; i++){
+                vec3 light =u_lights_positions[i];
+                vec3 sub = light.xyz - v_frag_pos.xyz;
+                vec3 lightDir = normalize(sub);
+                float distance = length(sub);
+                vec2 extra = u_lights_extra_data[i];
+                float attenuation = 6.0 * extra.x / (1.0 + (0.1*distance) + (0.44*distance*distance));
+                float dot_value = dot(v_normal, lightDir);
+                float intensity = max(ramp(dot_value, 1.0, 1.0 - extra.y/10.0, 1.0 - extra.y/10.0-0.2), 0.0);
+                gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
+            }
+            gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;
+        } else {
+            gl_FragColor.rgb = diffuse.rgb + emissive.rgb;
         }
-        gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;
     } else {
-        gl_FragColor.rgb = diffuse.rgb + emissive.rgb;
+        gl_FragColor.rgb = vec3(0.0);
     }
         #else
     gl_FragColor.rgb = (diffuse.rgb * (v_ambientLight + v_lightDiffuse)) + emissive.rgb;

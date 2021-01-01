@@ -20,6 +20,7 @@ public class ModelInstanceComponent implements Component, Pool.Poolable {
 
 	@Setter
 	private boolean visible;
+
 	private GameModelInstance modelInstance;
 	private ColorAttribute colorAttribute;
 	private boolean castShadow;
@@ -33,7 +34,6 @@ public class ModelInstanceComponent implements Component, Pool.Poolable {
 	public BoundingBox getBoundingBox(final BoundingBox auxBoundBox) {
 		return auxBoundBox.set(boundingBox);
 	}
-
 
 	public void init(final GameModelInstance modelInstance,
 					 final boolean visible,

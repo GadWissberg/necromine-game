@@ -40,7 +40,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private final ImmutableArray<Entity> obstacleEntities;
 
 	@Getter
-	private final int[][] fow;
+	private final int[][] fowMap;
 
 	@Setter(AccessLevel.PACKAGE)
 	@Getter(AccessLevel.PACKAGE)
@@ -54,7 +54,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		this.obstacleEntities = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
 		this.characterEntities = characterEntities;
 		this.nodes = new Array<>(MAP_SIZE * MAP_SIZE);
-		this.fow = new int[MAP_SIZE][MAP_SIZE];
+		this.fowMap = new int[MAP_SIZE][MAP_SIZE];
 		int[][] map = new int[MAP_SIZE][MAP_SIZE];
 		wallEntities.forEach(wall -> {
 			WallComponent wallComponent = ComponentsMapper.wall.get(wall);

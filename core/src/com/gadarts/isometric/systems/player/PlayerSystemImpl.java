@@ -56,7 +56,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private final static Vector3 auxVector3 = new Vector3();
 	private final static Vector2 auxVector2_1 = new Vector2();
 	private final static Vector2 auxVector2_2 = new Vector2();
-	private static final float PLAYER_VISION_RAD = 3f;
+	private static final float PLAYER_VISION_RAD = 2f;
 	private Entity player;
 	private ImmutableArray<Entity> enemies;
 	private PathPlanHandler pathPlanHandler;
@@ -349,7 +349,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private void revealRadius() {
 		Vector2 cellPosition = ComponentsMapper.characterDecal.get(player).getNodePosition(auxVector2_1);
 		cellPosition.add(0.5f, 0.5f);
-		int[][] fow = map.getFow();
+		int[][] fow = map.getFowMap();
 		for (int row = (int) (cellPosition.y - PLAYER_VISION_RAD); row < cellPosition.y + PLAYER_VISION_RAD; row++) {
 			for (int col = (int) (cellPosition.x - PLAYER_VISION_RAD); col < cellPosition.x + PLAYER_VISION_RAD; col++) {
 				tryToRevealCell(cellPosition, fow, row, col);
@@ -359,8 +359,8 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	private void tryToRevealCell(final Vector2 cellPosition, final int[][] fow, final int row, final int col) {
 		int currentCellRow = Math.min(Math.max(row, 0), fow.length);
-		int currentCellCol = Math.min(Math.max(col, 0), map.getFow()[0].length);
-		Vector2 currentCell = auxVector2_2.set(currentCellRow + 0.5f, currentCellCol + 0.5f);
+		int currentCellCol = Math.min(Math.max(col, 0), map.getFowMap()[0].length);
+		Vector2 currentCell = auxVector2_2.set(currentCellCol + 0.5f, currentCellRow + 0.5f);
 		if (cellPosition.dst(currentCell) <= PLAYER_VISION_RAD) {
 			fow[currentCellRow][currentCellCol] = 1;
 		}

@@ -9,15 +9,17 @@ import com.gadarts.isometric.utils.assets.GameAssetsManager;
 
 public class MainShaderProvider extends DefaultShaderProvider {
 	private final DefaultShader.Config mainShaderConfig;
+	private final int[][] fowMap;
 
-	public MainShaderProvider(final GameAssetsManager assetsManager) {
+	public MainShaderProvider(final GameAssetsManager assetsManager, final int[][] fowMap) {
 		mainShaderConfig = new DefaultShader.Config();
 		mainShaderConfig.vertexShader = assetsManager.getShader(Assets.Shaders.VERTEX);
 		mainShaderConfig.fragmentShader = assetsManager.getShader(Assets.Shaders.FRAGMENT);
+		this.fowMap = fowMap;
 	}
 
 	@Override
 	protected Shader createShader(final Renderable renderable) {
-		return new MainShader(renderable, mainShaderConfig);
+		return new MainShader(renderable, mainShaderConfig, fowMap);
 	}
 }

@@ -4,8 +4,10 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.LightComponent;
+import com.gadarts.isometric.components.model.AdditionalRenderData;
 
 import java.util.List;
 
@@ -13,49 +15,93 @@ public class MainShader extends DefaultShader {
 	public static final String UNIFORM_LIGHTS_POSITIONS = "u_lights_positions[0]";
 	public static final String UNIFORM_LIGHTS_EXTRA_DATA = "u_lights_extra_data[0]";
 	public static final String UNIFORM_NUMBER_OF_LIGHTS = "u_number_of_lights";
+	public static final String UNIFORM_MODEL_WIDTH = "u_model_width";
+	public static final String UNIFORM_MODEL_HEIGHT = "u_model_height";
+	public static final String UNIFORM_MODEL_X = "u_model_x";
+	public static final String UNIFORM_MODEL_Y = "u_model_y";
+	public static final String UNIFORM_FOW_MAP = "u_fow_map[0]";
 	public static final int MAX_LIGHTS = 8;
 	public static final int LIGHT_EXTRA_DATA_SIZE = 2;
 	private static final Vector3 auxVector = new Vector3();
+	private static final int MODEL_MAX_SIZE = 4 * 4;
 
 	private final float[] lightsPositions = new float[MAX_LIGHTS * 3];
 	private final float[] lightsExtraData = new float[MAX_LIGHTS * LIGHT_EXTRA_DATA_SIZE];
+	private final float[] fowMapArray = new float[MODEL_MAX_SIZE];
+	private final int[][] fowMap;
 	private int lightsPositionsLocation;
 	private int lightsExtraDataLocation;
 	private int numberOfLightsLocation;
+	private int modelWidthLocation;
+	private int modelHeightLocation;
+	private int fowMapLocation;
+	private int modelXLocation;
+	private int modelYLocation;
 
-	public MainShader(final Renderable renderable, final Config shaderConfig) {
+	public MainShader(final Renderable renderable, final Config shaderConfig, final int[][] fowMap) {
 		super(renderable, shaderConfig);
+		this.fowMap = fowMap;
 	}
 
 	@Override
 	public void init() {
 		super.init();
-		lightsPositionsLocation = program.getUniformLocation(UNIFORM_LIGHTS_POSITIONS);
-		lightsExtraDataLocation = program.getUniformLocation(UNIFORM_LIGHTS_EXTRA_DATA);
-		numberOfLightsLocation = program.getUniformLocation(UNIFORM_NUMBER_OF_LIGHTS);
+		fetchUniformsLocations();
 		if (program.getLog().length() != 0) {
 			System.out.println(program.getLog());
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	private void fetchUniformsLocations() {
+		lightsPositionsLocation = program.getUniformLocation(UNIFORM_LIGHTS_POSITIONS);
+		lightsExtraDataLocation = program.getUniformLocation(UNIFORM_LIGHTS_EXTRA_DATA);
+		numberOfLightsLocation = program.getUniformLocation(UNIFORM_NUMBER_OF_LIGHTS);
+		modelWidthLocation = program.getUniformLocation(UNIFORM_MODEL_WIDTH);
+		modelHeightLocation = program.getUniformLocation(UNIFORM_MODEL_HEIGHT);
+		modelXLocation = program.getUniformLocation(UNIFORM_MODEL_X);
+		modelYLocation = program.getUniformLocation(UNIFORM_MODEL_Y);
+		fowMapLocation = program.getUniformLocation(UNIFORM_FOW_MAP);
+	}
+
 	@Override
 	public void render(final Renderable renderable) {
 		if (renderable.userData != null) {
-			List<Entity> nearbyLights = (List<Entity>) renderable.userData;
-			int size = nearbyLights.size();
-			program.setUniformi(numberOfLightsLocation, size);
-			for (int i = 0; i < size; i++) {
-				insertToLightsArray(nearbyLights, i);
-			}
-			if (size > 0) {
-				program.setUniform3fv(lightsPositionsLocation, lightsPositions, 0, size * 3);
-				program.setUniform2fv(lightsExtraDataLocation, lightsExtraData, 0, size * LIGHT_EXTRA_DATA_SIZE);
-			}
+			applyAdditionalRenderData(renderable);
 		} else {
 			program.setUniformi(numberOfLightsLocation, -1);
 		}
 		super.render(renderable);
+	}
+
+	private void applyAdditionalRenderData(final Renderable renderable) {
+		AdditionalRenderData additionalRenderData = (AdditionalRenderData) renderable.userData;
+		List<Entity> nearbyLights = additionalRenderData.getNearbyLights();
+		int size = nearbyLights.size();
+		program.setUniformi(numberOfLightsLocation, size);
+		if (size > 0) {
+			for (int i = 0; i < size; i++) {
+				insertToLightsArray(nearbyLights, i);
+			}
+			program.setUniform3fv(lightsPositionsLocation, lightsPositions, 0, size * 3);
+			program.setUniform2fv(lightsExtraDataLocation, lightsExtraData, 0, size * LIGHT_EXTRA_DATA_SIZE);
+		}
+		Vector3 position = renderable.worldTransform.getTranslation(auxVector);
+		position.set(Math.max(position.x, 0), 0, Math.max(position.z, 0));
+		BoundingBox boundingBox = additionalRenderData.getBoundingBox();
+		int width = (int) boundingBox.getWidth() + 1;
+		int height = (int) boundingBox.getDepth() + 1;
+		int x = (int) position.x;
+		int z = (int) position.z;
+		for (int row = 0; row < height; row++) {
+			for (int col = 0; col < width; col++) {
+				fowMapArray[row * width + col] = fowMap[z + row][x + col];
+			}
+		}
+		program.setUniformi(modelWidthLocation, width);
+		program.setUniformi(modelHeightLocation, height);
+		program.setUniformi(modelXLocation, x);
+		program.setUniformi(modelYLocation, z);
+		program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * height);
 	}
 
 	private void insertToLightsArray(final List<Entity> nearbyLights, final int i) {

@@ -104,15 +104,13 @@ public class LightsRenderer {
 	 * @param mic The model-instance to apply the lights on.
 	 */
 	public void applyLightsOnModel(final ModelInstanceComponent mic) {
-		mic.getModelInstance().getNearbyLights().clear();
+		List<Entity> nearbyLights = mic.getModelInstance().getAdditionalRenderData().getNearbyLights();
+		nearbyLights.clear();
 		if (!DefaultGameSettings.DISABLE_LIGHTS) {
 			if (mic.isAffectedByLight()) {
 				for (Entity light : lightsEntities) {
-					addLightIfClose(mic.getModelInstance(), mic.getModelInstance().getNearbyLights(), light);
+					addLightIfClose(mic.getModelInstance(), nearbyLights, light);
 				}
-				mic.getModelInstance().userData = mic.getModelInstance().getNearbyLights();
-			} else {
-				mic.getModelInstance().userData = null;
 			}
 		}
 	}
