@@ -94,7 +94,7 @@ public class MainShader extends DefaultShader {
 		int z = (int) position.z;
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
-				fowMapArray[row * width + col] = fowMap[z + row][x + col];
+				fowMapArray[row * width + col] = fowMap[Math.max(z - ((int) (boundingBox.getDepth() / 2)) + row, 0)][Math.max(x - ((int) (boundingBox.getWidth() / 2)) + col, 0)];
 			}
 		}
 		program.setUniformi(modelWidthLocation, width);

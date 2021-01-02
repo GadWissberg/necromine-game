@@ -113,17 +113,10 @@ public final class MapBuilder {
 	private MapGraph createTestMap() {
 		addTestWalls();
 		addObstacles();
-		addTestFloor(auxVector3_1.setZero(), testFloorModel3_3);
-		addTestFloor(auxVector3_1.set(0, 0, 3), testFloorModel3_3);
-		addTestFloor(auxVector3_1.set(3, 0, 0), testFloorModel3_3);
-		addTestFloor(auxVector3_1.set(3, 0, 3), testFloorModel3_3);
-		addTestFloor(auxVector3_1.set(2, 0, 6), testFloorModel1_2);
-		addTestFloor(auxVector3_1.set(2, 0, 8), testFloorModel1_2);
-		addTestFloor(auxVector3_1.set(2, 0, 10), testFloorModel3_3);
-		addTestFloor(auxVector3_1.set(6, 0, 2), testFloorModel2_1);
-		addTestFloor(auxVector3_1.set(8, 0, 2), testFloorModel2_1);
-		addTestFloor(auxVector3_1.set(10, 0, 2), testFloorModel3_3);
-		addTestFloor(auxVector3_1.set(10, 0, 5), testFloorModel3_3);
+		addTestFloor(auxVector3_1.set(1.5f, 0, 1.5f), testFloorModel3_3);
+		addTestFloor(auxVector3_1.set(4.5f, 0, 1.5f), testFloorModel3_3);
+		addTestFloor(auxVector3_1.set(1.5f, 0, 4.5f), testFloorModel3_3);
+		addTestFloor(auxVector3_1.set(4.5f, 0, 4.5f), testFloorModel3_3);
 		return new MapGraph(
 				engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
 				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
@@ -155,10 +148,8 @@ public final class MapBuilder {
 
 	private void addTestWalls() {
 		auxVector2_1.set(-1, -1);
-		addTestWall(auxVector3_1.setZero(), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(4, 0, 0), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(0, 0, 4), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(0, 0, 6), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(2, 0, 0), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(0, 0, 2), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
 		addTestWall(auxVector3_1.set(2, 0, 8), 90, auxVector2_1.set(0, 6), auxVector2_2.set(1, 12), Assets.Models.WALL_2);
 		addTestWall(auxVector3_1.set(2, 0, 11), 90, auxVector2_1.set(1, 8), auxVector2_2.set(1, 10), Assets.Models.WALL_1);
 		addTestWall(auxVector3_1.set(2, 0, 13), 90, auxVector2_1.set(1, 11), auxVector2_2.set(1, 12), Assets.Models.WALL_2);
@@ -187,6 +178,7 @@ public final class MapBuilder {
 		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(model));
 		modelInstance.transform.setTranslation(position);
 		modelInstance.transform.rotate(Vector3.Y, rotation);
+		modelInstance.getAdditionalRenderData().getBoundingBox().mul(modelInstance.transform);
 		EntityBuilder.beginBuildingEntity(engine)
 				.addWallComponent((int) topLeft.x, (int) topLeft.y, (int) bottomRight.x, (int) bottomRight.y)
 				.addModelInstanceComponent(modelInstance, true)
@@ -311,7 +303,7 @@ public final class MapBuilder {
 				GL20.GL_TRIANGLES,
 				Usage.Position | Usage.Normal | Usage.TextureCoordinates,
 				createTestFloorMaterial());
-		createRect(meshPartBuilder, width, height, u, v, 0, 0);
+		createRect(meshPartBuilder, width, height, u, v, -width / 2f, -height / 2f);
 		return modelBuilder.end();
 	}
 

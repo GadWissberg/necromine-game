@@ -11,7 +11,11 @@ public class GameModelInstance extends ModelInstance {
 	public GameModelInstance(final Model model) {
 		super(model);
 		this.additionalRenderData = new AdditionalRenderData();
-		calculateBoundingBox(additionalRenderData.getBoundingBox());
+		calculateBoundingBox();
 		userData = additionalRenderData;
+	}
+
+	public void calculateBoundingBox() {
+		calculateBoundingBox(additionalRenderData.getBoundingBox());
 	}
 }
