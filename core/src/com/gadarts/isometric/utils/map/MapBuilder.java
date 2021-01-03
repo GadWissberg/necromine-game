@@ -121,7 +121,8 @@ public final class MapBuilder {
 				engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
 				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
 				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()),
-				engine);
+				engine
+		);
 	}
 
 	private void addObstacles() {
@@ -137,8 +138,9 @@ public final class MapBuilder {
 								 final int rotation,
 								 final Obstacles definition) {
 		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(definition.getModel()));
-		modelInstance.transform.setTranslation(x, 0, y);
+		modelInstance.transform.setTranslation(x + 0.5f, 0, y + 0.5f);
 		modelInstance.transform.rotate(Vector3.Y, rotation);
+		modelInstance.getAdditionalRenderData().getBoundingBox().set(auxVector3_1.setZero(), auxVector3_2.set(1, 1, 1));
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true, definition.getModel().isCastShadow(), true)
 				.addObstacleComponent(x, y, definition)
@@ -150,24 +152,7 @@ public final class MapBuilder {
 		auxVector2_1.set(-1, -1);
 		addTestWall(auxVector3_1.set(2, 0, 0), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
 		addTestWall(auxVector3_1.set(0, 0, 2), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(2, 0, 8), 90, auxVector2_1.set(0, 6), auxVector2_2.set(1, 12), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(2, 0, 11), 90, auxVector2_1.set(1, 8), auxVector2_2.set(1, 10), Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(2, 0, 13), 90, auxVector2_1.set(1, 11), auxVector2_2.set(1, 12), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(5, 0, 13), 180, auxVector2_1.set(2, 13), auxVector2_2.set(2, 14), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(5, 0, 11), 270, auxVector2_1.set(2, 13), auxVector2_2.set(2, 14), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(3, 0, 10), 0, auxVector2_1.set(2, 13), auxVector2_2.set(2, 14), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(3, 0, 6), 270, auxVector2_1.set(2, 13), auxVector2_2.set(2, 14), Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(2, 0, 6), 180, auxVector2_1.set(0, 6), auxVector2_2.set(1, 6), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(5, 0, 6), 180, auxVector2_1.set(3, 6), auxVector2_2.set(5, 9), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(6, 0, 3), 270, auxVector2_1.set(5, 10), auxVector2_2.set(6, 12), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(6, 0, 0), 270, auxVector2_1.set(2, 13), auxVector2_2.set(5, 14), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(6, 0, 2), 0, auxVector2_1.set(6, 3), auxVector2_2.set(9, 7), Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(10, 0, 2), 0, auxVector2_1.set(6, 0), auxVector2_2.set(12, 1), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(13, 0, 2), 270, auxVector2_1.set(13, 2), auxVector2_2.set(14, 7), Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(13, 0, 6), 270, auxVector2_1.set(10, 8), auxVector2_2.set(12, 9), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(13, 0, 8), 180, auxVector2_1.set(6, 3), auxVector2_2.set(9, 7), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(10, 0, 8), 90, auxVector2_1.set(6, 3), auxVector2_2.set(9, 7), Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(10, 0, 3), 180, auxVector2_1.set(6, 3), auxVector2_2.set(9, 7), Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(0, 0, 5), 90, auxVector2_1.set(0, 6), auxVector2_2.set(1, 12), Assets.Models.WALL_2);
 	}
 
 	private void addTestWall(final Vector3 position,

@@ -252,6 +252,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				if (renderLight) {
 					lightsHandler.applyLightsOnModel(modelInstanceComponent);
 				}
+				Vector3 translation = ComponentsMapper.modelInstance.get(entity).getModelInstance().transform.getTranslation(new Vector3());
+				if (ComponentsMapper.obstacle.has(entity) && translation.x == 3f && translation.z == 1f) {
+					Gdx.app.log("!", "!");
+				}
 				numberOfVisible++;
 				modelBatch.render(modelInstance, environment);
 			}

@@ -3,6 +3,7 @@ package com.gadarts.isometric.systems.render.shaders.main;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.gadarts.isometric.components.ComponentsMapper;
@@ -65,16 +66,24 @@ public class MainShader extends DefaultShader {
 
 	@Override
 	public void render(final Renderable renderable) {
+		boolean cancelRender = false;
 		if (renderable.userData != null) {
-			applyAdditionalRenderData(renderable);
+			cancelRender = applyAdditionalRenderData(renderable);
 		} else {
 			program.setUniformi(numberOfLightsLocation, -1);
 		}
-		super.render(renderable);
+		if (!cancelRender) {
+			super.render(renderable);
+		}
 	}
 
-	private void applyAdditionalRenderData(final Renderable renderable) {
+	private boolean applyAdditionalRenderData(final Renderable renderable) {
 		AdditionalRenderData additionalRenderData = (AdditionalRenderData) renderable.userData;
+		applyLights(additionalRenderData);
+		return applyFow(renderable, additionalRenderData);
+	}
+
+	private void applyLights(final AdditionalRenderData additionalRenderData) {
 		List<Entity> nearbyLights = additionalRenderData.getNearbyLights();
 		int size = nearbyLights.size();
 		program.setUniformi(numberOfLightsLocation, size);
@@ -85,23 +94,35 @@ public class MainShader extends DefaultShader {
 			program.setUniform3fv(lightsPositionsLocation, lightsPositions, 0, size * 3);
 			program.setUniform2fv(lightsExtraDataLocation, lightsExtraData, 0, size * LIGHT_EXTRA_DATA_SIZE);
 		}
+	}
+
+	private boolean applyFow(final Renderable renderable, final AdditionalRenderData additionalRenderData) {
 		Vector3 position = renderable.worldTransform.getTranslation(auxVector);
 		position.set(Math.max(position.x, 0), 0, Math.max(position.z, 0));
 		BoundingBox boundingBox = additionalRenderData.getBoundingBox();
-		int width = (int) boundingBox.getWidth() + 1;
-		int height = (int) boundingBox.getDepth() + 1;
-		int x = (int) position.x;
-		int z = (int) position.z;
+		int width = MathUtils.ceil(boundingBox.getWidth());
+		int height = MathUtils.ceil(boundingBox.getDepth());
+		int x = (int) (position.x - width / 2f);
+		int z = (int) (position.z - height / 2f);
+		boolean isWholeHidden = true;
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
-				fowMapArray[row * width + col] = fowMap[Math.max(z - ((int) (boundingBox.getDepth() / 2)) + row, 0)][Math.max(x - ((int) (boundingBox.getWidth() / 2)) + col, 0)];
+				int relativeRow = Math.max(z + row, 0);
+				int relativeCol = Math.max(x + col, 0);
+				int fowMapValue = fowMap[relativeRow][relativeCol];
+				fowMapArray[row * width + col] = fowMapValue;
+				isWholeHidden &= !(fowMapValue == 1);
 			}
+		}
+		if (isWholeHidden) {
+			return true;
 		}
 		program.setUniformi(modelWidthLocation, width);
 		program.setUniformi(modelHeightLocation, height);
 		program.setUniformi(modelXLocation, x);
 		program.setUniformi(modelYLocation, z);
 		program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * height);
+		return false;
 	}
 
 	private void insertToLightsArray(final List<Entity> nearbyLights, final int i) {
