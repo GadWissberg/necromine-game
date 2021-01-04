@@ -56,7 +56,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private final static Vector3 auxVector3 = new Vector3();
 	private final static Vector2 auxVector2_1 = new Vector2();
 	private final static Vector2 auxVector2_2 = new Vector2();
-	private static final float PLAYER_VISION_RAD = 2f;
+	private static final float PLAYER_VISION_RAD = 3f;
 	private Entity player;
 	private ImmutableArray<Entity> enemies;
 	private PathPlanHandler pathPlanHandler;

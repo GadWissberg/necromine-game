@@ -137,12 +137,13 @@ public final class MapBuilder {
 								 final int y,
 								 final int rotation,
 								 final Obstacles definition) {
-		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(definition.getModel()));
+		Assets.Models def = definition.getModel();
+		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(def));
 		modelInstance.transform.setTranslation(x + 0.5f, 0, y + 0.5f);
 		modelInstance.transform.rotate(Vector3.Y, rotation);
 		modelInstance.getAdditionalRenderData().getBoundingBox().set(auxVector3_1.setZero(), auxVector3_2.set(1, 1, 1));
 		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(modelInstance, true, definition.getModel().isCastShadow(), true)
+				.addModelInstanceComponent(modelInstance, true, def.isCastShadow())
 				.addObstacleComponent(x, y, definition)
 				.addCollisionComponent()
 				.finishAndAddToEngine();
@@ -221,7 +222,7 @@ public final class MapBuilder {
 	private void createAndAdd3dCursor() {
 		Model model = modelTestCursor();
 		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(new GameModelInstance(model), true, false, false)
+				.addModelInstanceComponent(new GameModelInstance(model, false), true, false)
 				.addCursorComponent()
 				.finishAndAddToEngine();
 	}

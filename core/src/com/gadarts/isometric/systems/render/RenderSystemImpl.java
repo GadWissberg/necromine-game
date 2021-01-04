@@ -193,10 +193,13 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				}
 			}
 			if (!DefaultGameSettings.HIDE_ENEMIES || !ComponentsMapper.enemy.has(entity)) {
-				lightsHandler.setDecalColorAccordingToLights(entity);
-				decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
-				decalBatch.add(decal);
-				decalBatch.add(shadowDecal);
+				MapGraphNode characterNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_1));
+				if (map.getFowMap()[characterNode.getY()][characterNode.getX()] == 1) {
+					lightsHandler.setDecalColorAccordingToLights(entity);
+					decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
+					decalBatch.add(decal);
+					decalBatch.add(shadowDecal);
+				}
 			}
 		}
 		for (Entity entity : renderSystemRelatedEntities.getSimpleDecalsEntities()) {

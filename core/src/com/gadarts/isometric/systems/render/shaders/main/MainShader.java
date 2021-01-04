@@ -67,7 +67,8 @@ public class MainShader extends DefaultShader {
 	@Override
 	public void render(final Renderable renderable) {
 		boolean cancelRender = false;
-		if (renderable.userData != null) {
+		AdditionalRenderData additionalRenderData = (AdditionalRenderData) renderable.userData;
+		if (renderable.userData != null && additionalRenderData.isAffectedByLight()) {
 			cancelRender = applyAdditionalRenderData(renderable);
 		} else {
 			program.setUniformi(numberOfLightsLocation, -1);

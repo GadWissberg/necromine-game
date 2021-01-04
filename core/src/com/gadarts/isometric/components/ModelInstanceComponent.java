@@ -24,11 +24,10 @@ public class ModelInstanceComponent implements Component, Pool.Poolable {
 	private GameModelInstance modelInstance;
 	private ColorAttribute colorAttribute;
 	private boolean castShadow;
-	private boolean affectedByLight;
 
 
 	public void init(final GameModelInstance modelInstance, final boolean visible) {
-		init(modelInstance, visible, true, true);
+		init(modelInstance, visible, true);
 	}
 
 	public BoundingBox getBoundingBox(final BoundingBox auxBoundBox) {
@@ -37,13 +36,11 @@ public class ModelInstanceComponent implements Component, Pool.Poolable {
 
 	public void init(final GameModelInstance modelInstance,
 					 final boolean visible,
-					 final boolean castShadow,
-					 final boolean affectedByLight) {
+					 final boolean castShadow) {
 		this.modelInstance = modelInstance;
 		this.visible = visible;
 		this.colorAttribute = null;
 		this.castShadow = castShadow;
-		this.affectedByLight = affectedByLight;
 		modelInstance.calculateBoundingBox(boundingBox);
 	}
 

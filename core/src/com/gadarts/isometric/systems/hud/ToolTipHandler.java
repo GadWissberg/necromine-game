@@ -57,6 +57,7 @@ public class ToolTipHandler implements Disposable {
 	private String calculateToolTipText(final MapGraph map,
 										final MapGraphNode cursorNode,
 										final ImmutableArray<Entity> enemiesEntities) {
+		if (map.getFowMap()[cursorNode.getY()][cursorNode.getX()] == 0) return null;
 		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, cursorNode);
 		String result;
 		if (enemyAtNode != null) {

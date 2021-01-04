@@ -196,11 +196,12 @@ void main() {
                 gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
             }
             gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;
-        } else {
-            gl_FragColor.rgb = diffuse.rgb + emissive.rgb;
         }
     } else {
         gl_FragColor.rgb = vec3(0.0);
+    }
+    if (u_number_of_lights == -1) {
+        gl_FragColor.rgb = diffuse.rgb + emissive.rgb;
     }
         #else
     gl_FragColor.rgb = (diffuse.rgb * (v_ambientLight + v_lightDiffuse)) + emissive.rgb;

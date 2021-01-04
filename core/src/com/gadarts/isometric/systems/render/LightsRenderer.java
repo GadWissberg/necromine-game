@@ -107,7 +107,7 @@ public class LightsRenderer {
 		List<Entity> nearbyLights = mic.getModelInstance().getAdditionalRenderData().getNearbyLights();
 		nearbyLights.clear();
 		if (!DefaultGameSettings.DISABLE_LIGHTS) {
-			if (mic.isAffectedByLight()) {
+			if (mic.getModelInstance().getAdditionalRenderData().isAffectedByLight()) {
 				for (Entity light : lightsEntities) {
 					addLightIfClose(mic.getModelInstance(), nearbyLights, light);
 				}

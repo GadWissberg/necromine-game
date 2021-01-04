@@ -11,5 +11,9 @@ import java.util.List;
 public class AdditionalRenderData {
 	List<Entity> nearbyLights = new ArrayList<>();
 	BoundingBox boundingBox = new BoundingBox();
+	boolean affectedByLight;
 
+	public AdditionalRenderData(final boolean affectedByLight) {
+		this.affectedByLight = affectedByLight;
+	}
 }

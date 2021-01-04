@@ -9,8 +9,12 @@ public class GameModelInstance extends ModelInstance {
 	private final AdditionalRenderData additionalRenderData;
 
 	public GameModelInstance(final Model model) {
+		this(model, true);
+	}
+
+	public GameModelInstance(final Model model, final boolean affectedByLight) {
 		super(model);
-		this.additionalRenderData = new AdditionalRenderData();
+		this.additionalRenderData = new AdditionalRenderData(affectedByLight);
 		calculateBoundingBox();
 		userData = additionalRenderData;
 	}

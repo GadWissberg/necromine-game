@@ -59,6 +59,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		PickupSystemEventsSubscriber {
 
 	public static final Color CURSOR_REGULAR = Color.YELLOW;
+	public static final Color CURSOR_UNAVAILABLE = Color.DARK_GRAY;
 	static final Color CURSOR_ATTACK = Color.RED;
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
@@ -142,10 +143,14 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void colorizeCursor(final MapGraphNode newNode) {
 		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, newNode);
-		if (enemyAtNode != null) {
-			setCursorColor(CURSOR_ATTACK);
+		if (map.getFowMap()[newNode.getY()][newNode.getX()] == 1) {
+			if (enemyAtNode != null) {
+				setCursorColor(CURSOR_ATTACK);
+			} else {
+				setCursorColor(CURSOR_REGULAR);
+			}
 		} else {
-			setCursorColor(CURSOR_REGULAR);
+			setCursorColor(CURSOR_UNAVAILABLE);
 		}
 	}
 
@@ -174,8 +179,10 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void userSelectedNodeToApplyTurn() {
 		MapGraphNode cursorNode = getCursorNode();
-		for (HudSystemEventsSubscriber sub : subscribers) {
-			sub.onUserSelectedNodeToApplyTurn(cursorNode, attackNodesHandler);
+		if (map.getFowMap()[cursorNode.getY()][cursorNode.getX()] == 1) {
+			for (HudSystemEventsSubscriber sub : subscribers) {
+				sub.onUserSelectedNodeToApplyTurn(cursorNode, attackNodesHandler);
+			}
 		}
 	}
 

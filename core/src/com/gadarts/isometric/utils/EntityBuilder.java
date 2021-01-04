@@ -40,15 +40,14 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addModelInstanceComponent(final GameModelInstance modelInstance, final boolean visible) {
-		return addModelInstanceComponent(modelInstance, visible, true, true);
+		return addModelInstanceComponent(modelInstance, visible, true);
 	}
 
 	public EntityBuilder addModelInstanceComponent(final GameModelInstance modelInstance,
 												   final boolean visible,
-												   final boolean castShadow,
-												   final boolean isAffectedByLight) {
+												   final boolean castShadow) {
 		ModelInstanceComponent component = engine.createComponent(ModelInstanceComponent.class);
-		component.init(modelInstance, visible, castShadow, isAffectedByLight);
+		component.init(modelInstance, visible, castShadow);
 		currentEntity.add(component);
 		return instance;
 	}
