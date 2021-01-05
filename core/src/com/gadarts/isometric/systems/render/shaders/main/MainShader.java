@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.LightComponent;
 import com.gadarts.isometric.components.model.AdditionalRenderData;
+import com.gadarts.isometric.utils.DefaultGameSettings;
 
 import java.util.List;
 
@@ -17,7 +18,6 @@ public class MainShader extends DefaultShader {
 	public static final String UNIFORM_LIGHTS_EXTRA_DATA = "u_lights_extra_data[0]";
 	public static final String UNIFORM_NUMBER_OF_LIGHTS = "u_number_of_lights";
 	public static final String UNIFORM_MODEL_WIDTH = "u_model_width";
-	public static final String UNIFORM_MODEL_HEIGHT = "u_model_height";
 	public static final String UNIFORM_MODEL_X = "u_model_x";
 	public static final String UNIFORM_MODEL_Y = "u_model_y";
 	public static final String UNIFORM_FOW_MAP = "u_fow_map[0]";
@@ -34,7 +34,6 @@ public class MainShader extends DefaultShader {
 	private int lightsExtraDataLocation;
 	private int numberOfLightsLocation;
 	private int modelWidthLocation;
-	private int modelHeightLocation;
 	private int fowMapLocation;
 	private int modelXLocation;
 	private int modelYLocation;
@@ -58,7 +57,6 @@ public class MainShader extends DefaultShader {
 		lightsExtraDataLocation = program.getUniformLocation(UNIFORM_LIGHTS_EXTRA_DATA);
 		numberOfLightsLocation = program.getUniformLocation(UNIFORM_NUMBER_OF_LIGHTS);
 		modelWidthLocation = program.getUniformLocation(UNIFORM_MODEL_WIDTH);
-		modelHeightLocation = program.getUniformLocation(UNIFORM_MODEL_HEIGHT);
 		modelXLocation = program.getUniformLocation(UNIFORM_MODEL_X);
 		modelYLocation = program.getUniformLocation(UNIFORM_MODEL_Y);
 		fowMapLocation = program.getUniformLocation(UNIFORM_FOW_MAP);
@@ -98,31 +96,34 @@ public class MainShader extends DefaultShader {
 	}
 
 	private boolean applyFow(final Renderable renderable, final AdditionalRenderData additionalRenderData) {
-		Vector3 position = renderable.worldTransform.getTranslation(auxVector);
-		position.set(Math.max(position.x, 0), 0, Math.max(position.z, 0));
-		BoundingBox boundingBox = additionalRenderData.getBoundingBox();
-		int width = MathUtils.ceil(boundingBox.getWidth());
-		int height = MathUtils.ceil(boundingBox.getDepth());
-		int x = (int) (position.x - width / 2f);
-		int z = (int) (position.z - height / 2f);
-		boolean isWholeHidden = true;
-		for (int row = 0; row < height; row++) {
-			for (int col = 0; col < width; col++) {
-				int relativeRow = Math.max(z + row, 0);
-				int relativeCol = Math.max(x + col, 0);
-				int fowMapValue = fowMap[relativeRow][relativeCol];
-				fowMapArray[row * width + col] = fowMapValue;
-				isWholeHidden &= !(fowMapValue == 1);
+		if (DefaultGameSettings.DISABLE_FOW) {
+			program.setUniformi(modelWidthLocation, 0);
+		} else {
+			Vector3 position = renderable.worldTransform.getTranslation(auxVector);
+			position.set(Math.max(position.x, 0), 0, Math.max(position.z, 0));
+			BoundingBox boundingBox = additionalRenderData.getBoundingBox();
+			int width = MathUtils.ceil(boundingBox.getWidth());
+			int height = MathUtils.ceil(boundingBox.getDepth());
+			int x = (int) (position.x - width / 2f);
+			int z = (int) (position.z - height / 2f);
+			boolean isWholeHidden = true;
+			for (int row = 0; row < height; row++) {
+				for (int col = 0; col < width; col++) {
+					int relativeRow = Math.max(z + row, 0);
+					int relativeCol = Math.max(x + col, 0);
+					int fowMapValue = fowMap[relativeRow][relativeCol];
+					fowMapArray[row * width + col] = fowMapValue;
+					isWholeHidden &= !(fowMapValue == 1);
+				}
 			}
+			if (isWholeHidden) {
+				return true;
+			}
+			program.setUniformi(modelWidthLocation, width);
+			program.setUniformi(modelXLocation, x);
+			program.setUniformi(modelYLocation, z);
+			program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * height);
 		}
-		if (isWholeHidden) {
-			return true;
-		}
-		program.setUniformi(modelWidthLocation, width);
-		program.setUniformi(modelHeightLocation, height);
-		program.setUniformi(modelXLocation, x);
-		program.setUniformi(modelYLocation, z);
-		program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * height);
 		return false;
 	}
 

@@ -152,7 +152,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	@Override
 	public void onCharacterGotDamage(final Entity entity) {
 		if (ComponentsMapper.enemy.has(entity)) {
-			ComponentsMapper.enemy.get(entity).setAwaken(true);
+			awakeEnemy(entity);
 		}
 	}
 
@@ -213,8 +213,15 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 				return;
 			}
 		}
-		ComponentsMapper.enemy.get(enemy).setAwaken(true);
+		awakeEnemy(enemy);
 		soundPlayer.playSound(Assets.Sounds.ENEMY_AWAKE);
+	}
+
+	private void awakeEnemy(final Entity enemy) {
+		ComponentsMapper.enemy.get(enemy).setAwaken(true);
+		for (EnemySystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onEnemyAwaken(enemy);
+		}
 	}
 
 	private boolean isTargetInFov(final Entity enemy) {

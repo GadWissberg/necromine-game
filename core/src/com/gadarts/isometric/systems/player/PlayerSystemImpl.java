@@ -6,13 +6,12 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.gadarts.isometric.components.CharacterAnimation;
-import com.gadarts.isometric.components.CharacterDecalComponent;
-import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.EnemyComponent;
+import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
@@ -24,6 +23,7 @@ import com.gadarts.isometric.systems.character.CharacterCommand;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.Commands;
+import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
@@ -35,6 +35,7 @@ import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
+import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
@@ -50,16 +51,20 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		InputSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber,
 		RenderSystemEventsSubscriber,
-		PlayerStorageEventsSubscriber {
+		PlayerStorageEventsSubscriber,
+		EnemySystemEventsSubscriber {
 
 	private static final CharacterCommand auxCommand = new CharacterCommand();
 	private final static Vector3 auxVector3 = new Vector3();
 	private final static Vector2 auxVector2_1 = new Vector2();
 	private final static Vector2 auxVector2_2 = new Vector2();
-	private static final float PLAYER_VISION_RAD = 3f;
+	private static final int PLAYER_VISION_RAD = 3;
+	private static final Rectangle auxRect = new Rectangle();
+	private static final int ENEMY_SPOTS_RADIUS = 1;
 	private Entity player;
 	private ImmutableArray<Entity> enemies;
 	private PathPlanHandler pathPlanHandler;
+	private ImmutableArray<Entity> walls;
 
 	private void applyPlayerTurn(final MapGraphNode cursorNode, final AttackNodesHandler attackNodesHandler) {
 		int pathSize = pathPlanHandler.getPath().getCount();
@@ -97,9 +102,9 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		MapGraphNode playerNode = map.getNode(cellPosition);
 		CharacterSystem characterSystem = getSystem(CharacterSystem.class);
 		MapGraphPath plannedPath = pathPlanHandler.getPath();
-		return (enemyAtNode != null && ComponentsMapper.character.get(enemyAtNode).getHealthData().getHp() > 0 && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
+		return ((enemyAtNode != null && ComponentsMapper.character.get(enemyAtNode).getHealthData().getHp() > 0 && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
 				|| getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath)
-				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath);
+				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath));
 	}
 
 
@@ -188,6 +193,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		ComponentsMapper.player.get(player).getStorage().subscribeForEvents(this);
 		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
+		walls = engine.getEntitiesFor(Family.all(WallComponent.class).get());
 	}
 
 	@Override
@@ -259,7 +265,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	@Override
 	public void onCharacterNodeChanged(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
 		if (ComponentsMapper.player.has(entity)) {
-			revealRadius();
+			revealRadius(PLAYER_VISION_RAD, ComponentsMapper.characterDecal.get(player).getNodePosition(auxVector2_1));
 		}
 	}
 
@@ -340,30 +346,45 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	public void activate() {
 		pathPlanHandler = new PathPlanHandler(assetsManager);
 		pathPlanHandler.init((PooledEngine) getEngine());
-		revealRadius();
+		revealRadius(PLAYER_VISION_RAD, ComponentsMapper.characterDecal.get(player).getNodePosition(auxVector2_1));
 		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onPlayerSystemReady(this);
 		}
 	}
 
-	private void revealRadius() {
-		Vector2 cellPosition = ComponentsMapper.characterDecal.get(player).getNodePosition(auxVector2_1);
-		cellPosition.add(0.5f, 0.5f);
-		int[][] fow = map.getFowMap();
-		for (int row = (int) (cellPosition.y - PLAYER_VISION_RAD); row < cellPosition.y + PLAYER_VISION_RAD; row++) {
-			for (int col = (int) (cellPosition.x - PLAYER_VISION_RAD); col < cellPosition.x + PLAYER_VISION_RAD; col++) {
-				tryToRevealCell(cellPosition, fow, row, col);
+	private void revealRadius(final int radius, final Vector2 srcPosition) {
+		if (DefaultGameSettings.DISABLE_FOW) return;
+		srcPosition.add(0.5f, 0.5f);
+		for (int row = (int) (srcPosition.y - radius); row < srcPosition.y + radius; row++) {
+			for (int col = (int) (srcPosition.x - radius); col < srcPosition.x + radius; col++) {
+				tryToRevealNode(srcPosition, row, col, radius);
 			}
 		}
 	}
 
-	private void tryToRevealCell(final Vector2 cellPosition, final int[][] fow, final int row, final int col) {
+	private void tryToRevealNode(final Vector2 srcNodePosition, final int row, final int col, final int radius) {
+		int[][] fow = map.getFowMap();
 		int currentCellRow = Math.min(Math.max(row, 0), fow.length);
 		int currentCellCol = Math.min(Math.max(col, 0), map.getFowMap()[0].length);
-		Vector2 currentCell = auxVector2_2.set(currentCellCol + 0.5f, currentCellRow + 0.5f);
-		if (cellPosition.dst(currentCell) <= PLAYER_VISION_RAD) {
-			fow[currentCellRow][currentCellCol] = 1;
+		Vector2 nodeToReveal = auxVector2_2.set(currentCellCol + 0.5f, currentCellRow + 0.5f);
+		if (srcNodePosition.dst(nodeToReveal) <= radius) {
+			if (!isWallBlocksReveal(srcNodePosition, nodeToReveal)) {
+				fow[currentCellRow][currentCellCol] = 1;
+			}
 		}
+	}
+
+	private boolean isWallBlocksReveal(final Vector2 srcNodePosition, final Vector2 nodeToReveal) {
+		for (Entity wall : walls) {
+			WallComponent wallComp = ComponentsMapper.wall.get(wall);
+			int width = Math.abs(wallComp.getBottomRightX() - wallComp.getTopLeftX()) + 1;
+			int height = Math.abs(wallComp.getBottomRightY() - wallComp.getTopLeftY()) + 1;
+			Rectangle wallRect = auxRect.set(wallComp.getTopLeftX(), wallComp.getTopLeftY(), width, height);
+			if (Intersector.intersectSegmentRectangle(srcNodePosition, nodeToReveal, wallRect)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -403,5 +424,15 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	@Override
 	public void onPickUpSystemReady(final PickUpSystem pickUpSystem) {
 		addSystem(PickUpSystem.class, pickUpSystem);
+	}
+
+	@Override
+	public void onEnemyFinishedTurn() {
+
+	}
+
+	@Override
+	public void onEnemyAwaken(final Entity enemy) {
+		revealRadius(ENEMY_SPOTS_RADIUS, ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1));
 	}
 }

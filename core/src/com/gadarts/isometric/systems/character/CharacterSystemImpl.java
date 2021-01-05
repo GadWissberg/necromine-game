@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -71,17 +70,29 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		}
 	}
 
+	private boolean isPathHasUnrevealedNodes(final MapGraphPath plannedPath) {
+		boolean result = false;
+		for (MapGraphNode node : plannedPath.nodes) {
+			if (map.getFowMap()[node.getY()][node.getX()] == 0) {
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
+
 	@Override
 	public boolean calculatePath(final MapGraphNode sourceNode,
 								 final MapGraphNode destinationNode,
-								 final GraphPath<MapGraphNode> outputPath) {
+								 final MapGraphPath outputPath) {
 		outputPath.clear();
-		return graphData.getPathFinder().searchNodePath(
+		boolean success = graphData.getPathFinder().searchNodePath(
 				sourceNode,
 				destinationNode,
 				graphData.getHeuristic(),
 				outputPath
 		);
+		return success && !isPathHasUnrevealedNodes(outputPath);
 	}
 
 	@Override

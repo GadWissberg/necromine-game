@@ -122,7 +122,6 @@ uniform vec3 u_lights_positions[8];
 uniform vec2 u_lights_extra_data[8];
 uniform int u_number_of_lights;
 uniform int u_model_width;
-uniform int u_model_height;
 uniform float u_fow_map[16];
 uniform int u_model_x;
 uniform int u_model_y;
@@ -181,7 +180,7 @@ void main() {
     int numberOfRows = int(max(v_frag_pos.z, 0.0) - float(max(u_model_y, 0.0)))*u_model_width;
     int horizontalOffset = int(max(v_frag_pos.x, 0.0)-float(max(u_model_x, 0.0)));
     int fragPosInModel = numberOfRows + horizontalOffset;
-    if (horizontalOffset != u_model_width && u_fow_map[fragPosInModel] == 1.0){
+    if (u_model_width == 0 || (horizontalOffset != u_model_width && u_fow_map[fragPosInModel] == 1.0)){
         if (u_number_of_lights > -1){
             gl_FragColor.rgb = diffuse.rgb * v_lightDiffuse;
             for (int i = 0; i< u_number_of_lights; i++){

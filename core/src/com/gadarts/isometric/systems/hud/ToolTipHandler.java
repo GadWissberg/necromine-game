@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.Setter;
@@ -57,7 +58,7 @@ public class ToolTipHandler implements Disposable {
 	private String calculateToolTipText(final MapGraph map,
 										final MapGraphNode cursorNode,
 										final ImmutableArray<Entity> enemiesEntities) {
-		if (map.getFowMap()[cursorNode.getY()][cursorNode.getX()] == 0) return null;
+		if (!DefaultGameSettings.DISABLE_FOW && map.getFowMap()[cursorNode.getY()][cursorNode.getX()] == 0) return null;
 		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, cursorNode);
 		String result;
 		if (enemyAtNode != null) {

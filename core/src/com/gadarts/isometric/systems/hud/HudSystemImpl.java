@@ -143,7 +143,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void colorizeCursor(final MapGraphNode newNode) {
 		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, newNode);
-		if (map.getFowMap()[newNode.getY()][newNode.getX()] == 1) {
+		if (DefaultGameSettings.DISABLE_FOW || map.getFowMap()[newNode.getY()][newNode.getX()] == 1) {
 			if (enemyAtNode != null) {
 				setCursorColor(CURSOR_ATTACK);
 			} else {
@@ -179,7 +179,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void userSelectedNodeToApplyTurn() {
 		MapGraphNode cursorNode = getCursorNode();
-		if (map.getFowMap()[cursorNode.getY()][cursorNode.getX()] == 1) {
+		if (DefaultGameSettings.DISABLE_FOW || map.getFowMap()[cursorNode.getY()][cursorNode.getX()] == 1) {
 			for (HudSystemEventsSubscriber sub : subscribers) {
 				sub.onUserSelectedNodeToApplyTurn(cursorNode, attackNodesHandler);
 			}

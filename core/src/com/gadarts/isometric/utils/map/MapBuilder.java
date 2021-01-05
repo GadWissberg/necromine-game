@@ -74,11 +74,10 @@ public final class MapBuilder {
 		testFloorModel2_1 = createTestFloorModel(modelBuilder, 2, 1, 2, 1);
 		createAndAdd3dCursor();
 		addPlayer();
-		addEnemyTest(4, 3, Direction.EAST);
 		addEnemyTest(2, 5, Direction.SOUTH);
-		addEnemyTest(11, 6, Direction.NORTH);
-		addEnemyTest(12, 6, Direction.NORTH_WEST);
-		addEnemyTest(4, 10, Direction.WEST);
+		addEnemyTest(7, 2, Direction.WEST);
+		addEnemyTest(8, 0, Direction.WEST);
+		addEnemyTest(7, 0, Direction.SOUTH_WEST);
 		addWeaponPickupTest(2, 2, Assets.Models.COLT, WeaponsDefinitions.COLT, REGION_NAME_BULLET);
 		addWeaponPickupTest(3, 12, Assets.Models.HAMMER, WeaponsDefinitions.HAMMER, null);
 		addTestLights();
@@ -115,6 +114,7 @@ public final class MapBuilder {
 		addObstacles();
 		addTestFloor(auxVector3_1.set(1.5f, 0, 1.5f), testFloorModel3_3);
 		addTestFloor(auxVector3_1.set(4.5f, 0, 1.5f), testFloorModel3_3);
+		addTestFloor(auxVector3_1.set(8.5f, 0, 1.5f), testFloorModel3_3);
 		addTestFloor(auxVector3_1.set(1.5f, 0, 4.5f), testFloorModel3_3);
 		addTestFloor(auxVector3_1.set(4.5f, 0, 4.5f), testFloorModel3_3);
 		return new MapGraph(
@@ -126,11 +126,8 @@ public final class MapBuilder {
 	}
 
 	private void addObstacles() {
-		addTestObstacle(12, 3, 0, Obstacles.PILLAR);
 		addTestObstacle(3, 1, 0, Obstacles.PILLAR);
-		addTestObstacle(2, 6, 90, Obstacles.CAVE_SUPPORTER_3);
-		addTestObstacle(6, 3, 180, Obstacles.CAVE_SUPPORTER_1);
-		addTestObstacle(10, 3, 180, Obstacles.CAVE_SUPPORTER_2);
+		addTestObstacle(6, 2, 270, Obstacles.CAVE_SUPPORTER_1);
 	}
 
 	private void addTestObstacle(final int x,
@@ -152,6 +149,9 @@ public final class MapBuilder {
 	private void addTestWalls() {
 		auxVector2_1.set(-1, -1);
 		addTestWall(auxVector3_1.set(2, 0, 0), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
+		addTestWall(auxVector3_1.set(5, 0, 0), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(6, 0, 1), 270, auxVector2_1.set(6, 0), auxVector2_2.set(6, 1), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(6, 0, 4), 270, auxVector2_1.set(6, 3), auxVector2_2.set(6, 5), Assets.Models.WALL_2);
 		addTestWall(auxVector3_1.set(0, 0, 2), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
 		addTestWall(auxVector3_1.set(0, 0, 5), 90, auxVector2_1.set(0, 6), auxVector2_2.set(1, 12), Assets.Models.WALL_2);
 	}

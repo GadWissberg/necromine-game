@@ -1,5 +1,6 @@
 package com.gadarts.isometric.systems.turns;
 
+import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystem;
@@ -76,6 +77,11 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 				subscriber.onPlayerTurn(currentTurnId);
 			}
 		}
+	}
+
+	@Override
+	public void onEnemyAwaken(final Entity enemy) {
+
 	}
 
 
