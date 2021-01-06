@@ -25,6 +25,14 @@ public class MainShader extends DefaultShader {
 	public static final int LIGHT_EXTRA_DATA_SIZE = 2;
 	private static final Vector3 auxVector = new Vector3();
 	private static final int MODEL_MAX_SIZE = 4 * 4;
+	private static final int MASK_BOTTOM_RIGHT = 0B0000000010;
+	private static final int MASK_BOTTOM = 0B0000000100;
+	private static final int MASK_BOTTOM_LEFT = 0B0000001000;
+	private static final int MASK_RIGHT = 0B0000010000;
+	private static final int MASK_LEFT = 0B0000100000;
+	private static final int MASK_TOP_RIGHT = 0B0001000000;
+	private static final int MASK_TOP = 0B0010000000;
+	private static final int MASK_TOP_LEFT = 0B0100000000;
 
 	private final float[] lightsPositions = new float[MAX_LIGHTS * 3];
 	private final float[] lightsExtraData = new float[MAX_LIGHTS * LIGHT_EXTRA_DATA_SIZE];
@@ -112,19 +120,59 @@ public class MainShader extends DefaultShader {
 					int relativeRow = Math.max(z + row, 0);
 					int relativeCol = Math.max(x + col, 0);
 					int fowMapValue = fowMap[relativeRow][relativeCol];
-					fowMapArray[row * width + col] = fowMapValue;
+					int currentIndex = row * width + col;
+					if (fowMapValue == 1) {
+//						if (row == 0 || row == height - 1 || col == 0 || col == width - 1) {
+						fowMapArray[currentIndex] = calculateFowValueBasedOnNeighbours(relativeRow, relativeCol);
+//						} else {
+//							fowMapArray[currentIndex] = 1;
+//						}
+					} else {
+						fowMapArray[currentIndex] = 0;
+					}
 					isWholeHidden &= !(fowMapValue == 1);
 				}
+				if (isWholeHidden) {
+					return true;
+				}
+				program.setUniformi(modelWidthLocation, width);
+				program.setUniformi(modelXLocation, x);
+				program.setUniformi(modelYLocation, z);
+				program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * height);
 			}
-			if (isWholeHidden) {
-				return true;
-			}
-			program.setUniformi(modelWidthLocation, width);
-			program.setUniformi(modelXLocation, x);
-			program.setUniformi(modelYLocation, z);
-			program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * height);
 		}
 		return false;
+	}
+
+	private float calculateFowValueBasedOnNeighbours(final int relativeRow, final int relativeCol) {
+		int result = 1;
+		result = applyTopMasks(relativeRow, relativeCol, result);
+		result = applyMask(relativeRow, relativeCol - 1, result, MASK_LEFT);
+		result = applyMask(relativeRow, relativeCol + 1, result, MASK_RIGHT);
+		result = applyBottomMasks(relativeRow, relativeCol, result);
+		return result;
+	}
+
+	private int applyBottomMasks(final int relativeRow, final int relativeCol, int result) {
+		result = applyMask(relativeRow + 1, relativeCol - 1, result, MASK_BOTTOM_LEFT);
+		result = applyMask(relativeRow + 1, relativeCol, result, MASK_BOTTOM);
+		result = applyMask(relativeRow + 1, relativeCol + 1, result, MASK_BOTTOM_RIGHT);
+		return result;
+	}
+
+	private int applyTopMasks(final int relativeRow, final int relativeCol, int result) {
+		result = applyMask(relativeRow - 1, relativeCol - 1, result, MASK_TOP_LEFT);
+		result = applyMask(relativeRow - 1, relativeCol, result, MASK_TOP);
+		result = applyMask(relativeRow - 1, relativeCol + 1, result, MASK_TOP_RIGHT);
+		return result;
+	}
+
+	private int applyMask(final int relativeRow, final int relativeCol, int result, final int mask) {
+		if (relativeRow < 0 || relativeCol < 0) return result;
+		if (fowMap[relativeRow][relativeCol] == 0) {
+			result |= mask;
+		}
+		return result;
 	}
 
 	private void insertToLightsArray(final List<Entity> nearbyLights, final int i) {
