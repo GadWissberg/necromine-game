@@ -203,35 +203,35 @@ void main() {
         float flooredZ = floor(v_frag_pos.z);
         // Bottom-Right
         if ((fragFowValue & 2) == 2){
-            gl_FragColor.rgb *= min(length(vec3(flooredX+1.0, 0.0, flooredZ+1.0) - vec3(v_frag_pos.xyz)), 1.0);
+            gl_FragColor.rgb *= min(2.0*length(vec3(flooredX+1.0, 0.0, flooredZ+1.0) - vec3(v_frag_pos.xyz)), 1.0);
         }
         // Bottom
         if ((fragFowValue & 4) == 4){
-            gl_FragColor.rgb *= vec3(flooredZ + 1.0 - v_frag_pos.z);
+            gl_FragColor.rgb *= vec3(min(2.0*(flooredZ + 1.0 - v_frag_pos.z), 1.0));
         }
         // Bottom-Left
         if ((fragFowValue & 8) == 8){
-            gl_FragColor.rgb *= min(length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ+1.0)), 1.0);
+            gl_FragColor.rgb *= min(2.0*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ+1.0)), 1.0);
         }
         // Right
         if ((fragFowValue & 16) == 16){
-            gl_FragColor.rgb *= vec3(flooredX + 1.0 - v_frag_pos.x);
+            gl_FragColor.rgb *= vec3(min(2.0*(flooredX + 1.0 - v_frag_pos.x), 1.0));
         }
         // Left
         if ((fragFowValue & 32) == 32){
-            gl_FragColor.rgb *= vec3(v_frag_pos.x - flooredX);
+            gl_FragColor.rgb *= vec3(min(2.0*(v_frag_pos.x - flooredX), 1.0));
         }
         // Top-Right
-        if ((fragFowValue & 64) == 2){
-            gl_FragColor.rgb *= min(length(vec3(flooredX+1.0, 0.0, flooredZ) - vec3(v_frag_pos.xyz)), 1.0);
+        if ((fragFowValue & 64) == 64){
+            gl_FragColor.rgb *= min(2.0*length(vec3(v_frag_pos.xyz)-vec3(flooredX+1.0, 0.0, flooredZ)), 1.0);
         }
         // Top
         if ((fragFowValue & 128) == 128){
-            gl_FragColor.rgb *= vec3(v_frag_pos.z - flooredZ);
+            gl_FragColor.rgb *= vec3(min(2.0*(v_frag_pos.z - flooredZ), 1.0));
         }
         // Top-Left
         if ((fragFowValue & 256) == 256){
-            gl_FragColor.rgb *= min(length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ)), 1.0);
+            gl_FragColor.rgb *= min(2.0*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ)), 1.0);
         }
     } else {
         gl_FragColor.rgb = vec3(0.0);

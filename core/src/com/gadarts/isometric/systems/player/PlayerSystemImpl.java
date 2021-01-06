@@ -60,7 +60,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private final static Vector2 auxVector2_2 = new Vector2();
 	private static final int PLAYER_VISION_RAD = 3;
 	private static final Rectangle auxRect = new Rectangle();
-	private static final int ENEMY_SPOTS_RADIUS = 1;
+	private static final int ENEMY_AWAKEN_RADIUS = 2;
 	private Entity player;
 	private ImmutableArray<Entity> enemies;
 	private PathPlanHandler pathPlanHandler;
@@ -433,6 +433,6 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	@Override
 	public void onEnemyAwaken(final Entity enemy) {
-		revealRadius(ENEMY_SPOTS_RADIUS, ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1));
+		revealRadius(ENEMY_AWAKEN_RADIUS, ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1));
 	}
 }

@@ -75,9 +75,8 @@ public final class MapBuilder {
 		createAndAdd3dCursor();
 		addPlayer();
 		addEnemyTest(2, 5, Direction.SOUTH);
-		addEnemyTest(7, 2, Direction.WEST);
-		addEnemyTest(8, 0, Direction.WEST);
-		addEnemyTest(7, 0, Direction.SOUTH_WEST);
+		addEnemyTest(8, 0, Direction.SOUTH);
+		addEnemyTest(9, 0, Direction.SOUTH_WEST);
 		addWeaponPickupTest(2, 2, Assets.Models.COLT, WeaponsDefinitions.COLT, REGION_NAME_BULLET);
 		addWeaponPickupTest(3, 12, Assets.Models.HAMMER, WeaponsDefinitions.HAMMER, null);
 		addTestLights();
@@ -86,8 +85,7 @@ public final class MapBuilder {
 
 	private void addTestLights() {
 		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(3, 2f, 3), 1f, 3f).finishAndAddToEngine();
-		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(11, 2f, 4), 0.5f, 3f).finishAndAddToEngine();
-		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(3, 2f, 12), 1f, 2f).finishAndAddToEngine();
+		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(11, 2f, 2), 0.5f, 3f).finishAndAddToEngine();
 	}
 
 	private void addWeaponPickupTest(final int x,
@@ -114,7 +112,8 @@ public final class MapBuilder {
 		addObstacles();
 		addTestFloor(auxVector3_1.set(1.5f, 0, 1.5f), testFloorModel3_3);
 		addTestFloor(auxVector3_1.set(4.5f, 0, 1.5f), testFloorModel3_3);
-		addTestFloor(auxVector3_1.set(8.5f, 0, 1.5f), testFloorModel3_3);
+		addTestFloor(auxVector3_1.set(7f, 0, 2.5f), testFloorModel2_1);
+		addTestFloor(auxVector3_1.set(9.5f, 0, 1.5f), testFloorModel3_3);
 		addTestFloor(auxVector3_1.set(1.5f, 0, 4.5f), testFloorModel3_3);
 		addTestFloor(auxVector3_1.set(4.5f, 0, 4.5f), testFloorModel3_3);
 		return new MapGraph(
@@ -150,7 +149,13 @@ public final class MapBuilder {
 		auxVector2_1.set(-1, -1);
 		addTestWall(auxVector3_1.set(2, 0, 0), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
 		addTestWall(auxVector3_1.set(5, 0, 0), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(7, 0, 2), 0, auxVector2_1.set(6, 1), auxVector2_2.set(6, 1), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(7, 0, 3), 180, auxVector2_1.set(6, 3), auxVector2_2.set(6, 3), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(9, 0, 3), 180, auxVector2_1.set(8, 3), auxVector2_2.set(10, 3), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(11, 0, 2), 270, auxVector2_1.set(11, 0), auxVector2_2.set(11, 3), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(10, 0, 0), 0, auxVector2_1.set(11, 0), auxVector2_2.set(11, 3), Assets.Models.WALL_2);
 		addTestWall(auxVector3_1.set(6, 0, 1), 270, auxVector2_1.set(6, 0), auxVector2_2.set(6, 1), Assets.Models.WALL_2);
+		addTestWall(auxVector3_1.set(8, 0, 1), 90, auxVector2_1.set(7, 0), auxVector2_2.set(7, 1), Assets.Models.WALL_2);
 		addTestWall(auxVector3_1.set(6, 0, 4), 270, auxVector2_1.set(6, 3), auxVector2_2.set(6, 5), Assets.Models.WALL_2);
 		addTestWall(auxVector3_1.set(0, 0, 2), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
 		addTestWall(auxVector3_1.set(0, 0, 5), 90, auxVector2_1.set(0, 6), auxVector2_2.set(1, 12), Assets.Models.WALL_2);
