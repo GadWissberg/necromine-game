@@ -107,6 +107,8 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			auxPath.nodes.removeIndex(auxPath.getCount() - 1);
 			auxCommand.init(Commands.GO_TO_MELEE, auxPath, enemy);
 			characterSystem.applyCommand(auxCommand, enemy);
+		} else {
+			onCommandDone(enemy);
 		}
 	}
 

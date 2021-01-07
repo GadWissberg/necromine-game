@@ -95,7 +95,8 @@ public class LightsRenderer {
 		TextureAtlas.AtlasRegion textureRegion = (TextureAtlas.AtlasRegion) decal.getTextureRegion();
 		return ComponentsMapper.enemy.has(entity)
 				|| spriteData.getSpriteType() != SpriteType.ATTACK
-				|| textureRegion.index != spriteData.getHitFrameIndex();
+				|| textureRegion.index != spriteData.getHitFrameIndex()
+				|| ComponentsMapper.player.get(entity).getStorage().getSelectedWeapon().isMelee();
 	}
 
 	/**

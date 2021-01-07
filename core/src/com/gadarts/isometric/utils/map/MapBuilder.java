@@ -74,6 +74,7 @@ public final class MapBuilder {
 		testFloorModel2_1 = createTestFloorModel(modelBuilder, 2, 1, 2, 1);
 		createAndAdd3dCursor();
 		addPlayer();
+		addEnemyTest(2, 2, Direction.SOUTH);
 		addEnemyTest(2, 5, Direction.SOUTH);
 		addEnemyTest(8, 0, Direction.SOUTH);
 		addEnemyTest(9, 0, Direction.SOUTH_WEST);
@@ -184,7 +185,7 @@ public final class MapBuilder {
 		CharacterAnimations general = assetManager.get(Atlases.PLAYER_GENERIC.name());
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
 		Vector3 position = auxVector3_1.set(0.5f, CharacterDecalComponent.BILLBOARD_Y, 0.5f);
-		addCharBaseComponents(entityBuilder, Atlases.PLAYER_AXE_PICK, position, null, Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH, Direction.SOUTH_EAST, 8);
+		addCharBaseComponents(entityBuilder, Atlases.PLAYER_AXE_PICK, position, null, Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH, Direction.SOUTH_EAST, 16);
 		entityBuilder.finishAndAddToEngine();
 	}
 

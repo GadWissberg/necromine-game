@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -64,6 +65,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final float BUTTON_PADDING = 40;
+	private static final String BUTTON_NAME_STORAGE = "button_storage";
 
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
 	private ImmutableArray<Entity> enemiesEntities;
@@ -117,6 +119,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		buttonStyle.down = new TextureRegionDrawable(assetsManager.getTexture(Assets.UiTextures.BUTTON_STORAGE_DOWN));
 		buttonStyle.over = new TextureRegionDrawable(assetsManager.getTexture(Assets.UiTextures.BUTTON_STORAGE_HOVER));
 		Button button = new Button(buttonStyle);
+		button.setName(BUTTON_NAME_STORAGE);
 		button.addListener(new ClickListener() {
 			@Override
 			public void clicked(final InputEvent event, final float x, final float y) {
@@ -264,12 +267,14 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	@Override
 	public void onEnemyTurn(final long currentTurnId) {
-
+		Button button = getStage().getRoot().findActor(BUTTON_NAME_STORAGE);
+		button.setTouchable(Touchable.disabled);
 	}
 
 	@Override
 	public void onPlayerTurn(final long currentTurnId) {
-
+		Button button = getStage().getRoot().findActor(BUTTON_NAME_STORAGE);
+		button.setTouchable(Touchable.enabled);
 	}
 
 	@Override

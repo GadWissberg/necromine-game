@@ -77,7 +77,8 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 
 	private boolean checkCollisionWithCharacter(final Decal decal, final Entity collidable) {
 		Vector3 colPos = ComponentsMapper.characterDecal.get(collidable).getDecal().getPosition();
-		return auxVector2_1.set(colPos.x, colPos.z).dst(decal.getPosition().x, decal.getPosition().z) < CHAR_RAD;
+		return ComponentsMapper.character.get(collidable).getHealthData().getHp() > 0
+				&& auxVector2_1.set(colPos.x, colPos.z).dst(decal.getPosition().x, decal.getPosition().z) < CHAR_RAD;
 	}
 
 	private void handleBulletMaxDistance(final Entity bullet, final Decal decal, final BulletComponent bulletComponent) {
