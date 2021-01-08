@@ -55,12 +55,13 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		EnemySystemEventsSubscriber {
 
 	private static final CharacterCommand auxCommand = new CharacterCommand();
-	private final static Vector3 auxVector3 = new Vector3();
-	private final static Vector2 auxVector2_1 = new Vector2();
-	private final static Vector2 auxVector2_2 = new Vector2();
+	private static final Vector3 auxVector3 = new Vector3();
+	private static final Vector2 auxVector2_1 = new Vector2();
+	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final int PLAYER_VISION_RAD = 3;
 	private static final Rectangle auxRect = new Rectangle();
 	private static final int ENEMY_AWAKEN_RADIUS = 2;
+
 	private Entity player;
 	private ImmutableArray<Entity> enemies;
 	private PathPlanHandler pathPlanHandler;

@@ -241,17 +241,21 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	private boolean checkIfWallBlocksLineOfSightToTarget(final Entity enemy, final Entity wall) {
-		WallComponent wallComponent = ComponentsMapper.wall.get(wall);
-		auxRect.set(wallComponent.getTopLeftX(), wallComponent.getTopLeftY(),
-				Math.abs(wallComponent.getTopLeftX() - (wallComponent.getBottomRightX() + 1)),
-				Math.abs(wallComponent.getTopLeftY() - (wallComponent.getBottomRightY() + 1))
-		);
-		Vector3 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition();
+		Rectangle rect = initializeRectOfWall(wall);
+		Vector3 enemyPos = ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition();
 		Entity target = ComponentsMapper.character.get(enemy).getTarget();
-		Vector3 targetPosition = ComponentsMapper.characterDecal.get(target).getDecal().getPosition();
-		auxVector2_1.set(enemyPosition.x, enemyPosition.z);
-		auxVector2_2.set(targetPosition.x, targetPosition.z);
-		return Intersector.intersectSegmentRectangle(auxVector2_1, auxVector2_2, auxRect);
+		Vector3 targetPos = ComponentsMapper.characterDecal.get(target).getDecal().getPosition();
+		return Intersector.intersectSegmentRectangle(
+				auxVector2_1.set(enemyPos.x, enemyPos.z),
+				auxVector2_2.set(targetPos.x, targetPos.z),
+				rect);
+	}
+
+	private Rectangle initializeRectOfWall(final Entity wall) {
+		WallComponent wallComp = ComponentsMapper.wall.get(wall);
+		return auxRect.set(wallComp.getTopLeftX(), wallComp.getTopLeftY(),
+				Math.abs(wallComp.getTopLeftX() - (wallComp.getBottomRightX() + 1)),
+				Math.abs(wallComp.getTopLeftY() - (wallComp.getBottomRightY() + 1)));
 	}
 
 	@Override

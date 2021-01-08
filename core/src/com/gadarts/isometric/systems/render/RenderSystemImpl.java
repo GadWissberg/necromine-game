@@ -51,7 +51,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
 	private static final Quaternion auxQuat = new Quaternion();
-	private final static BoundingBox auxBoundingBox = new BoundingBox();
+	private static final BoundingBox auxBoundingBox = new BoundingBox();
+
 	private final WorldEnvironment environment = new WorldEnvironment();
 	private RenderBatches renderBatches;
 	private RenderSystemRelatedEntities renderSystemRelatedEntities;

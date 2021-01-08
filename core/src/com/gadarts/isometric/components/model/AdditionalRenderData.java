@@ -9,9 +9,9 @@ import java.util.List;
 
 @Getter
 public class AdditionalRenderData {
-	List<Entity> nearbyLights = new ArrayList<>();
-	BoundingBox boundingBox = new BoundingBox();
-	boolean affectedByLight;
+	final List<Entity> nearbyLights = new ArrayList<>();
+	final BoundingBox boundingBox = new BoundingBox();
+	final boolean affectedByLight;
 
 	public AdditionalRenderData(final boolean affectedByLight) {
 		this.affectedByLight = affectedByLight;

@@ -13,14 +13,18 @@ import com.gadarts.isometric.components.CollisionComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.systems.GameEntitySystem;
 
+/**
+ * Handles weapons bullets behaviour.
+ */
 public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubscriber> implements BulletSystem {
 
 	private final static Vector2 auxVector2_1 = new Vector2();
 	private final static Vector3 auxVector3 = new Vector3();
-	private static final float BULLET_SPEED = 0.6f;
-	private static final float BULLET_MAX_DISTANCE = 10;
-	private static final float CHAR_RAD = 0.3f;
-	private static final float OBST_RAD = 0.5f;
+	private final static float BULLET_SPEED = 0.6f;
+	private final static float BULLET_MAX_DISTANCE = 10;
+	private final static float CHAR_RAD = 0.3f;
+	private final static float OBST_RAD = 0.5f;
+
 	private ImmutableArray<Entity> bullets;
 	private ImmutableArray<Entity> collidables;
 
