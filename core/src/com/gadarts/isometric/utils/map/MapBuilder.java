@@ -78,8 +78,7 @@ public final class MapBuilder {
 		addEnemyTest(2, 5, Direction.SOUTH);
 		addEnemyTest(8, 0, Direction.SOUTH);
 		addEnemyTest(9, 0, Direction.SOUTH_WEST);
-		addWeaponPickupTest(2, 2, Assets.Models.COLT, WeaponsDefinitions.COLT, REGION_NAME_BULLET);
-		addWeaponPickupTest(3, 12, Assets.Models.HAMMER, WeaponsDefinitions.HAMMER, null);
+		addWeaponPickupTest(1, 1, Assets.Models.COLT, WeaponsDefinitions.COLT, REGION_NAME_BULLET);
 		addTestLights();
 		return createTestMap();
 	}

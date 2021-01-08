@@ -80,17 +80,22 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	@Override
 	public void onEnemyTurn(final long currentTurnId) {
+		if (invokeTurnForUnplayedEnemy(currentTurnId)) return;
+		enemyFinishedTurn();
+	}
+
+	private boolean invokeTurnForUnplayedEnemy(final long currentTurnId) {
 		for (Entity enemy : enemies) {
 			int hp = ComponentsMapper.character.get(enemy).getHealthData().getHp();
 			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
 			if (enemyComponent.getLastTurn() < currentTurnId) {
 				if (hp > 0 && enemyComponent.isAwaken()) {
 					invokeEnemyTurn(enemy);
-					return;
+					return true;
 				}
 			}
 		}
-		enemyFinishedTurn();
+		return false;
 	}
 
 	private void invokeEnemyTurn(final Entity enemy) {
@@ -171,7 +176,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	@Override
-	public void onCharacterNodeChanged(Entity entity, MapGraphNode oldNode, MapGraphNode newNode) {
+	public void onCharacterNodeChanged(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
 
 	}
 

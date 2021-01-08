@@ -19,6 +19,8 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 
 	private Turns currentTurn = Turns.PLAYER;
 	private long currentTurnId;
+	private boolean enemyTurnDone;
+	private boolean playerTurnDone;
 
 	@Override
 	public long getCurrentTurnId() {
@@ -32,15 +34,42 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 
 	@Override
 	public void onPlayerFinishedTurn() {
-		if (currentTurn == Turns.PLAYER) {
-			currentTurnId++;
-			if (!DefaultGameSettings.PARALYZED_ENEMIES) {
-				currentTurn = Turns.ENEMY;
-				for (TurnsSystemEventsSubscriber subscriber : subscribers) {
-					subscriber.onEnemyTurn(currentTurnId);
-				}
+		playerTurnDone = true;
+	}
+
+	@Override
+	public void update(final float deltaTime) {
+		super.update(deltaTime);
+		if (currentTurn == Turns.PLAYER && playerTurnDone) {
+			invokePlayerTurnDone();
+		} else if (currentTurn == Turns.ENEMY && enemyTurnDone) {
+			invokeEnemyTurnDone();
+		}
+	}
+
+	private void invokeEnemyTurnDone() {
+		resetTurnFlags();
+		currentTurnId++;
+		currentTurn = Turns.PLAYER;
+		for (TurnsSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onPlayerTurn(currentTurnId);
+		}
+	}
+
+	private void invokePlayerTurnDone() {
+		resetTurnFlags();
+		currentTurnId++;
+		if (!DefaultGameSettings.PARALYZED_ENEMIES) {
+			currentTurn = Turns.ENEMY;
+			for (TurnsSystemEventsSubscriber subscriber : subscribers) {
+				subscriber.onEnemyTurn(currentTurnId);
 			}
 		}
+	}
+
+	private void resetTurnFlags() {
+		playerTurnDone = false;
+		enemyTurnDone = false;
 	}
 
 	@Override
@@ -70,13 +99,7 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 
 	@Override
 	public void onEnemyFinishedTurn() {
-		if (currentTurn == Turns.ENEMY) {
-			currentTurnId++;
-			currentTurn = Turns.PLAYER;
-			for (TurnsSystemEventsSubscriber subscriber : subscribers) {
-				subscriber.onPlayerTurn(currentTurnId);
-			}
-		}
+		enemyTurnDone = true;
 	}
 
 	@Override
