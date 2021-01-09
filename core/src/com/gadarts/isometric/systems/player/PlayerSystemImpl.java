@@ -20,9 +20,9 @@ import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.CharacterCommand;
+import com.gadarts.isometric.systems.character.CharacterCommands;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
-import com.gadarts.isometric.systems.character.Commands;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
 import com.gadarts.isometric.systems.hud.HudSystem;
@@ -318,7 +318,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	public void applyGoToCommand(final MapGraphPath path) {
 		MapGraphNode playerNode = map.getNode(ComponentsMapper.characterDecal.get(player).getDecal().getPosition());
 		if (path.getCount() > 0 && !playerNode.equals(path.get(path.getCount() - 1))) {
-			getSystem(CharacterSystem.class).applyCommand(auxCommand.init(Commands.GO_TO, path, player), player);
+			getSystem(CharacterSystem.class).applyCommand(auxCommand.init(CharacterCommands.GO_TO, path, player), player);
 		}
 	}
 
@@ -331,16 +331,16 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	@Override
 	public void applyGoToMeleeCommand(final MapGraphPath path) {
-		getSystem(CharacterSystem.class).applyCommand(auxCommand.init(Commands.GO_TO_MELEE, path, player), player);
+		getSystem(CharacterSystem.class).applyCommand(auxCommand.init(CharacterCommands.GO_TO_MELEE, path, player), player);
 	}
 
 	public void applyShootCommand(final MapGraphNode target) {
-		getSystem(CharacterSystem.class).applyCommand(auxCommand.init(Commands.SHOOT, null, player, target), player);
+		getSystem(CharacterSystem.class).applyCommand(auxCommand.init(CharacterCommands.SHOOT, null, player, target), player);
 	}
 
 	@Override
 	public void applyGoToPickupCommand(final MapGraphPath path, final Entity itemToPickup) {
-		getSystem(CharacterSystem.class).applyCommand(auxCommand.init(Commands.GO_TO_PICKUP, path, player, itemToPickup), player);
+		getSystem(CharacterSystem.class).applyCommand(auxCommand.init(CharacterCommands.GO_TO_PICKUP, path, player, itemToPickup), player);
 	}
 
 	@Override

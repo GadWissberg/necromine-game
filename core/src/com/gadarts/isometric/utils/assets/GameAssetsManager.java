@@ -3,10 +3,16 @@ package com.gadarts.isometric.utils.assets;
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.gadarts.isometric.components.CharacterAnimation;
@@ -15,10 +21,12 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.utils.assets.Assets.Atlases;
 import com.gadarts.isometric.utils.assets.definitions.AtlasDefinition;
+import com.gadarts.isometric.utils.assets.definitions.FontDefinition;
 import com.gadarts.isometric.utils.assets.definitions.ModelDefinition;
 import com.gadarts.isometric.utils.assets.definitions.TextureDefinition;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Assets loader and manager.
@@ -26,6 +34,10 @@ import java.util.Arrays;
 public class GameAssetsManager extends AssetManager {
 	public GameAssetsManager() {
 		setLoader(String.class, new ShaderLoader(getFileHandleResolver()));
+		FileHandleResolver resolver = new InternalFileHandleResolver();
+		setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
+		FreetypeFontLoader loader = new FreetypeFontLoader(resolver);
+		setLoader(BitmapFont.class, FontDefinition.FORMAT, loader);
 	}
 
 	/**
@@ -33,9 +45,15 @@ public class GameAssetsManager extends AssetManager {
 	 */
 	public void loadGameFiles() {
 		Arrays.stream(Assets.AssetsTypes.values()).forEach(type ->
-				Arrays.stream(type.getAssetDefinitions()).forEach(def ->
-						load(Gdx.files.getFileHandle(def.getFilePath(), FileType.Internal).path(), def.getTypeClass()))
-		);
+				Arrays.stream(type.getAssetDefinitions()).forEach(def -> {
+					String path = Gdx.files.getFileHandle(def.getFilePath(), FileType.Internal).path();
+					Class<?> typeClass = def.getTypeClass();
+					if (Optional.ofNullable(def.getParameters()).isPresent()) {
+						load(path, typeClass, def.getParameters());
+					} else {
+						load(path, typeClass);
+					}
+				}));
 		finishLoading();
 		Arrays.stream(Atlases.values()).forEach(atlas -> {
 					CharacterAnimations animations = createCharacterAnimations(atlas);

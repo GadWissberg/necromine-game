@@ -18,9 +18,9 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterCommand;
+import com.gadarts.isometric.systems.character.CharacterCommands;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
-import com.gadarts.isometric.systems.character.Commands;
 import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
@@ -110,7 +110,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 								final Entity target) {
 		if (characterSystem.calculatePathToCharacter(enemyNode, target, auxPath)) {
 			auxPath.nodes.removeIndex(auxPath.getCount() - 1);
-			auxCommand.init(Commands.GO_TO_MELEE, auxPath, enemy);
+			auxCommand.init(CharacterCommands.GO_TO_MELEE, auxPath, enemy);
 			characterSystem.applyCommand(auxCommand, enemy);
 		} else {
 			onCommandDone(enemy);

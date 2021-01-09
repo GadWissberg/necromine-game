@@ -1,8 +1,12 @@
 package com.gadarts.isometric.utils.assets;
 
+import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.gadarts.isometric.components.player.WeaponsDefinitions;
 import com.gadarts.isometric.utils.assets.definitions.*;
@@ -29,7 +33,8 @@ public final class Assets {
 		SOUND(Sounds.values()),
 		MODEL(Models.values()),
 		SHADER(Shaders.values()),
-		TEXTURE(TexturesTypes.getAllDefinitionsInSingleArray());
+		TEXTURE(TexturesTypes.getAllDefinitionsInSingleArray()),
+		FONT(Fonts.values());
 
 		private final AssetDefinition[] assetDefinitions;
 
@@ -75,6 +80,11 @@ public final class Assets {
 		}
 
 		@Override
+		public AssetLoaderParameters<Texture> getParameters() {
+			return null;
+		}
+
+		@Override
 		public Class<TextureAtlas> getTypeClass() {
 			return TextureAtlas.class;
 		}
@@ -90,6 +100,11 @@ public final class Assets {
 
 		Melody() {
 			this.filePath = MelodyDefinition.FOLDER + PATH_SEPARATOR + name().toLowerCase() + "." + MelodyDefinition.FORMAT;
+		}
+
+		@Override
+		public AssetLoaderParameters<Music> getParameters() {
+			return null;
 		}
 
 		@Override
@@ -115,8 +130,45 @@ public final class Assets {
 		}
 
 		@Override
+		public AssetLoaderParameters<String> getParameters() {
+			return null;
+		}
+
+		@Override
 		public Class<String> getTypeClass() {
 			return String.class;
+		}
+	}
+
+	/**
+	 * Fonts files.
+	 */
+	@Getter
+	public enum Fonts implements FontDefinition {
+		CONSOLA(new FreetypeFontLoader.FreeTypeFontLoaderParameter());
+
+		private final String filePath;
+		private final AssetLoaderParameters<BitmapFont> params;
+
+		Fonts() {
+			this(null);
+		}
+
+		Fonts(final FreetypeFontLoader.FreeTypeFontLoaderParameter freeTypeFontLoaderParameter) {
+			this.filePath = FontDefinition.FOLDER + PATH_SEPARATOR + name().toLowerCase() + "." + FontDefinition.FORMAT;
+			freeTypeFontLoaderParameter.fontParameters.size = 15;
+			freeTypeFontLoaderParameter.fontFileName = "./core/assets/" + filePath;
+			this.params = freeTypeFontLoaderParameter;
+		}
+
+		@Override
+		public AssetLoaderParameters<BitmapFont> getParameters() {
+			return params;
+		}
+
+		@Override
+		public Class<BitmapFont> getTypeClass() {
+			return BitmapFont.class;
 		}
 	}
 
@@ -156,6 +208,11 @@ public final class Assets {
 		}
 
 		@Override
+		public AssetLoaderParameters<Sound> getParameters() {
+			return null;
+		}
+
+		@Override
 		public Class<Sound> getTypeClass() {
 			return Sound.class;
 		}
@@ -185,6 +242,11 @@ public final class Assets {
 		Models(final boolean castShadow) {
 			this.castShadow = castShadow;
 			filePath = ModelDefinition.FOLDER + PATH_SEPARATOR + name().toLowerCase() + "." + ModelDefinition.FORMAT;
+		}
+
+		@Override
+		public AssetLoaderParameters<Model> getParameters() {
+			return null;
 		}
 
 		@Override
@@ -233,6 +295,10 @@ public final class Assets {
 			return name();
 		}
 
+		@Override
+		public AssetLoaderParameters<Texture> getParameters() {
+			return null;
+		}
 	}
 
 	/**
@@ -280,6 +346,10 @@ public final class Assets {
 			return specialFileName != null ? specialFileName : name();
 		}
 
+		@Override
+		public AssetLoaderParameters<Texture> getParameters() {
+			return null;
+		}
 	}
 
 }

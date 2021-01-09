@@ -5,7 +5,7 @@ import com.gadarts.isometric.systems.character.actions.PickUpAction;
 import com.gadarts.isometric.systems.character.actions.ShootAction;
 import lombok.Getter;
 
-public enum Commands {
+public enum CharacterCommands {
 	GO_TO,
 	GO_TO_MELEE(new MeleeAction()),
 	GO_TO_PICKUP(new PickUpAction()),
@@ -16,15 +16,15 @@ public enum Commands {
 	@Getter
 	private final boolean requiresMovement;
 
-	Commands() {
+	CharacterCommands() {
 		this(null);
 	}
 
-	Commands(final ToDoAfterDestinationReached toDoAfterDestinationReached) {
+	CharacterCommands(final ToDoAfterDestinationReached toDoAfterDestinationReached) {
 		this(toDoAfterDestinationReached, true);
 	}
 
-	Commands(final ToDoAfterDestinationReached toDoAfterDestinationReached, final boolean requiresMovement) {
+	CharacterCommands(final ToDoAfterDestinationReached toDoAfterDestinationReached, final boolean requiresMovement) {
 		this.toDoAfterDestinationReached = toDoAfterDestinationReached;
 		this.requiresMovement = requiresMovement;
 	}

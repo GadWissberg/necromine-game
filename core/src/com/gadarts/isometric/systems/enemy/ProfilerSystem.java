@@ -16,6 +16,12 @@ import com.gadarts.isometric.systems.SystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.console.CommandParameter;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
+import com.gadarts.isometric.systems.hud.console.ConsoleEventsSubscriber;
+import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
+import com.gadarts.isometric.systems.hud.console.commands.types.ProfilerCommand;
 import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
@@ -29,7 +35,8 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
  */
 public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		implements RenderSystemEventsSubscriber,
-		HudSystemEventsSubscriber {
+		HudSystemEventsSubscriber,
+		ConsoleEventsSubscriber {
 	public static final String WARNING_COLOR = "[RED]";
 	private static final char SEPARATOR = '/';
 	private static final String LABEL_FPS = "FPS: ";
@@ -191,6 +198,36 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 
 	@Override
 	public void activate() {
+
+	}
+
+	@Override
+	public void onConsoleActivated() {
+
+	}
+
+	@Override
+	public boolean onCommandRun(final com.gadarts.isometric.systems.hud.console.ConsoleCommands command, final ConsoleCommandResult consoleCommandResult) {
+		return onCommandRun(command, consoleCommandResult, null);
+	}
+
+	@Override
+	public boolean onCommandRun(final com.gadarts.isometric.systems.hud.console.ConsoleCommands command, final ConsoleCommandResult consoleCommandResult, final CommandParameter parameter) {
+		consoleCommandResult.setMessage(reactToCommand(command));
+		return true;
+	}
+
+	private String reactToCommand(final ConsoleCommands command) {
+		String msg = null;
+		if (command == ConsoleCommandsList.PROFILER) {
+			toggle();
+			msg = glProfiler.isEnabled() ? ProfilerCommand.PROFILING_ACTIVATED : ProfilerCommand.PROFILING_DEACTIVATED;
+		}
+		return msg;
+	}
+
+	@Override
+	public void onConsoleDeactivated() {
 
 	}
 }
