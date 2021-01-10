@@ -84,13 +84,13 @@ public class CommandsHandler {
 		characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.IDLE);
 		currentCommand = null;
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onCommandDone(character);
+			subscriber.onCharacterCommandDone(character);
 		}
 	}
 
 	private void commandSet(final CharacterCommand command, final Entity character) {
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onNewCommandSet(command);
+			subscriber.onNewCharacterCommandSet(command);
 		}
 		initDestinationNode(ComponentsMapper.character.get(character), graphData.getCurrentPath().get(1));
 	}

@@ -2,9 +2,7 @@ package com.gadarts.isometric.systems;
 
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.gdx.utils.Disposable;
-import com.gadarts.isometric.utils.SoundPlayer;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
-import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.isometric.services.GameServices;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,15 +17,11 @@ public abstract class GameEntitySystem<T extends SystemEventsSubscriber> extends
 	protected final List<T> subscribers = new ArrayList<>();
 	private final Map<Class<? extends GameSystem>, GameSystem> mySystems = new HashMap<>();
 
-	protected MapGraph map;
-	protected SoundPlayer soundPlayer;
-	protected GameAssetsManager assetsManager;
+	protected GameServices services;
 
 	@Override
-	public void init(final MapGraph map, final SoundPlayer soundPlayer, final GameAssetsManager assetManager) {
-		this.map = map;
-		this.soundPlayer = soundPlayer;
-		this.assetsManager = assetManager;
+	public void init(final GameServices services) {
+		this.services = services;
 	}
 
 	@Override

@@ -7,9 +7,9 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 public interface CharacterSystemEventsSubscriber extends SystemEventsSubscriber {
 	void onDestinationReached(Entity character);
 
-	void onCommandDone(Entity character);
+	void onCharacterCommandDone(Entity character);
 
-	void onNewCommandSet(CharacterCommand command);
+	void onNewCharacterCommandSet(CharacterCommand command);
 
 	void onCharacterSystemReady(CharacterSystem characterSystem);
 

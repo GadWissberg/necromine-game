@@ -1,34 +1,22 @@
 package com.gadarts.isometric;
 
-import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Screen;
+import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.SystemsHandler;
-import com.gadarts.isometric.systems.hud.HudSystemImpl;
-import com.gadarts.isometric.systems.hud.console.*;
-import com.gadarts.isometric.utils.SoundPlayer;
-import com.gadarts.isometric.utils.assets.Assets;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
-import com.gadarts.isometric.utils.map.MapBuilder;
-import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.isometric.systems.hud.console.CommandParameter;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
+import com.gadarts.isometric.systems.hud.console.ConsoleEventsSubscriber;
 
 public class BattleScreen implements Screen, ConsoleEventsSubscriber {
-	private final PooledEngine engine;
 	private final SystemsHandler systemsHandler;
-	private final GameAssetsManager assetManager;
-	private final ConsoleImpl consoleImpl;
+
+	private final GameServices services;
 
 	public BattleScreen() {
-		this.engine = new PooledEngine();
-		assetManager = new GameAssetsManager();
-		assetManager.loadGameFiles();
-		MapBuilder mapBuilder = new MapBuilder(assetManager, engine);
-		MapGraph map = mapBuilder.createAndAddTestMap();
-		SoundPlayer soundPlayer = new SoundPlayer(assetManager);
-		soundPlayer.playMusic(Assets.Melody.TEST);
-		systemsHandler = new SystemsHandler(engine, map, soundPlayer, assetManager);
-		consoleImpl = new ConsoleImpl(assetManager);
-		consoleImpl.subscribeForEvents(this);
-		engine.getSystem(HudSystemImpl.class).getStage().addActor(consoleImpl);
+		services = new GameServices();
+		systemsHandler = new SystemsHandler(services);
+		services.init();
 	}
 
 	@Override
@@ -38,7 +26,7 @@ public class BattleScreen implements Screen, ConsoleEventsSubscriber {
 
 	@Override
 	public void render(final float delta) {
-		engine.update(delta);
+		services.getEngine().update(delta);
 	}
 
 	@Override
@@ -64,7 +52,7 @@ public class BattleScreen implements Screen, ConsoleEventsSubscriber {
 	@Override
 	public void dispose() {
 		systemsHandler.dispose();
-		assetManager.dispose();
+		services.getAssetManager().dispose();
 	}
 
 	@Override

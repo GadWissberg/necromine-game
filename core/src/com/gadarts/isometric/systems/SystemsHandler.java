@@ -3,31 +3,32 @@ package com.gadarts.isometric.systems;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.utils.Disposable;
-import com.gadarts.isometric.utils.SoundPlayer;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
-import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.isometric.services.GameServices;
+import com.gadarts.isometric.systems.hud.console.CommandParameter;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
+import com.gadarts.isometric.systems.hud.console.ConsoleEventsSubscriber;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SystemsHandler implements Disposable {
-	private final PooledEngine engine;
+public class SystemsHandler implements Disposable, ConsoleEventsSubscriber {
 
 	@SuppressWarnings("rawtypes")
 	private final Map<Class<? extends SystemEventsSubscriber>, Class<? extends GameEntitySystem>> subscribersInterfaces = new HashMap<>();
+	private final GameServices services;
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public SystemsHandler(final PooledEngine engine,
-						  final MapGraph map,
-						  final SoundPlayer soundPlayer,
-						  final GameAssetsManager assetManager) {
-		this.engine = engine;
+	public SystemsHandler(final GameServices services) {
+		this.services = services;
+		services.getConsoleImpl().subscribeForEvents(this);
+		PooledEngine engine = services.getEngine();
 		Arrays.stream(Systems.values()).forEach(system -> {
 			GameSystem implementation = system.getImplementation();
 			engine.addSystem((EntitySystem) implementation);
 			subscribersInterfaces.put(system.getEventsSubscriberClass(), (Class<? extends GameEntitySystem>) implementation.getClass());
-			implementation.init(map, soundPlayer, assetManager);
+			implementation.init(services);
 		});
 		engine.getSystems().forEach((system) -> Arrays.stream(system.getClass().getInterfaces()).forEach(i -> {
 			if (subscribersInterfaces.containsKey(i)) {
@@ -35,14 +36,56 @@ public class SystemsHandler implements Disposable {
 				s.subscribeForEvents((SystemEventsSubscriber) system);
 			}
 		}));
-		Arrays.stream(Systems.values()).forEach(system -> {
-			system.getImplementation().activate();
-		});
+		Arrays.stream(Systems.values()).forEach(system -> system.getImplementation().activate());
 	}
 
 
 	@Override
 	public void dispose() {
-		engine.getSystems().forEach(system -> ((GameEntitySystem<? extends SystemEventsSubscriber>) system).dispose());
+		services.getEngine().getSystems().forEach(system -> ((GameEntitySystem<? extends SystemEventsSubscriber>) system).dispose());
+	}
+
+	@Override
+	public void onConsoleActivated() {
+		services.getEngine().getSystems().forEach(system -> {
+			if (system instanceof ConsoleEventsSubscriber) {
+				ConsoleEventsSubscriber sub = (ConsoleEventsSubscriber) system;
+				sub.onConsoleActivated();
+			}
+		});
+	}
+
+	@Override
+	public boolean onCommandRun(final ConsoleCommands command, final ConsoleCommandResult consoleCommandResult) {
+		services.getEngine().getSystems().forEach(system -> {
+			if (system instanceof ConsoleEventsSubscriber) {
+				ConsoleEventsSubscriber sub = (ConsoleEventsSubscriber) system;
+				sub.onCommandRun(command, consoleCommandResult);
+			}
+		});
+		return true;
+	}
+
+	@Override
+	public boolean onCommandRun(final ConsoleCommands command,
+								final ConsoleCommandResult consoleCommandResult,
+								final CommandParameter parameter) {
+		services.getEngine().getSystems().forEach(system -> {
+			if (system instanceof ConsoleEventsSubscriber) {
+				ConsoleEventsSubscriber sub = (ConsoleEventsSubscriber) system;
+				sub.onCommandRun(command, consoleCommandResult, parameter);
+			}
+		});
+		return true;
+	}
+
+	@Override
+	public void onConsoleDeactivated() {
+		services.getEngine().getSystems().forEach(system -> {
+			if (system instanceof ConsoleEventsSubscriber) {
+				ConsoleEventsSubscriber sub = (ConsoleEventsSubscriber) system;
+				sub.onConsoleDeactivated();
+			}
+		});
 	}
 }

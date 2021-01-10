@@ -30,6 +30,7 @@ import com.gadarts.isometric.systems.hud.AttackNodesHandler;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
+import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 
 import static java.lang.Math.max;
@@ -222,6 +223,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			}
 		}
 		if (!DefaultGameSettings.HIDE_ENEMIES || !ComponentsMapper.enemy.has(entity)) {
+			MapGraph map = services.getMap();
 			MapGraphNode characterNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_1));
 			if (DefaultGameSettings.DISABLE_FOW || map.getFowMap()[characterNode.getY()][characterNode.getX()] == 1) {
 				lightsHandler.setDecalColorAccordingToLights(entity);
@@ -294,7 +296,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		addSystem(CameraSystem.class, cameraSystem);
-		this.renderBatches = new RenderBatches(cameraSystem.getCamera(), assetsManager, map.getFowMap());
+		this.renderBatches = new RenderBatches(cameraSystem.getCamera(), services.getAssetManager(), services.getMap().getFowMap());
 		environment.initialize();
 		systemReady();
 	}

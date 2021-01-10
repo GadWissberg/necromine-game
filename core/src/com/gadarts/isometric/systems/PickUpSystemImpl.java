@@ -116,6 +116,7 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 		return itemToPickup;
 	}
 
+
 	@Override
 	public void activate() {
 		subscribers.forEach(sub -> sub.onPickUpSystemReady(PickUpSystemImpl.this));
@@ -126,7 +127,7 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 		Vector3 cen = mic.transform.getTranslation(auxVector3_1);
 		ColorAttribute attr = (ColorAttribute) mic.materials.get(0).get(ColorAttribute.Emissive);
 		boolean rayCheck = Intersector.intersectRayBoundsFast(ray, cen, auxVector3_2.set(0.5f, 0.5f, 0.5f));
-		if (rayCheck && map.getAliveEnemyFromNode(enemiesEntities, currentNode) == null) {
+		if (rayCheck && services.getMap().getAliveEnemyFromNode(enemiesEntities, currentNode) == null) {
 			attr.color.set(1, 1, 1, 1);
 			return true;
 		} else {
@@ -150,7 +151,7 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 
 	@Override
 	public void mouseMoved(final int screenX, final int screenY) {
-		MapGraphNode newNode = map.getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
+		MapGraphNode newNode = services.getMap().getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
 		boolean foundPickup = highlightPickupUnderMouse(screenX, screenY, newNode);
 		currentHighLightedPickup = foundPickup ? currentHighLightedPickup : null;
 	}
@@ -228,12 +229,12 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 	}
 
 	@Override
-	public void onCommandDone(final Entity character) {
+	public void onCharacterCommandDone(final Entity character) {
 
 	}
 
 	@Override
-	public void onNewCommandSet(final CharacterCommand command) {
+	public void onNewCharacterCommandSet(final CharacterCommand command) {
 
 	}
 

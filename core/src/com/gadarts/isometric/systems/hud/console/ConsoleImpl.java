@@ -48,9 +48,9 @@ public class ConsoleImpl extends Table implements Console, InputProcessor {
 	private static final String MSG_SUGGESTED = "Possible options:\n%s";
 	private final ConsoleTextures consoleTextures = new ConsoleTextures();
 	private final Array<ConsoleEventsSubscriber> subscribers = new Array<>();
-	private final ConsoleTextData consoleTextData;
+	private ConsoleTextData consoleTextData;
 	private final ConsoleCommandResult consoleCommandResult = new ConsoleCommandResult();
-	private final ConsoleInputHistoryHandler consoleInputHistoryHandler;
+	private ConsoleInputHistoryHandler consoleInputHistoryHandler;
 	private final StringBuilder stringBuilder = new StringBuilder();
 	private boolean active;
 	private TextField input;
@@ -58,7 +58,7 @@ public class ConsoleImpl extends Table implements Console, InputProcessor {
 	private boolean scrollToEnd = true;
 	private Image arrow;
 
-	public ConsoleImpl(final GameAssetsManager assetManager) {
+	public void init(final GameAssetsManager assetManager) {
 		consoleTextData = new ConsoleTextData(assetManager);
 		setName(NAME);
 		int screenHeight = Gdx.graphics.getHeight();
@@ -74,10 +74,15 @@ public class ConsoleImpl extends Table implements Console, InputProcessor {
 		consoleInputHistoryHandler = new ConsoleInputHistoryHandler();
 		InputMultiplexer multiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
 		multiplexer.addProcessor(this);
+		input.setTextFieldFilter((textField, c) -> c != '\t');
 		input.setTextFieldListener((textField, c) -> {
 			if (c == GRAVE_ASCII) {
 				textField.setText(null);
-				if (!ConsoleImpl.this.hasActions()) if (isActive()) deactivate();
+				if (!ConsoleImpl.this.hasActions()) {
+					if (isActive()) {
+						deactivate();
+					}
+				}
 			}
 			if (active) {
 				if (c == '\r' || c == '\n') {
@@ -91,11 +96,17 @@ public class ConsoleImpl extends Table implements Console, InputProcessor {
 				boolean result = false;
 				if (active) {
 					result = true;
-					if (keycode == Input.Keys.PAGE_UP) scroll(-consoleTextData.getFontHeight() * 2);
-					else if (keycode == Input.Keys.PAGE_DOWN) scroll(consoleTextData.getFontHeight() * 2);
-					else if (keycode == Input.Keys.TAB) tryFindingCommand();
-					else if (keycode == Input.Keys.ESCAPE) deactivate();
-					else consoleInputHistoryHandler.onKeyDown(keycode);
+					if (keycode == Input.Keys.PAGE_UP) {
+						scroll(-consoleTextData.getFontHeight() * 2);
+					} else if (keycode == Input.Keys.PAGE_DOWN) {
+						scroll(consoleTextData.getFontHeight() * 2);
+					} else if (keycode == Input.Keys.TAB) {
+						tryFindingCommand();
+					} else if (keycode == Input.Keys.ESCAPE) {
+						deactivate();
+					} else {
+						consoleInputHistoryHandler.onKeyDown(keycode);
+					}
 				}
 				return result;
 			}
@@ -106,9 +117,10 @@ public class ConsoleImpl extends Table implements Console, InputProcessor {
 						.filter(command -> command.name().startsWith(input.getText().toUpperCase()))
 						.collect(toList());
 				if (options.size() == 1) {
-					input.setText(options.get(0).name().toLowerCase());
-					input.setCursorPosition(input.getText().length());
-				} else if (options.size() > 1) logSuggestedCommands(options);
+					applyFoundCommandByTab(options);
+				} else if (options.size() > 1) {
+					logSuggestedCommands(options);
+				}
 			}
 
 			private void logSuggestedCommands(final java.util.List<ConsoleCommandsList> options) {
@@ -122,6 +134,11 @@ public class ConsoleImpl extends Table implements Console, InputProcessor {
 				scrollToEnd = false;
 			}
 		});
+	}
+
+	private void applyFoundCommandByTab(final java.util.List<ConsoleCommandsList> options) {
+		input.setText(options.get(0).name().toLowerCase());
+		input.setCursorPosition(input.getText().length());
 	}
 
 	@Override

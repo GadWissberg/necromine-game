@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.gadarts.isometric.NecromineGame;
+import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
@@ -25,9 +26,6 @@ import com.gadarts.isometric.systems.hud.console.commands.types.ProfilerCommand;
 import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
-import com.gadarts.isometric.utils.SoundPlayer;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
-import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 
 /**
@@ -57,11 +55,12 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	private RenderSystem renderSystem;
 
 	@Override
-	public void init(final MapGraph map, final SoundPlayer soundPlayer, final GameAssetsManager assetManager) {
-		super.init(map, soundPlayer, assetManager);
+	public void init(final GameServices services) {
+		super.init(services);
 		glProfiler = new GLProfiler(Gdx.graphics);
 		stringBuilder = new StringBuilder();
 	}
+
 
 	private void setGlProfiler() {
 		if (Gdx.app.getLogLevel() == Application.LOG_DEBUG && DefaultGameSettings.SHOW_GL_PROFILING) {
@@ -207,12 +206,14 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	}
 
 	@Override
-	public boolean onCommandRun(final com.gadarts.isometric.systems.hud.console.ConsoleCommands command, final ConsoleCommandResult consoleCommandResult) {
+	public boolean onCommandRun(final ConsoleCommands command, final ConsoleCommandResult consoleCommandResult) {
 		return onCommandRun(command, consoleCommandResult, null);
 	}
 
 	@Override
-	public boolean onCommandRun(final com.gadarts.isometric.systems.hud.console.ConsoleCommands command, final ConsoleCommandResult consoleCommandResult, final CommandParameter parameter) {
+	public boolean onCommandRun(final ConsoleCommands command,
+								final ConsoleCommandResult consoleCommandResult,
+								final CommandParameter parameter) {
 		consoleCommandResult.setMessage(reactToCommand(command));
 		return true;
 	}

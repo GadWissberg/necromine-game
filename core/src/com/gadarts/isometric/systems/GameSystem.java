@@ -1,11 +1,9 @@
 package com.gadarts.isometric.systems;
 
-import com.gadarts.isometric.utils.SoundPlayer;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
-import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.isometric.services.GameServices;
 
 public interface GameSystem {
-	void init(MapGraph map, SoundPlayer soundPlayer, GameAssetsManager assetManager);
+	void init(final GameServices gameServices);
 
 	void activate();
 }

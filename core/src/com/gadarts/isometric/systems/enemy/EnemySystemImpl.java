@@ -59,7 +59,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			if (enemyComponent.isAwaken()) {
 				if (TimeUtils.timeSinceMillis(enemyComponent.getNextRoamSound()) >= 0) {
 					enemyComponent.calculateNextRoamSound();
-					soundPlayer.playSound(Assets.Sounds.ENEMY_ROAM);
+					services.getSoundPlayer().playSound(Assets.Sounds.ENEMY_ROAM);
 				}
 			}
 		}
@@ -101,7 +101,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private void invokeEnemyTurn(final Entity enemy) {
 		Vector2 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 		Entity target = ComponentsMapper.character.get(enemy).getTarget();
-		MapGraphNode enemyNode = map.getNode(enemyPosition);
+		MapGraphNode enemyNode = services.getMap().getNode(enemyPosition);
 		applyGoToMelee(enemy, enemyNode, target);
 	}
 
@@ -113,7 +113,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			auxCommand.init(CharacterCommands.GO_TO_MELEE, auxPath, enemy);
 			characterSystem.applyCommand(auxCommand, enemy);
 		} else {
-			onCommandDone(enemy);
+			onCharacterCommandDone(enemy);
 		}
 	}
 
@@ -132,7 +132,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	@Override
-	public void onCommandDone(final Entity character) {
+	public void onCharacterCommandDone(final Entity character) {
 		if (ComponentsMapper.enemy.has(character)) {
 			long currentTurnId = turnsSystem.getCurrentTurnId();
 			ComponentsMapper.enemy.get(character).setLastTurn(currentTurnId);
@@ -147,7 +147,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	@Override
-	public void onNewCommandSet(final CharacterCommand command) {
+	public void onNewCharacterCommandSet(final CharacterCommand command) {
 
 	}
 
@@ -191,7 +191,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		if (ComponentsMapper.enemy.has(entity)) {
 			if (spriteType == SpriteType.ATTACK) {
 				if (newFrame.index == ComponentsMapper.character.get(entity).getCharacterSpriteData().getHitFrameIndex()) {
-					soundPlayer.playSound(ComponentsMapper.enemy.get(entity).getEnemyDefinition().getAttackSound());
+					services.getSoundPlayer().playSound(ComponentsMapper.enemy.get(entity).getEnemyDefinition().getAttackSound());
 				}
 			}
 		} else if (ComponentsMapper.player.has(entity) && spriteType == SpriteType.RUN) {
@@ -221,7 +221,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			}
 		}
 		awakeEnemy(enemy);
-		soundPlayer.playSound(Assets.Sounds.ENEMY_AWAKE);
+		services.getSoundPlayer().playSound(Assets.Sounds.ENEMY_AWAKE);
 	}
 
 	private void awakeEnemy(final Entity enemy) {

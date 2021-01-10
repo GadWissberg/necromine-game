@@ -12,9 +12,8 @@ public class ProfilerCommand extends ConsoleCommandImpl {
 	public static final String PROFILING_DEACTIVATED = "Profiling info is hidden.";
 
 	@Override
-	public ConsoleCommandResult run(Console console, Map<String, String> parameters) {
-		ConsoleCommandResult result = super.run(console, parameters);
-		return result;
+	public ConsoleCommandResult run(final Console console, final Map<String, String> parameters) {
+		return super.run(console, parameters);
 	}
 
 	@Override

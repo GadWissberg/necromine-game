@@ -25,6 +25,7 @@ import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.utils.EntityBuilder;
+import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.map.MapGraphNode;
@@ -63,8 +64,8 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 
 	@Override
 	public void activate() {
-		this.graphData = new CharacterSystemGraphData(map);
-		commandsHandler = new CommandsHandler(graphData, subscribers, soundPlayer, map);
+		this.graphData = new CharacterSystemGraphData(services.getMap());
+		commandsHandler = new CommandsHandler(graphData, subscribers, services.getSoundPlayer(), services.getMap());
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCharacterSystemReady(this);
 		}
@@ -73,7 +74,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private boolean isPathHasUnrevealedNodes(final MapGraphPath plannedPath) {
 		boolean result = false;
 		for (MapGraphNode node : plannedPath.nodes) {
-			if (map.getFowMap()[node.getY()][node.getX()] == 0) {
+			if (services.getMap().getFowMap()[node.getY()][node.getX()] == 0) {
 				result = true;
 				break;
 			}
@@ -103,7 +104,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		Vector2 cellPosition = ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2_1);
 		return graphData.getPathFinder().searchNodePathBeforeCommand(
 				sourceNode,
-				map.getNode((int) cellPosition.x, (int) cellPosition.y),
+				services.getMap().getNode((int) cellPosition.x, (int) cellPosition.y),
 				graphData.getHeuristic(),
 				outputPath
 		);
@@ -214,7 +215,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		Vector3 pos = auxVector3_1.set(ComponentsMapper.characterDecal.get(character).getDecal().getPosition());
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		Entity target = characterComponent.getTarget();
-		MapGraphNode targetNode = map.getNode(ComponentsMapper.characterDecal.get(target).getDecal().getPosition());
+		MapGraphNode targetNode = services.getMap().getNode(ComponentsMapper.characterDecal.get(target).getDecal().getPosition());
 		Vector2 destPos = targetNode.getCenterPosition(auxVector2_2);
 		Vector2 directionToDest = destPos.sub(pos.x, pos.z).nor();
 		return Direction.findDirection(directionToDest);
@@ -252,6 +253,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		CharacterHealthData healthData = characterComponent.getHealthData();
 		CharacterSoundData soundData = characterComponent.getSoundData();
+		SoundPlayer soundPlayer = services.getSoundPlayer();
 		if (healthData.getHp() <= 0) {
 			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.DIE);
 			if (ComponentsMapper.animation.has(character)) {
@@ -338,7 +340,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 							  final TextureAtlas.AtlasRegion newFrame,
 							  final CharacterComponent characterComponent) {
 		if (newFrame.index % 2 == 0) {
-			soundPlayer.playRandomSound(Assets.Sounds.STEP_1, Assets.Sounds.STEP_2, Assets.Sounds.STEP_3);
+			services.getSoundPlayer().playRandomSound(Assets.Sounds.STEP_1, Assets.Sounds.STEP_2, Assets.Sounds.STEP_3);
 		}
 		MapGraphNode oldDest = characterComponent.getDestinationNode();
 		Decal decal = ComponentsMapper.characterDecal.get(character).getDecal();
@@ -368,9 +370,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 
 	private void takeStep(final Entity entity) {
 		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(entity);
-		MapGraphNode oldNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_3));
+		MapGraphNode oldNode = services.getMap().getNode(characterDecalComponent.getNodePosition(auxVector2_3));
 		translateCharacter(entity, characterDecalComponent);
-		MapGraphNode newNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_3));
+		MapGraphNode newNode = services.getMap().getNode(characterDecalComponent.getNodePosition(auxVector2_3));
 		if (oldNode != newNode) {
 			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 				subscriber.onCharacterNodeChanged(entity, oldNode, newNode);

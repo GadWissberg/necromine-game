@@ -25,6 +25,7 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
 import com.gadarts.isometric.components.EnemyComponent;
 import com.gadarts.isometric.components.player.PlayerComponent;
+import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
@@ -41,7 +42,6 @@ import com.gadarts.isometric.systems.turns.Turns;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
-import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import com.gadarts.isometric.utils.map.MapGraph;
@@ -81,8 +81,8 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	@Override
-	public void init(final MapGraph map, final SoundPlayer soundPlayer, final GameAssetsManager assetManager) {
-		super.init(map, soundPlayer, assetManager);
+	public void init(final GameServices services) {
+		super.init(services);
 		createStageAndAddHud();
 	}
 
@@ -98,7 +98,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private void createStageAndAddHud() {
 		Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
-		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), soundPlayer);
+		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), services.getSoundPlayer());
 		addHudTable();
 		toolTipHandler = new ToolTipHandler(stage);
 		toolTipHandler.addToolTipTable();
@@ -115,6 +115,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void addStorageButton(final Table table) {
 		Button.ButtonStyle buttonStyle = new Button.ButtonStyle();
+		GameAssetsManager assetsManager = services.getAssetManager();
 		buttonStyle.up = new TextureRegionDrawable(assetsManager.getTexture(Assets.UiTextures.BUTTON_STORAGE));
 		buttonStyle.down = new TextureRegionDrawable(assetsManager.getTexture(Assets.UiTextures.BUTTON_STORAGE_DOWN));
 		buttonStyle.over = new TextureRegionDrawable(assetsManager.getTexture(Assets.UiTextures.BUTTON_STORAGE_HOVER));
@@ -125,7 +126,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 			public void clicked(final InputEvent event, final float x, final float y) {
 				super.clicked(event, x, y);
 				stage.openStorageWindow(assetsManager);
-				soundPlayer.playSound(Assets.Sounds.UI_CLICK);
+				services.getSoundPlayer().playSound(Assets.Sounds.UI_CLICK);
 			}
 		});
 		table.add(button).expand().left().bottom().pad(BUTTON_PADDING);
@@ -134,6 +135,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	@Override
 	public void mouseMoved(final int screenX, final int screenY) {
+		MapGraph map = services.getMap();
 		MapGraphNode newNode = map.getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
 		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
 		if (!newNode.equals(oldNode)) {
@@ -145,6 +147,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void colorizeCursor(final MapGraphNode newNode) {
+		MapGraph map = services.getMap();
 		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, newNode);
 		if (DefaultGameSettings.DISABLE_FOW || map.getFowMap()[newNode.getY()][newNode.getX()] == 1) {
 			if (enemyAtNode != null) {
@@ -165,7 +168,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private MapGraphNode getCursorNode() {
 		Vector3 dest = getCursorModelInstance().transform.getTranslation(auxVector3_1);
-		return map.getNode((int) dest.x, (int) dest.z);
+		return services.getMap().getNode((int) dest.x, (int) dest.z);
 	}
 
 	@Override
@@ -182,7 +185,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void userSelectedNodeToApplyTurn() {
 		MapGraphNode cursorNode = getCursorNode();
-		if (DefaultGameSettings.DISABLE_FOW || map.getFowMap()[cursorNode.getY()][cursorNode.getX()] == 1) {
+		if (DefaultGameSettings.DISABLE_FOW || services.getMap().getFowMap()[cursorNode.getY()][cursorNode.getX()] == 1) {
 			for (HudSystemEventsSubscriber sub : subscribers) {
 				sub.onUserSelectedNodeToApplyTurn(cursorNode, attackNodesHandler);
 			}
@@ -193,7 +196,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
 		stage.act();
-		toolTipHandler.handleToolTip(map, getCursorNode(), enemiesEntities);
+		toolTipHandler.handleToolTip(services.getMap(), getCursorNode(), enemiesEntities);
 	}
 
 
@@ -288,12 +291,12 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	@Override
-	public void onCommandDone(final Entity character) {
+	public void onCharacterCommandDone(final Entity character) {
 
 	}
 
 	@Override
-	public void onNewCommandSet(final CharacterCommand command) {
+	public void onNewCharacterCommandSet(final CharacterCommand command) {
 
 	}
 
