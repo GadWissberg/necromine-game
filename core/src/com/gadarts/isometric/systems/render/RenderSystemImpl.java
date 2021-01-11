@@ -29,6 +29,12 @@ import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommandParameter;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
+import com.gadarts.isometric.systems.hud.console.ConsoleEventsSubscriber;
+import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
+import com.gadarts.isometric.systems.hud.console.commands.types.SkipRenderCommand;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
@@ -43,7 +49,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		EntityListener,
 		HudSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
-		EventsNotifier<RenderSystemEventsSubscriber> {
+		EventsNotifier<RenderSystemEventsSubscriber>,
+		ConsoleEventsSubscriber {
 
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
@@ -60,6 +67,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private boolean ready;
 	private int numberOfVisible;
 	private LightsRenderer lightsHandler;
+	private boolean drawGround = !DefaultGameSettings.HIDE_GROUND;
+	private boolean drawEnemy = !DefaultGameSettings.HIDE_ENEMIES;
+	private boolean drawEnv = !DefaultGameSettings.HIDE_ENVIRONMENT_OBJECTS;
+	private boolean drawCursor = !DefaultGameSettings.HIDE_CURSOR;
 
 	private void resetDisplay(final Color color) {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -222,7 +233,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				}
 			}
 		}
-		if (!DefaultGameSettings.HIDE_ENEMIES || !ComponentsMapper.enemy.has(entity)) {
+		if (drawEnemy || !ComponentsMapper.enemy.has(entity)) {
 			MapGraph map = services.getMap();
 			MapGraphNode characterNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_1));
 			if (DefaultGameSettings.DISABLE_FOW || map.getFowMap()[characterNode.getY()][characterNode.getX()] == 1) {
@@ -255,10 +266,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 			boolean isWall = ComponentsMapper.wall.has(entity);
 			if ((!modelInstanceComponent.isVisible())
-					|| (DefaultGameSettings.HIDE_ENVIRONMENT_OBJECTS && ComponentsMapper.obstacle.has(entity))
+					|| (!drawEnv && ComponentsMapper.obstacle.has(entity))
 					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())
 					|| (!renderWallsAndFloor && (isWall || ComponentsMapper.floor.has(entity)))
-					|| (DefaultGameSettings.HIDE_CURSOR && ComponentsMapper.cursor.has(entity))
+					|| (!drawCursor && ComponentsMapper.cursor.has(entity))
 					|| !isVisible(getSystem(CameraSystem.class).getCamera(), entity)) {
 				continue;
 			}
@@ -272,13 +283,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 					continue;
 				}
 			}
-			if ((!DefaultGameSettings.HIDE_GROUND || !ComponentsMapper.floor.has(entity))) {
+			if ((drawGround || !ComponentsMapper.floor.has(entity))) {
 				if (renderLight) {
 					lightsHandler.applyLightsOnModel(modelInstanceComponent);
-				}
-				Vector3 translation = ComponentsMapper.modelInstance.get(entity).getModelInstance().transform.getTranslation(new Vector3());
-				if (ComponentsMapper.obstacle.has(entity) && translation.x == 3f && translation.z == 1f) {
-					Gdx.app.log("!", "!");
 				}
 				numberOfVisible++;
 				modelBatch.render(modelInstance, environment);
@@ -344,5 +351,43 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public int getNumberOfModelInstances() {
 		return renderSystemRelatedEntities.getModelInstanceEntities().size();
+	}
+
+	@Override
+	public void onConsoleActivated() {
+
+	}
+
+	@Override
+	public boolean onCommandRun(final ConsoleCommands command, final ConsoleCommandResult consoleCommandResult) {
+		return false;
+	}
+
+	@Override
+	public boolean onCommandRun(final ConsoleCommands command,
+								final ConsoleCommandResult consoleCommandResult,
+								final ConsoleCommandParameter parameter) {
+		boolean result = false;
+		if (command == ConsoleCommandsList.SKIP_RENDER) {
+			applySkipRenderCommand(parameter);
+			result = true;
+		}
+		return result;
+	}
+
+	private void applySkipRenderCommand(final ConsoleCommandParameter parameter) {
+		String alias = parameter.getAlias();
+		boolean value = !parameter.getParameterValue();
+		switch (alias) {
+			case SkipRenderCommand.GroundParameter.ALIAS -> drawGround = value;
+			case SkipRenderCommand.EnemyParameter.ALIAS -> drawEnemy = value;
+			case SkipRenderCommand.EnvironmentObjectParameter.ALIAS -> drawEnv = value;
+			case SkipRenderCommand.CursorParameter.ALIAS -> drawCursor = value;
+		}
+	}
+
+	@Override
+	public void onConsoleDeactivated() {
+
 	}
 }

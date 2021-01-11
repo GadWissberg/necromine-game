@@ -3,7 +3,7 @@ package com.gadarts.isometric;
 import com.badlogic.gdx.Screen;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.SystemsHandler;
-import com.gadarts.isometric.systems.hud.console.CommandParameter;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommandParameter;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
 import com.gadarts.isometric.systems.hud.console.ConsoleEventsSubscriber;
@@ -66,7 +66,7 @@ public class BattleScreen implements Screen, ConsoleEventsSubscriber {
 	}
 
 	@Override
-	public boolean onCommandRun(final ConsoleCommands command, final ConsoleCommandResult consoleCommandResult, final CommandParameter parameter) {
+	public boolean onCommandRun(final ConsoleCommands command, final ConsoleCommandResult consoleCommandResult, final ConsoleCommandParameter parameter) {
 		return false;
 	}
 

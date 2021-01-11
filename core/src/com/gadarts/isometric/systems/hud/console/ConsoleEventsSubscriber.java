@@ -5,7 +5,7 @@ public interface ConsoleEventsSubscriber {
 
 	boolean onCommandRun(ConsoleCommands command, ConsoleCommandResult consoleCommandResult);
 
-	boolean onCommandRun(ConsoleCommands command, ConsoleCommandResult consoleCommandResult, CommandParameter parameter);
+	boolean onCommandRun(ConsoleCommands command, ConsoleCommandResult consoleCommandResult, ConsoleCommandParameter parameter);
 
 	void onConsoleDeactivated();
 }

@@ -9,7 +9,7 @@ public interface Console {
 
 	ConsoleCommandResult notifyCommandExecution(ConsoleCommands command);
 
-	ConsoleCommandResult notifyCommandExecution(ConsoleCommands command, CommandParameter parameter);
+	ConsoleCommandResult notifyCommandExecution(ConsoleCommands command, ConsoleCommandParameter parameter);
 
 	void activate();
 

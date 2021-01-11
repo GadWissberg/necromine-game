@@ -114,7 +114,11 @@ public class ConsoleImpl extends Table implements Console, InputProcessor {
 			private void tryFindingCommand() {
 				if (input.getText().isEmpty()) return;
 				java.util.List<ConsoleCommandsList> options = Arrays.stream(ConsoleCommandsList.values())
-						.filter(command -> command.name().startsWith(input.getText().toUpperCase()))
+						.filter(command -> {
+							String p = input.getText().toUpperCase();
+							String alias = command.getAlias();
+							return command.name().startsWith(p) || ((alias != null && alias.startsWith(p.toLowerCase())));
+						})
 						.collect(toList());
 				if (options.size() == 1) {
 					applyFoundCommandByTab(options);
@@ -214,10 +218,10 @@ public class ConsoleImpl extends Table implements Console, InputProcessor {
 	}
 
 	@Override
-	public ConsoleCommandResult notifyCommandExecution(final ConsoleCommands command, final CommandParameter commandParameter) {
+	public ConsoleCommandResult notifyCommandExecution(final ConsoleCommands command, final ConsoleCommandParameter consoleCommandParameter) {
 		boolean result = false;
 		consoleCommandResult.clear();
-		Optional<CommandParameter> optional = Optional.ofNullable(commandParameter);
+		Optional<ConsoleCommandParameter> optional = Optional.ofNullable(consoleCommandParameter);
 		for (ConsoleEventsSubscriber sub : subscribers) {
 			if (optional.isPresent()) {
 				result |= sub.onCommandRun(command, consoleCommandResult, optional.get());

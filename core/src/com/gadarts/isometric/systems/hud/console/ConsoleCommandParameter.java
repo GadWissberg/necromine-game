@@ -7,12 +7,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class CommandParameter {
+public abstract class ConsoleCommandParameter {
 	private final String description;
 	private final String alias;
 	private boolean parameterValue;
 
-	public CommandParameter(final String description, final String alias) {
+	public ConsoleCommandParameter(final String description, final String alias) {
 		this.description = description;
 		this.alias = alias;
 	}

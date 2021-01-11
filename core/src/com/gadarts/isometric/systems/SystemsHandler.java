@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.services.GameServices;
-import com.gadarts.isometric.systems.hud.console.CommandParameter;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommandParameter;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
 import com.gadarts.isometric.systems.hud.console.ConsoleEventsSubscriber;
@@ -69,7 +69,7 @@ public class SystemsHandler implements Disposable, ConsoleEventsSubscriber {
 	@Override
 	public boolean onCommandRun(final ConsoleCommands command,
 								final ConsoleCommandResult consoleCommandResult,
-								final CommandParameter parameter) {
+								final ConsoleCommandParameter parameter) {
 		services.getEngine().getSystems().forEach(system -> {
 			if (system instanceof ConsoleEventsSubscriber) {
 				ConsoleEventsSubscriber sub = (ConsoleEventsSubscriber) system;

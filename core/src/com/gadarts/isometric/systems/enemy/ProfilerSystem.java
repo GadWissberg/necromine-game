@@ -17,7 +17,7 @@ import com.gadarts.isometric.systems.SystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
-import com.gadarts.isometric.systems.hud.console.CommandParameter;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommandParameter;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
 import com.gadarts.isometric.systems.hud.console.ConsoleEventsSubscriber;
@@ -213,9 +213,14 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	@Override
 	public boolean onCommandRun(final ConsoleCommands command,
 								final ConsoleCommandResult consoleCommandResult,
-								final CommandParameter parameter) {
-		consoleCommandResult.setMessage(reactToCommand(command));
-		return true;
+								final ConsoleCommandParameter parameter) {
+		String msg = reactToCommand(command);
+		boolean result = false;
+		if (msg != null) {
+			consoleCommandResult.setMessage(msg);
+			result = true;
+		}
+		return result;
 	}
 
 	private String reactToCommand(final ConsoleCommands command) {
