@@ -150,10 +150,6 @@ public final class Assets {
 		private final String filePath;
 		private final AssetLoaderParameters<BitmapFont> params;
 
-		Fonts() {
-			this(null);
-		}
-
 		Fonts(final FreetypeFontLoader.FreeTypeFontLoaderParameter freeTypeFontLoaderParameter) {
 			this.filePath = FontDefinition.FOLDER + PATH_SEPARATOR + name().toLowerCase() + "." + FontDefinition.FORMAT;
 			freeTypeFontLoaderParameter.fontParameters.size = 15;

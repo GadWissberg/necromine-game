@@ -32,6 +32,11 @@ import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.CharacterCommand;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommandParameter;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
+import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
+import com.gadarts.isometric.systems.hud.console.ConsoleEventsSubscriber;
+import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
 import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
@@ -57,7 +62,8 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		CameraSystemEventsSubscriber,
 		TurnsSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber,
-		PickupSystemEventsSubscriber {
+		PickupSystemEventsSubscriber,
+		ConsoleEventsSubscriber {
 
 	public static final Color CURSOR_REGULAR = Color.YELLOW;
 	public static final Color CURSOR_UNAVAILABLE = Color.DARK_GRAY;
@@ -66,12 +72,14 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final float BUTTON_PADDING = 40;
 	private static final String BUTTON_NAME_STORAGE = "button_storage";
+	public static final String MSG_BORDERS = "UI borders are %s.";
 
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
 	private ImmutableArray<Entity> enemiesEntities;
 	private ModelInstance cursorModelInstance;
 	private GameStage stage;
 	private ToolTipHandler toolTipHandler;
+	private boolean showBorders = DefaultGameSettings.DISPLAY_HUD_OUTLINES;
 
 
 	@Override
@@ -106,7 +114,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void addHudTable() {
 		Table hudTable = new Table();
-		stage.setDebugAll(Gdx.app.getLogLevel() == LOG_DEBUG && DefaultGameSettings.DISPLAY_HUD_OUTLINES);
+		stage.setDebugAll(Gdx.app.getLogLevel() == LOG_DEBUG && showBorders);
 		hudTable.setFillParent(true);
 		addStorageButton(hudTable);
 		stage.addActor(hudTable);
@@ -337,4 +345,33 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		addSystem(PickUpSystem.class, pickUpSystem);
 	}
 
+	@Override
+	public void onConsoleActivated() {
+
+	}
+
+	@Override
+	public boolean onCommandRun(final ConsoleCommands command, final ConsoleCommandResult consoleCommandResult) {
+		boolean result = false;
+		if (command == ConsoleCommandsList.BORDERS) {
+			showBorders = !showBorders;
+			stage.setDebugAll(showBorders);
+			String msg = showBorders ? String.format(MSG_BORDERS, "displayed") : String.format(MSG_BORDERS, "hidden");
+			consoleCommandResult.setMessage(msg);
+			result = true;
+		}
+		return result;
+	}
+
+	@Override
+	public boolean onCommandRun(final ConsoleCommands command,
+								final ConsoleCommandResult consoleCommandResult,
+								final ConsoleCommandParameter parameter) {
+		return false;
+	}
+
+	@Override
+	public void onConsoleDeactivated() {
+
+	}
 }

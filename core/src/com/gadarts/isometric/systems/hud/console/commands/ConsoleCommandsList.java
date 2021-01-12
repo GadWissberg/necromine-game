@@ -13,6 +13,7 @@ public enum ConsoleCommandsList implements ConsoleCommands {
 	PROFILER(new ProfilerCommand(), "Toggles profiler and GL operations stats."),
 	SFX("sound", new SfxCommand(), "Toggles sound effects."),
 	MELODY("music", new MusicCommand(), "Toggles background melody."),
+	BORDERS("borders", new BordersCommand(), "Toggles UI elements borders visibility."),
 	SKIP_RENDER("skip-render", new SkipRenderCommand(), "Toggles drawing skipping mode for given categories.",
 			new SkipRenderCommand.GroundParameter(),
 			new SkipRenderCommand.EnemyParameter(),

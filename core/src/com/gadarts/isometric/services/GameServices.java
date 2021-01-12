@@ -1,6 +1,7 @@
 package com.gadarts.isometric.services;
 
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.systems.hud.console.*;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
@@ -12,7 +13,7 @@ import com.gadarts.isometric.utils.map.MapGraph;
 import lombok.Getter;
 
 @Getter
-public class GameServices implements ConsoleEventsSubscriber {
+public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	private final PooledEngine engine;
 	private final GameAssetsManager assetManager;
 	private final ConsoleImpl consoleImpl;
@@ -88,5 +89,10 @@ public class GameServices implements ConsoleEventsSubscriber {
 	@Override
 	public void onConsoleDeactivated() {
 
+	}
+
+	@Override
+	public void dispose() {
+		assetManager.dispose();
 	}
 }
