@@ -104,7 +104,8 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		List<MapGraphNode> nodesAround = getNodesAround(node, auxNodesList_1);
 		List<MapGraphNode> availableNodes = auxNodesList_2;
 		for (MapGraphNode nearbyNode : nodesAround) {
-			if (nearbyNode.getType() == 0 && getAliveEnemyFromNode(enemiesEntities, nearbyNode) == null) {
+			boolean isRevealed = fowMap[nearbyNode.getY()][nearbyNode.getX()] != 0;
+			if (nearbyNode.getType() == 0 && getAliveEnemyFromNode(enemiesEntities, nearbyNode) == null && isRevealed) {
 				availableNodes.add(nearbyNode);
 			}
 		}
