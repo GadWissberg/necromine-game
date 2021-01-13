@@ -20,9 +20,10 @@ import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.components.player.WeaponsDefinitions;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.bullets.BulletsSystemEventsSubscriber;
+import com.gadarts.isometric.systems.character.commands.CharacterCommand;
+import com.gadarts.isometric.systems.character.commands.CommandsHandler;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
-import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.SoundPlayer;
@@ -351,10 +352,6 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		}
 	}
 
-	@Override
-	public void onRenderSystemReady(final RenderSystem renderSystem) {
-
-	}
 
 	private void reachedNodeOfPath(final Entity character,
 								   final MapGraphNode oldDest) {

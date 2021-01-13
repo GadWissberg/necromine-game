@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterMotivation;
-import com.gadarts.isometric.systems.character.ToDoAfterDestinationReached;
+import com.gadarts.isometric.systems.character.commands.ToDoAfterDestinationReached;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 

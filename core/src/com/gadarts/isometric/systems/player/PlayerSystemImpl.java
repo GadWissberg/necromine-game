@@ -17,12 +17,11 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.player.*;
 import com.gadarts.isometric.systems.GameEntitySystem;
-import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
-import com.gadarts.isometric.systems.character.CharacterCommand;
-import com.gadarts.isometric.systems.character.CharacterCommands;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
+import com.gadarts.isometric.systems.character.commands.CharacterCommand;
+import com.gadarts.isometric.systems.character.commands.CharacterCommands;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
 import com.gadarts.isometric.systems.hud.HudSystem;
@@ -268,12 +267,6 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		if (ComponentsMapper.player.has(entity)) {
 			revealRadius(PLAYER_VISION_RAD, ComponentsMapper.characterDecal.get(player).getNodePosition(auxVector2_1));
 		}
-	}
-
-
-	@Override
-	public void onCameraSystemReady(final CameraSystem cameraSystem) {
-
 	}
 
 	@Override

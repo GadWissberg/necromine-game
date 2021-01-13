@@ -5,7 +5,11 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
 
 public interface RenderSystemEventsSubscriber extends SystemEventsSubscriber {
-	void onFrameChanged(Entity entity, float deltaTime, TextureAtlas.AtlasRegion newFrame);
+	default void onFrameChanged(final Entity entity, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
 
-	void onRenderSystemReady(RenderSystem renderSystem);
+	}
+
+	default void onRenderSystemReady(final RenderSystem renderSystem) {
+
+	}
 }

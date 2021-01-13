@@ -7,13 +7,11 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.systems.GameEntitySystem;
-import com.gadarts.isometric.systems.hud.AttackNodesHandler;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
-import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.Getter;
 
 import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
@@ -179,9 +177,5 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		addSystem(HudSystem.class, hudSystem);
 	}
 
-	@Override
-	public void onUserSelectedNodeToApplyTurn(final MapGraphNode cursorNode, final AttackNodesHandler attackNodesHandler) {
-
-	}
 
 }

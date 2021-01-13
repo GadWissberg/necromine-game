@@ -2,22 +2,39 @@ package com.gadarts.isometric.systems.character;
 
 import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
+import com.gadarts.isometric.systems.character.commands.CharacterCommand;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 
 public interface CharacterSystemEventsSubscriber extends SystemEventsSubscriber {
-	void onDestinationReached(Entity character);
+	default void onDestinationReached(final Entity character) {
 
-	void onCharacterCommandDone(Entity character);
+	}
 
-	void onNewCharacterCommandSet(CharacterCommand command);
+	default void onCharacterCommandDone(final Entity character) {
 
-	void onCharacterSystemReady(CharacterSystem characterSystem);
+	}
 
-	void onCharacterGotDamage(Entity target);
+	default void onNewCharacterCommandSet(final CharacterCommand command) {
 
-	void onItemPickedUp(Entity itemPickedUp);
+	}
 
-	void onCharacterDies(Entity character);
+	default void onCharacterSystemReady(final CharacterSystem characterSystem) {
 
-	void onCharacterNodeChanged(Entity entity, MapGraphNode oldNode, MapGraphNode newNode);
+	}
+
+	default void onCharacterGotDamage(final Entity target) {
+
+	}
+
+	default void onItemPickedUp(final Entity itemPickedUp) {
+
+	}
+
+	default void onCharacterDies(final Entity character) {
+
+	}
+
+	default void onCharacterNodeChanged(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
+
+	}
 }

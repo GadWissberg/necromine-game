@@ -3,13 +3,23 @@ package com.gadarts.isometric.systems.input;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
 
 public interface InputSystemEventsSubscriber extends SystemEventsSubscriber {
-	void mouseMoved(final int screenX, final int screenY);
+	default void mouseMoved(final int screenX, final int screenY) {
 
-	void touchDown(int screenX, int screenY, int button);
+	}
 
-	void touchUp(int screenX, int screenY, int button);
+	default void touchDown(final int screenX, final int screenY, final int button) {
 
-	void touchDragged(int screenX, int screenY);
+	}
 
-	void inputSystemReady(InputSystem inputSystem);
+	default void touchUp(final int screenX, final int screenY, final int button) {
+
+	}
+
+	default void touchDragged(final int screenX, final int screenY) {
+
+	}
+
+	default void inputSystemReady(final InputSystem inputSystem) {
+
+	}
 }

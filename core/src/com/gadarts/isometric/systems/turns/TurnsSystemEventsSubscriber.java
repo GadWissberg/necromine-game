@@ -3,9 +3,15 @@ package com.gadarts.isometric.systems.turns;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
 
 public interface TurnsSystemEventsSubscriber extends SystemEventsSubscriber {
-	void onEnemyTurn(long currentTurnId);
+	default void onEnemyTurn(final long currentTurnId) {
 
-	void onPlayerTurn(long currentTurnId);
+	}
 
-	void onTurnsSystemReady(TurnsSystem turnsSystem);
+	default void onPlayerTurn(final long currentTurnId) {
+
+	}
+
+	default void onTurnsSystemReady(final TurnsSystem turnsSystem) {
+
+	}
 }

@@ -1,15 +1,10 @@
 package com.gadarts.isometric.systems.turns;
 
-import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
-import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
-import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.Getter;
-
-import java.util.List;
 
 @Getter
 public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscriber> implements
@@ -72,39 +67,10 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 		enemyTurnDone = false;
 	}
 
-	@Override
-	public void onPathCreated(final boolean pathToEnemy) {
-
-	}
-
-	@Override
-	public void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
-
-	}
-
-	@Override
-	public void onPlayerSystemReady(final PlayerSystem playerSystem) {
-
-	}
-
-	@Override
-	public void onAttackModeActivated(final List<MapGraphNode> availableNodes) {
-
-	}
-
-	@Override
-	public void onAttackModeDeactivated() {
-
-	}
 
 	@Override
 	public void onEnemyFinishedTurn() {
 		enemyTurnDone = true;
-	}
-
-	@Override
-	public void onEnemyAwaken(final Entity enemy) {
-
 	}
 
 

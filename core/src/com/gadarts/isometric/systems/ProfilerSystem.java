@@ -1,4 +1,4 @@
-package com.gadarts.isometric.systems.enemy;
+package com.gadarts.isometric.systems;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Application;
@@ -12,8 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.services.GameServices;
-import com.gadarts.isometric.systems.GameEntitySystem;
-import com.gadarts.isometric.systems.SystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;

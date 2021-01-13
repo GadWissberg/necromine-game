@@ -29,7 +29,6 @@ import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
-import com.gadarts.isometric.systems.character.CharacterCommand;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandParameter;
@@ -208,35 +207,13 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 
-	@Override
-	public void touchUp(final int screenX, final int screenY, final int button) {
 
-	}
-
-	@Override
-	public void touchDragged(final int screenX, final int screenY) {
-
-	}
 
 	@Override
 	public void inputSystemReady(final InputSystem inputSystem) {
 		inputSystem.addInputProcessor(stage);
 	}
 
-	@Override
-	public void onPlayerFinishedTurn() {
-
-	}
-
-	@Override
-	public void onPathCreated(final boolean pathToEnemy) {
-
-	}
-
-	@Override
-	public void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
-
-	}
 
 	@Override
 	public void onPlayerSystemReady(final PlayerSystem playerSystem) {
@@ -293,45 +270,19 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		super.addSystem(TurnsSystem.class, turnsSystem);
 	}
 
-	@Override
-	public void onDestinationReached(final Entity character) {
-
-	}
-
-	@Override
-	public void onCharacterCommandDone(final Entity character) {
-
-	}
-
-	@Override
-	public void onNewCharacterCommandSet(final CharacterCommand command) {
-
-	}
 
 	@Override
 	public void onCharacterSystemReady(final CharacterSystem characterSystem) {
 		addSystem(CharacterSystem.class, characterSystem);
 	}
 
-	@Override
-	public void onCharacterGotDamage(final Entity target) {
 
-	}
 
-	@Override
-	public void onItemPickedUp(final Entity itemPickedUp) {
 
-	}
 
-	@Override
-	public void onCharacterDies(final Entity character) {
 
-	}
 
-	@Override
-	public void onCharacterNodeChanged(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
 
-	}
 
 	@Override
 	public void activate() {

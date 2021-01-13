@@ -4,7 +4,11 @@ import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
 
 public interface EnemySystemEventsSubscriber extends SystemEventsSubscriber {
-	void onEnemyFinishedTurn();
+	default void onEnemyFinishedTurn() {
 
-	void onEnemyAwaken(Entity enemy);
+	}
+
+	default void onEnemyAwaken(Entity enemy) {
+
+	}
 }

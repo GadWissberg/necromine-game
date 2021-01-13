@@ -1,9 +1,11 @@
-package com.gadarts.isometric.systems.character;
+package com.gadarts.isometric.systems.character.commands;
 
 import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
+import com.gadarts.isometric.systems.character.CharacterSystemGraphData;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
@@ -77,7 +79,7 @@ public class CommandsHandler {
 		}
 	}
 
-	void commandDone(final Entity character) {
+	public void commandDone(final Entity character) {
 		graphData.getCurrentPath().clear();
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		characterComponent.setMotivation(null);
@@ -95,8 +97,8 @@ public class CommandsHandler {
 		initDestinationNode(ComponentsMapper.character.get(character), graphData.getCurrentPath().get(1));
 	}
 
-	void initDestinationNode(final CharacterComponent characterComponent,
-							 final MapGraphNode destNode) {
+	public void initDestinationNode(final CharacterComponent characterComponent,
+									final MapGraphNode destNode) {
 		characterComponent.getRotationData().setRotating(true);
 		characterComponent.setDestinationNode(destNode);
 	}

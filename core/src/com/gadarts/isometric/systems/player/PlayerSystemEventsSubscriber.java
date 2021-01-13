@@ -6,16 +6,28 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 import java.util.List;
 
 public interface PlayerSystemEventsSubscriber extends SystemEventsSubscriber {
-	void onPlayerFinishedTurn();
+	default void onPlayerFinishedTurn() {
 
-	void onPathCreated(boolean pathToEnemy);
+	}
 
-	void onEnemySelectedWithRangeWeapon(MapGraphNode node);
+	default void onPathCreated(final boolean pathToEnemy) {
 
-	void onPlayerSystemReady(PlayerSystem playerSystem);
+	}
 
-	void onAttackModeActivated(List<MapGraphNode> availableNodes);
+	default void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
 
-	void onAttackModeDeactivated();
+	}
+
+	default void onPlayerSystemReady(final PlayerSystem playerSystem) {
+
+	}
+
+	default void onAttackModeActivated(final List<MapGraphNode> availableNodes) {
+
+	}
+
+	default void onAttackModeDeactivated() {
+
+	}
 
 }

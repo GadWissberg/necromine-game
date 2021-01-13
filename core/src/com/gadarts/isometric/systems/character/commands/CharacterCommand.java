@@ -1,4 +1,4 @@
-package com.gadarts.isometric.systems.character;
+package com.gadarts.isometric.systems.character.commands;
 
 import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.utils.map.MapGraphPath;

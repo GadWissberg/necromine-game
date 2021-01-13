@@ -4,5 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
 
 public interface BulletsSystemEventsSubscriber extends SystemEventsSubscriber {
-	void onBulletCollision(Entity bullet, Entity collidable);
+	default void onBulletCollision(final Entity bullet, final Entity collidable) {
+
+	}
 }

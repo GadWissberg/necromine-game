@@ -17,11 +17,10 @@ import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.GameEntitySystem;
-import com.gadarts.isometric.systems.character.CharacterCommand;
-import com.gadarts.isometric.systems.character.CharacterCommands;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
-import com.gadarts.isometric.systems.render.RenderSystem;
+import com.gadarts.isometric.systems.character.commands.CharacterCommand;
+import com.gadarts.isometric.systems.character.commands.CharacterCommands;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
@@ -117,19 +116,14 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	@Override
-	public void onPlayerTurn(final long currentTurnId) {
 
-	}
 
 	@Override
 	public void onTurnsSystemReady(final TurnsSystem turnsSystem) {
 		this.turnsSystem = turnsSystem;
 	}
 
-	@Override
-	public void onDestinationReached(final Entity character) {
-	}
+
 
 	@Override
 	public void onCharacterCommandDone(final Entity character) {
@@ -146,10 +140,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	@Override
-	public void onNewCharacterCommandSet(final CharacterCommand command) {
 
-	}
 
 	@Override
 	public void onCharacterSystemReady(final CharacterSystem characterSystem) {
@@ -163,10 +154,6 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	@Override
-	public void onItemPickedUp(final Entity itemPickedUp) {
-
-	}
 
 	@Override
 	public void onCharacterDies(final Entity character) {
@@ -175,15 +162,8 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	@Override
-	public void onCharacterNodeChanged(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
 
-	}
 
-	@Override
-	public void activate() {
-
-	}
 
 	@Override
 	public void onFrameChanged(final Entity entity, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
@@ -259,7 +239,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	@Override
-	public void onRenderSystemReady(final RenderSystem renderSystem) {
+	public void activate() {
 
 	}
 }
