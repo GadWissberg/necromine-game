@@ -90,7 +90,12 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	@Override
 	public void init(final GameServices services) {
 		super.init(services);
-		createStageAndAddHud();
+		Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
+		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), services.getSoundPlayer());
+		addHudTable();
+		toolTipHandler = new ToolTipHandler(stage);
+		toolTipHandler.addToolTipTable();
 	}
 
 	@Override
@@ -100,15 +105,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		cursorModelInstance = ComponentsMapper.modelInstance.get(cursorEntity).getModelInstance();
 		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		attackNodesHandler.init(getEngine());
-	}
-
-	private void createStageAndAddHud() {
-		Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
-		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), services.getSoundPlayer());
-		addHudTable();
-		toolTipHandler = new ToolTipHandler(stage);
-		toolTipHandler.addToolTipTable();
 	}
 
 	private void addHudTable() {
@@ -207,8 +203,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 
-
-
 	@Override
 	public void inputSystemReady(final InputSystem inputSystem) {
 		inputSystem.addInputProcessor(stage);
@@ -275,13 +269,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	public void onCharacterSystemReady(final CharacterSystem characterSystem) {
 		addSystem(CharacterSystem.class, characterSystem);
 	}
-
-
-
-
-
-
-
 
 
 	@Override

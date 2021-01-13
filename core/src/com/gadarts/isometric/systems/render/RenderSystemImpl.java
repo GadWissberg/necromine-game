@@ -3,6 +3,7 @@ package com.gadarts.isometric.systems.render;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -33,7 +34,6 @@ import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
 import com.gadarts.isometric.systems.hud.console.ConsoleEventsSubscriber;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
-import com.gadarts.isometric.systems.hud.console.commands.types.SkipRenderCommand;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
@@ -61,15 +61,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
 
 	private final WorldEnvironment environment = new WorldEnvironment();
+	private final DrawFlags drawFlags = new DrawFlags();
 	private RenderBatches renderBatches;
 	private RenderSystemRelatedEntities renderSystemRelatedEntities;
 	private boolean ready;
 	private int numberOfVisible;
-	private LightsRenderer lightsHandler;
-	private boolean drawGround = !DefaultGameSettings.HIDE_GROUND;
-	private boolean drawEnemy = !DefaultGameSettings.HIDE_ENEMIES;
-	private boolean drawEnv = !DefaultGameSettings.HIDE_ENVIRONMENT_OBJECTS;
-	private boolean drawCursor = !DefaultGameSettings.HIDE_CURSOR;
 
 	private void resetDisplay(final Color color) {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -83,7 +79,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		super.addedToEngine(engine);
 		engine.addEntityListener(this);
 		renderSystemRelatedEntities = new RenderSystemRelatedEntities(engine);
-		lightsHandler = new LightsRenderer(renderSystemRelatedEntities.getLightsEntities());
 	}
 
 	@Override
@@ -232,11 +227,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				}
 			}
 		}
-		if (drawEnemy || !ComponentsMapper.enemy.has(entity)) {
+		if (drawFlags.isDrawEnemy() || !ComponentsMapper.enemy.has(entity)) {
 			MapGraph map = services.getMap();
 			MapGraphNode characterNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_1));
 			if (DefaultGameSettings.DISABLE_FOW || map.getFowMap()[characterNode.getY()][characterNode.getX()] == 1) {
-				lightsHandler.setDecalColorAccordingToLights(entity);
+				environment.getLightsRenderer().setDecalColorAccordingToLights(entity);
 				decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
 				decalBatch.add(decal);
 				decalBatch.add(shadowDecal);
@@ -265,10 +260,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 			boolean isWall = ComponentsMapper.wall.has(entity);
 			if ((!modelInstanceComponent.isVisible())
-					|| (!drawEnv && ComponentsMapper.obstacle.has(entity))
+					|| (!drawFlags.isDrawEnv() && ComponentsMapper.obstacle.has(entity))
 					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())
 					|| (!renderWallsAndFloor && (isWall || ComponentsMapper.floor.has(entity)))
-					|| (!drawCursor && ComponentsMapper.cursor.has(entity))
+					|| (!drawFlags.isDrawCursor() && ComponentsMapper.cursor.has(entity))
 					|| !isVisible(getSystem(CameraSystem.class).getCamera(), entity)) {
 				continue;
 			}
@@ -282,9 +277,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 					continue;
 				}
 			}
-			if ((drawGround || !ComponentsMapper.floor.has(entity))) {
+			if ((drawFlags.isDrawGround() || !ComponentsMapper.floor.has(entity))) {
 				if (renderLight) {
-					lightsHandler.applyLightsOnModel(modelInstanceComponent);
+					environment.getLightsRenderer().applyLightsOnModel(modelInstanceComponent);
 				}
 				numberOfVisible++;
 				modelBatch.render(modelInstance, environment);
@@ -303,7 +298,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		addSystem(CameraSystem.class, cameraSystem);
 		this.renderBatches = new RenderBatches(cameraSystem.getCamera(), services.getAssetManager(), services.getMap().getFowMap());
-		environment.initialize();
+		environment.initialize(getEngine().getEntitiesFor(Family.all(LightComponent.class).get()));
 		systemReady();
 	}
 
@@ -320,8 +315,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		addSystem(HudSystem.class, hudSystem);
 		systemReady();
 	}
-
-
 
 
 	@Override
@@ -365,22 +358,12 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 								final ConsoleCommandParameter parameter) {
 		boolean result = false;
 		if (command == ConsoleCommandsList.SKIP_RENDER) {
-			applySkipRenderCommand(parameter);
+			drawFlags.applySkipRenderCommand(parameter);
 			result = true;
 		}
 		return result;
 	}
 
-	private void applySkipRenderCommand(final ConsoleCommandParameter parameter) {
-		String alias = parameter.getAlias();
-		boolean value = !parameter.getParameterValue();
-		switch (alias) {
-			case SkipRenderCommand.GroundParameter.ALIAS -> drawGround = value;
-			case SkipRenderCommand.EnemyParameter.ALIAS -> drawEnemy = value;
-			case SkipRenderCommand.EnvironmentObjectParameter.ALIAS -> drawEnv = value;
-			case SkipRenderCommand.CursorParameter.ALIAS -> drawCursor = value;
-		}
-	}
 
 	@Override
 	public void onConsoleDeactivated() {
