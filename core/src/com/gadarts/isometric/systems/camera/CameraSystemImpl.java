@@ -12,6 +12,7 @@ import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
+import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.Getter;
 
@@ -46,7 +47,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
-		if (!rotateCamera && !getSystem(HudSystem.class).hasOpenWindows()) {
+		if (!DefaultGameSettings.DEBUG_INPUT && !rotateCamera && !getSystem(HudSystem.class).hasOpenWindows()) {
 			handleHorizontalScroll();
 			handleVerticalScroll();
 		}

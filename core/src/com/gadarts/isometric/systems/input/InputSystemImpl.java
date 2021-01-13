@@ -73,6 +73,7 @@ public class InputSystemImpl extends GameEntitySystem<InputSystemEventsSubscribe
 
 	@Override
 	public boolean touchDown(final int screenX, final int screenY, final int pointer, final int button) {
+		if (DefaultGameSettings.DEBUG_INPUT) return false;
 		for (InputSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.touchDown(screenX, screenY, button);
 		}
@@ -81,6 +82,7 @@ public class InputSystemImpl extends GameEntitySystem<InputSystemEventsSubscribe
 
 	@Override
 	public boolean touchUp(final int screenX, final int screenY, final int pointer, final int button) {
+		if (DefaultGameSettings.DEBUG_INPUT) return false;
 		for (InputSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.touchUp(screenX, screenY, button);
 		}
@@ -89,6 +91,7 @@ public class InputSystemImpl extends GameEntitySystem<InputSystemEventsSubscribe
 
 	@Override
 	public boolean touchDragged(final int screenX, final int screenY, final int pointer) {
+		if (DefaultGameSettings.DEBUG_INPUT) return false;
 		for (InputSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.touchDragged(screenX, screenY);
 		}
@@ -97,6 +100,7 @@ public class InputSystemImpl extends GameEntitySystem<InputSystemEventsSubscribe
 
 	@Override
 	public boolean mouseMoved(final int screenX, final int screenY) {
+		if (DefaultGameSettings.DEBUG_INPUT) return false;
 		for (InputSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.mouseMoved(screenX, screenY);
 		}
