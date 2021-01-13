@@ -35,9 +35,6 @@ import com.gadarts.isometric.utils.map.MapGraphPath;
 import static com.gadarts.isometric.components.character.CharacterMotivation.TO_PICK_UP;
 import static com.gadarts.isometric.components.character.SpriteType.PAIN;
 
-/**
- * Handles characters behaviour.
- */
 public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsSubscriber>
 		implements RenderSystemEventsSubscriber,
 		CharacterSystem,
@@ -129,17 +126,21 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		super.update(deltaTime);
 		CharacterCommand currentCommand = commandsHandler.getCurrentCommand();
 		if (currentCommand != null) {
-			Entity character = currentCommand.getCharacter();
-			CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-			SpriteType spriteType = characterComponent.getCharacterSpriteData().getSpriteType();
-			if (spriteType == SpriteType.ATTACK || spriteType == SpriteType.PICKUP) {
-				handleModeWithNonLoopingAnimation(character);
-			} else {
-				handleRotation(character, characterComponent);
-			}
+			handleCurrentCommand(currentCommand);
 		}
 		for (Entity character : characters) {
 			handlePain(character);
+		}
+	}
+
+	private void handleCurrentCommand(final CharacterCommand currentCommand) {
+		Entity character = currentCommand.getCharacter();
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		SpriteType spriteType = characterComponent.getCharacterSpriteData().getSpriteType();
+		if (spriteType == SpriteType.ATTACK || spriteType == SpriteType.PICKUP) {
+			handleModeWithNonLoopingAnimation(character);
+		} else {
+			handleRotation(character, characterComponent);
 		}
 	}
 
@@ -288,9 +289,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 
-	/**
-	 * @return Whether a command is being processed.
-	 */
+	@Override
 	public boolean isProcessingCommand() {
 		return commandsHandler.getCurrentCommand() != null;
 	}

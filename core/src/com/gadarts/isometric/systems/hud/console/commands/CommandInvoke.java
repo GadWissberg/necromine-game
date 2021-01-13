@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class CommandInvoke {
 	private final ConsoleCommandsList command;
-	private Map<String, String> parameters = new HashMap<>();
+	private final Map<String, String> parameters = new HashMap<>();
 
-	public CommandInvoke(ConsoleCommandsList command) {
+	public CommandInvoke(final ConsoleCommandsList command) {
 		this.command = command;
 	}
 
@@ -15,7 +15,7 @@ public class CommandInvoke {
 		return command;
 	}
 
-	public void addParameter(String parameter, String value) {
+	public void addParameter(final String parameter, final String value) {
 		parameters.put(parameter, value);
 	}
 
