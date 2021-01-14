@@ -108,27 +108,27 @@ die
   orig: 128, 128
   offset: 0, 0
   index: 6
-pickup_east0018
+pickup_east
   rotate: false
   xy: 264, 133
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: -1
-pickup_east0019
+  index: 0
+pickup_east
   rotate: false
   xy: 264, 264
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: -1
-pickup_east0020
+  index: 1
+pickup_east
   rotate: false
   xy: 264, 395
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: -1
+  index: 2
 pickup_north
   rotate: false
   xy: 264, 526

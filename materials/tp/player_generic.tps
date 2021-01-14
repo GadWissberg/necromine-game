@@ -196,9 +196,9 @@
             <key type="filename">../sprites/player/die_4.png</key>
             <key type="filename">../sprites/player/die_5.png</key>
             <key type="filename">../sprites/player/die_6.png</key>
-            <key type="filename">../sprites/player/pickup_east0018.png</key>
-            <key type="filename">../sprites/player/pickup_east0019.png</key>
-            <key type="filename">../sprites/player/pickup_east0020.png</key>
+            <key type="filename">../sprites/player/pickup_east_0.png</key>
+            <key type="filename">../sprites/player/pickup_east_1.png</key>
+            <key type="filename">../sprites/player/pickup_east_2.png</key>
             <key type="filename">../sprites/player/pickup_north_0.png</key>
             <key type="filename">../sprites/player/pickup_north_1.png</key>
             <key type="filename">../sprites/player/pickup_north_2.png</key>
@@ -244,9 +244,6 @@
             <filename>../sprites/player/die_4.png</filename>
             <filename>../sprites/player/die_5.png</filename>
             <filename>../sprites/player/die_6.png</filename>
-            <filename>../sprites/player/pickup_east0018.png</filename>
-            <filename>../sprites/player/pickup_east0019.png</filename>
-            <filename>../sprites/player/pickup_east0020.png</filename>
             <filename>../sprites/player/pickup_north_0.png</filename>
             <filename>../sprites/player/pickup_north_1.png</filename>
             <filename>../sprites/player/pickup_north_2.png</filename>
@@ -276,6 +273,9 @@
             <filename>../sprites/player/dead_south_east.png</filename>
             <filename>../sprites/player/dead_south_west.png</filename>
             <filename>../sprites/player/dead_west.png</filename>
+            <filename>../sprites/player/pickup_east_0.png</filename>
+            <filename>../sprites/player/pickup_east_1.png</filename>
+            <filename>../sprites/player/pickup_east_2.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
