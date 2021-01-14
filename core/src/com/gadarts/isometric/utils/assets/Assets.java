@@ -153,7 +153,7 @@ public final class Assets {
 		Fonts(final FreetypeFontLoader.FreeTypeFontLoaderParameter freeTypeFontLoaderParameter) {
 			this.filePath = FontDefinition.FOLDER + PATH_SEPARATOR + name().toLowerCase() + "." + FontDefinition.FORMAT;
 			freeTypeFontLoaderParameter.fontParameters.size = 15;
-			freeTypeFontLoaderParameter.fontFileName = "./core/assets/" + filePath;
+			freeTypeFontLoaderParameter.fontFileName = filePath;
 			this.params = freeTypeFontLoaderParameter;
 		}
 

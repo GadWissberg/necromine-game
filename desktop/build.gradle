@@ -1,8 +1,10 @@
+import org.gradle.internal.os.OperatingSystem
+
 plugins { id 'org.beryx.runtime' version '1.8.4' }
 apply plugin: "java"
 
 sourceCompatibility = 1.14
-sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.java.srcDirs = ["src/"]
 sourceSets.main.resources.srcDirs = ["../core/assets"]
 
 mainClassName = "com.gadarts.isometric.desktop.DesktopLauncher"
@@ -49,14 +51,19 @@ runtime {
                '--no-man-pages',
                '--strip-native-commands',
                '--vm', 'server']
-    modules = ['java.base' ,
+    modules = ['java.base',
                'java.desktop',
-               'jdk.unsupported']
+               'jdk.unsupported',
+               'java.sql']
     distDir = file(buildDir)
+
 
     jpackage {
         //jpackageHome = '/usr/lib/jvm/open-jdk'
         mainJar = dist.archiveFileName.get()
+//        if (OperatingSystem.current().windows) {
+//            imageOptions += ['--win-console']
+//        }
 //        if (osName.contains('windows')) {
 //            imageOptions = ["--icon", file("../icons/icon.ico")]
 //        } else if (osName.contains('linux')) {
