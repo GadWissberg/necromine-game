@@ -1,13 +1,13 @@
 package com.gadarts.isometric.systems.hud.window.storage;
 
-import com.gadarts.isometric.components.player.WeaponsDefinitions;
 import com.gadarts.isometric.systems.hud.window.GameWindowEvent;
 import com.gadarts.isometric.systems.hud.window.GameWindowEventType;
 import com.gadarts.isometric.systems.hud.window.OnEvent;
 import com.gadarts.isometric.systems.hud.window.storage.item.ItemDisplay;
 import com.gadarts.isometric.systems.hud.window.storage.item.ItemSelectionHandler;
 import com.gadarts.isometric.utils.SoundPlayer;
-import com.gadarts.isometric.utils.assets.Assets;
+import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.WeaponsDefinitions;
 
 enum StorageWindowOnEvents {
 

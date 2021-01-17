@@ -2,6 +2,7 @@ package com.gadarts.isometric.components.player;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Pool;
+import com.gadarts.necromine.ItemDefinition;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -6,10 +6,10 @@ import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.systems.hud.console.*;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
 import com.gadarts.isometric.utils.SoundPlayer;
-import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import com.gadarts.isometric.utils.map.MapBuilder;
 import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.necromine.Assets;
 import lombok.Getter;
 
 @Getter

@@ -13,7 +13,11 @@ import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.*;
 import com.gadarts.isometric.components.enemy.Enemies;
 import com.gadarts.isometric.components.model.GameModelInstance;
-import com.gadarts.isometric.components.player.*;
+import com.gadarts.isometric.components.player.Item;
+import com.gadarts.isometric.components.player.PlayerComponent;
+import com.gadarts.isometric.components.player.Weapon;
+import com.gadarts.necromine.ItemDefinition;
+import com.gadarts.necromine.WeaponsDefinitions;
 import lombok.AccessLevel;
 import lombok.Setter;
 

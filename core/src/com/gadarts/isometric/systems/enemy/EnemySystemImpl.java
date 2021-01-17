@@ -24,9 +24,9 @@ import com.gadarts.isometric.systems.character.commands.CharacterCommands;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
-import com.gadarts.isometric.utils.assets.Assets;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
+import com.gadarts.necromine.Assets;
 
 /**
  * Handles enemy AI.

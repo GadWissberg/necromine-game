@@ -1,4 +1,4 @@
-package com.gadarts.isometric.utils.assets;
+package com.gadarts.isometric.utils.assets.loaders;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;

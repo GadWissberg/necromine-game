@@ -19,11 +19,11 @@ import com.gadarts.isometric.components.CharacterAnimation;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
-import com.gadarts.isometric.utils.assets.Assets.Atlases;
-import com.gadarts.isometric.utils.assets.definitions.AtlasDefinition;
-import com.gadarts.isometric.utils.assets.definitions.FontDefinition;
-import com.gadarts.isometric.utils.assets.definitions.ModelDefinition;
-import com.gadarts.isometric.utils.assets.definitions.TextureDefinition;
+import com.gadarts.isometric.utils.assets.loaders.ShaderLoader;
+import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.definitions.AtlasDefinition;
+import com.gadarts.necromine.definitions.FontDefinition;
+import com.gadarts.necromine.definitions.TextureDefinition;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -55,7 +55,7 @@ public class GameAssetsManager extends AssetManager {
 					}
 				}));
 		finishLoading();
-		Arrays.stream(Atlases.values()).forEach(atlas -> {
+		Arrays.stream(Assets.Atlases.values()).forEach(atlas -> {
 					CharacterAnimations animations = createCharacterAnimations(atlas);
 					addAsset(atlas.name(), CharacterAnimations.class, animations);
 				}
@@ -71,7 +71,7 @@ public class GameAssetsManager extends AssetManager {
 		}
 	}
 
-	private CharacterAnimations createCharacterAnimations(final Atlases zealot) {
+	private CharacterAnimations createCharacterAnimations(final Assets.Atlases zealot) {
 		CharacterAnimations animations = new CharacterAnimations();
 		TextureAtlas atlas = getAtlas(zealot);
 		Arrays.stream(SpriteType.values()).forEach(spriteType -> {
@@ -113,7 +113,7 @@ public class GameAssetsManager extends AssetManager {
 		return get(atlas.getFilePath(), TextureAtlas.class);
 	}
 
-	public Model getModel(final ModelDefinition model) {
+	public Model getModel(final com.gadarts.necromine.definitions.ModelDefinition model) {
 		return get(model.getFilePath(), Model.class);
 	}
 

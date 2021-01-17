@@ -1,6 +1,6 @@
 package com.gadarts.isometric.components.enemy;
 
-import com.gadarts.isometric.utils.assets.Assets;
+import com.gadarts.necromine.Assets;
 import lombok.Getter;
 
 @Getter

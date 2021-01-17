@@ -1,6 +1,7 @@
 package com.gadarts.isometric.components.player;
 
-import com.gadarts.isometric.utils.assets.Assets;
+import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.ItemDefinition;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

@@ -13,9 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.gadarts.isometric.components.player.Item;
-import com.gadarts.isometric.components.player.ItemDefinition;
 import com.gadarts.isometric.systems.hud.window.GameWindowEvent;
 import com.gadarts.isometric.systems.hud.window.GameWindowEventType;
+import com.gadarts.necromine.ItemDefinition;
 import lombok.Getter;
 import lombok.Setter;
 

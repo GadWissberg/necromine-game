@@ -1,6 +1,7 @@
 package com.gadarts.isometric.components;
 
-import com.gadarts.isometric.utils.assets.Assets;
+import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.Assets.Models;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,7 +14,7 @@ public enum Obstacles {
 	CAVE_SUPPORTER_3("Wall Supporter", Assets.Models.CAVE_SUPPORTER_3, false);
 
 	private final String displayName;
-	private final Assets.Models model;
+	private final Models model;
 	private final boolean blocksPath;
 
 	Obstacles(final String displayName, final Assets.Models model) {

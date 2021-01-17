@@ -26,13 +26,11 @@ import com.gadarts.isometric.components.enemy.Enemies;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
-import com.gadarts.isometric.components.player.WeaponsDefinitions;
 import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.utils.EntityBuilder;
-import com.gadarts.isometric.utils.assets.Assets;
-import com.gadarts.isometric.utils.assets.Assets.Atlases;
-import com.gadarts.isometric.utils.assets.Assets.Sounds;
 import com.gadarts.isometric.utils.assets.GameAssetsManager;
+import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.WeaponsDefinitions;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
 
@@ -97,7 +95,7 @@ public final class MapBuilder {
 									 final String regionNameBullet) {
 		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(model));
 		modelInstance.transform.setTranslation(auxVector3_1.set(x + 0.5f, 0, y + 0.5f));
-		Atlases atlas = Atlases.findByRelatedWeapon(definition);
+		Assets.Atlases atlas = Assets.Atlases.findByRelatedWeapon(definition);
 		TextureAtlas.AtlasRegion bulletRegion = null;
 		if (regionNameBullet != null) {
 			bulletRegion = assetManager.getAtlas(atlas).findRegion(regionNameBullet);
@@ -141,7 +139,7 @@ public final class MapBuilder {
 								 final int y,
 								 final int rotation,
 								 final Obstacles definition) {
-		Assets.Models def = definition.getModel();
+		com.gadarts.necromine.Assets.Models def = definition.getModel();
 		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(def));
 		modelInstance.transform.setTranslation(x + 0.5f, 0, y + 0.5f);
 		modelInstance.transform.rotate(Vector3.Y, rotation);
@@ -197,10 +195,10 @@ public final class MapBuilder {
 		Texture image = assetManager.getTexture(WeaponsDefinitions.AXE_PICK.getImage());
 		Weapon weapon = Pools.obtain(Weapon.class);
 		weapon.init(WeaponsDefinitions.AXE_PICK, 0, 0, image);
-		CharacterAnimations general = assetManager.get(Atlases.PLAYER_GENERIC.name());
+		CharacterAnimations general = assetManager.get(Assets.Atlases.PLAYER_GENERIC.name());
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
 		Vector3 position = auxVector3_1.set(0.5f, CharacterDecalComponent.BILLBOARD_Y, 0.5f);
-		addCharBaseComponents(entityBuilder, Atlases.PLAYER_AXE_PICK, position, null, Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH, Direction.SOUTH_EAST, 16);
+		addCharBaseComponents(entityBuilder, Assets.Atlases.PLAYER_AXE_PICK, position, null, Assets.Sounds.PLAYER_PAIN, Assets.Sounds.PLAYER_DEATH, Direction.SOUTH_EAST, 16);
 		entityBuilder.finishAndAddToEngine();
 	}
 
@@ -208,16 +206,16 @@ public final class MapBuilder {
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(Enemies.ZEALOT);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		Vector3 position = auxVector3_1.set(x + 0.5f, CharacterDecalComponent.BILLBOARD_Y, y + 0.5f);
-		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player, Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH, direction, 2);
+		addCharBaseComponents(entityBuilder, Assets.Atlases.ZEALOT, position, player, Assets.Sounds.ENEMY_PAIN, Assets.Sounds.ENEMY_DEATH, direction, 2);
 		entityBuilder.finishAndAddToEngine();
 	}
 
 	private void addCharBaseComponents(final EntityBuilder entityBuilder,
-									   final Atlases atlas,
+									   final Assets.Atlases atlas,
 									   final Vector3 position,
 									   final Entity target,
-									   final Sounds painSound,
-									   final Sounds deathSound,
+									   final Assets.Sounds painSound,
+									   final Assets.Sounds deathSound,
 									   final Direction direction, final int health) {
 		CharacterAnimations animations = assetManager.get(atlas.name());
 		SpriteType spriteType = SpriteType.IDLE;
