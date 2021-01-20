@@ -28,9 +28,9 @@ import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.utils.EntityBuilder;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import com.gadarts.necromine.Assets;
 import com.gadarts.necromine.WeaponsDefinitions;
+import com.gadarts.necromine.assets.GameAssetsManager;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
 

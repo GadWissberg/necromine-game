@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
+import com.gadarts.necromine.assets.GameAssetsManager;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;

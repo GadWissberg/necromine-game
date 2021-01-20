@@ -21,7 +21,7 @@ import com.badlogic.gdx.utils.StringBuilder;
 import com.gadarts.isometric.systems.hud.console.commands.CommandInvoke;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
 import com.gadarts.isometric.utils.DefaultGameSettings;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
+import com.gadarts.necromine.assets.GameAssetsManager;
 
 import java.util.Arrays;
 import java.util.Optional;

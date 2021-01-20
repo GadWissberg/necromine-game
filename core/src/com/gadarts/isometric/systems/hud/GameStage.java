@@ -15,8 +15,8 @@ import com.gadarts.isometric.systems.hud.window.GameWindowEvent;
 import com.gadarts.isometric.systems.hud.window.GameWindowEventType;
 import com.gadarts.isometric.systems.hud.window.storage.StorageWindow;
 import com.gadarts.isometric.utils.SoundPlayer;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.assets.GameAssetsManager;
 
 import java.util.ArrayList;
 import java.util.List;

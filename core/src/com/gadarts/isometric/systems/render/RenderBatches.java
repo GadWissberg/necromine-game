@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.systems.render.shaders.main.MainShaderProvider;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
+import com.gadarts.necromine.assets.GameAssetsManager;
 import lombok.Getter;
 
 @Getter

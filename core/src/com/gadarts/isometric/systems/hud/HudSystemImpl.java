@@ -46,10 +46,10 @@ import com.gadarts.isometric.systems.turns.Turns;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.assets.GameAssetsManager;
 
 import java.util.List;
 

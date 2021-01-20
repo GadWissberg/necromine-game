@@ -20,8 +20,8 @@ import com.gadarts.isometric.systems.hud.window.GameWindowEvent;
 import com.gadarts.isometric.systems.hud.window.storage.item.ItemDisplay;
 import com.gadarts.isometric.systems.hud.window.storage.item.ItemSelectionHandler;
 import com.gadarts.isometric.utils.SoundPlayer;
-import com.gadarts.isometric.utils.assets.GameAssetsManager;
 import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.assets.GameAssetsManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 
