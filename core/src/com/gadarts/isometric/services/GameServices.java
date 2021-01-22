@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.components.CharacterAnimation;
 import com.gadarts.isometric.components.character.CharacterAnimations;
-import com.gadarts.isometric.components.character.CharacterComponent;
-import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.systems.hud.console.*;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
@@ -15,6 +13,8 @@ import com.gadarts.isometric.utils.map.MapBuilder;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
+import com.gadarts.necromine.model.characters.Direction;
+import com.gadarts.necromine.model.characters.SpriteType;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -50,9 +50,9 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 		TextureAtlas atlas = assetManager.getAtlas(zealot);
 		Arrays.stream(SpriteType.values()).forEach(spriteType -> {
 			if (spriteType.isSingleAnimation()) {
-				inflateCharacterAnimation(animations, atlas, spriteType, CharacterComponent.Direction.SOUTH);
+				inflateCharacterAnimation(animations, atlas, spriteType, Direction.SOUTH);
 			} else {
-				CharacterComponent.Direction[] directions = CharacterComponent.Direction.values();
+				Direction[] directions = Direction.values();
 				Arrays.stream(directions).forEach(dir -> inflateCharacterAnimation(animations, atlas, spriteType, dir));
 			}
 		});
@@ -62,7 +62,7 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	private void inflateCharacterAnimation(final CharacterAnimations animations,
 										   final TextureAtlas atlas,
 										   final SpriteType spriteType,
-										   final CharacterComponent.Direction dir) {
+										   final Direction dir) {
 		String spriteTypeName = spriteType.name().toLowerCase();
 		String name = (spriteType.isSingleAnimation()) ? spriteTypeName : spriteTypeName + "_" + dir.name().toLowerCase();
 		CharacterAnimation a = createAnimation(atlas, spriteType, name, dir);
@@ -74,7 +74,7 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	private CharacterAnimation createAnimation(final TextureAtlas atlas,
 											   final SpriteType spriteType,
 											   final String name,
-											   final CharacterComponent.Direction dir) {
+											   final Direction dir) {
 		return new CharacterAnimation(
 				spriteType.getAnimationDuration(),
 				atlas.findRegions(name),

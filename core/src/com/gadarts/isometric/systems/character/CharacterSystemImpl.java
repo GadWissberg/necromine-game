@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.AnimationComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.*;
-import com.gadarts.isometric.components.character.CharacterComponent.Direction;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -31,9 +30,11 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.model.WeaponsDefinitions;
+import com.gadarts.necromine.model.characters.Direction;
+import com.gadarts.necromine.model.characters.SpriteType;
 
 import static com.gadarts.isometric.components.character.CharacterMotivation.TO_PICK_UP;
-import static com.gadarts.isometric.components.character.SpriteType.PAIN;
+import static com.gadarts.necromine.model.characters.SpriteType.PAIN;
 
 public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsSubscriber>
 		implements RenderSystemEventsSubscriber,

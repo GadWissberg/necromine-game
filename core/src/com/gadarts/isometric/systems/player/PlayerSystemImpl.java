@@ -16,7 +16,6 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
-import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.*;
@@ -42,6 +41,8 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.model.WeaponsDefinitions;
+import com.gadarts.necromine.model.characters.Direction;
+import com.gadarts.necromine.model.characters.SpriteType;
 
 import java.util.List;
 
@@ -395,7 +396,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		WeaponsDefinitions definition = (WeaponsDefinitions) selectedWeapon.getDefinition();
 		CharacterDecalComponent cdc = ComponentsMapper.characterDecal.get(player);
 		CharacterAnimations animations = services.getAssetManager().get(Assets.Atlases.findByRelatedWeapon(definition).name());
-		CharacterComponent.Direction direction = cdc.getDirection();
+		Direction direction = cdc.getDirection();
 		cdc.init(animations, cdc.getSpriteType(), direction, auxVector3.set(cdc.getDecal().getPosition()));
 		CharacterAnimation animation = animations.get(cdc.getSpriteType(), direction);
 		ComponentsMapper.animation.get(player).init(cdc.getSpriteType().getAnimationDuration(), animation);

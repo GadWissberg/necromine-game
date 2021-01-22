@@ -3,17 +3,18 @@ package com.gadarts.isometric.systems.character.commands;
 import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
-import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.CharacterSystemGraphData;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
+import com.gadarts.necromine.model.characters.SpriteType;
 import lombok.Getter;
 
 import java.util.List;
 
-import static com.gadarts.isometric.components.character.SpriteType.PAIN;
+import static com.gadarts.necromine.model.characters.SpriteType.PAIN;
+
 
 public class CommandsHandler {
 	private final CharacterSystemGraphData graphData;

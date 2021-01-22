@@ -19,9 +19,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
-import com.gadarts.isometric.components.character.CharacterComponent.Direction;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
-import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.decal.SimpleDecalComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
@@ -39,6 +37,8 @@ import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
+import com.gadarts.necromine.model.characters.Direction;
+import com.gadarts.necromine.model.characters.SpriteType;
 
 import static java.lang.Math.max;
 

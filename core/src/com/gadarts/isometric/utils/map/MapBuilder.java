@@ -19,9 +19,10 @@ import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.Obstacles;
 import com.gadarts.isometric.components.WallComponent;
-import com.gadarts.isometric.components.character.*;
-import com.gadarts.isometric.components.character.CharacterComponent.Direction;
-import com.gadarts.isometric.components.decal.CharacterDecalComponent;
+import com.gadarts.isometric.components.character.CharacterAnimations;
+import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.CharacterSoundData;
+import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.enemy.Enemies;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.PlayerComponent;
@@ -31,8 +32,11 @@ import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.model.WeaponsDefinitions;
+import com.gadarts.necromine.model.characters.Direction;
+import com.gadarts.necromine.model.characters.SpriteType;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
+import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_Y;
 
 /**
  * Creates the map.
@@ -197,7 +201,7 @@ public final class MapBuilder {
 		weapon.init(WeaponsDefinitions.AXE_PICK, 0, 0, image);
 		CharacterAnimations general = assetManager.get(Assets.Atlases.PLAYER_GENERIC.name());
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
-		Vector3 position = auxVector3_1.set(0.5f, CharacterDecalComponent.BILLBOARD_Y, 0.5f);
+		Vector3 position = auxVector3_1.set(0.5f, BILLBOARD_Y, 0.5f);
 		addCharBaseComponents(entityBuilder, Assets.Atlases.PLAYER_AXE_PICK, position, null, Assets.Sounds.PLAYER_PAIN, Assets.Sounds.PLAYER_DEATH, Direction.SOUTH_EAST, 16);
 		entityBuilder.finishAndAddToEngine();
 	}
@@ -205,7 +209,7 @@ public final class MapBuilder {
 	private void addEnemyTest(final int x, final int y, final Direction direction) {
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(Enemies.ZEALOT);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		Vector3 position = auxVector3_1.set(x + 0.5f, CharacterDecalComponent.BILLBOARD_Y, y + 0.5f);
+		Vector3 position = auxVector3_1.set(x + 0.5f, BILLBOARD_Y, y + 0.5f);
 		addCharBaseComponents(entityBuilder, Assets.Atlases.ZEALOT, position, player, Assets.Sounds.ENEMY_PAIN, Assets.Sounds.ENEMY_DEATH, direction, 2);
 		entityBuilder.finishAndAddToEngine();
 	}

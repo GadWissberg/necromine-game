@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
-import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterSystem;
@@ -27,6 +26,7 @@ import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.assets.Assets;
+import com.gadarts.necromine.model.characters.SpriteType;
 
 /**
  * Handles enemy AI.

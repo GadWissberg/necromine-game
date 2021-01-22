@@ -1,7 +1,8 @@
 package com.gadarts.isometric.components.character;
 
 import com.gadarts.isometric.components.CharacterAnimation;
-import com.gadarts.isometric.components.character.CharacterComponent.Direction;
+import com.gadarts.necromine.model.characters.Direction;
+import com.gadarts.necromine.model.characters.SpriteType;
 
 import java.util.HashMap;
 import java.util.Map;

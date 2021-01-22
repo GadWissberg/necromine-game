@@ -6,14 +6,15 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.GameComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
-import com.gadarts.isometric.components.character.CharacterComponent;
-import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.necromine.model.characters.Direction;
+import com.gadarts.necromine.model.characters.SpriteType;
 import lombok.Getter;
+
+import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_SCALE;
+import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_Y;
 
 @Getter
 public class CharacterDecalComponent implements GameComponent {
-	public static final float BILLBOARD_SCALE = 0.015f;
-	public static final float BILLBOARD_Y = 0.7f;
 	private static final Vector3 auxVector3 = new Vector3();
 	private static final Vector2 auxVector2 = new Vector2();
 	public static final float SHADOW_OPACITY = 0.6f;
@@ -23,7 +24,7 @@ public class CharacterDecalComponent implements GameComponent {
 	private Decal shadowDecal;
 	private CharacterAnimations animations;
 	private SpriteType spriteType;
-	private CharacterComponent.Direction direction;
+	private Direction direction;
 
 	@Override
 	public void reset() {
@@ -32,7 +33,7 @@ public class CharacterDecalComponent implements GameComponent {
 
 	public void init(final CharacterAnimations animations,
 					 final SpriteType type,
-					 final CharacterComponent.Direction direction,
+					 final Direction direction,
 					 final Vector3 position) {
 		this.animations = animations;
 		this.direction = direction;
@@ -42,7 +43,7 @@ public class CharacterDecalComponent implements GameComponent {
 
 	private void createDecals(final CharacterAnimations animations,
 							  final SpriteType type,
-							  final CharacterComponent.Direction direction,
+							  final Direction direction,
 							  final Vector3 position) {
 		createCharacterDecal(animations, type, direction, position);
 		createShadowDecal(animations, type, direction, position);
@@ -50,7 +51,7 @@ public class CharacterDecalComponent implements GameComponent {
 
 	private void createShadowDecal(final CharacterAnimations animations,
 								   final SpriteType type,
-								   final CharacterComponent.Direction direction,
+								   final Direction direction,
 								   final Vector3 position) {
 		shadowDecal = Decal.newDecal(animations.get(type, direction).getKeyFrames()[0], true);//Optimize this - it creates an object each time.
 		shadowDecal.setPosition(auxVector3.set(position).set(
@@ -65,7 +66,7 @@ public class CharacterDecalComponent implements GameComponent {
 
 	private void createCharacterDecal(final CharacterAnimations animations,
 									  final SpriteType type,
-									  final CharacterComponent.Direction direction,
+									  final Direction direction,
 									  final Vector3 position) {
 		decal = Decal.newDecal(animations.get(type, direction).getKeyFrames()[0], true);//Optimize this - it creates an object each time.
 		decal.setScale(BILLBOARD_SCALE);
@@ -73,7 +74,7 @@ public class CharacterDecalComponent implements GameComponent {
 	}
 
 
-	public void initializeSprite(final SpriteType type, final CharacterComponent.Direction direction) {
+	public void initializeSprite(final SpriteType type, final Direction direction) {
 		this.spriteType = type;
 		this.direction = direction;
 	}

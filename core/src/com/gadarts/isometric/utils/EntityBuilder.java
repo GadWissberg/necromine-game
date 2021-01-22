@@ -10,7 +10,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.*;
-import com.gadarts.isometric.components.character.*;
+import com.gadarts.isometric.components.character.CharacterAnimations;
+import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.CharacterSoundData;
+import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.decal.SimpleDecalComponent;
 import com.gadarts.isometric.components.enemy.Enemies;
@@ -21,8 +24,12 @@ import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.necromine.model.ItemDefinition;
 import com.gadarts.necromine.model.WeaponsDefinitions;
+import com.gadarts.necromine.model.characters.Direction;
+import com.gadarts.necromine.model.characters.SpriteType;
 import lombok.AccessLevel;
 import lombok.Setter;
+
+import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_SCALE;
 
 public final class EntityBuilder {
 	private static final EntityBuilder instance = new EntityBuilder();
@@ -101,7 +108,7 @@ public final class EntityBuilder {
 
 	public EntityBuilder addCharacterDecalComponent(final CharacterAnimations animations,
 													final SpriteType spriteType,
-													final CharacterComponent.Direction direction,
+													final Direction direction,
 													final Vector3 position) {
 		CharacterDecalComponent characterDecalComponent = engine.createComponent(CharacterDecalComponent.class);
 		characterDecalComponent.init(animations, spriteType, direction, position);
@@ -114,7 +121,7 @@ public final class EntityBuilder {
 		simpleDecalComponent.init(texture, visible);
 		Decal decal = simpleDecalComponent.getDecal();
 		decal.setPosition(position);
-		decal.setScale(CharacterDecalComponent.BILLBOARD_SCALE);
+		decal.setScale(BILLBOARD_SCALE);
 		currentEntity.add(simpleDecalComponent);
 		return instance;
 	}
@@ -126,7 +133,7 @@ public final class EntityBuilder {
 		simpleDecalComponent.init(textureRegion, true);
 		Decal decal = simpleDecalComponent.getDecal();
 		decal.setPosition(position);
-		decal.setScale(CharacterDecalComponent.BILLBOARD_SCALE);
+		decal.setScale(BILLBOARD_SCALE);
 		rotateSimpleDecal(decal, rotationAroundAxis);
 		currentEntity.add(simpleDecalComponent);
 		return instance;

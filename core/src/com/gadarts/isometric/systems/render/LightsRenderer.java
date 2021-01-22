@@ -11,9 +11,9 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.LightComponent;
 import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
-import com.gadarts.isometric.components.character.SpriteType;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.utils.DefaultGameSettings;
+import com.gadarts.necromine.model.characters.SpriteType;
 
 import java.util.List;
 
