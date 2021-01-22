@@ -23,7 +23,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
-import com.gadarts.isometric.components.EnemyComponent;
+import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -48,7 +48,7 @@ import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
-import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
 
 import java.util.List;

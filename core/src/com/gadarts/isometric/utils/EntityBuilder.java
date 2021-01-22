@@ -11,13 +11,16 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.*;
+import com.gadarts.isometric.components.decal.CharacterDecalComponent;
+import com.gadarts.isometric.components.decal.SimpleDecalComponent;
 import com.gadarts.isometric.components.enemy.Enemies;
+import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.Item;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
-import com.gadarts.necromine.ItemDefinition;
-import com.gadarts.necromine.WeaponsDefinitions;
+import com.gadarts.necromine.model.ItemDefinition;
+import com.gadarts.necromine.model.WeaponsDefinitions;
 import lombok.AccessLevel;
 import lombok.Setter;
 

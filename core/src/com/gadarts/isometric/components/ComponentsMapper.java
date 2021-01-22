@@ -2,6 +2,9 @@ package com.gadarts.isometric.components;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.decal.CharacterDecalComponent;
+import com.gadarts.isometric.components.decal.SimpleDecalComponent;
+import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.PlayerComponent;
 
 public class ComponentsMapper {

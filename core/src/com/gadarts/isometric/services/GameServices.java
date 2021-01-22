@@ -13,7 +13,7 @@ import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapBuilder;
 import com.gadarts.isometric.utils.map.MapGraph;
-import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import lombok.Getter;
 

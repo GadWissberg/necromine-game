@@ -1,8 +1,9 @@
-package com.gadarts.isometric.components;
+package com.gadarts.isometric.components.decal;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.gadarts.isometric.components.GameComponent;
 import lombok.Getter;
 import lombok.Setter;
 

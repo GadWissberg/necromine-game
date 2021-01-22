@@ -22,6 +22,8 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterComponent.Direction;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.decal.CharacterDecalComponent;
+import com.gadarts.isometric.components.decal.SimpleDecalComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;

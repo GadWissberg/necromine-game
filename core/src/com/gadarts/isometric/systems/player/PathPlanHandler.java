@@ -10,7 +10,7 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
-import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import lombok.Getter;
 

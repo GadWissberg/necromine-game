@@ -1,6 +1,6 @@
 package com.gadarts.isometric.components.character;
 
-import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.assets.Assets;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -11,10 +11,14 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.CharacterAnimation;
+import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.SpriteType;
+import com.gadarts.isometric.components.decal.CharacterDecalComponent;
+import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.*;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
@@ -36,8 +40,8 @@ import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
-import com.gadarts.necromine.Assets;
-import com.gadarts.necromine.WeaponsDefinitions;
+import com.gadarts.necromine.assets.Assets;
+import com.gadarts.necromine.model.WeaponsDefinitions;
 
 import java.util.List;
 

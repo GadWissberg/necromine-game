@@ -1,7 +1,7 @@
 package com.gadarts.isometric.components.player;
 
 import com.gadarts.isometric.systems.EventsNotifier;
-import com.gadarts.necromine.ItemDefinition;
+import com.gadarts.necromine.model.ItemDefinition;
 import lombok.AccessLevel;
 import lombok.Getter;
 

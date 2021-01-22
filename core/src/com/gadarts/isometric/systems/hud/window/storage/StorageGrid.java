@@ -25,7 +25,7 @@ import com.gadarts.isometric.systems.hud.window.storage.item.ItemDisplay;
 import com.gadarts.isometric.systems.hud.window.storage.item.ItemSelectionHandler;
 import com.gadarts.isometric.systems.hud.window.storage.item.ItemsTable;
 import com.gadarts.isometric.utils.Utils;
-import com.gadarts.necromine.ItemDefinition;
+import com.gadarts.necromine.model.ItemDefinition;
 
 import java.util.Optional;
 import java.util.stream.IntStream;

@@ -1,8 +1,8 @@
-package com.gadarts.isometric.components;
+package com.gadarts.isometric.components.enemy;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.gadarts.isometric.components.enemy.Enemies;
+import com.gadarts.isometric.components.GameComponent;
 import lombok.Getter;
 import lombok.Setter;
 

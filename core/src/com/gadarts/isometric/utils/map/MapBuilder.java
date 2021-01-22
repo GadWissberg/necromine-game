@@ -16,21 +16,21 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
-import com.gadarts.isometric.components.CharacterDecalComponent;
 import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.Obstacles;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.*;
 import com.gadarts.isometric.components.character.CharacterComponent.Direction;
+import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.enemy.Enemies;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.utils.EntityBuilder;
-import com.gadarts.necromine.Assets;
-import com.gadarts.necromine.WeaponsDefinitions;
+import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
+import com.gadarts.necromine.model.WeaponsDefinitions;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
 
@@ -139,7 +139,7 @@ public final class MapBuilder {
 								 final int y,
 								 final int rotation,
 								 final Obstacles definition) {
-		com.gadarts.necromine.Assets.Models def = definition.getModel();
+		Assets.Models def = definition.getModel();
 		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(def));
 		modelInstance.transform.setTranslation(x + 0.5f, 0, y + 0.5f);
 		modelInstance.transform.rotate(Vector3.Y, rotation);

@@ -2,7 +2,7 @@ package com.gadarts.isometric.utils;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.MathUtils;
-import com.gadarts.necromine.Assets;
+import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import lombok.Getter;
 import lombok.Setter;
