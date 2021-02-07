@@ -3,6 +3,7 @@ package com.gadarts.isometric.components.enemy;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.GameComponent;
+import com.gadarts.necromine.model.characters.Enemies;
 import lombok.Getter;
 import lombok.Setter;
 

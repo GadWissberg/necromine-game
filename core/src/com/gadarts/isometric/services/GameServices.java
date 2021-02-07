@@ -33,7 +33,7 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 		engine = new PooledEngine();
 		createAssetsManagerAndLoadAssets();
 		MapBuilder mapBuilder = new MapBuilder(assetManager, engine);
-		this.map = mapBuilder.createAndAddTestMap();
+		this.map = mapBuilder.inflateTestMap();
 		consoleImpl = new ConsoleImpl();
 		consoleImpl.subscribeForEvents(this);
 		soundPlayer = new SoundPlayer(assetManager);

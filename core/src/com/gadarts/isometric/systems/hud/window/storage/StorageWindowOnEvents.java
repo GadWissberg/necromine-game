@@ -7,7 +7,7 @@ import com.gadarts.isometric.systems.hud.window.storage.item.ItemDisplay;
 import com.gadarts.isometric.systems.hud.window.storage.item.ItemSelectionHandler;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.necromine.assets.Assets;
-import com.gadarts.necromine.model.WeaponsDefinitions;
+import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
 enum StorageWindowOnEvents {
 

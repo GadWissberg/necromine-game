@@ -1,7 +1,7 @@
 package com.gadarts.isometric.components.player;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.gadarts.necromine.model.WeaponsDefinitions;
+import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import lombok.Getter;
 import lombok.Setter;
 

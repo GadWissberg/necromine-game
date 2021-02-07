@@ -21,7 +21,6 @@ public class WorldEnvironment extends Environment implements Disposable {
 	private DirectionalShadowLight shadowLight;
 
 	public void initializeModelShadowLight() {
-
 		shadowLight = new DirectionalShadowLight(
 				1024,
 				1024,

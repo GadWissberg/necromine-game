@@ -1,7 +1,7 @@
 package com.gadarts.isometric.components.player;
 
 import com.gadarts.necromine.assets.Assets;
-import com.gadarts.necromine.model.ItemDefinition;
+import com.gadarts.necromine.model.pickups.ItemDefinition;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -45,4 +45,8 @@ public enum ItemsDefinitions implements ItemDefinition {
 	}
 
 
+	@Override
+	public Assets.Models getModelDefinition() {
+		return null;
+	}
 }
