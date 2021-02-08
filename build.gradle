@@ -22,7 +22,7 @@ allprojects {
     ext {
         versionNumber = 6
         appName = "necromine"
-        gdxVersion = '1.9.14'
+        gdxVersion = '1.9.15-SNAPSHOT'
         ashleyVersion = '1.7.0'
         aiVersion = '1.8.0'
     }
