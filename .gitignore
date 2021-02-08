@@ -124,3 +124,4 @@ Thumbs.db
 !/ios-moe/xcode/*.xcodeproj/project.pbxproj
 /ios-moe/xcode/native/
 /materials/models/player/axe.glb
+/core/assets/version.txt
