@@ -25,11 +25,6 @@ public class ModelInstanceComponent implements Component, Pool.Poolable {
 	private ColorAttribute colorAttribute;
 	private boolean castShadow;
 
-
-	public void init(final GameModelInstance modelInstance, final boolean visible) {
-		init(modelInstance, visible, true);
-	}
-
 	public BoundingBox getBoundingBox(final BoundingBox auxBoundBox) {
 		return auxBoundBox.set(boundingBox);
 	}

@@ -33,7 +33,6 @@ import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.Assets.Atlases;
 import com.gadarts.necromine.assets.Assets.Sounds;
 import com.gadarts.necromine.assets.GameAssetsManager;
-import com.gadarts.necromine.assets.MapJsonKeys;
 import com.gadarts.necromine.model.EnvironmentDefinitions;
 import com.gadarts.necromine.model.characters.CharacterTypes;
 import com.gadarts.necromine.model.characters.Direction;
@@ -48,7 +47,10 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
+import static com.gadarts.necromine.assets.MapJsonKeys.*;
 import static com.gadarts.necromine.model.characters.CharacterTypes.*;
+import static com.gadarts.necromine.model.characters.Direction.NORTH;
+import static com.gadarts.necromine.model.characters.Direction.SOUTH;
 
 /**
  * Creates the map.
@@ -344,7 +346,7 @@ public final class MapBuilder implements Disposable {
 		inflateTiles(mapJsonObject);
 		inflateCharacters(mapJsonObject);
 		inflateLights(mapJsonObject);
-		inflateEnv(mapJsonObject);
+		inflateEnvironment(mapJsonObject);
 		return new MapGraph(engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
 				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
 				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()),
@@ -354,7 +356,7 @@ public final class MapBuilder implements Disposable {
 	private void inflateCharacters(final JsonObject mapJsonObject) {
 		Arrays.stream(CharacterTypes.values()).forEach(type -> {
 			String typeName = type.name().toLowerCase();
-			JsonObject charactersJsonObject = mapJsonObject.getAsJsonObject(MapJsonKeys.KEY_CHARACTERS);
+			JsonObject charactersJsonObject = mapJsonObject.getAsJsonObject(KEY_CHARACTERS);
 			if (charactersJsonObject.has(typeName)) {
 				JsonArray array = charactersJsonObject.get(typeName).getAsJsonArray();
 				array.forEach(characterJsonElement -> {
@@ -372,47 +374,83 @@ public final class MapBuilder implements Disposable {
 		JsonArray lights = mapJsonObject.getAsJsonArray(KEY_LIGHTS);
 		lights.forEach(element -> {
 			JsonObject lightJsonObject = element.getAsJsonObject();
-			int row = lightJsonObject.get(MapJsonKeys.KEY_ROW).getAsInt();
-			int col = lightJsonObject.get(MapJsonKeys.KEY_COL).getAsInt();
+			int row = lightJsonObject.get(KEY_ROW).getAsInt();
+			int col = lightJsonObject.get(KEY_COL).getAsInt();
 			EntityBuilder.beginBuildingEntity(engine)
 					.addLightComponent(auxVector3_1.set(col + 0.5f, 2f, row + 0.5f), 1f, 3f)
 					.finishAndAddToEngine();
 		});
 	}
 
-	private void inflateEnv(final JsonObject mapJsonObject) {
+	private void inflateEnvironment(final JsonObject mapJsonObject) {
 		JsonArray envs = mapJsonObject.getAsJsonArray(KEY_ENVIRONMENT);
 		envs.forEach(element -> {
 			JsonObject envJsonObject = element.getAsJsonObject();
-			int row = envJsonObject.get(MapJsonKeys.KEY_ROW).getAsInt();
-			int col = envJsonObject.get(MapJsonKeys.KEY_COL).getAsInt();
-			int directionIndex = envJsonObject.get(MapJsonKeys.KEY_DIRECTION).getAsInt();
-			int typeIndex = envJsonObject.get(MapJsonKeys.KEY_TYPE).getAsInt();
-			EnvironmentDefinitions type = EnvironmentDefinitions.values()[typeIndex];
-			GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()));
-			modelInstance.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
-			modelInstance.transform.translate(type.getOffset(auxVector3_1));
-			Direction direction = Direction.values()[directionIndex];
-			EnvironmentDefinitions.handleEvenSize(type, modelInstance, direction);
-			modelInstance.transform.rotate(Vector3.Y, direction.getDirection(auxVector2_1).angleDeg());
-			modelInstance.getAdditionalRenderData().getBoundingBox().mul(modelInstance.transform);
+			int row = envJsonObject.get(KEY_ROW).getAsInt();
+			int col = envJsonObject.get(KEY_COL).getAsInt();
+			int dirIndex = envJsonObject.get(KEY_DIRECTION).getAsInt();
+			EnvironmentDefinitions type = EnvironmentDefinitions.values()[envJsonObject.get(KEY_TYPE).getAsInt()];
 			EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
-			if (type.isWall()) {
-				builder.addWallComponent(0, 0, 0, 0);
-			} else {
-				builder.addObstacleComponent(col, row, type);
-			}
-			builder.addModelInstanceComponent(modelInstance, true)
-					.addCollisionComponent()
-					.finishAndAddToEngine();
+			MapCoord coord = new MapCoord(row, col);
+			inflateEnvSpecifiedComponent(coord, type, builder, Direction.values()[dirIndex]);
+			inflateEnvModelInstanceComponent(coord, dirIndex, type, builder);
+			inflateEnvironmentEntity(builder);
 		});
 	}
 
+	private GameModelInstance inflateEnvModelInstanceComponent(final MapCoord coord,
+															   final int directionIndex,
+															   final EnvironmentDefinitions type,
+															   final EntityBuilder builder) {
+		GameModelInstance mi = inflateEnvironmentModelInstance(coord.getRow(), coord.getCol(), directionIndex, type);
+		builder.addModelInstanceComponent(mi, true, type.isCastShadow());
+		return mi;
+	}
+
+	private void inflateEnvironmentEntity(final EntityBuilder builder) {
+		builder.addCollisionComponent()
+				.finishAndAddToEngine();
+	}
+
+	private void inflateEnvSpecifiedComponent(final MapCoord coord,
+											  final EnvironmentDefinitions type,
+											  final EntityBuilder builder,
+											  final Direction facingDirection) {
+		int col = coord.getCol();
+		int row = coord.getRow();
+		if (type.isWall()) {
+			int halfWidth = type.getWidth() / 2;
+			int halfDepth = type.getHeight() / 2;
+			if (facingDirection == NORTH || facingDirection == SOUTH) {
+				int swap = halfWidth;
+				halfWidth = halfDepth;
+				halfDepth = swap;
+			}
+			builder.addWallComponent(col - halfWidth, row - halfDepth, col + Math.max(halfWidth, 1) - 1, row + Math.max(halfDepth, 1) - 1);
+		} else {
+			builder.addObstacleComponent(col, row, type);
+		}
+	}
+
+	private GameModelInstance inflateEnvironmentModelInstance(final int row,
+															  final int col,
+															  final int directionIndex,
+															  final EnvironmentDefinitions type) {
+		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()));
+		Direction direction = Direction.values()[directionIndex];
+		modelInstance.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
+		modelInstance.transform.rotate(Vector3.Y, -1 * direction.getDirection(auxVector2_1).angleDeg());
+		modelInstance.transform.translate(type.getOffset(auxVector3_1));
+		EnvironmentDefinitions.handleEvenSize(type, modelInstance, direction);
+		modelInstance.getAdditionalRenderData().getBoundingBox().mul(modelInstance.transform);
+		return modelInstance;
+	}
+
 	private void inflateTiles(final JsonObject mapJsonObject) {
-		JsonObject tilesJsonObject = mapJsonObject.get(MapJsonKeys.KEY_TILES).getAsJsonObject();
-		int width = tilesJsonObject.get(MapJsonKeys.KEY_WIDTH).getAsInt();
-		int depth = tilesJsonObject.get(MapJsonKeys.KEY_DEPTH).getAsInt();
-		String matrix = tilesJsonObject.get(MapJsonKeys.KEY_MATRIX).getAsString();
+		JsonObject tilesJsonObject = mapJsonObject.get(KEY_TILES).getAsJsonObject();
+		int width = tilesJsonObject.get(KEY_WIDTH).getAsInt();
+		int depth = tilesJsonObject.get(KEY_DEPTH).getAsInt();
+		String matrix = tilesJsonObject.get(KEY_MATRIX).getAsString();
 		IntStream.range(0, depth).forEach(row ->
 				IntStream.range(0, width).forEach(col -> {
 					char currentChar = matrix.charAt(row * width + col % width);
@@ -435,7 +473,7 @@ public final class MapBuilder implements Disposable {
 	}
 
 	private void inflateEnemy(final JsonObject characterJsonObject) {
-		int index = characterJsonObject.get(MapJsonKeys.KEY_TYPE).getAsInt();
+		int index = characterJsonObject.get(KEY_TYPE).getAsInt();
 		Enemies type = Enemies.values()[index];
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(type);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
@@ -447,7 +485,7 @@ public final class MapBuilder implements Disposable {
 				player,
 				Sounds.ENEMY_PAIN,
 				Sounds.ENEMY_DEATH,
-				Direction.values()[characterJsonObject.get(MapJsonKeys.KEY_DIRECTION).getAsInt()],
+				Direction.values()[characterJsonObject.get(KEY_DIRECTION).getAsInt()],
 				2);
 		entityBuilder.finishAndAddToEngine();
 	}
@@ -463,15 +501,15 @@ public final class MapBuilder implements Disposable {
 				null,
 				Sounds.PLAYER_PAIN,
 				Sounds.PLAYER_DEATH,
-				Direction.values()[characterJsonObject.get(MapJsonKeys.KEY_DIRECTION).getAsInt()],
+				Direction.values()[characterJsonObject.get(KEY_DIRECTION).getAsInt()],
 				16);
 		builder.finishAndAddToEngine();
 	}
 
 	private Vector3 inflateCharacterPosition(final com.google.gson.JsonElement characterJsonElement) {
 		JsonObject asJsonObject = characterJsonElement.getAsJsonObject();
-		int col = asJsonObject.get(MapJsonKeys.KEY_COL).getAsInt();
-		int row = asJsonObject.get(MapJsonKeys.KEY_ROW).getAsInt();
+		int col = asJsonObject.get(KEY_COL).getAsInt();
+		int row = asJsonObject.get(KEY_ROW).getAsInt();
 		return auxVector3_1.set(col + 0.5f, BILLBOARD_Y, row + 0.5f);
 	}
 
