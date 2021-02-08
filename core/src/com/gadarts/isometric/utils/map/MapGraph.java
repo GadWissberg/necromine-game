@@ -19,6 +19,7 @@ import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.commands.CharacterCommand;
 import com.gadarts.isometric.utils.Utils;
+import com.gadarts.necromine.model.EnvironmentDefinitions;
 import com.gadarts.necromine.model.MapNodesTypes;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -73,9 +74,10 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		});
 		obstacleEntities.forEach(obstacle -> {
 			ObstacleComponent obstacleComponent = ComponentsMapper.obstacle.get(obstacle);
-			if (obstacleComponent.getDefinition().isBlocksPath()) {
-				map[obstacleComponent.getY()][obstacleComponent.getX()] = MapNodesTypes.OBSTACLE_KEY_DIAGONAL_ALLOWED.ordinal();
-			}
+			EnvironmentDefinitions definition = obstacleComponent.getDefinition();
+			MapNodesTypes nodeType = definition.getNodeType();
+			int current = map[obstacleComponent.getY()][obstacleComponent.getX()];
+			map[obstacleComponent.getY()][obstacleComponent.getX()] = Math.max(nodeType.ordinal(), current);
 		});
 		for (int x = 0; x < MAP_SIZE; x++) {
 			for (int y = 0; y < MAP_SIZE; y++) {

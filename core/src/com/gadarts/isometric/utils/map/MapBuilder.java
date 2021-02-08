@@ -19,7 +19,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.ObstacleComponent;
-import com.gadarts.isometric.components.Obstacles;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
@@ -35,6 +34,7 @@ import com.gadarts.necromine.assets.Assets.Atlases;
 import com.gadarts.necromine.assets.Assets.Sounds;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.assets.MapJsonKeys;
+import com.gadarts.necromine.model.EnvironmentDefinitions;
 import com.gadarts.necromine.model.characters.CharacterTypes;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.Enemies;
@@ -64,6 +64,8 @@ public final class MapBuilder implements Disposable {
 	private static final Vector3 auxVector3_5 = new Vector3();
 	private static final String REGION_NAME_BULLET = "bullet";
 	public static final String TEMP_PATH = "core/assets/maps/test_map.json";
+	private static final String KEY_LIGHTS = "lights";
+	private static final String KEY_ENVIRONMENT = "environment";
 
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
@@ -138,15 +140,15 @@ public final class MapBuilder implements Disposable {
 	}
 
 	private void addObstacles() {
-		addTestObstacle(3, 1, 0, Obstacles.PILLAR);
-		addTestObstacle(6, 2, 270, Obstacles.CAVE_SUPPORTER_1);
+		addTestObstacle(3, 1, 0, EnvironmentDefinitions.PILLAR);
+		addTestObstacle(6, 2, 270, EnvironmentDefinitions.CAVE_SUPPORTER_1);
 	}
 
 	private void addTestObstacle(final int x,
 								 final int y,
 								 final int rotation,
-								 final Obstacles definition) {
-		Assets.Models def = definition.getModel();
+								 final EnvironmentDefinitions definition) {
+		Assets.Models def = definition.getModelDefinition();
 		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(def));
 		modelInstance.transform.setTranslation(x + 0.5f, 0, y + 0.5f);
 		modelInstance.transform.rotate(Vector3.Y, rotation);
@@ -314,14 +316,14 @@ public final class MapBuilder implements Disposable {
 		MeshPartBuilder meshPartBuilder = modelBuilder.part("floor",
 				GL20.GL_TRIANGLES,
 				Usage.Position | Usage.Normal | Usage.TextureCoordinates,
-				createTestFloorMaterial());
+				createFloorMaterial());
 		createRect(meshPartBuilder);
 		return modelBuilder.end();
 	}
 
 	private void createRect(final MeshPartBuilder meshPartBuilder) {
 		meshPartBuilder.setUVRange(0, 0, 1, 1);
-		final float OFFSET = -1 / 2f;
+		final float OFFSET = -0.5f;
 		meshPartBuilder.rect(
 				auxVector3_4.set(OFFSET, 0, 1 + OFFSET),
 				auxVector3_1.set(1 + OFFSET, 0, 1 + OFFSET),
@@ -330,10 +332,8 @@ public final class MapBuilder implements Disposable {
 				auxVector3_5.set(0, 1, 0));
 	}
 
-	private Material createTestFloorMaterial() {
-		Texture floor = assetManager.getTexture(Assets.FloorsTextures.FLOOR_3);
-		floor.setWrap(Repeat, Repeat);
-		Material material = new Material(TextureAttribute.createDiffuse(floor));
+	private Material createFloorMaterial() {
+		Material material = new Material();
 		material.id = "floor_test";
 		return material;
 	}
@@ -342,6 +342,16 @@ public final class MapBuilder implements Disposable {
 		createAndAdd3dCursor();
 		JsonObject mapJsonObject = gson.fromJson(Gdx.files.internal(TEMP_PATH).reader(), JsonObject.class);
 		inflateTiles(mapJsonObject);
+		inflateCharacters(mapJsonObject);
+		inflateLights(mapJsonObject);
+		inflateEnv(mapJsonObject);
+		return new MapGraph(engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
+				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
+				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()),
+				engine);
+	}
+
+	private void inflateCharacters(final JsonObject mapJsonObject) {
 		Arrays.stream(CharacterTypes.values()).forEach(type -> {
 			String typeName = type.name().toLowerCase();
 			JsonObject charactersJsonObject = mapJsonObject.getAsJsonObject(MapJsonKeys.KEY_CHARACTERS);
@@ -356,10 +366,46 @@ public final class MapBuilder implements Disposable {
 				});
 			}
 		});
-		return new MapGraph(engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
-				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
-				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()),
-				engine);
+	}
+
+	private void inflateLights(final JsonObject mapJsonObject) {
+		JsonArray lights = mapJsonObject.getAsJsonArray(KEY_LIGHTS);
+		lights.forEach(element -> {
+			JsonObject lightJsonObject = element.getAsJsonObject();
+			int row = lightJsonObject.get(MapJsonKeys.KEY_ROW).getAsInt();
+			int col = lightJsonObject.get(MapJsonKeys.KEY_COL).getAsInt();
+			EntityBuilder.beginBuildingEntity(engine)
+					.addLightComponent(auxVector3_1.set(col + 0.5f, 2f, row + 0.5f), 1f, 3f)
+					.finishAndAddToEngine();
+		});
+	}
+
+	private void inflateEnv(final JsonObject mapJsonObject) {
+		JsonArray envs = mapJsonObject.getAsJsonArray(KEY_ENVIRONMENT);
+		envs.forEach(element -> {
+			JsonObject envJsonObject = element.getAsJsonObject();
+			int row = envJsonObject.get(MapJsonKeys.KEY_ROW).getAsInt();
+			int col = envJsonObject.get(MapJsonKeys.KEY_COL).getAsInt();
+			int directionIndex = envJsonObject.get(MapJsonKeys.KEY_DIRECTION).getAsInt();
+			int typeIndex = envJsonObject.get(MapJsonKeys.KEY_TYPE).getAsInt();
+			EnvironmentDefinitions type = EnvironmentDefinitions.values()[typeIndex];
+			GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()));
+			modelInstance.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
+			modelInstance.transform.translate(type.getOffset(auxVector3_1));
+			Direction direction = Direction.values()[directionIndex];
+			EnvironmentDefinitions.handleEvenSize(type, modelInstance, direction);
+			modelInstance.transform.rotate(Vector3.Y, direction.getDirection(auxVector2_1).angleDeg());
+			modelInstance.getAdditionalRenderData().getBoundingBox().mul(modelInstance.transform);
+			EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
+			if (type.isWall()) {
+				builder.addWallComponent(0, 0, 0, 0);
+			} else {
+				builder.addObstacleComponent(col, row, type);
+			}
+			builder.addModelInstanceComponent(modelInstance, true)
+					.addCollisionComponent()
+					.finishAndAddToEngine();
+		});
 	}
 
 	private void inflateTiles(final JsonObject mapJsonObject) {
@@ -379,8 +425,9 @@ public final class MapBuilder implements Disposable {
 	private void inflateTile(final int row, final int col, final char currentChar) {
 		GameModelInstance modelInstance = new GameModelInstance(floorModel);
 		Texture texture = assetManager.getTexture(Assets.FloorsTextures.values()[currentChar - '1']);
+		texture.setWrap(Repeat, Repeat);
 		modelInstance.materials.get(0).set(TextureAttribute.createDiffuse(texture));
-		modelInstance.transform.setTranslation(auxVector3_1.set(col, 0, row));
+		modelInstance.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true)
 				.addFloorComponent()

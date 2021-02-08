@@ -21,6 +21,7 @@ import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.Item;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
+import com.gadarts.necromine.model.EnvironmentDefinitions;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.Enemies;
 import com.gadarts.necromine.model.characters.SpriteType;
@@ -174,7 +175,7 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addObstacleComponent(final int x, final int y, final Obstacles definition) {
+	public EntityBuilder addObstacleComponent(final int x, final int y, final EnvironmentDefinitions definition) {
 		ObstacleComponent obstacleComponent = engine.createComponent(ObstacleComponent.class);
 		obstacleComponent.init(x, y, definition);
 		currentEntity.add(obstacleComponent);
