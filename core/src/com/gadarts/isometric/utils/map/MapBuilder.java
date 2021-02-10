@@ -56,6 +56,7 @@ import static com.gadarts.necromine.model.characters.Direction.SOUTH;
  * Creates the map.
  */
 public final class MapBuilder implements Disposable {
+	public static final String TEMP_PATH = "core/assets/maps/test_map.json";
 	private static final CharacterSoundData auxCharacterSoundData = new CharacterSoundData();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
@@ -65,9 +66,9 @@ public final class MapBuilder implements Disposable {
 	private static final Vector3 auxVector3_4 = new Vector3();
 	private static final Vector3 auxVector3_5 = new Vector3();
 	private static final String REGION_NAME_BULLET = "bullet";
-	public static final String TEMP_PATH = "core/assets/maps/test_map.json";
 	private static final String KEY_LIGHTS = "lights";
 	private static final String KEY_ENVIRONMENT = "environment";
+	private static final String KEY_PICKUPS = "pickups";
 
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
@@ -343,14 +344,19 @@ public final class MapBuilder implements Disposable {
 	public MapGraph inflateTestMap() {
 		createAndAdd3dCursor();
 		JsonObject mapJsonObject = gson.fromJson(Gdx.files.internal(TEMP_PATH).reader(), JsonObject.class);
-		inflateTiles(mapJsonObject);
-		inflateCharacters(mapJsonObject);
-		inflateLights(mapJsonObject);
-		inflateEnvironment(mapJsonObject);
+		inflateAllElements(mapJsonObject);
 		return new MapGraph(engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
 				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
 				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()),
 				engine);
+	}
+
+	private void inflateAllElements(final JsonObject mapJsonObject) {
+		inflateTiles(mapJsonObject);
+		inflateCharacters(mapJsonObject);
+		inflateLights(mapJsonObject);
+		inflateEnvironment(mapJsonObject);
+		inflatePickups(mapJsonObject);
 	}
 
 	private void inflateCharacters(final JsonObject mapJsonObject) {
@@ -386,25 +392,53 @@ public final class MapBuilder implements Disposable {
 		JsonArray envs = mapJsonObject.getAsJsonArray(KEY_ENVIRONMENT);
 		envs.forEach(element -> {
 			JsonObject envJsonObject = element.getAsJsonObject();
-			int row = envJsonObject.get(KEY_ROW).getAsInt();
-			int col = envJsonObject.get(KEY_COL).getAsInt();
 			int dirIndex = envJsonObject.get(KEY_DIRECTION).getAsInt();
 			EnvironmentDefinitions type = EnvironmentDefinitions.values()[envJsonObject.get(KEY_TYPE).getAsInt()];
 			EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
-			MapCoord coord = new MapCoord(row, col);
+			MapCoord coord = new MapCoord(envJsonObject.get(KEY_ROW).getAsInt(), envJsonObject.get(KEY_COL).getAsInt());
 			inflateEnvSpecifiedComponent(coord, type, builder, Direction.values()[dirIndex]);
 			inflateEnvModelInstanceComponent(coord, dirIndex, type, builder);
 			inflateEnvironmentEntity(builder);
 		});
 	}
 
-	private GameModelInstance inflateEnvModelInstanceComponent(final MapCoord coord,
-															   final int directionIndex,
-															   final EnvironmentDefinitions type,
-															   final EntityBuilder builder) {
+	private void inflatePickups(final JsonObject mapJsonObject) {
+		JsonArray pickups = mapJsonObject.getAsJsonArray(KEY_PICKUPS);
+		pickups.forEach(element -> {
+			JsonObject pickJsonObject = element.getAsJsonObject();
+			WeaponsDefinitions type = WeaponsDefinitions.values()[pickJsonObject.get(KEY_TYPE).getAsInt()];
+			TextureAtlas.AtlasRegion bulletRegion = null;
+			if (!type.isMelee()) {
+				bulletRegion = assetManager.getAtlas(Atlases.findByRelatedWeapon(type)).findRegion(REGION_NAME_BULLET);
+			}
+			inflatePickupEntity(pickJsonObject, type, bulletRegion);
+		});
+	}
+
+	private void inflatePickupEntity(final JsonObject pickJsonObject,
+									 final WeaponsDefinitions type,
+									 final TextureAtlas.AtlasRegion bulletRegion) {
+		EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
+		inflatePickupModel(builder, pickJsonObject, type);
+		builder.addPickUpComponentAsWeapon(type, assetManager.getTexture(type.getImage()), bulletRegion)
+				.finishAndAddToEngine();
+	}
+
+	private void inflatePickupModel(final EntityBuilder builder,
+									final JsonObject pickJsonObject,
+									final WeaponsDefinitions type) {
+		MapCoord coord = new MapCoord(pickJsonObject.get(KEY_ROW).getAsInt(), pickJsonObject.get(KEY_COL).getAsInt());
+		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()));
+		modelInstance.transform.setTranslation(auxVector3_1.set(coord.getCol() + 0.5f, 0, coord.getRow() + 0.5f));
+		builder.addModelInstanceComponent(modelInstance, true);
+	}
+
+	private void inflateEnvModelInstanceComponent(final MapCoord coord,
+												  final int directionIndex,
+												  final EnvironmentDefinitions type,
+												  final EntityBuilder builder) {
 		GameModelInstance mi = inflateEnvironmentModelInstance(coord.getRow(), coord.getCol(), directionIndex, type);
 		builder.addModelInstanceComponent(mi, true, type.isCastShadow());
-		return mi;
 	}
 
 	private void inflateEnvironmentEntity(final EntityBuilder builder) {
