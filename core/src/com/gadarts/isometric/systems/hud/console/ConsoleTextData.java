@@ -10,8 +10,8 @@ import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.necromine.assets.GameAssetsManager;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 
 public class ConsoleTextData implements Disposable {
@@ -20,7 +20,7 @@ public class ConsoleTextData implements Disposable {
 	private final float fontHeight;
 	private final StringBuilder stringBuilder = new StringBuilder();
 	private final SimpleDateFormat date = new SimpleDateFormat("HH:mm:ss");
-	private final Timestamp timeStamp = new Timestamp(TimeUtils.millis());
+	private final Date timeStamp = new Date(TimeUtils.millis());
 	private final Label.LabelStyle textStyle;
 	private Stage stage;
 

@@ -119,7 +119,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		Vector2 cellPosition = charDecalComp.getNodePosition(auxVector2_1);
 		MapGraphNode playerNode = services.getMap().getNode(cellPosition);
 		if (attackNodesHandler.getSelectedAttackNode() == null) {
-			applyCommandWhenNoAttackNodeSelected();
+			applyCommandWhenNoAttackNodeSelected(playerNode);
 		} else {
 			applyPlayerAttackCommand(cursorNode, playerNode, attackNodesHandler);
 		}
@@ -152,13 +152,15 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		return result;
 	}
 
-	private void applyCommandWhenNoAttackNodeSelected() {
-		MapGraphPath plannedPath = pathPlanHandler.getPath();
-		Entity itemToPickup = getSystem(PickUpSystem.class).getItemToPickup();
-		if (itemToPickup != null) {
-			applyGoToPickupCommand(plannedPath, itemToPickup);
+	private void applyCommandWhenNoAttackNodeSelected(MapGraphNode playerNode) {
+		PickUpSystem pickUpSystem = getSystem(PickUpSystem.class);
+		Entity p = pickUpSystem.getCurrentHighLightedPickup();
+		if (pickUpSystem.getItemToPickup() != null || (p != null && services.getMap()
+				.getNode(ComponentsMapper.modelInstance.get(p)
+						.getModelInstance().transform.getTranslation(auxVector3)).equals(playerNode))) {
+			applyGoToPickupCommand(pathPlanHandler.getPath(), pickUpSystem.getItemToPickup());
 		} else {
-			applyGoToCommand(plannedPath);
+			applyGoToCommand(pathPlanHandler.getPath());
 		}
 	}
 

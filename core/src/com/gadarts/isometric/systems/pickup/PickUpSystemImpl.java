@@ -18,19 +18,11 @@ import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
-import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
-import com.gadarts.isometric.systems.character.commands.CharacterCommand;
-import com.gadarts.isometric.systems.hud.AttackNodesHandler;
-import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
-import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
-import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.utils.map.MapGraphNode;
-
-import java.util.List;
 
 public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscriber>
 		implements PickUpSystem,
@@ -156,41 +148,6 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 	}
 
 	@Override
-	public void touchDown(final int screenX, final int screenY, final int button) {
-
-	}
-
-	@Override
-	public void touchUp(final int screenX, final int screenY, final int button) {
-
-	}
-
-	@Override
-	public void touchDragged(final int screenX, final int screenY) {
-
-	}
-
-	@Override
-	public void inputSystemReady(final InputSystem inputSystem) {
-
-	}
-
-	@Override
-	public void onHudSystemReady(final HudSystem hudSystem) {
-
-	}
-
-	@Override
-	public void onUserSelectedNodeToApplyTurn(final MapGraphNode cursorNode, final AttackNodesHandler attackNodesHandler) {
-
-	}
-
-	@Override
-	public void onPlayerFinishedTurn() {
-
-	}
-
-	@Override
 	public void onPathCreated(final boolean pathToEnemy) {
 		if (!pathToEnemy && getCurrentHighLightedPickup() != null) {
 			itemToPickup = currentHighLightedPickup;
@@ -198,53 +155,8 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 	}
 
 	@Override
-	public void onEnemySelectedWithRangeWeapon(final MapGraphNode node) {
-
-	}
-
-	@Override
-	public void onPlayerSystemReady(final PlayerSystem playerSystem) {
-
-	}
-
-	@Override
-	public void onAttackModeActivated(final List<MapGraphNode> availableNodes) {
-
-	}
-
-	@Override
-	public void onAttackModeDeactivated() {
-
-	}
-
-	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		addSystem(CameraSystem.class, cameraSystem);
-	}
-
-	@Override
-	public void onDestinationReached(final Entity character) {
-
-	}
-
-	@Override
-	public void onCharacterCommandDone(final Entity character) {
-
-	}
-
-	@Override
-	public void onNewCharacterCommandSet(final CharacterCommand command) {
-
-	}
-
-	@Override
-	public void onCharacterSystemReady(final CharacterSystem characterSystem) {
-
-	}
-
-	@Override
-	public void onCharacterGotDamage(final Entity target) {
-
 	}
 
 	@Override
@@ -254,13 +166,4 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 		itemToPickup = null;
 	}
 
-	@Override
-	public void onCharacterDies(final Entity character) {
-
-	}
-
-	@Override
-	public void onCharacterNodeChanged(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
-
-	}
 }
