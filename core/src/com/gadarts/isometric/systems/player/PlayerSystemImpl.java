@@ -365,8 +365,8 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	private void tryToRevealNode(final Vector2 srcNodePosition, final int row, final int col, final int radius) {
 		int[][] fow = services.getMap().getFowMap();
-		int currentCellRow = Math.min(Math.max(row, 0), fow.length);
-		int currentCellCol = Math.min(Math.max(col, 0), services.getMap().getFowMap()[0].length);
+		int currentCellRow = Math.min(Math.max(row, 0), fow.length - 1);
+		int currentCellCol = Math.min(Math.max(col, 0), services.getMap().getFowMap()[0].length - 1);
 		Vector2 nodeToReveal = auxVector2_2.set(currentCellCol + 0.5f, currentCellRow + 0.5f);
 		if (srcNodePosition.dst(nodeToReveal) <= radius) {
 			if (!isWallBlocksReveal(srcNodePosition, nodeToReveal)) {

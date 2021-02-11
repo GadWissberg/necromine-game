@@ -170,7 +170,7 @@ public class MainShader extends DefaultShader {
 
 	private int applyMask(final int relativeRow, final int relativeCol, int result, final int mask) {
 		if (relativeRow < 0 || relativeCol < 0) return result;
-		if (fowMap[relativeRow][relativeCol] == 0) {
+		if (fowMap[Math.min(relativeRow, fowMap.length - 1)][Math.min(relativeCol, fowMap[0].length - 1)] == 0) {
 			result |= mask;
 		}
 		return result;
