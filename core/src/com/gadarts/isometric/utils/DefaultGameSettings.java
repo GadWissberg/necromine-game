@@ -12,7 +12,7 @@ public class DefaultGameSettings {
 	public static final boolean HIDE_ENEMIES = false;
 	public static final boolean HIDE_ENVIRONMENT_OBJECTS = false;
 	public static final boolean HIDE_CURSOR = false;
-	public static final boolean HIDE_FOW = false;
+	public static final boolean HIDE_FOW = true;
 	public static final Color BACKGROUND_COLOR = Color.BLACK;
 	public static final boolean MELODY_ENABLED = false;
 	public static final boolean SFX_ENABLED = false;

@@ -249,7 +249,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			if (isWall) {
 				float angleAround = MathUtils.round(modelInstance.transform.getRotation(auxQuat).getAngleAround(Vector3.Y));
 				Vector2 cameraAngle = auxVector2_2.set(camera.direction.x, camera.direction.z);
-				float angle = auxVector2_1.set(1, 0).setAngleDeg(angleAround + 180).angleDeg(cameraAngle);
+				float angle = auxVector2_1.set(1, 0).setAngleDeg(angleAround + (angleAround < 90 || angleAround > 270 || angleAround == 180 ? 0 : 180)).angleDeg(cameraAngle);
 				if (angle < 90 || angle > 270) {
 					continue;
 				}
