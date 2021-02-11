@@ -77,6 +77,9 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		auxVector3_1.y = camera.position.y;
 		auxVector3_1.z = clampTranslation(cameraZ, newPosition.z);
 		camera.position.interpolate(auxVector3_1, alpha, Interpolation.smooth2);
+		for (CameraSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onCameraMove(camera);
+		}
 	}
 
 	private float clampTranslation(final float cameraFrag, final float newPositionFrag) {

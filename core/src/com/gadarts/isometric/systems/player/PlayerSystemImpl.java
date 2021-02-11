@@ -354,7 +354,6 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	private void revealRadius(final int radius, final Vector2 srcPosition) {
-//		if (DefaultGameSettings.DISABLE_FOW) return;
 		srcPosition.add(0.5f, 0.5f);
 		for (int row = (int) (srcPosition.y - radius); row < srcPosition.y + radius; row++) {
 			for (int col = (int) (srcPosition.x - radius); col < srcPosition.x + radius; col++) {
