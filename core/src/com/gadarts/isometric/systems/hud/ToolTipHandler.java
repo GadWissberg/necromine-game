@@ -15,27 +15,26 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.utils.DefaultGameSettings;
+import com.gadarts.isometric.systems.render.DrawFlags;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+@RequiredArgsConstructor
 public class ToolTipHandler implements Disposable {
 	public static final Color TOOL_TIP_FONT_COLOR = Color.WHITE;
 	public static final Color TOOL_TIP_BACKGROUND_COLOR = Color.FOREST;
 	private static final float TOOLTIP_PADDING = 4f;
 	private static final long TOOLTIP_DELAY = 1000;
 	private final GameStage stage;
+	private final DrawFlags drawFlags;
 	@Setter
 	private long lastHighlightNodeChange;
 	private Texture toolTipBackgroundColor;
 	private Table tooltipTable;
 	private GlyphLayout toolTipLayout;
 	private BitmapFont toolTipFont;
-
-	public ToolTipHandler(final GameStage stage) {
-		this.stage = stage;
-	}
 
 	private String checkIfToolTipIsPickupOrObstacle(final MapGraphNode cursorNode, final MapGraph map) {
 		Entity pickup = map.getPickupFromNode(cursorNode);
@@ -58,7 +57,7 @@ public class ToolTipHandler implements Disposable {
 	private String calculateToolTipText(final MapGraph map,
 										final MapGraphNode cursorNode,
 										final ImmutableArray<Entity> enemiesEntities) {
-		if (!DefaultGameSettings.DISABLE_FOW && map.getFowMap()[cursorNode.getY()][cursorNode.getX()] == 0) return null;
+		if (drawFlags.isDrawFow() && map.getFowMap()[cursorNode.getY()][cursorNode.getX()] == 0) return null;
 		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, cursorNode);
 		String result;
 		if (enemyAtNode != null) {

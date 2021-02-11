@@ -18,8 +18,11 @@ public class RenderBatches implements Disposable {
 	private final MainShaderProvider shaderProvider;
 	private final ModelBatch shadowBatch;
 
-	public RenderBatches(final Camera camera, final GameAssetsManager assetsManager, final int[][] fowMap) {
-		shaderProvider = new MainShaderProvider(assetsManager, fowMap);
+	public RenderBatches(final Camera camera,
+						 final GameAssetsManager assetsManager,
+						 final int[][] fowMap,
+						 final DrawFlags drawFlags) {
+		shaderProvider = new MainShaderProvider(assetsManager, fowMap, drawFlags);
 		this.modelBatch = new ModelBatch(shaderProvider);
 		GameCameraGroupStrategy groupStrategy = new GameCameraGroupStrategy(camera, assetsManager);
 		this.decalBatch = new DecalBatch(DECALS_POOL_SIZE, groupStrategy);

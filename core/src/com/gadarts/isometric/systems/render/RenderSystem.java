@@ -6,4 +6,6 @@ public interface RenderSystem extends GameSystem {
 	int getNumberOfVisible();
 
 	int getNumberOfModelInstances();
+
+	DrawFlags getDrawFlags();
 }

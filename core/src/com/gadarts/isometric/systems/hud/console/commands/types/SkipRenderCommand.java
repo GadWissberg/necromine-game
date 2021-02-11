@@ -13,7 +13,6 @@ public class SkipRenderCommand extends ConsoleCommandImpl {
 
 	public static class GroundParameter extends SkipRenderCommandParameter {
 
-		public static final String DESCRIPTION = "0 - Renders ground. 1 - Skips.";
 		public static final String ALIAS = "ground";
 
 		public GroundParameter() {
@@ -47,6 +46,16 @@ public class SkipRenderCommand extends ConsoleCommandImpl {
 		public static final String ALIAS = "cursor";
 
 		public CursorParameter() {
+			super(DESCRIPTION, ALIAS);
+		}
+
+	}
+
+	public static class FowParameter extends SkipRenderCommandParameter {
+
+		public static final String ALIAS = "fow";
+
+		public FowParameter() {
 			super(DESCRIPTION, ALIAS);
 		}
 

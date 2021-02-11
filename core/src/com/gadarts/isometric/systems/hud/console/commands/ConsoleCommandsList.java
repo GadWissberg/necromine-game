@@ -17,7 +17,8 @@ public enum ConsoleCommandsList implements ConsoleCommands {
 	SKIP_RENDER("skip-render", new SkipRenderCommand(), "Toggles drawing skipping mode for given categories.",
 			new SkipRenderCommand.GroundParameter(),
 			new SkipRenderCommand.EnemyParameter(),
-			new SkipRenderCommand.EnvironmentObjectParameter()),
+			new SkipRenderCommand.EnvironmentObjectParameter(),
+			new SkipRenderCommand.FowParameter()),
 	HELP("?", new HelpCommand(), "Displays commands list.");
 
 	public static final String DESCRIPTION_PARAMETERS = " Parameters:%s";

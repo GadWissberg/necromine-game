@@ -42,6 +42,9 @@ import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
+import com.gadarts.isometric.systems.render.DrawFlags;
+import com.gadarts.isometric.systems.render.RenderSystem;
+import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.Turns;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
@@ -59,6 +62,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		InputSystemEventsSubscriber,
 		PlayerSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
+		RenderSystemEventsSubscriber,
 		TurnsSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber,
 		PickupSystemEventsSubscriber,
@@ -79,6 +83,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private GameStage stage;
 	private ToolTipHandler toolTipHandler;
 	private boolean showBorders = DefaultGameSettings.DISPLAY_HUD_OUTLINES;
+	private DrawFlags drawFlags;
 
 
 	@Override
@@ -94,7 +99,12 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
 		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), services.getSoundPlayer());
 		addHudTable();
-		toolTipHandler = new ToolTipHandler(stage);
+	}
+
+	@Override
+	public void onRenderSystemReady(final RenderSystem renderSystem) {
+		drawFlags = renderSystem.getDrawFlags();
+		toolTipHandler = new ToolTipHandler(stage, drawFlags);
 		toolTipHandler.addToolTipTable();
 	}
 
@@ -152,7 +162,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private void colorizeCursor(final MapGraphNode newNode) {
 		MapGraph map = services.getMap();
 		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, newNode);
-		if (DefaultGameSettings.DISABLE_FOW || map.getFowMap()[newNode.getY()][newNode.getX()] == 1) {
+		if (!drawFlags.isDrawFow() || map.getFowMap()[newNode.getY()][newNode.getX()] == 1) {
 			if (enemyAtNode != null) {
 				setCursorColor(CURSOR_ATTACK);
 			} else {
@@ -188,7 +198,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void userSelectedNodeToApplyTurn() {
 		MapGraphNode cursorNode = getCursorNode();
-		if (DefaultGameSettings.DISABLE_FOW || services.getMap().getFowMap()[cursorNode.getY()][cursorNode.getX()] == 1) {
+		if (!drawFlags.isDrawFow() || services.getMap().getFowMap()[cursorNode.getY()][cursorNode.getX()] == 1) {
 			for (HudSystemEventsSubscriber sub : subscribers) {
 				sub.onUserSelectedNodeToApplyTurn(cursorNode, attackNodesHandler);
 			}

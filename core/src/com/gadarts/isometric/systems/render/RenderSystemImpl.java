@@ -13,7 +13,10 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
-import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
@@ -35,6 +38,7 @@ import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
+import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.model.characters.CharacterUtils;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
@@ -57,7 +61,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Vector2 auxVector2_3 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
-	private static final Plane auxPlane = new Plane(new Vector3(0, 1, 0), 0);
 	private static final Quaternion auxQuat = new Quaternion();
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
 
@@ -206,7 +209,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		if (drawFlags.isDrawEnemy() || !ComponentsMapper.enemy.has(entity)) {
 			MapGraph map = services.getMap();
 			MapGraphNode characterNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_1));
-			if (DefaultGameSettings.DISABLE_FOW || map.getFowMap()[characterNode.getY()][characterNode.getX()] == 1) {
+			if (!drawFlags.isDrawFow() || map.getFowMap()[characterNode.getY()][characterNode.getX()] == 1) {
 				environment.getLightsRenderer().setDecalColorAccordingToLights(entity);
 				decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
 				decalBatch.add(decal);
@@ -272,7 +275,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		addSystem(CameraSystem.class, cameraSystem);
-		this.renderBatches = new RenderBatches(cameraSystem.getCamera(), services.getAssetManager(), services.getMap().getFowMap());
+		Camera camera = cameraSystem.getCamera();
+		GameAssetsManager assetManager = services.getAssetManager();
+		this.renderBatches = new RenderBatches(camera, assetManager, services.getMap().getFowMap(), drawFlags);
 		environment.initialize(getEngine().getEntitiesFor(Family.all(LightComponent.class).get()));
 		systemReady();
 	}
@@ -315,6 +320,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public int getNumberOfModelInstances() {
 		return renderSystemRelatedEntities.getModelInstanceEntities().size();
+	}
+
+	@Override
+	public DrawFlags getDrawFlags() {
+		return drawFlags;
 	}
 
 	@Override

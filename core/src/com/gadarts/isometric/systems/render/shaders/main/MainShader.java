@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.LightComponent;
 import com.gadarts.isometric.components.model.AdditionalRenderData;
-import com.gadarts.isometric.utils.DefaultGameSettings;
+import com.gadarts.isometric.systems.render.DrawFlags;
 
 import java.util.List;
 
@@ -38,6 +38,7 @@ public class MainShader extends DefaultShader {
 	private final float[] lightsExtraData = new float[MAX_LIGHTS * LIGHT_EXTRA_DATA_SIZE];
 	private final float[] fowMapArray = new float[MODEL_MAX_SIZE];
 	private final int[][] fowMap;
+	private final DrawFlags drawFlags;
 	private int lightsPositionsLocation;
 	private int lightsExtraDataLocation;
 	private int numberOfLightsLocation;
@@ -46,9 +47,13 @@ public class MainShader extends DefaultShader {
 	private int modelXLocation;
 	private int modelYLocation;
 
-	public MainShader(final Renderable renderable, final Config shaderConfig, final int[][] fowMap) {
+	public MainShader(final Renderable renderable,
+					  final Config shaderConfig,
+					  final int[][] fowMap,
+					  final DrawFlags drawFlags) {
 		super(renderable, shaderConfig);
 		this.fowMap = fowMap;
+		this.drawFlags = drawFlags;
 	}
 
 	@Override
@@ -104,7 +109,7 @@ public class MainShader extends DefaultShader {
 	}
 
 	private boolean applyFow(final Renderable renderable, final AdditionalRenderData additionalRenderData) {
-		if (DefaultGameSettings.DISABLE_FOW) {
+		if (!drawFlags.isDrawFow()) {
 			program.setUniformi(modelWidthLocation, 0);
 		} else {
 			Vector3 position = renderable.worldTransform.getTranslation(auxVector);
@@ -122,11 +127,7 @@ public class MainShader extends DefaultShader {
 					int fowMapValue = fowMap[relativeRow][relativeCol];
 					int currentIndex = row * width + col;
 					if (fowMapValue == 1) {
-//						if (row == 0 || row == height - 1 || col == 0 || col == width - 1) {
 						fowMapArray[currentIndex] = calculateFowValueBasedOnNeighbours(relativeRow, relativeCol);
-//						} else {
-//							fowMapArray[currentIndex] = 1;
-//						}
 					} else {
 						fowMapArray[currentIndex] = 0;
 					}
