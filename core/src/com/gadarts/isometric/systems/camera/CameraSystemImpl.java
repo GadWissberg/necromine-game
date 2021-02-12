@@ -30,7 +30,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private static final Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
-	private static final float SCROLL_OFFSET = 50;
+	private static final float SCROLL_OFFSET = 100;
 
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
