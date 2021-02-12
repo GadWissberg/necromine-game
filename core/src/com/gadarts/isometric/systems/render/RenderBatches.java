@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.systems.render.shaders.main.MainShaderProvider;
+import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import lombok.Getter;
 
@@ -20,9 +21,9 @@ public class RenderBatches implements Disposable {
 
 	public RenderBatches(final Camera camera,
 						 final GameAssetsManager assetsManager,
-						 final int[][] fowMap,
+						 final MapGraph mapGraph,
 						 final DrawFlags drawFlags) {
-		shaderProvider = new MainShaderProvider(assetsManager, fowMap, drawFlags);
+		shaderProvider = new MainShaderProvider(assetsManager, mapGraph, drawFlags);
 		this.modelBatch = new ModelBatch(shaderProvider);
 		GameCameraGroupStrategy groupStrategy = new GameCameraGroupStrategy(camera, assetsManager);
 		this.decalBatch = new DecalBatch(DECALS_POOL_SIZE, groupStrategy);

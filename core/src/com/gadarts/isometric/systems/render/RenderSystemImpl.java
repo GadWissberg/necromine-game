@@ -276,7 +276,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		addSystem(CameraSystem.class, cameraSystem);
 		Camera camera = cameraSystem.getCamera();
 		GameAssetsManager assetManager = services.getAssetManager();
-		this.renderBatches = new RenderBatches(camera, assetManager, services.getMap().getFowMap(), drawFlags);
+		this.renderBatches = new RenderBatches(camera, assetManager, services.getMap(), drawFlags);
 		environment.initialize(getEngine().getEntitiesFor(Family.all(LightComponent.class).get()));
 		systemReady();
 	}

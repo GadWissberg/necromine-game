@@ -10,6 +10,7 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.LightComponent;
 import com.gadarts.isometric.components.model.AdditionalRenderData;
 import com.gadarts.isometric.systems.render.DrawFlags;
+import com.gadarts.isometric.utils.map.MapGraph;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class MainShader extends DefaultShader {
 	private final float[] lightsPositions = new float[MAX_LIGHTS * 3];
 	private final float[] lightsExtraData = new float[MAX_LIGHTS * LIGHT_EXTRA_DATA_SIZE];
 	private final float[] fowMapArray = new float[MODEL_MAX_SIZE];
-	private final int[][] fowMap;
+	private final MapGraph map;
 	private final DrawFlags drawFlags;
 	private int lightsPositionsLocation;
 	private int lightsExtraDataLocation;
@@ -49,10 +50,10 @@ public class MainShader extends DefaultShader {
 
 	public MainShader(final Renderable renderable,
 					  final Config shaderConfig,
-					  final int[][] fowMap,
+					  final MapGraph map,
 					  final DrawFlags drawFlags) {
 		super(renderable, shaderConfig);
-		this.fowMap = fowMap;
+		this.map = map;
 		this.drawFlags = drawFlags;
 	}
 
@@ -116,15 +117,15 @@ public class MainShader extends DefaultShader {
 			position.set(Math.max(position.x, 0), 0, Math.max(position.z, 0));
 			BoundingBox boundingBox = additionalRenderData.getBoundingBox();
 			int width = MathUtils.ceil(boundingBox.getWidth());
-			int height = MathUtils.ceil(boundingBox.getDepth());
+			int depth = MathUtils.ceil(boundingBox.getDepth());
 			int x = (int) (position.x - width / 2f);
-			int z = (int) (position.z - height / 2f);
+			int z = (int) (position.z - depth / 2f);
 			boolean isWholeHidden = true;
-			for (int row = 0; row < height; row++) {
+			for (int row = 0; row < depth; row++) {
 				for (int col = 0; col < width; col++) {
 					int relativeRow = Math.max(z + row, 0);
 					int relativeCol = Math.max(x + col, 0);
-					int fowMapValue = fowMap[relativeRow][relativeCol];
+					int fowMapValue = map.getFowMap()[relativeRow][relativeCol];
 					int currentIndex = row * width + col;
 					if (fowMapValue == 1) {
 						fowMapArray[currentIndex] = calculateFowValueBasedOnNeighbours(relativeRow, relativeCol);
@@ -139,7 +140,7 @@ public class MainShader extends DefaultShader {
 				program.setUniformi(modelWidthLocation, width);
 				program.setUniformi(modelXLocation, x);
 				program.setUniformi(modelYLocation, z);
-				program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * height);
+				program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * depth);
 			}
 		}
 		return false;
@@ -170,6 +171,7 @@ public class MainShader extends DefaultShader {
 
 	private int applyMask(final int relativeRow, final int relativeCol, int result, final int mask) {
 		if (relativeRow < 0 || relativeCol < 0) return result;
+		int[][] fowMap = map.getFowMap();
 		if (fowMap[Math.min(relativeRow, fowMap.length - 1)][Math.min(relativeCol, fowMap[0].length - 1)] == 0) {
 			result |= mask;
 		}

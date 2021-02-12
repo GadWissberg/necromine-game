@@ -152,7 +152,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		return result;
 	}
 
-	private void applyCommandWhenNoAttackNodeSelected(MapGraphNode playerNode) {
+	private void applyCommandWhenNoAttackNodeSelected(final MapGraphNode playerNode) {
 		PickUpSystem pickUpSystem = getSystem(PickUpSystem.class);
 		Entity p = pickUpSystem.getCurrentHighLightedPickup();
 		if (pickUpSystem.getItemToPickup() != null || (p != null && services.getMap()
@@ -368,23 +368,31 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		int currentCellCol = Math.min(Math.max(col, 0), services.getMap().getFowMap()[0].length - 1);
 		Vector2 nodeToReveal = auxVector2_2.set(currentCellCol + 0.5f, currentCellRow + 0.5f);
 		if (srcNodePosition.dst(nodeToReveal) <= radius) {
-			if (!isWallBlocksReveal(srcNodePosition, nodeToReveal)) {
+			if (!isAnyWallBlocksReveal(srcNodePosition, nodeToReveal)) {
 				fow[currentCellRow][currentCellCol] = 1;
 			}
 		}
 	}
 
-	private boolean isWallBlocksReveal(final Vector2 srcNodePosition, final Vector2 nodeToReveal) {
+	private boolean isAnyWallBlocksReveal(final Vector2 srcNodePosition, final Vector2 nodeToReveal) {
+		boolean result = false;
 		for (Entity wall : walls) {
-			WallComponent wallComp = ComponentsMapper.wall.get(wall);
-			int width = Math.abs(wallComp.getBottomRightX() - wallComp.getTopLeftX()) + 1;
-			int height = Math.abs(wallComp.getBottomRightY() - wallComp.getTopLeftY()) + 1;
-			Rectangle wallRect = auxRect.set(wallComp.getTopLeftX(), wallComp.getTopLeftY(), width, height);
-			if (Intersector.intersectSegmentRectangle(srcNodePosition, nodeToReveal, wallRect)) {
-				return true;
+			if (isWallBlocksReveal(srcNodePosition, nodeToReveal, wall)) {
+				result = true;
+				break;
 			}
 		}
-		return false;
+		return result;
+	}
+
+	private boolean isWallBlocksReveal(final Vector2 srcNodePosition,
+									   final Vector2 nodeToReveal,
+									   final Entity wall) {
+		WallComponent wallComp = ComponentsMapper.wall.get(wall);
+		int width = Math.abs(wallComp.getBottomRightX() - wallComp.getTopLeftX()) + 1;
+		int height = Math.abs(wallComp.getBottomRightY() - wallComp.getTopLeftY()) + 1;
+		Rectangle wallRect = auxRect.set(wallComp.getTopLeftX(), wallComp.getTopLeftY(), width, height);
+		return Intersector.intersectSegmentRectangle(srcNodePosition, nodeToReveal, wallRect);
 	}
 
 	@Override
