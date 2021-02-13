@@ -336,6 +336,12 @@
       "col": 9,
       "direction": 2,
       "type": 2
+    },
+    {
+      "row": 8,
+      "col": 4,
+      "direction": 6,
+      "type": 1
     }
   ],
   "pickups": [
@@ -353,23 +359,19 @@
   "lights": [
     {
       "row": 3,
-      "col": 3,
-      "type": 2
+      "col": 3
     },
     {
       "row": 10,
-      "col": 5,
-      "type": 2
+      "col": 5
     },
     {
       "row": 5,
-      "col": 11,
-      "type": 2
+      "col": 11
     },
     {
       "row": 15,
-      "col": 3,
-      "type": 2
+      "col": 3
     }
   ]
 }

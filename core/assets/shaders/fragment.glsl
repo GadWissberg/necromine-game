@@ -182,7 +182,8 @@ void main() {
     int numberOfRows = int(max(v_frag_pos.z, 0.0) - float(max(u_model_y, 0)))*u_model_width;
     int horizontalOffset = int(max(v_frag_pos.x, 0.0)-float(max(u_model_x, 0)));
     int nodeIndex = numberOfRows + horizontalOffset;
-    bool fragOutside = v_frag_pos.z - float(u_model_y) >= float(u_model_depth) || v_frag_pos.x - float(u_model_x) >= float(u_model_width);
+    float bias = 0.01;
+    bool fragOutside = v_frag_pos.z - float(u_model_y) >= float(u_model_depth) + bias || v_frag_pos.x - float(u_model_x) >= float(u_model_width) + bias;
     int fragFowValue = (fragOutside)? 1 : int(u_fow_map[nodeIndex]);
     gl_FragColor.rgb = vec3(0.0);
     if (u_model_width == 0 || (fragFowValue > 0)){

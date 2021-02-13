@@ -41,7 +41,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final MapGraphPath auxPath = new MapGraphPath();
 	private static final CharacterCommand auxCommand = new CharacterCommand();
-	private static final float MAX_SIGHT = 10;
+	private static final float MAX_SIGHT = 7;
 	private static final Rectangle auxRect = new Rectangle();
 	private static final float ENEMY_HALF_FOV_ANGLE = 75f;
 
