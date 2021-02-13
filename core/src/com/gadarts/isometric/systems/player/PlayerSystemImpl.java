@@ -33,7 +33,6 @@ import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
-import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
@@ -392,7 +391,17 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		int width = Math.abs(wallComp.getBottomRightX() - wallComp.getTopLeftX()) + 1;
 		int height = Math.abs(wallComp.getBottomRightY() - wallComp.getTopLeftY()) + 1;
 		Rectangle wallRect = auxRect.set(wallComp.getTopLeftX(), wallComp.getTopLeftY(), width, height);
-		return Intersector.intersectSegmentRectangle(srcNodePosition, nodeToReveal, wallRect);
+		boolean nodeInWall = isNodeInWall(nodeToReveal, wallComp);
+		return !nodeInWall && Intersector.intersectSegmentRectangle(srcNodePosition, nodeToReveal, wallRect);
+	}
+
+	private boolean isNodeInWall(final Vector2 nodeToReveal, final WallComponent wallComp) {
+		int col = (int) nodeToReveal.x;
+		int row = (int) nodeToReveal.y;
+		return wallComp.getTopLeftX() <= col
+				&& wallComp.getBottomRightX() >= col
+				&& wallComp.getTopLeftY() <= row
+				&& wallComp.getBottomRightY() >= row;
 	}
 
 	@Override
@@ -425,19 +434,10 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	@Override
-	public void onRenderSystemReady(final RenderSystem renderSystem) {
-
-	}
-
-	@Override
 	public void onPickUpSystemReady(final PickUpSystem pickUpSystem) {
 		addSystem(PickUpSystem.class, pickUpSystem);
 	}
 
-	@Override
-	public void onEnemyFinishedTurn() {
-
-	}
 
 	@Override
 	public void onEnemyAwaken(final Entity enemy) {

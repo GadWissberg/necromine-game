@@ -19,6 +19,7 @@ public class MainShader extends DefaultShader {
 	public static final String UNIFORM_LIGHTS_EXTRA_DATA = "u_lights_extra_data[0]";
 	public static final String UNIFORM_NUMBER_OF_LIGHTS = "u_number_of_lights";
 	public static final String UNIFORM_MODEL_WIDTH = "u_model_width";
+	public static final String UNIFORM_MODEL_DEPTH = "u_model_depth";
 	public static final String UNIFORM_MODEL_X = "u_model_x";
 	public static final String UNIFORM_MODEL_Y = "u_model_y";
 	public static final String UNIFORM_FOW_MAP = "u_fow_map[0]";
@@ -44,6 +45,7 @@ public class MainShader extends DefaultShader {
 	private int lightsExtraDataLocation;
 	private int numberOfLightsLocation;
 	private int modelWidthLocation;
+	private int modelDepthLocation;
 	private int fowMapLocation;
 	private int modelXLocation;
 	private int modelYLocation;
@@ -71,6 +73,7 @@ public class MainShader extends DefaultShader {
 		lightsExtraDataLocation = program.getUniformLocation(UNIFORM_LIGHTS_EXTRA_DATA);
 		numberOfLightsLocation = program.getUniformLocation(UNIFORM_NUMBER_OF_LIGHTS);
 		modelWidthLocation = program.getUniformLocation(UNIFORM_MODEL_WIDTH);
+		modelDepthLocation = program.getUniformLocation(UNIFORM_MODEL_DEPTH);
 		modelXLocation = program.getUniformLocation(UNIFORM_MODEL_X);
 		modelYLocation = program.getUniformLocation(UNIFORM_MODEL_Y);
 		fowMapLocation = program.getUniformLocation(UNIFORM_FOW_MAP);
@@ -123,12 +126,12 @@ public class MainShader extends DefaultShader {
 			boolean isWholeHidden = true;
 			for (int row = 0; row < depth; row++) {
 				for (int col = 0; col < width; col++) {
-					int relativeRow = Math.max(z + row, 0);
-					int relativeCol = Math.max(x + col, 0);
-					int fowMapValue = map.getFowMap()[relativeRow][relativeCol];
+					int mapRow = Math.max(z + row, 0);
+					int mapCol = Math.max(x + col, 0);
+					int fowMapValue = map.getFowMap()[mapRow][mapCol];
 					int currentIndex = row * width + col;
 					if (fowMapValue == 1) {
-						fowMapArray[currentIndex] = calculateFowValueBasedOnNeighbours(relativeRow, relativeCol);
+						fowMapArray[currentIndex] = calculateFowValueBasedOnNeighbours(mapRow, mapCol);
 					} else {
 						fowMapArray[currentIndex] = 0;
 					}
@@ -137,11 +140,12 @@ public class MainShader extends DefaultShader {
 				if (isWholeHidden) {
 					return true;
 				}
-				program.setUniformi(modelWidthLocation, width);
-				program.setUniformi(modelXLocation, x);
-				program.setUniformi(modelYLocation, z);
-				program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * depth);
 			}
+			program.setUniformi(modelWidthLocation, width);
+			program.setUniformi(modelDepthLocation, depth);
+			program.setUniformi(modelXLocation, x);
+			program.setUniformi(modelYLocation, z);
+			program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * depth);
 		}
 		return false;
 	}
@@ -172,7 +176,7 @@ public class MainShader extends DefaultShader {
 	private int applyMask(final int relativeRow, final int relativeCol, int result, final int mask) {
 		if (relativeRow < 0 || relativeCol < 0) return result;
 		int[][] fowMap = map.getFowMap();
-		if (fowMap[Math.min(relativeRow, fowMap.length - 1)][Math.min(relativeCol, fowMap[0].length - 1)] == 0) {
+		if (fowMap[Math.min(relativeRow, fowMap.length - 1)][Math.min(relativeCol, fowMap[0].length - 1)] == 1) {
 			result |= mask;
 		}
 		return result;
