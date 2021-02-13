@@ -72,6 +72,7 @@ public final class MapBuilder implements Disposable {
 	private static final String KEY_ENVIRONMENT = "environment";
 	private static final String KEY_PICKUPS = "pickups";
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
+
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
 	private final ModelBuilder modelBuilder;

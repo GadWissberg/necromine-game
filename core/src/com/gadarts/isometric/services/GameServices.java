@@ -23,12 +23,13 @@ import java.util.Arrays;
 @Getter
 public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	public static final String BOUNDING_BOX_PREFIX = "box_";
+	private static final String MSG_ENABLED = "%s enabled.";
+	private static final String MSG_DISABLED = "%s disabled.";
+
 	private final PooledEngine engine;
 	private final ConsoleImpl consoleImpl;
 	private final SoundPlayer soundPlayer;
 	private final MapGraph map;
-	private final String MSG_ENABLED = "%s enabled.";
-	private final String MSG_DISABLED = "%s disabled.";
 	private GameAssetsManager assetManager;
 
 	public GameServices() {

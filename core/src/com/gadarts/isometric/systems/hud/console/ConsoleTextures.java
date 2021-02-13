@@ -12,6 +12,7 @@ public class ConsoleTextures implements Disposable {
 	public static final int CURSOR_HEIGHT = 10;
 	private static final Color CONSOLE_BACKGROUND_COLOR = new Color(0, 0.1f, 0, 1f);
 	private static final Color TEXT_BACKGROUND_COLOR = new Color(0, 0.2f, 0, 0.8f);
+
 	private Texture backgroundTexture;
 	private Texture textBackgroundTexture;
 	private Texture cursorTexture;

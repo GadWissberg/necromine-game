@@ -34,12 +34,14 @@ public class AttackNodesHandler implements Disposable {
 	private static final Vector3 auxVector3_4 = new Vector3();
 	private static final Vector3 auxVector3_5 = new Vector3();
 	private final static BoundingBox auxBoundingBox = new BoundingBox();
+
 	private final List<Entity> attackNodesEntities = new ArrayList<>();
 	private Model attackNodeModel;
+	private Engine engine;
+
 	@Getter
 	@Setter
 	private MapGraphNode selectedAttackNode;
-	private Engine engine;
 
 	private void displayAttackNodes(final List<MapGraphNode> availableNodes) {
 		for (int i = 0; i < availableNodes.size(); i++) {
