@@ -7,11 +7,14 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * More data needed mainly for shader.
+ */
 @Getter
 public class AdditionalRenderData {
-	final List<Entity> nearbyLights = new ArrayList<>();
-	final BoundingBox boundingBox = new BoundingBox();
-	final boolean affectedByLight;
+	private final List<Entity> nearbyLights = new ArrayList<>();
+	private final BoundingBox boundingBox = new BoundingBox();
+	private final boolean affectedByLight;
 
 	public AdditionalRenderData(final boolean affectedByLight, final BoundingBox boundingBox) {
 		this.affectedByLight = affectedByLight;

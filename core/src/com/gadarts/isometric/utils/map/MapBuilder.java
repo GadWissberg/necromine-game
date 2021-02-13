@@ -62,7 +62,6 @@ public final class MapBuilder implements Disposable {
 	public static final String TEMP_PATH = "core/assets/maps/test_map.json";
 	private static final CharacterSoundData auxCharacterSoundData = new CharacterSoundData();
 	private static final Vector2 auxVector2_1 = new Vector2();
-	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final Vector3 auxVector3_3 = new Vector3();
@@ -86,31 +85,6 @@ public final class MapBuilder implements Disposable {
 		floorModel = createFloorModel();
 	}
 
-	private void addTestLights() {
-		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(3, 2f, 3), 1f, 3f).finishAndAddToEngine();
-		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(10, 2f, 2), 0.5f, 3f).finishAndAddToEngine();
-		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(1, 2f, 11), 0.5f, 3f).finishAndAddToEngine();
-	}
-
-	private void addPlayer() {
-		Texture image = assetManager.getTexture(WeaponsDefinitions.AXE_PICK.getImage());
-		Weapon weapon = Pools.obtain(Weapon.class);
-		weapon.init(WeaponsDefinitions.AXE_PICK, 0, 0, image);
-		CharacterAnimations general = assetManager.get(Atlases.PLAYER_GENERIC.name());
-		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
-		Vector3 position = auxVector3_1.set(0.5f, BILLBOARD_Y, 0.5f);
-		addCharBaseComponents(entityBuilder, Atlases.PLAYER_AXE_PICK, position, null, Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH, Direction.SOUTH_EAST, 16);
-		entityBuilder.finishAndAddToEngine();
-	}
-
-	private void addEnemyTest(final int x, final int y, final Direction direction) {
-		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(Enemies.ZEALOT);
-		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		Vector3 position = auxVector3_1.set(x + 0.5f, BILLBOARD_Y, y + 0.5f);
-		addCharBaseComponents(entityBuilder, Atlases.ZEALOT, position, player, Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH, direction, 2);
-		entityBuilder.finishAndAddToEngine();
-	}
-
 	private void addCharBaseComponents(final EntityBuilder entityBuilder,
 									   final Atlases atlas,
 									   final Vector3 position,
@@ -118,13 +92,12 @@ public final class MapBuilder implements Disposable {
 									   final Sounds painSound,
 									   final Sounds deathSound,
 									   final Direction direction, final int health) {
-		CharacterAnimations animations = assetManager.get(atlas.name());
 		SpriteType spriteType = SpriteType.IDLE;
 		CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
 		characterSpriteData.init(direction, spriteType, 1);
 		auxCharacterSoundData.set(painSound, deathSound);
 		entityBuilder.addCharacterComponent(characterSpriteData, target, auxCharacterSoundData, health)
-				.addCharacterDecalComponent(animations, spriteType, direction, position)
+				.addCharacterDecalComponent(assetManager.get(atlas.name()), spriteType, direction, position)
 				.addCollisionComponent()
 				.addAnimationComponent();
 	}
@@ -337,7 +310,7 @@ public final class MapBuilder implements Disposable {
 		int row = coord.getRow();
 		if (type.isWall()) {
 			int halfWidth = type.getWidth() / 2;
-			int halfDepth = type.getHeight() / 2;
+			int halfDepth = type.getDepth() / 2;
 			if (facingDirection == NORTH || facingDirection == SOUTH) {
 				int swap = halfWidth;
 				halfWidth = halfDepth;

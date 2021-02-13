@@ -45,7 +45,7 @@ public class ConsoleTextures implements Disposable {
 		return backgroundTexture;
 	}
 
-	private void generateBackgroundTexture(int height) {
+	private void generateBackgroundTexture(final int height) {
 		Pixmap pixmap = new Pixmap(Gdx.graphics.getWidth(), height, Pixmap.Format.RGBA8888);
 		pixmap.setColor(CONSOLE_BACKGROUND_COLOR);
 		pixmap.fillRectangle(0, 0, Gdx.graphics.getWidth(), height);
@@ -61,7 +61,7 @@ public class ConsoleTextures implements Disposable {
 		return cursorTexture;
 	}
 
-	public void init(int height) {
+	public void init(final int height) {
 		generateBackgroundTexture(height);
 		generateTextBackgroundTexture();
 		generateCursorTexture();

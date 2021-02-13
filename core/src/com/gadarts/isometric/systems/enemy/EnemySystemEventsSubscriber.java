@@ -8,7 +8,7 @@ public interface EnemySystemEventsSubscriber extends SystemEventsSubscriber {
 
 	}
 
-	default void onEnemyAwaken(Entity enemy) {
+	default void onEnemyAwaken(final Entity enemy) {
 
 	}
 }
