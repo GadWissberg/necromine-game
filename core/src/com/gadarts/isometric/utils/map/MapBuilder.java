@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.ObstacleComponent;
@@ -27,6 +28,8 @@ import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
+import com.gadarts.isometric.services.GameServices;
+import com.gadarts.isometric.services.ModelBoundingBox;
 import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.necromine.assets.Assets;
@@ -69,7 +72,7 @@ public final class MapBuilder implements Disposable {
 	private static final String KEY_LIGHTS = "lights";
 	private static final String KEY_ENVIRONMENT = "environment";
 	private static final String KEY_PICKUPS = "pickups";
-
+	private static final BoundingBox auxBoundingBox = new BoundingBox();
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
 	private final ModelBuilder modelBuilder;
@@ -83,124 +86,10 @@ public final class MapBuilder implements Disposable {
 		floorModel = createFloorModel();
 	}
 
-	/**
-	 * Test map.
-	 *
-	 * @return The map graph.
-	 */
-	public MapGraph createAndAddTestMap() {
-		createAndAdd3dCursor();
-		addPlayer();
-		addEnemyTest(1, 10, Direction.EAST);
-		addEnemyTest(2, 2, Direction.SOUTH_EAST);
-		addEnemyTest(8, 0, Direction.SOUTH);
-		addEnemyTest(9, 0, Direction.SOUTH_WEST);
-		addWeaponPickupTest(0, 10, Assets.Models.COLT, WeaponsDefinitions.COLT, REGION_NAME_BULLET);
-		addWeaponPickupTest(1, 1, Assets.Models.HAMMER, WeaponsDefinitions.HAMMER, null);
-		addTestLights();
-		return createTestMap();
-	}
-
 	private void addTestLights() {
 		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(3, 2f, 3), 1f, 3f).finishAndAddToEngine();
 		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(10, 2f, 2), 0.5f, 3f).finishAndAddToEngine();
 		EntityBuilder.beginBuildingEntity(engine).addLightComponent(auxVector3_1.set(1, 2f, 11), 0.5f, 3f).finishAndAddToEngine();
-	}
-
-	private void addWeaponPickupTest(final int x,
-									 final int y,
-									 final Assets.Models model,
-									 final WeaponsDefinitions definition,
-									 final String regionNameBullet) {
-		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(model));
-		modelInstance.transform.setTranslation(auxVector3_1.set(x + 0.5f, 0, y + 0.5f));
-		Atlases atlas = Atlases.findByRelatedWeapon(definition);
-		TextureAtlas.AtlasRegion bulletRegion = null;
-		if (regionNameBullet != null) {
-			bulletRegion = assetManager.getAtlas(atlas).findRegion(regionNameBullet);
-		}
-		Texture displayImage = assetManager.getTexture(definition.getImage());
-		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(modelInstance, true)
-				.addPickUpComponentAsWeapon(definition, displayImage, bulletRegion)
-				.finishAndAddToEngine();
-	}
-
-	private MapGraph createTestMap() {
-		addTestWalls();
-		addObstacles();
-		addTestFloor(auxVector3_1.set(1.5f, 0, 1.5f), floorModel);
-		addTestFloor(auxVector3_1.set(4.5f, 0, 1.5f), floorModel);
-		addTestFloor(auxVector3_1.set(9.5f, 0, 1.5f), floorModel);
-		addTestFloor(auxVector3_1.set(1.5f, 0, 4.5f), floorModel);
-		addTestFloor(auxVector3_1.set(4.5f, 0, 4.5f), floorModel);
-		return new MapGraph(
-				engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
-				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
-				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()),
-				engine
-		);
-	}
-
-	private void addObstacles() {
-		addTestObstacle(3, 1, 0, EnvironmentDefinitions.PILLAR);
-		addTestObstacle(6, 2, 270, EnvironmentDefinitions.CAVE_SUPPORTER_1);
-	}
-
-	private void addTestObstacle(final int x,
-								 final int y,
-								 final int rotation,
-								 final EnvironmentDefinitions definition) {
-		Assets.Models def = definition.getModelDefinition();
-		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(def));
-		modelInstance.transform.setTranslation(x + 0.5f, 0, y + 0.5f);
-		modelInstance.transform.rotate(Vector3.Y, rotation);
-		modelInstance.getAdditionalRenderData().getBoundingBox().set(auxVector3_1.setZero(), auxVector3_2.set(1, 1, 1));
-		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(modelInstance, true, def.isCastShadow())
-				.addObstacleComponent(x, y, definition)
-				.addCollisionComponent()
-				.finishAndAddToEngine();
-	}
-
-	private void addTestWalls() {
-		auxVector2_1.set(-1, -1);
-		addTestWall(auxVector3_1.set(2, 0, 0), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(1, 0, 6), 180, auxVector2_1.set(0, 6), auxVector2_2.set(1, 6), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(2, 0, 8), 90, auxVector2_1.set(1, 6), auxVector2_2.set(1, 9), Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(1, 0, 10), 0, auxVector2_1.set(0, 9), auxVector2_2.set(1, 9), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(0, 0, 11), 90, auxVector2_1.set(0, 9), auxVector2_2.set(1, 9), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(2, 0, 12), 180, auxVector2_1.set(0, 12), auxVector2_2.set(3, 12), Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(4, 0, 11), 270, auxVector2_1.set(4, 10), auxVector2_2.set(4, 13), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(3, 0, 8), 270, auxVector2_1.set(3, 6), auxVector2_2.set(3, 9), Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(4, 0, 6), 180, auxVector2_1.set(3, 6), auxVector2_2.set(5, 6), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(5, 0, 0), 0, auxVector2_1, auxVector2_1, Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(7, 0, 2), 0, auxVector2_1.set(6, 1), auxVector2_2.set(6, 1), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(7, 0, 3), 180, auxVector2_1.set(6, 3), auxVector2_2.set(10, 3), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(9, 0, 3), 180, auxVector2_1.set(8, 3), auxVector2_2.set(10, 3), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(11, 0, 2), 270, auxVector2_1.set(11, 0), auxVector2_2.set(11, 3), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(10, 0, 0), 0, auxVector2_1.set(11, 0), auxVector2_2.set(11, 3), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(6, 0, 1), 270, auxVector2_1.set(6, 0), auxVector2_2.set(6, 1), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(8, 0, 1), 90, auxVector2_1.set(7, 0), auxVector2_2.set(7, 1), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(6, 0, 4), 270, auxVector2_1.set(6, 3), auxVector2_2.set(6, 5), Assets.Models.WALL_2);
-		addTestWall(auxVector3_1.set(0, 0, 2), 90, auxVector2_1, auxVector2_1, Assets.Models.WALL_1);
-		addTestWall(auxVector3_1.set(0, 0, 5), 90, auxVector2_1.set(-1, -1), auxVector2_2.set(-1, -1), Assets.Models.WALL_2);
-	}
-
-	private void addTestWall(final Vector3 position,
-							 final float rotation,
-							 final Vector2 topLeft,
-							 final Vector2 bottomRight,
-							 final Assets.Models model) {
-		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(model));
-		modelInstance.transform.setTranslation(position);
-		modelInstance.transform.rotate(Vector3.Y, rotation);
-		modelInstance.getAdditionalRenderData().getBoundingBox().mul(modelInstance.transform);
-		EntityBuilder.beginBuildingEntity(engine)
-				.addWallComponent((int) topLeft.x, (int) topLeft.y, (int) bottomRight.x, (int) bottomRight.y)
-				.addModelInstanceComponent(modelInstance, true)
-				.addCollisionComponent()
-				.finishAndAddToEngine();
 	}
 
 	private void addPlayer() {
@@ -240,20 +129,11 @@ public final class MapBuilder implements Disposable {
 				.addAnimationComponent();
 	}
 
-
-	private void addTestFloor(final Vector3 position, final Model model) {
-		GameModelInstance testFloorModelInstance = new GameModelInstance(model);
-		testFloorModelInstance.transform.setTranslation(position);
-		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(testFloorModelInstance, true)
-				.addFloorComponent()
-				.finishAndAddToEngine();
-	}
-
 	private void createAndAdd3dCursor() {
 		Model model = modelTestCursor();
+		model.calculateBoundingBox(auxBoundingBox);
 		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(new GameModelInstance(model, false), true, false)
+				.addModelInstanceComponent(new GameModelInstance(model, auxBoundingBox, false), true, false)
 				.addCursorComponent()
 				.finishAndAddToEngine();
 	}
@@ -428,7 +308,10 @@ public final class MapBuilder implements Disposable {
 									final JsonObject pickJsonObject,
 									final WeaponsDefinitions type) {
 		MapCoord coord = new MapCoord(pickJsonObject.get(KEY_ROW).getAsInt(), pickJsonObject.get(KEY_COL).getAsInt());
-		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()));
+		Assets.Models modelDefinition = type.getModelDefinition();
+		String fileName = GameServices.BOUNDING_BOX_PREFIX + modelDefinition.getFilePath();
+		ModelBoundingBox boundingBox = assetManager.get(fileName, ModelBoundingBox.class);
+		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(modelDefinition), boundingBox);
 		modelInstance.transform.setTranslation(auxVector3_1.set(coord.getCol() + 0.5f, 0, coord.getRow() + 0.5f));
 		builder.addModelInstanceComponent(modelInstance, true);
 	}
@@ -470,7 +353,9 @@ public final class MapBuilder implements Disposable {
 															  final int col,
 															  final int directionIndex,
 															  final EnvironmentDefinitions type) {
-		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()));
+		String fileName = GameServices.BOUNDING_BOX_PREFIX + type.getModelDefinition().getFilePath();
+		ModelBoundingBox box = assetManager.get(fileName, ModelBoundingBox.class);
+		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()), box);
 		Direction direction = Direction.values()[directionIndex];
 		modelInstance.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
 		modelInstance.transform.rotate(Vector3.Y, -1 * direction.getDirection(auxVector2_1).angleDeg());
@@ -485,6 +370,7 @@ public final class MapBuilder implements Disposable {
 		int width = tilesJsonObject.get(KEY_WIDTH).getAsInt();
 		int depth = tilesJsonObject.get(KEY_DEPTH).getAsInt();
 		String matrix = tilesJsonObject.get(KEY_MATRIX).getAsString();
+		floorModel.calculateBoundingBox(auxBoundingBox);
 		IntStream.range(0, depth).forEach(row ->
 				IntStream.range(0, width).forEach(col -> {
 					char currentChar = matrix.charAt(row * width + col % width);
@@ -495,13 +381,13 @@ public final class MapBuilder implements Disposable {
 	}
 
 	private void inflateTile(final int row, final int col, final char currentChar) {
-		GameModelInstance modelInstance = new GameModelInstance(floorModel);
+		GameModelInstance mi = new GameModelInstance(floorModel, auxBoundingBox);
 		Texture texture = assetManager.getTexture(Assets.FloorsTextures.values()[currentChar - '1']);
 		texture.setWrap(Repeat, Repeat);
-		modelInstance.materials.get(0).set(TextureAttribute.createDiffuse(texture));
-		modelInstance.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
+		mi.materials.get(0).set(TextureAttribute.createDiffuse(texture));
+		mi.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
 		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(modelInstance, true)
+				.addModelInstanceComponent(mi, true)
 				.addFloorComponent()
 				.finishAndAddToEngine();
 	}

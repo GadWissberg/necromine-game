@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.ModelInstanceComponent;
@@ -32,13 +33,12 @@ public class AttackNodesHandler implements Disposable {
 	private static final Vector3 auxVector3_3 = new Vector3();
 	private static final Vector3 auxVector3_4 = new Vector3();
 	private static final Vector3 auxVector3_5 = new Vector3();
+	private final static BoundingBox auxBoundingBox = new BoundingBox();
 	private final List<Entity> attackNodesEntities = new ArrayList<>();
 	private Model attackNodeModel;
-
 	@Getter
 	@Setter
 	private MapGraphNode selectedAttackNode;
-
 	private Engine engine;
 
 	private void displayAttackNodes(final List<MapGraphNode> availableNodes) {
@@ -61,14 +61,15 @@ public class AttackNodesHandler implements Disposable {
 
 	private void createAttackNodesForFutureUse() {
 		attackNodeModel = createAttackNodeModelTest();
-		createAttackNodesEntities();
+		createAndAddAttackNodesEntities();
 	}
 
-	private void createAttackNodesEntities() {
+	private void createAndAddAttackNodesEntities() {
+		attackNodeModel.calculateBoundingBox(auxBoundingBox);
 		IntStream.range(0, ATTACK_NODES_POOL_SIZE).forEach(i ->
 				attackNodesEntities.add(EntityBuilder.beginBuildingEntity((PooledEngine) engine)
 						.addModelInstanceComponent(
-								new GameModelInstance(attackNodeModel, false),
+								new GameModelInstance(attackNodeModel, auxBoundingBox, false),
 								false,
 								false)
 						.finishAndAddToEngine()

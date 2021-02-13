@@ -2,6 +2,7 @@ package com.gadarts.isometric.services;
 
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.components.CharacterAnimation;
 import com.gadarts.isometric.components.character.CharacterAnimations;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 
 @Getter
 public class GameServices implements ConsoleEventsSubscriber, Disposable {
+	public static final String BOUNDING_BOX_PREFIX = "box_";
 	private final PooledEngine engine;
 	private final ConsoleImpl consoleImpl;
 	private final SoundPlayer soundPlayer;
@@ -42,7 +44,7 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	private void createAssetsManagerAndLoadAssets() {
 		assetManager = new GameAssetsManager();
 		assetManager.loadGameFiles();
-		generateCharactersAnimations();
+		afterFilesAreLoaded();
 	}
 
 	private CharacterAnimations createCharacterAnimations(final Assets.Atlases zealot) {
@@ -83,12 +85,25 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 		);
 	}
 
+	private void afterFilesAreLoaded() {
+		generateCharactersAnimations();
+		generateModelsBoundingBoxes();
+	}
+
+	private void generateModelsBoundingBoxes() {
+		Arrays.stream(Assets.Models.values())
+				.forEach(def -> assetManager.addAsset(
+						BOUNDING_BOX_PREFIX + def.getFilePath(),
+						ModelBoundingBox.class,
+						(ModelBoundingBox) assetManager.get(def.getFilePath(), Model.class).calculateBoundingBox(new ModelBoundingBox(def))));
+	}
+
 	private void generateCharactersAnimations() {
-		Arrays.stream(Assets.Atlases.values()).forEach(atlas -> {
-					CharacterAnimations animations = createCharacterAnimations(atlas);
-					assetManager.addAsset(atlas.name(), CharacterAnimations.class, animations);
-				}
-		);
+		Arrays.stream(Assets.Atlases.values())
+				.forEach(atlas -> assetManager.addAsset(
+						atlas.name(),
+						CharacterAnimations.class,
+						createCharacterAnimations(atlas)));
 	}
 
 	public void init() {

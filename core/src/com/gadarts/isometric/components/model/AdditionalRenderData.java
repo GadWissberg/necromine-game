@@ -13,7 +13,8 @@ public class AdditionalRenderData {
 	final BoundingBox boundingBox = new BoundingBox();
 	final boolean affectedByLight;
 
-	public AdditionalRenderData(final boolean affectedByLight) {
+	public AdditionalRenderData(final boolean affectedByLight, final BoundingBox boundingBox) {
 		this.affectedByLight = affectedByLight;
+		this.boundingBox.set(boundingBox);
 	}
 }
