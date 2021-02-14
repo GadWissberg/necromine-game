@@ -114,10 +114,6 @@ uniform vec3 u_ambientLight;
 uniform vec3 u_ambientCubemap[6];
 #endif// ambientCubemapFlag
 
-#ifdef sphericalHarmonicsFlag
-uniform vec3 u_sphericalHarmonics[9];
-#endif//sphericalHarmonicsFlag
-
 #ifdef specularFlag
 varying vec3 v_lightSpecular;
 #endif// specularFlag
@@ -146,7 +142,7 @@ struct PointLight
 uniform PointLight u_pointLights[numPointLights];
 #endif// numPointLights
 
-#if    defined(ambientLightFlag) || defined(ambientCubemapFlag) || defined(sphericalHarmonicsFlag)
+#if    defined(ambientLightFlag) || defined(ambientCubemapFlag)
 #define ambientFlag
 #endif//ambientFlag
 
