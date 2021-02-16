@@ -108,7 +108,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void addMenuTable() {
 		Table menuTable = addTable();
-		font = services.getAssetManager().get("fonts/exorcista.ttf", BitmapFont.class);
+		font = services.getAssetManager().get("chubgothic_72.ttf", BitmapFont.class);
 		Label.LabelStyle style = new Label.LabelStyle(font, FONT_COLOR);
 		Label logo = new Label(NecromineGame.TITLE, style);
 		menuTable.add(logo);

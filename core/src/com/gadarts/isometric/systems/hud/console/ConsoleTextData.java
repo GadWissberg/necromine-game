@@ -25,7 +25,7 @@ public class ConsoleTextData implements Disposable {
 	private Stage stage;
 
 	public ConsoleTextData(final GameAssetsManager assetManager) {
-		font = assetManager.get("fonts/consola.ttf", BitmapFont.class);
+		font = assetManager.get("consola_15.ttf", BitmapFont.class);
 		font.getData().markupEnabled = true;
 		textStyle = new Label.LabelStyle(font, Color.WHITE);
 		GlyphLayout layout = new GlyphLayout();
