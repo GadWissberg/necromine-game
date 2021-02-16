@@ -7,6 +7,7 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -76,6 +78,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private static final float BUTTON_PADDING = 40;
 	private static final String BUTTON_NAME_STORAGE = "button_storage";
 	public static final String MSG_BORDERS = "UI borders are %s.";
+	private static final Color FONT_COLOR = Color.RED;
 
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
 	private ImmutableArray<Entity> enemiesEntities;
@@ -84,6 +87,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private ToolTipHandler toolTipHandler;
 	private boolean showBorders = DefaultGameSettings.DISPLAY_HUD_OUTLINES;
 	private DrawFlags drawFlags;
+	private BitmapFont font;
 
 
 	@Override
@@ -99,6 +103,16 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
 		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), services.getSoundPlayer());
 		addHudTable();
+		addMenuTable();
+	}
+
+	private void addMenuTable() {
+		Table menuTable = addTable();
+		font = services.getAssetManager().get("fonts/exorcista.ttf", BitmapFont.class);
+		Label.LabelStyle style = new Label.LabelStyle(font, FONT_COLOR);
+		Label logo = new Label(NecromineGame.TITLE, style);
+		menuTable.add(logo);
+		menuTable.toFront();
 	}
 
 	@Override
@@ -118,11 +132,16 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void addHudTable() {
-		Table hudTable = new Table();
-		stage.setDebugAll(Gdx.app.getLogLevel() == LOG_DEBUG && showBorders);
-		hudTable.setFillParent(true);
+		Table hudTable = addTable();
 		addStorageButton(hudTable);
-		stage.addActor(hudTable);
+	}
+
+	private Table addTable() {
+		Table table = new Table();
+		stage.setDebugAll(Gdx.app.getLogLevel() == LOG_DEBUG && showBorders);
+		table.setFillParent(true);
+		stage.addActor(table);
+		return table;
 	}
 
 
