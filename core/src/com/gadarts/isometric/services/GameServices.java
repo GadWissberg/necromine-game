@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Disposable;
+import com.gadarts.isometric.GlobalApplicationService;
 import com.gadarts.isometric.components.CharacterAnimation;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.systems.hud.HudSystemImpl;
@@ -26,20 +27,30 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	private static final String MSG_ENABLED = "%s enabled.";
 	private static final String MSG_DISABLED = "%s disabled.";
 
-	private final PooledEngine engine;
+	private final GlobalApplicationService globalApplicationService;
 	private final ConsoleImpl consoleImpl;
 	private final SoundPlayer soundPlayer;
-	private final MapGraph map;
+	private PooledEngine engine;
+	private MapGraph map;
 	private GameAssetsManager assetManager;
 
-	public GameServices() {
-		engine = new PooledEngine();
+	public GameServices(final GlobalApplicationService globalApplicationService) {
+		this.globalApplicationService = globalApplicationService;
+		createAndSetEngine();
 		createAssetsManagerAndLoadAssets();
-		MapBuilder mapBuilder = new MapBuilder(assetManager, engine);
-		this.map = mapBuilder.inflateTestMap();
+		createAndSetMap();
 		consoleImpl = new ConsoleImpl();
 		consoleImpl.subscribeForEvents(this);
 		soundPlayer = new SoundPlayer(assetManager);
+	}
+
+	public void createAndSetEngine() {
+		this.engine = new PooledEngine();
+	}
+
+	public void createAndSetMap() {
+		MapBuilder mapBuilder = new MapBuilder(assetManager, engine);
+		this.map = mapBuilder.inflateTestMap();
 	}
 
 	private void createAssetsManagerAndLoadAssets() {

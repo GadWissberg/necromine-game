@@ -11,4 +11,7 @@ public interface HudSystem extends GameSystem {
 
 	boolean hasOpenWindows();
 
+	boolean isMenuOpen();
+
+	void toggleMenu(boolean active);
 }

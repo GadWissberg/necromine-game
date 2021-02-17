@@ -4,13 +4,12 @@ import com.badlogic.gdx.Screen;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.SystemsHandler;
 
-public class BattleScreen implements Screen {
-	private final SystemsHandler systemsHandler;
-
+public class BattleScreen implements Screen, GlobalApplicationService {
+	private SystemsHandler systemsHandler;
 	private final GameServices services;
 
 	public BattleScreen() {
-		services = new GameServices();
+		services = new GameServices(this);
 		systemsHandler = new SystemsHandler(services);
 		services.init();
 	}
@@ -51,4 +50,11 @@ public class BattleScreen implements Screen {
 		services.dispose();
 	}
 
+	@Override
+	public void restartGame() {
+		systemsHandler.dispose();
+		services.createAndSetEngine();
+		services.createAndSetMap();
+		systemsHandler = new SystemsHandler(services);
+	}
 }

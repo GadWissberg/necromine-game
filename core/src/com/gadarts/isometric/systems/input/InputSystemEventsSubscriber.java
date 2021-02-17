@@ -22,4 +22,8 @@ public interface InputSystemEventsSubscriber extends SystemEventsSubscriber {
 	default void inputSystemReady(final InputSystem inputSystem) {
 
 	}
+
+	default void keyDown(final int keycode) {
+
+	}
 }

@@ -9,7 +9,6 @@ import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.hud.HudSystem;
 import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
-import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 import lombok.Getter;
@@ -45,7 +44,8 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
-		if (!DefaultGameSettings.DEBUG_INPUT && !rotateCamera && !getSystem(HudSystem.class).hasOpenWindows()) {
+		HudSystem hudSystem = getSystem(HudSystem.class);
+		if (!DefaultGameSettings.DEBUG_INPUT && !rotateCamera && !hudSystem.hasOpenWindows() && !hudSystem.isMenuOpen()) {
 			handleHorizontalScroll();
 			handleVerticalScroll();
 		}
@@ -146,15 +146,10 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	@Override
 	public void touchDragged(final int screenX, final int screenY) {
-		if (rotateCamera) {
+		if (rotateCamera && !getSystem(HudSystem.class).isMenuOpen()) {
 			camera.rotateAround(rotationPoint, Vector3.Y, (lastRightPressMousePosition.x - screenX) / 2f);
 			lastRightPressMousePosition.set(screenX, screenY);
 		}
-	}
-
-	@Override
-	public void inputSystemReady(final InputSystem inputSystem) {
-
 	}
 
 

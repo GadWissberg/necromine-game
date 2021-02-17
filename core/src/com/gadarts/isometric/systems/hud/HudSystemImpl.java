@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.gadarts.isometric.GlobalApplicationService;
 import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
@@ -56,6 +57,7 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static com.badlogic.gdx.Application.LOG_DEBUG;
@@ -72,13 +74,14 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	public static final Color CURSOR_REGULAR = Color.YELLOW;
 	public static final Color CURSOR_UNAVAILABLE = Color.DARK_GRAY;
+	public static final String MSG_BORDERS = "UI borders are %s.";
 	static final Color CURSOR_ATTACK = Color.RED;
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final float BUTTON_PADDING = 40;
 	private static final String BUTTON_NAME_STORAGE = "button_storage";
-	public static final String MSG_BORDERS = "UI borders are %s.";
-	private static final Color FONT_COLOR = Color.RED;
+	private static final String TABLE_NAME_MENU = "menu";
+	private static final String TABLE_NAME_HUD = "hud";
 
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
 	private ImmutableArray<Entity> enemiesEntities;
@@ -87,7 +90,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private ToolTipHandler toolTipHandler;
 	private boolean showBorders = DefaultGameSettings.DISPLAY_HUD_OUTLINES;
 	private DrawFlags drawFlags;
-	private BitmapFont font;
+	private Table menuTable;
 
 
 	@Override
@@ -107,12 +110,30 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void addMenuTable() {
-		Table menuTable = addTable();
-		font = services.getAssetManager().get("chubgothic_72.ttf", BitmapFont.class);
-		Label.LabelStyle style = new Label.LabelStyle(font, FONT_COLOR);
-		Label logo = new Label(NecromineGame.TITLE, style);
-		menuTable.add(logo);
+		menuTable = addTable();
+		menuTable.setName(TABLE_NAME_MENU);
+		menuTable.add(createLogo()).row();
+		addMenuOptions(menuTable);
 		menuTable.toFront();
+		toggleMenu(DefaultGameSettings.MENU_ON_STARTUP);
+	}
+
+	public void toggleMenu(final boolean active) {
+		menuTable.setVisible(active);
+		stage.getRoot().findActor(TABLE_NAME_HUD).setTouchable(active ? Touchable.disabled : Touchable.enabled);
+	}
+
+	private void addMenuOptions(final Table menuTable) {
+		BitmapFont smallFont = services.getAssetManager().get("chubgothic_40.ttf", BitmapFont.class);
+		Label.LabelStyle style = new Label.LabelStyle(smallFont, MenuOption.FONT_COLOR_REGULAR);
+		GlobalApplicationService global = services.getGlobalApplicationService();
+		Arrays.stream(MenuOptions.values()).forEach(o -> menuTable.add(new MenuOption(o, style, global, this)).row());
+	}
+
+	private Label createLogo() {
+		BitmapFont largeFont = services.getAssetManager().get("chubgothic_72.ttf", BitmapFont.class);
+		Label.LabelStyle logoStyle = new Label.LabelStyle(largeFont, MenuOption.FONT_COLOR_REGULAR);
+		return new Label(NecromineGame.TITLE, logoStyle);
 	}
 
 	@Override
@@ -133,6 +154,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void addHudTable() {
 		Table hudTable = addTable();
+		hudTable.setName(TABLE_NAME_HUD);
 		addStorageButton(hudTable);
 	}
 
@@ -167,9 +189,9 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	@Override
 	public void mouseMoved(final int screenX, final int screenY) {
-		MapGraph map = services.getMap();
-		MapGraphNode newNode = map.getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
-		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
+		if (menuTable.isVisible()) return;
+		MapGraphNode newNode = services.getMap().getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
+		MapGraphNode oldNode = services.getMap().getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
 		if (!newNode.equals(oldNode)) {
 			toolTipHandler.displayToolTip(null);
 			toolTipHandler.setLastHighlightNodeChange(TimeUtils.millis());
@@ -237,6 +259,13 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		inputSystem.addInputProcessor(stage);
 	}
 
+	@Override
+	public void keyDown(final int keycode) {
+		if (keycode == Input.Keys.ESCAPE) {
+			toggleMenu(!isMenuOpen());
+		}
+	}
+
 
 	@Override
 	public void onPlayerSystemReady(final PlayerSystem playerSystem) {
@@ -273,6 +302,11 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	@Override
 	public boolean hasOpenWindows() {
 		return stage.hasOpenWindows();
+	}
+
+	@Override
+	public boolean isMenuOpen() {
+		return menuTable.isVisible();
 	}
 
 

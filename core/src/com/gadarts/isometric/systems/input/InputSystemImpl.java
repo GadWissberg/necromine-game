@@ -58,6 +58,9 @@ public class InputSystemImpl extends GameEntitySystem<InputSystemEventsSubscribe
 
 	@Override
 	public boolean keyDown(final int keycode) {
+		for (InputSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.keyDown(keycode);
+		}
 		return false;
 	}
 
