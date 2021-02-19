@@ -91,24 +91,26 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		if (ready) {
 			numberOfVisible = 0;
 			resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
-			renderWorld(deltaTime, getSystem(CameraSystem.class).getCamera());
+			CameraSystem system = getSystem(CameraSystem.class);
+			renderWorld(deltaTime, system.getCamera(), system.getRotationPoint(auxVector3_1));
 			getSystem(HudSystem.class).getStage().draw();
 		}
 	}
 
-	private void renderWorld(final float deltaTime, final Camera camera) {
+	private void renderWorld(final float deltaTime, final Camera camera, final Vector3 lastRotationPoint) {
 		if (!DefaultGameSettings.DISABLE_SHADOWS) {
-			renderModelsShadows(camera);
+			renderModelsShadows(camera, lastRotationPoint);
 		}
 		resetDisplay(Color.BLACK);
 		renderModels(camera, renderBatches.getModelBatch(), true, true);
 		renderDecals(deltaTime, camera);
 	}
 
-	private void renderModelsShadows(final Camera camera) {
+	private void renderModelsShadows(final Camera camera, final Vector3 lastRotationPoint) {
 		DirectionalShadowLight shadowLight = environment.getShadowLight();
-		shadowLight.begin(Vector3.Zero, camera.direction);
-		renderModels(shadowLight.getCamera(), renderBatches.getShadowBatch(), false, false);
+		Camera shadowLightCamera = shadowLight.getCamera();
+		shadowLight.begin(lastRotationPoint.set(lastRotationPoint.x, camera.position.y, lastRotationPoint.z + 10f), shadowLightCamera.direction);
+		renderModels(shadowLightCamera, renderBatches.getShadowBatch(), false, false);
 		shadowLight.end();
 	}
 

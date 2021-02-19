@@ -29,17 +29,16 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private static final Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
+	private static final Vector3 auxVector3_3 = new Vector3();
 	private static final float SCROLL_OFFSET = 100;
 
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
 	private final Vector3 rotationPoint = new Vector3();
+	private boolean rotateCamera;
 
 	@Getter
 	private OrthographicCamera camera;
-
-	@Getter
-	private boolean rotateCamera;
 
 	@Override
 	public void update(final float deltaTime) {
@@ -70,16 +69,20 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	private void setCameraTranslationClamped(final Vector3 direction, final float alpha) {
+		Vector3 originalPosition = auxVector3_3.set(camera.position);
 		Vector3 newPosition = auxVector3_2.set(camera.position).add(direction.x, 0, direction.z);
-		float cameraX = camera.position.x;
-		float cameraZ = camera.position.z;
-		auxVector3_1.x = clampTranslation(cameraX, newPosition.x);
+		auxVector3_1.x = clampTranslation(camera.position.x, newPosition.x);
 		auxVector3_1.y = camera.position.y;
-		auxVector3_1.z = clampTranslation(cameraZ, newPosition.z);
+		auxVector3_1.z = clampTranslation(camera.position.z, newPosition.z);
 		camera.position.interpolate(auxVector3_1, alpha, Interpolation.smooth2);
+		cameraMoved(auxVector3_1.set(camera.position).sub(originalPosition));
+	}
+
+	private void cameraMoved(final Vector3 delta) {
 		for (CameraSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCameraMove(camera);
 		}
+		rotationPoint.add(delta);
 	}
 
 	private float clampTranslation(final float cameraFrag, final float newPositionFrag) {
@@ -130,8 +133,6 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Override
 	public void touchDown(final int screenX, final int screenY, final int button) {
 		if (button == Input.Buttons.RIGHT) {
-			Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
-			Intersector.intersectRayPlane(ray, groundPlane, rotationPoint);
 			rotateCamera = true;
 			lastRightPressMousePosition.set(screenX, screenY);
 		}
@@ -158,10 +159,17 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		return rotateCamera;
 	}
 
+	@Override
+	public Vector3 getRotationPoint(final Vector3 output) {
+		return output.set(rotationPoint);
+	}
+
 
 	@Override
 	public void activate() {
 		camera = createCamera();
+		Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+		Intersector.intersectRayPlane(ray, groundPlane, rotationPoint);
 		camera.position.set(4, CAMERA_HEIGHT, 4);
 		camera.direction.rotate(Vector3.X, -45);
 		camera.direction.rotate(Vector3.Y, 45);

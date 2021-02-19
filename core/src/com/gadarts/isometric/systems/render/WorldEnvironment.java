@@ -24,8 +24,8 @@ public class WorldEnvironment extends Environment implements Disposable {
 		shadowLight = new DirectionalShadowLight(
 				1024,
 				1024,
-				CameraSystemImpl.VIEWPORT_WIDTH,
-				CameraSystemImpl.VIEWPORT_HEIGHT,
+				CameraSystemImpl.VIEWPORT_WIDTH * 2f,
+				CameraSystemImpl.VIEWPORT_HEIGHT * 2f,
 				1f,
 				300
 		);
