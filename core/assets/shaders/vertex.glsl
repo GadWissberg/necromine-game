@@ -110,10 +110,6 @@ varying vec3 v_lightDiffuse;
 uniform vec3 u_ambientLight;
 #endif// ambientLightFlag
 
-#ifdef ambientCubemapFlag
-uniform vec3 u_ambientCubemap[6];
-#endif// ambientCubemapFlag
-
 #ifdef specularFlag
 varying vec3 v_lightSpecular;
 #endif// specularFlag
@@ -142,7 +138,7 @@ struct PointLight
 uniform PointLight u_pointLights[numPointLights];
 #endif// numPointLights
 
-#if    defined(ambientLightFlag) || defined(ambientCubemapFlag)
+#if    defined(ambientLightFlag)
 #define ambientFlag
 #endif//ambientFlag
 
@@ -198,19 +194,8 @@ void main() {
     #endif// normalFlag
 
     #ifdef lightingFlag
-    #if    defined(ambientLightFlag)
-    vec3 ambientLight = u_ambientLight;
-    #elif defined(ambientFlag)
     vec3 ambientLight = vec3(0.0);
     #endif
-
-    #ifdef ambientCubemapFlag
-    vec3 squaredNormal = normal * normal;
-    vec3 isPositive  = step(0.0, normal);
-    ambientLight += squaredNormal.x * mix(u_ambientCubemap[0], u_ambientCubemap[1], isPositive.x) +
-    squaredNormal.y * mix(u_ambientCubemap[2], u_ambientCubemap[3], isPositive.y) +
-    squaredNormal.z * mix(u_ambientCubemap[4], u_ambientCubemap[5], isPositive.z);
-    #endif// ambientCubemapFlag
 
     #ifdef sphericalHarmonicsFlag
     ambientLight += u_sphericalHarmonics[0];
@@ -253,7 +238,4 @@ void main() {
         #endif// specularFlag
     }
         #endif// numDirectionalLights
-
-
-        #endif// lightingFlag
 }
