@@ -4,11 +4,25 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
 
+/**
+ * General utils.
+ */
 public class Utils {
-	private static final Plane floorPlane = new Plane(new Vector3(0, 1, 0), 0);
+	/**
+	 * Used for comparisons.
+	 */
 	public static final float EPSILON = 0.025f;
-	private final static Vector2 auxVector2_1 = new Vector2();
+	private static final Plane floorPlane = new Plane(new Vector3(0, 1, 0), 0);
 
+	/**
+	 * Calculates the node's position based on screen mouse position.
+	 *
+	 * @param camera  The rendering camera.
+	 * @param screenX
+	 * @param screenY
+	 * @param output  The result
+	 * @return output argument for chaining.
+	 */
 	public static Vector3 calculateGridPositionFromMouse(final Camera camera,
 														 final float screenX,
 														 final float screenY,
@@ -18,6 +32,12 @@ public class Utils {
 		return alignPositionToGrid(output);
 	}
 
+	/**
+	 * Floors x and z.
+	 *
+	 * @param position
+	 * @return position argument for chaining.
+	 */
 	public static Vector3 alignPositionToGrid(final Vector3 position) {
 		position.x = MathUtils.floor(position.x);
 		position.y = 0;
@@ -25,6 +45,9 @@ public class Utils {
 		return position;
 	}
 
+	/**
+	 * Whether given contained is fully inside the container.
+	 */
 	public static boolean rectangleContainedInRectangleWithBoundaries(final Rectangle container,
 																	  final Rectangle contained) {
 		float xmin = contained.x;
