@@ -57,7 +57,7 @@ project(":core") {
 
 
     dependencies {
-        implementation 'com.github.GadWissberg:necromine-shared:master-SNAPSHOT'
+        implementation 'com.gadarts.necromine.shared:core:0.1'
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
