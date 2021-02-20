@@ -116,14 +116,14 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	private void renderDecals(final float deltaTime, final Camera camera) {
 		Gdx.gl.glDepthMask(false);
+		renderCorpses(deltaTime, camera);
+		renderLiveCharacters(deltaTime, camera);
+		renderSimpleDecals();
+		Gdx.gl.glDepthMask(true);
+	}
+
+	private void renderSimpleDecals() {
 		DecalBatch decalBatch = renderBatches.getDecalBatch();
-		for (Entity entity : renderSystemRelatedEntities.getCharacterDecalsEntities()) {
-			renderCharacterDecal(deltaTime, camera, entity, true);
-		}
-		decalBatch.flush();
-		for (Entity entity : renderSystemRelatedEntities.getCharacterDecalsEntities()) {
-			renderCharacterDecal(deltaTime, camera, entity, false);
-		}
 		for (Entity entity : renderSystemRelatedEntities.getSimpleDecalsEntities()) {
 			SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
 			if (simpleDecalComponent.isVisible()) {
@@ -131,7 +131,20 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			}
 		}
 		decalBatch.flush();
-		Gdx.gl.glDepthMask(true);
+	}
+
+	private void renderLiveCharacters(final float deltaTime, final Camera camera) {
+		for (Entity entity : renderSystemRelatedEntities.getCharacterDecalsEntities()) {
+			renderCharacterDecal(deltaTime, camera, entity, false);
+		}
+	}
+
+	private void renderCorpses(final float deltaTime, final Camera camera) {
+		DecalBatch decalBatch = renderBatches.getDecalBatch();
+		for (Entity entity : renderSystemRelatedEntities.getCharacterDecalsEntities()) {
+			renderCharacterDecal(deltaTime, camera, entity, true);
+		}
+		decalBatch.flush();
 	}
 
 	private void renderCharacterDecal(final float deltaTime,

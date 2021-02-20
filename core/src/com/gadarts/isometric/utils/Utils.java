@@ -3,8 +3,6 @@ package com.gadarts.isometric.utils;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
-import com.gadarts.isometric.utils.map.MapGraphNode;
-import com.gadarts.necromine.model.characters.Direction;
 
 public class Utils {
 	private static final Plane floorPlane = new Plane(new Vector3(0, 1, 0), 0);
@@ -25,16 +23,6 @@ public class Utils {
 		position.y = 0;
 		position.z = MathUtils.floor(position.z);
 		return position;
-	}
-
-	public static Direction getDirectionBetweenNodes(final MapGraphNode myNode,
-													 final MapGraphNode targetNode) {
-		Vector2 vector2 = auxVector2_1.set(targetNode.getX(), targetNode.getY()).sub(myNode.getX(), myNode.getY()).nor();
-		return Direction.findDirection(vector2);
-	}
-
-	public static float closestMultiplication(final float value, final int multiplication) {
-		return Math.round(value / multiplication) * multiplication;
 	}
 
 	public static boolean rectangleContainedInRectangleWithBoundaries(final Rectangle container,
