@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -52,7 +53,6 @@ import com.gadarts.isometric.systems.turns.Turns;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
-import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
@@ -74,14 +74,15 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	public static final Color CURSOR_REGULAR = Color.YELLOW;
 	public static final Color CURSOR_UNAVAILABLE = Color.DARK_GRAY;
+	public static final Color CURSOR_ATTACK = Color.RED;
 	public static final String MSG_BORDERS = "UI borders are %s.";
-	static final Color CURSOR_ATTACK = Color.RED;
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final float BUTTON_PADDING = 40;
 	private static final String BUTTON_NAME_STORAGE = "button_storage";
 	private static final String TABLE_NAME_MENU = "menu";
 	private static final String TABLE_NAME_HUD = "hud";
+	private static final float CURSOR_FLICKER_STEP = 1.5f;
 
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
 	private ImmutableArray<Entity> enemiesEntities;
@@ -91,6 +92,8 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private boolean showBorders = DefaultGameSettings.DISPLAY_HUD_OUTLINES;
 	private DrawFlags drawFlags;
 	private Table menuTable;
+	private Entity cursor;
+	private float cursorFlickerChange = CURSOR_FLICKER_STEP;
 
 
 	@Override
@@ -107,6 +110,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), services.getSoundPlayer());
 		addHudTable();
 		addMenuTable();
+		cursor = getEngine().getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 	}
 
 	private void addMenuTable() {
@@ -195,21 +199,21 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		if (!newNode.equals(oldNode)) {
 			toolTipHandler.displayToolTip(null);
 			toolTipHandler.setLastHighlightNodeChange(TimeUtils.millis());
-			cursorModelInstance.transform.setTranslation(newNode.getX(), 0, newNode.getY());
+			cursorModelInstance.transform.setTranslation(newNode.getX() + 0.5f, 0, newNode.getY() + 0.5f);
 			colorizeCursor(newNode);
 		}
 	}
 
 	private void colorizeCursor(final MapGraphNode newNode) {
-		MapGraph map = services.getMap();
-		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, newNode);
-		if (!drawFlags.isDrawFow() || map.getFowMap()[newNode.getY()][newNode.getX()] == 1) {
-			if (enemyAtNode != null) {
+		if (!drawFlags.isDrawFow() || services.getMap().getFowMap()[newNode.getY()][newNode.getX()] == 1) {
+			if (services.getMap().getAliveEnemyFromNode(enemiesEntities, newNode) != null) {
 				setCursorColor(CURSOR_ATTACK);
 			} else {
+				setCursorOpacity(1F);
 				setCursorColor(CURSOR_REGULAR);
 			}
 		} else {
+			setCursorOpacity(1F);
 			setCursorColor(CURSOR_UNAVAILABLE);
 		}
 	}
@@ -251,6 +255,27 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		super.update(deltaTime);
 		stage.act();
 		toolTipHandler.handleToolTip(services.getMap(), getCursorNode(), enemiesEntities);
+		handleCursorFlicker(deltaTime);
+	}
+
+	private void handleCursorFlicker(final float deltaTime) {
+		Material material = ComponentsMapper.modelInstance.get(cursor).getModelInstance().materials.get(0);
+		if (((ColorAttribute) material.get(ColorAttribute.Diffuse)).color.equals(CURSOR_ATTACK)) {
+			BlendingAttribute blend = (BlendingAttribute) material.get(BlendingAttribute.Type);
+			if (blend.opacity > 0.9) {
+				cursorFlickerChange = -CURSOR_FLICKER_STEP;
+			} else if (blend.opacity < 0.1) {
+				cursorFlickerChange = CURSOR_FLICKER_STEP;
+			}
+			setCursorOpacity(blend.opacity + cursorFlickerChange * deltaTime);
+		}
+	}
+
+	private void setCursorOpacity(final float opacity) {
+		Material material = cursorModelInstance.materials.get(0);
+		BlendingAttribute blend = (BlendingAttribute) material.get(BlendingAttribute.Type);
+		blend.opacity = opacity;
+		material.set(blend);
 	}
 
 

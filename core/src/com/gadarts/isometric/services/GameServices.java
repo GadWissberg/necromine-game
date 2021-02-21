@@ -2,7 +2,9 @@ package com.gadarts.isometric.services;
 
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.GlobalApplicationService;
 import com.gadarts.isometric.components.CharacterAnimation;
@@ -100,6 +102,7 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	private void afterFilesAreLoaded() {
 		generateCharactersAnimations();
 		generateModelsBoundingBoxes();
+		applyAlphaOnModels();
 	}
 
 	private void generateModelsBoundingBoxes() {
@@ -108,6 +111,16 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 						BOUNDING_BOX_PREFIX + def.getFilePath(),
 						ModelBoundingBox.class,
 						(ModelBoundingBox) assetManager.get(def.getFilePath(), Model.class).calculateBoundingBox(new ModelBoundingBox(def))));
+	}
+
+	private void applyAlphaOnModels() {
+		Arrays.stream(Assets.Models.values()).filter(def -> def.getAlpha() < 1.0f)
+				.forEach(def -> {
+					Material material = assetManager.getModel(def).materials.get(0);
+					BlendingAttribute attribute = new BlendingAttribute();
+					material.set(attribute);
+					attribute.opacity = def.getAlpha();
+				});
 	}
 
 	private void generateCharactersAnimations() {

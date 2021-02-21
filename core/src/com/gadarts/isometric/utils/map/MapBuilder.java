@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -30,7 +29,6 @@ import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.services.ModelBoundingBox;
-import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.Assets.Atlases;
@@ -104,68 +102,12 @@ public final class MapBuilder implements Disposable {
 	}
 
 	private void createAndAdd3dCursor() {
-		Model model = modelTestCursor();
+		Model model = assetManager.getModel(Assets.Models.CURSOR);
 		model.calculateBoundingBox(auxBoundingBox);
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(new GameModelInstance(model, auxBoundingBox, false), true, false)
 				.addCursorComponent()
 				.finishAndAddToEngine();
-	}
-
-	private Model modelTestCursor() {
-		modelBuilder.begin();
-
-		Material material = new Material(ColorAttribute.createDiffuse(HudSystemImpl.CURSOR_REGULAR));
-
-		MeshPartBuilder meshPartBuilder = modelBuilder.part(
-				"test_cursor",
-				GL20.GL_LINES,
-				Usage.Position | Usage.Normal,
-				material);
-
-		meshPartBuilder.rect(
-				auxVector3_1.set(1, 0, 1),
-				auxVector3_2.set(1, 0, 0),
-				auxVector3_3.set(0, 0, 0),
-				auxVector3_4.set(0, 0, 1),
-				auxVector3_5.set(0, -1, 0));
-
-		meshPartBuilder.rect(
-				auxVector3_1.set(1, 1.5f, 1),
-				auxVector3_2.set(1, 1.5f, 0),
-				auxVector3_3.set(0, 1.5f, 0),
-				auxVector3_4.set(0, 1.5f, 1),
-				auxVector3_5.set(0, 1, 0));
-
-		meshPartBuilder.rect(
-				auxVector3_1.set(1, 0, 0),
-				auxVector3_2.set(1, 1.5f, 0),
-				auxVector3_3.set(1, 1.5f, 1),
-				auxVector3_4.set(1, 0, 1),
-				auxVector3_5.set(1, 0, 0));
-
-		meshPartBuilder.rect(
-				auxVector3_1.set(1, 0, 1),
-				auxVector3_2.set(1, 1.5f, 1),
-				auxVector3_3.set(0, 1.5f, 1),
-				auxVector3_4.set(0, 0, 1),
-				auxVector3_5.set(0, 0, 1));
-
-		meshPartBuilder.rect(
-				auxVector3_1.set(0, 0, 1),
-				auxVector3_2.set(0, 1.5f, 1),
-				auxVector3_3.set(0, 1.5f, 0),
-				auxVector3_4.set(0, 0, 0),
-				auxVector3_5.set(-1, 0, 0));
-
-		meshPartBuilder.rect(
-				auxVector3_1.set(0, 0, 0),
-				auxVector3_2.set(0, 1.5f, 0),
-				auxVector3_3.set(1, 1.5f, 0),
-				auxVector3_4.set(1, 0, 0),
-				auxVector3_5.set(0, 0, -1));
-
-		return modelBuilder.end();
 	}
 
 	private Model createFloorModel() {
