@@ -3,6 +3,7 @@ package com.gadarts.isometric.utils;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
+import com.google.gson.JsonObject;
 
 /**
  * General utils.
@@ -60,5 +61,15 @@ public class Utils {
 		float height = container.getHeight();
 		return ((xmin >= x && xmin <= x + width) && (xmax >= x && xmax <= x + width))
 				&& ((ymin >= y && ymin <= y + height) && (ymax >= y && ymax <= y + height));
+	}
+
+	public static String getStringFromJsonOrDefault(final JsonObject jsonObject,
+													final String key,
+													final String defaultValue) {
+		String result = defaultValue;
+		if (jsonObject.has(key)) {
+			result = jsonObject.get(key).getAsString();
+		}
+		return result;
 	}
 }

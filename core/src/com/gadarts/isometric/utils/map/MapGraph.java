@@ -11,10 +11,8 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.ObstacleComponent;
-import com.gadarts.isometric.components.PickUpComponent;
-import com.gadarts.isometric.components.WallComponent;
+import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.commands.CharacterCommand;
@@ -84,6 +82,12 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 				nodes.add(new MapGraphNode(x, y, map[y][x], 8));
 			}
 		}
+		ImmutableArray<Entity> floorEntities = engine.getEntitiesFor(Family.all(FloorComponent.class).get());
+		floorEntities.forEach(entity -> {
+			GameModelInstance modelInstance = ComponentsMapper.modelInstance.get(entity).getModelInstance();
+			Vector3 pos = modelInstance.transform.getTranslation(auxVector3);
+			getNode(pos).setEntity(entity);
+		});
 		for (int x = 0; x < MAP_SIZE; x++) {
 			int idx = x * MAP_SIZE;
 			for (int y = 0; y < MAP_SIZE; y++) {

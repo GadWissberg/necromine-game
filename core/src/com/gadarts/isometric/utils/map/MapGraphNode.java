@@ -1,9 +1,11 @@
 package com.gadarts.isometric.utils.map;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class MapGraphNode {
@@ -12,6 +14,9 @@ public class MapGraphNode {
 	private int x;
 	private int y;
 	private int type;
+
+	@Setter
+	private Entity entity;
 
 	public MapGraphNode(final int x, final int y, final int type, final int connections) {
 		this.x = x;

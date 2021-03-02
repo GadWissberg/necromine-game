@@ -103,6 +103,7 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 		generateCharactersAnimations();
 		generateModelsBoundingBoxes();
 		applyAlphaOnModels();
+		assetManager.applyRepeatWrapOnAllTextures();
 	}
 
 	private void generateModelsBoundingBoxes() {

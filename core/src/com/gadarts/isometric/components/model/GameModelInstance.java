@@ -9,6 +9,14 @@ import lombok.Getter;
 public class GameModelInstance extends ModelInstance {
 	private final AdditionalRenderData additionalRenderData;
 
+	public GameModelInstance(final ModelInstance modelInstance,
+							 final BoundingBox boundingBox,
+							 final boolean affectedByLight) {
+		super(modelInstance);
+		this.additionalRenderData = new AdditionalRenderData(affectedByLight, boundingBox);
+		userData = additionalRenderData;
+	}
+
 	public GameModelInstance(final Model model, final BoundingBox boundingBox) {
 		this(model, boundingBox, true);
 	}
@@ -18,5 +26,4 @@ public class GameModelInstance extends ModelInstance {
 		this.additionalRenderData = new AdditionalRenderData(affectedByLight, boundingBox);
 		userData = additionalRenderData;
 	}
-
 }

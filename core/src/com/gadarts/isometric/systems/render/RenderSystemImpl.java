@@ -101,7 +101,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		if (!DefaultGameSettings.DISABLE_SHADOWS) {
 			renderModelsShadows(camera, lastRotationPoint);
 		}
-		resetDisplay(Color.BLACK);
+		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
 		renderModels(camera, renderBatches.getModelBatch(), true, true);
 		renderDecals(deltaTime, camera);
 	}
