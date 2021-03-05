@@ -29,6 +29,7 @@ import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.assets.Assets;
+import com.gadarts.necromine.model.characters.CharacterTypes;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
@@ -73,7 +74,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private boolean isPathHasUnrevealedNodes(final MapGraphPath plannedPath) {
 		boolean result = false;
 		for (MapGraphNode node : plannedPath.nodes) {
-			if (services.getMap().getFowMap()[node.getY()][node.getX()] == 0) {
+			if (services.getMap().getFowMap()[node.getRow()][node.getCol()] == 0) {
 				result = true;
 				break;
 			}
@@ -371,9 +372,16 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		translateCharacter(entity, characterDecalComponent);
 		MapGraphNode newNode = services.getMap().getNode(characterDecalComponent.getNodePosition(auxVector2_3));
 		if (oldNode != newNode) {
-			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-				subscriber.onCharacterNodeChanged(entity, oldNode, newNode);
-			}
+			enteredNewNode(entity, oldNode, newNode);
+		}
+	}
+
+	private void enteredNewNode(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
+		Decal decal = ComponentsMapper.characterDecal.get(entity).getDecal();
+		Vector3 position = decal.getPosition();
+		decal.setPosition(position.x, newNode.getHeight() + CharacterTypes.BILLBOARD_Y, position.z);
+		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onCharacterNodeChanged(entity, oldNode, newNode);
 		}
 	}
 

@@ -58,7 +58,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
-	private static final Vector2 auxVector2_3 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final Quaternion auxQuat = new Quaternion();
@@ -224,7 +223,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		if (drawFlags.isDrawEnemy() || !ComponentsMapper.enemy.has(entity)) {
 			MapGraph map = services.getMap();
 			MapGraphNode characterNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_1));
-			if (!drawFlags.isDrawFow() || map.getFowMap()[characterNode.getY()][characterNode.getX()] == 1) {
+			if (!drawFlags.isDrawFow() || map.getFowMap()[characterNode.getRow()][characterNode.getCol()] == 1) {
 				environment.getLightsRenderer().setDecalColorAccordingToLights(entity);
 				decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
 				decalBatch.add(decal);

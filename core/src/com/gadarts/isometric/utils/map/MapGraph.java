@@ -33,6 +33,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private static final Vector2 auxVector2 = new Vector2();
 	private static final List<MapGraphNode> auxNodesList_1 = new ArrayList<>();
 	private static final List<MapGraphNode> auxNodesList_2 = new ArrayList<>();
+	private static final float PASSABLE_MAX_HEIGHT_DIFF = 0.3f;
 
 	private final Array<MapGraphNode> nodes;
 	private final ImmutableArray<Entity> characterEntities;
@@ -88,6 +89,9 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 			Vector3 pos = modelInstance.transform.getTranslation(auxVector3);
 			getNode(pos).setEntity(entity);
 		});
+	}
+
+	void applyConnections() {
 		for (int x = 0; x < MAP_SIZE; x++) {
 			int idx = x * MAP_SIZE;
 			for (int y = 0; y < MAP_SIZE; y++) {
@@ -111,7 +115,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		List<MapGraphNode> nodesAround = getNodesAround(node, auxNodesList_1);
 		List<MapGraphNode> availableNodes = auxNodesList_2;
 		for (MapGraphNode nearbyNode : nodesAround) {
-			boolean isRevealed = fowMap[nearbyNode.getY()][nearbyNode.getX()] != 0;
+			boolean isRevealed = fowMap[nearbyNode.getRow()][nearbyNode.getCol()] != 0;
 			if (nearbyNode.getType() == 0 && getAliveEnemyFromNode(enemiesEntities, nearbyNode) == null && isRevealed) {
 				availableNodes.add(nearbyNode);
 			}
@@ -141,10 +145,46 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		return nodes.get(Math.min(col, MAP_SIZE - 1) * MAP_SIZE + Math.min(row, MAP_SIZE - 1));
 	}
 
-	private void addConnection(final MapGraphNode n, final int xOffset, final int yOffset) {
-		MapGraphNode target = getNode(n.getX() + xOffset, n.getY() + yOffset);
-		if (target.getType() == 0) {
-			n.getConnections().add(new MapGraphConnection<>(n, target));
+	private void addConnection(final MapGraphNode source, final int xOffset, final int yOffset) {
+		MapGraphNode target = getNode(source.getCol() + xOffset, source.getRow() + yOffset);
+		float heightDiff = Math.abs(source.getHeight() - target.getHeight());
+		int ordinal = MapNodesTypes.PASSABLE_NODE.ordinal();
+		if (target.getType() == ordinal && heightDiff <= PASSABLE_MAX_HEIGHT_DIFF && isDiagonalPossible(source, target)) {
+			source.getConnections().add(new MapGraphConnection<>(source, target));
+		}
+	}
+
+	private boolean isDiagonalPossible(final MapGraphNode source, final MapGraphNode target) {
+		if (source.getCol() != target.getCol() && source.getRow() != target.getRow()) {
+			if (source.getCol() < target.getCol()) {
+				if (isDiagonalBlockedWithEastOrWest(source, source.getCol() + 1)) {
+					return false;
+				}
+			} else {
+				if (isDiagonalBlockedWithEastOrWest(source, source.getCol() - 1)) {
+					return false;
+				}
+			}
+			return !isDiagonalBlockedWithNorthAndSouth(target, source.getCol(), source.getRow(), source.getHeight());
+		}
+		return true;
+	}
+
+	private boolean isDiagonalBlockedWithEastOrWest(final MapGraphNode source, final int col) {
+		float east = getNode(col, source.getRow()).getHeight();
+		return Math.abs(source.getHeight() - east) > PASSABLE_MAX_HEIGHT_DIFF;
+	}
+
+	private boolean isDiagonalBlockedWithNorthAndSouth(final MapGraphNode target,
+													   final int srcX,
+													   final int srcY,
+													   final float srcHeight) {
+		if (srcY < target.getRow()) {
+			float bottom = getNode(srcX, srcY + 1).getHeight();
+			return Math.abs(srcHeight - bottom) > PASSABLE_MAX_HEIGHT_DIFF;
+		} else {
+			float top = getNode(srcX, srcY - 1).getHeight();
+			return Math.abs(srcHeight - top) > PASSABLE_MAX_HEIGHT_DIFF;
 		}
 	}
 
@@ -176,10 +216,10 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		MapGraphNode fromNode = con.getFromNode();
 		MapGraphNode toNode = con.getToNode();
 		boolean result = fromNode.getType() == 0 && toNode.getType() == 0;
-		result &= Math.abs(fromNode.getX() - toNode.getX()) < 2 && Math.abs(fromNode.getY() - toNode.getY()) < 2;
-		if ((fromNode.getX() != toNode.getX()) && (fromNode.getY() != toNode.getY())) {
-			result &= getNode(fromNode.getX(), toNode.getY()).getType() != MapGraphNode.BLOCK_DIAGONAL;
-			result &= getNode(toNode.getX(), fromNode.getY()).getType() != MapGraphNode.BLOCK_DIAGONAL;
+		result &= Math.abs(fromNode.getCol() - toNode.getCol()) < 2 && Math.abs(fromNode.getRow() - toNode.getRow()) < 2;
+		if ((fromNode.getCol() != toNode.getCol()) && (fromNode.getRow() != toNode.getRow())) {
+			result &= getNode(fromNode.getCol(), toNode.getRow()).getType() != MapGraphNode.BLOCK_DIAGONAL;
+			result &= getNode(toNode.getCol(), fromNode.getRow()).getType() != MapGraphNode.BLOCK_DIAGONAL;
 		}
 		return result;
 	}
@@ -201,18 +241,18 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		output.clear();
 		getThreeBehind(node, output);
 		getThreeInFront(node, output);
-		if (node.getX() > 0) {
-			output.add(getNode(node.getX() - 1, node.getY()));
+		if (node.getCol() > 0) {
+			output.add(getNode(node.getCol() - 1, node.getRow()));
 		}
-		if (node.getX() < MAP_SIZE - 1) {
-			output.add(getNode(node.getX() + 1, node.getY()));
+		if (node.getCol() < MAP_SIZE - 1) {
+			output.add(getNode(node.getCol() + 1, node.getRow()));
 		}
 		return output;
 	}
 
 	private void getThreeBehind(final MapGraphNode node, final List<MapGraphNode> output) {
-		int x = node.getX();
-		int y = node.getY();
+		int x = node.getCol();
+		int y = node.getRow();
 		if (y > 0) {
 			if (x > 0) {
 				output.add(getNode(x - 1, y - 1));
@@ -225,8 +265,8 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	private void getThreeInFront(final MapGraphNode node, final List<MapGraphNode> output) {
-		int x = node.getX();
-		int y = node.getY();
+		int x = node.getCol();
+		int y = node.getRow();
 		if (y < MAP_SIZE - 1) {
 			if (x > 0) {
 				output.add(getNode(x - 1, y + 1));

@@ -8,6 +8,6 @@ public class GameHeuristic implements Heuristic<MapGraphNode> {
 
 	@Override
 	public float estimate(final MapGraphNode node, final MapGraphNode endNode) {
-		return auxVector.set(node.getX(), node.getY()).dst2(endNode.getX(), endNode.getY());
+		return auxVector.set(node.getCol(), node.getRow()).dst2(endNode.getCol(), endNode.getRow());
 	}
 }

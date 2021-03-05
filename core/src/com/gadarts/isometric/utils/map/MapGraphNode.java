@@ -11,16 +11,19 @@ import lombok.Setter;
 public class MapGraphNode {
 	public static final int BLOCK_DIAGONAL = 2;
 	private final Array<Connection<MapGraphNode>> connections;
-	private int x;
-	private int y;
+	private int col;
+	private int row;
 	private int type;
+
+	@Setter
+	private float height;
 
 	@Setter
 	private Entity entity;
 
-	public MapGraphNode(final int x, final int y, final int type, final int connections) {
-		this.x = x;
-		this.y = y;
+	public MapGraphNode(final int col, final int row, final int type, final int connections) {
+		this.col = col;
+		this.row = row;
 		this.type = type;
 		this.connections = new Array<>(connections);
 	}
@@ -28,13 +31,13 @@ public class MapGraphNode {
 	@Override
 	public String toString() {
 		return "MapGraphNode{" +
-				"x=" + x +
-				", y=" + y +
+				"x=" + col +
+				", y=" + row +
 				'}';
 	}
 
 	public Vector2 getCenterPosition(final Vector2 output) {
-		return output.set(x + 0.5f, y + 0.5f);
+		return output.set(col + 0.5f, row + 0.5f);
 	}
 
 	@Override
@@ -44,28 +47,28 @@ public class MapGraphNode {
 
 		MapGraphNode that = (MapGraphNode) o;
 
-		if (x != that.x) return false;
-		if (y != that.y) return false;
+		if (col != that.col) return false;
+		if (row != that.row) return false;
 		if (type != that.type) return false;
 		return connections.equals(that.connections);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = x;
-		result = 31 * result + y;
+		int result = col;
+		result = 31 * result + row;
 		result = 31 * result + type;
 		result = 31 * result + connections.hashCode();
 		return result;
 	}
 
 	public int getIndex() {
-		return x * MapGraph.MAP_SIZE + y;
+		return col * MapGraph.MAP_SIZE + row;
 	}
 
 	public MapGraphNode set(final MapGraphNode newValue) {
-		this.x = newValue.x;
-		this.y = newValue.y;
+		this.col = newValue.col;
+		this.row = newValue.row;
 		this.type = newValue.type;
 		this.connections.clear();
 		connections.addAll(newValue.connections);

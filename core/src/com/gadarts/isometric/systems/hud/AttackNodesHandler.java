@@ -50,7 +50,7 @@ public class AttackNodesHandler implements Disposable {
 			modelInstanceComp.setVisible(true);
 			MapGraphNode availableNode = availableNodes.get(i);
 			ModelInstance modelInstance = modelInstanceComp.getModelInstance();
-			modelInstance.transform.setTranslation(availableNode.getX(), 0, availableNode.getY());
+			modelInstance.transform.setTranslation(availableNode.getCol(), 0, availableNode.getRow());
 		}
 	}
 

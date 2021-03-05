@@ -50,9 +50,11 @@ import com.gadarts.necromine.model.characters.SpriteType;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
@@ -84,11 +86,13 @@ public final class MapBuilder implements Disposable {
 	private final ModelBuilder modelBuilder;
 	private final Model floorModel;
 	private final Gson gson = new Gson();
+	private WallCreator wallCreator;
 
 	public MapBuilder(final GameAssetsManager assetManager, final PooledEngine engine) {
 		this.assetManager = assetManager;
 		this.engine = engine;
 		this.modelBuilder = new ModelBuilder();
+		this.wallCreator = new WallCreator(assetManager);
 		floorModel = createFloorModel();
 	}
 
@@ -189,7 +193,7 @@ public final class MapBuilder implements Disposable {
 			int row = lightJsonObject.get(ROW).getAsInt();
 			int col = lightJsonObject.get(COL).getAsInt();
 			EntityBuilder.beginBuildingEntity(engine)
-					.addLightComponent(auxVector3_1.set(col + 0.5f, 2f, row + 0.5f), 1f, 3f)
+					.addLightComponent(auxVector3_1.set(col + 0.5f, 2f, row + 0.5f), 1f, 4f)
 					.finishAndAddToEngine();
 		});
 	}
@@ -307,23 +311,27 @@ public final class MapBuilder implements Disposable {
 	}
 
 	private void inflateHeights(final JsonObject mapJsonObject, final MapGraph mapGraph) {
-		JsonArray heights = mapJsonObject.get(TILES).getAsJsonObject().get(HEIGHTS).getAsJsonArray();
-		WallCreator wallCreator = new WallCreator(assetManager);
-		heights.forEach(jsonElement -> {
-			JsonObject tileJsonObject = jsonElement.getAsJsonObject();
-			int row = tileJsonObject.get(ROW).getAsInt();
-			int col = tileJsonObject.get(COL).getAsInt();
-			float height = tileJsonObject.get(HEIGHT).getAsFloat();
-			MapGraphNode node = mapGraph.getNode(col, row);
-			Entity entity = node.getEntity();
-			ComponentsMapper.modelInstance.get(entity).getModelInstance().transform.translate(0, height, 0);
-			inflateWalls(wallCreator, tileJsonObject, node, height, mapGraph);
+		JsonElement heightsElement = mapJsonObject.get(TILES).getAsJsonObject().get(HEIGHTS);
+		Optional.ofNullable(heightsElement).ifPresent(element -> {
+			JsonArray heights = element.getAsJsonArray();
+			heights.forEach(jsonElement -> {
+				JsonObject tileJsonObject = jsonElement.getAsJsonObject();
+				int row = tileJsonObject.get(ROW).getAsInt();
+				int col = tileJsonObject.get(COL).getAsInt();
+				float height = tileJsonObject.get(HEIGHT).getAsFloat();
+				MapGraphNode node = mapGraph.getNode(col, row);
+				node.setHeight(height);
+				ComponentsMapper.modelInstance.get(node.getEntity()).getModelInstance().transform.translate(0, height, 0);
+				inflateWalls(tileJsonObject, node, height, mapGraph);
+			});
 		});
+		mapGraph.applyConnections();
 	}
 
-	private void inflateWalls(final WallCreator wallCreator,
-							  final JsonObject tileJsonObject,
-							  final MapGraphNode node, float height, MapGraph mapGraph) {
+	private void inflateWalls(final JsonObject tileJsonObject,
+							  final MapGraphNode node,
+							  final float height,
+							  final MapGraph mapGraph) {
 		inflateEastWall(wallCreator, tileJsonObject, node, height, mapGraph);
 		inflateSouthWall(wallCreator, tileJsonObject, node, height, mapGraph);
 		inflateWestWall(wallCreator, tileJsonObject, node, height, mapGraph);
@@ -333,9 +341,9 @@ public final class MapBuilder implements Disposable {
 	private void inflateEastWall(final WallCreator wallCreator,
 								 final JsonObject tileJsonObject,
 								 final MapGraphNode node,
-								 final float height, MapGraph mapGraph) {
-		int row = node.getY();
-		int col = node.getX();
+								 final float height, final MapGraph mapGraph) {
+		int row = node.getRow();
+		int col = node.getCol();
 		String east = Utils.getStringFromJsonOrDefault(tileJsonObject, EAST, FloorsTextures.FLOOR_0.getName());
 		FloorsTextures definition = FloorsTextures.valueOf(east);
 		MapNodeData n = new MapNodeData(row, col, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
@@ -349,10 +357,10 @@ public final class MapBuilder implements Disposable {
 
 	private void inflateSouthWall(final WallCreator wallCreator,
 								  final JsonObject tileJsonObject,
-								  final MapGraphNode node, float height, MapGraph mapGraph) {
+								  final MapGraphNode node, final float height, final MapGraph mapGraph) {
 		String south = Utils.getStringFromJsonOrDefault(tileJsonObject, MapJsonKeys.SOUTH, FloorsTextures.FLOOR_0.getName());
 		FloorsTextures definition = FloorsTextures.valueOf(south);
-		MapNodeData n = new MapNodeData(node.getY(), node.getX(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+		MapNodeData n = new MapNodeData(node.getRow(), node.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 		n.setSouthWall(WallCreator.createSouthWall(n, wallCreator.getWallModel(), assetManager, definition));
 		MapNodeData southNode = new MapNodeData(n.getRow() + 1, n.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 		n.lift(height);
@@ -363,10 +371,10 @@ public final class MapBuilder implements Disposable {
 
 	private void inflateWestWall(final WallCreator wallCreator,
 								 final JsonObject tileJsonObject,
-								 final MapGraphNode node, float height, MapGraph mapGraph) {
+								 final MapGraphNode node, final float height, final MapGraph mapGraph) {
 		String west = Utils.getStringFromJsonOrDefault(tileJsonObject, WEST, FloorsTextures.FLOOR_0.getName());
 		FloorsTextures definition = FloorsTextures.valueOf(west);
-		MapNodeData n = new MapNodeData(node.getY(), node.getX(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+		MapNodeData n = new MapNodeData(node.getRow(), node.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 		n.setWestWall(WallCreator.createWestWall(n, wallCreator.getWallModel(), assetManager, definition));
 		MapNodeData westNode = new MapNodeData(n.getRow(), n.getCol() - 1, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 		n.lift(height);
@@ -377,10 +385,10 @@ public final class MapBuilder implements Disposable {
 
 	private void inflateNorthWall(final WallCreator wallCreator,
 								  final JsonObject tileJsonObject,
-								  final MapGraphNode node, float height, MapGraph mapGraph) {
+								  final MapGraphNode node, final float height, final MapGraph mapGraph) {
 		String north = Utils.getStringFromJsonOrDefault(tileJsonObject, MapJsonKeys.NORTH, FloorsTextures.FLOOR_0.getName());
 		FloorsTextures definition = FloorsTextures.valueOf(north);
-		MapNodeData n = new MapNodeData(node.getY(), node.getX(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+		MapNodeData n = new MapNodeData(node.getRow(), node.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 		n.setNorthWall(WallCreator.createNorthWall(n, wallCreator.getWallModel(), assetManager, definition));
 		MapNodeData northNode = new MapNodeData(n.getRow() - 1, n.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 		n.lift(height);
@@ -460,5 +468,6 @@ public final class MapBuilder implements Disposable {
 	@Override
 	public void dispose() {
 		floorModel.dispose();
+		wallCreator.dispose();
 	}
 }

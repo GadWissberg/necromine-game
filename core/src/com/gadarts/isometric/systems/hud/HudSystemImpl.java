@@ -199,13 +199,13 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		if (!newNode.equals(oldNode)) {
 			toolTipHandler.displayToolTip(null);
 			toolTipHandler.setLastHighlightNodeChange(TimeUtils.millis());
-			cursorModelInstance.transform.setTranslation(newNode.getX() + 0.5f, 0, newNode.getY() + 0.5f);
+			cursorModelInstance.transform.setTranslation(newNode.getCol() + 0.5f, 0, newNode.getRow() + 0.5f);
 			colorizeCursor(newNode);
 		}
 	}
 
 	private void colorizeCursor(final MapGraphNode newNode) {
-		if (!drawFlags.isDrawFow() || services.getMap().getFowMap()[newNode.getY()][newNode.getX()] == 1) {
+		if (!drawFlags.isDrawFow() || services.getMap().getFowMap()[newNode.getRow()][newNode.getCol()] == 1) {
 			if (services.getMap().getAliveEnemyFromNode(enemiesEntities, newNode) != null) {
 				setCursorColor(CURSOR_ATTACK);
 			} else {
@@ -243,7 +243,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void userSelectedNodeToApplyTurn() {
 		MapGraphNode cursorNode = getCursorNode();
-		if (!drawFlags.isDrawFow() || services.getMap().getFowMap()[cursorNode.getY()][cursorNode.getX()] == 1) {
+		if (!drawFlags.isDrawFow() || services.getMap().getFowMap()[cursorNode.getRow()][cursorNode.getCol()] == 1) {
 			for (HudSystemEventsSubscriber sub : subscribers) {
 				sub.onUserSelectedNodeToApplyTurn(cursorNode, attackNodesHandler);
 			}

@@ -128,18 +128,6 @@ uniform float u_fow_map[16];
 uniform int u_model_x;
 uniform int u_model_y;
 
-float ramp(float value, float max, float high, float low){
-    float ramped = value;
-    if (value >= high && value < max){
-        ramped = high;
-    } else if (value >= low){
-        ramped = low;
-    } else if (value >= 0.0){
-        ramped = 0.0;
-    }
-    return ramped;
-}
-
 void main() {
     #if defined(normalFlag)
     vec3 normal = v_normal;
@@ -188,16 +176,15 @@ void main() {
     gl_FragColor.rgb = vec3(0.0);
     if (u_model_width == 0 || (fragFowValue > 0)){
         if (u_number_of_lights > -1){
-            gl_FragColor.rgb = diffuse.rgb * v_lightDiffuse;
             for (int i = 0; i< u_number_of_lights; i++){
                 vec3 light =u_lights_positions[i];
                 vec3 sub = light.xyz - v_frag_pos.xyz;
                 vec3 lightDir = normalize(sub);
                 float distance = length(sub);
                 vec2 extra = u_lights_extra_data[i];
-                float attenuation = 6.0 * extra.x / (1.0 + (0.1*distance) + (0.44*distance*distance));
+                float attenuation = 4.0 * extra.x / (1.0 + (0.001*distance) + (0.5*distance*distance));
                 float dot_value = dot(v_normal, lightDir);
-                float intensity = max(ramp(dot_value, 1.0, 1.0 - extra.y/10.0, 1.0 - extra.y/10.0-0.2), 0.0);
+                float intensity = max(dot_value, 0.0);
                 gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
             }
             gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;

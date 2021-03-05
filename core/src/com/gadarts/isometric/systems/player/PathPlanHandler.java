@@ -53,7 +53,7 @@ public class PathPlanHandler {
 			if (i < arrowsEntities.size() && i < path.getCount() - 1) {
 				MapGraphNode n = path.get(i);
 				MapGraphNode next = path.get(i + 1);
-				Vector2 dirVector = auxVector2.set(next.getX(), next.getY()).sub(n.getX(), n.getY()).nor().scl(0.5f);
+				Vector2 dirVector = auxVector2.set(next.getCol(), next.getRow()).sub(n.getCol(), n.getRow()).nor().scl(0.5f);
 				transformArrowDecal(n, dirVector, ComponentsMapper.simpleDecal.get(arrowsEntities.get(i)).getDecal());
 				ComponentsMapper.simpleDecal.get(arrowsEntities.get(i)).setVisible(true);
 			}
@@ -64,7 +64,7 @@ public class PathPlanHandler {
 		decal.getRotation().idt();
 		decal.rotateX(90);
 		decal.rotateZ(directionVector.angleDeg());
-		Vector3 pos = auxVector3_1.set(currentNode.getX() + 0.5f, ARROW_HEIGHT, currentNode.getY() + 0.5f);
+		Vector3 pos = auxVector3_1.set(currentNode.getCol() + 0.5f, ARROW_HEIGHT, currentNode.getRow() + 0.5f);
 		decal.setPosition(pos.add(directionVector.x, 0, directionVector.y));
 	}
 
