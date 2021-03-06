@@ -197,11 +197,17 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		MapGraphNode newNode = services.getMap().getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
 		MapGraphNode oldNode = services.getMap().getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
 		if (!newNode.equals(oldNode)) {
-			toolTipHandler.displayToolTip(null);
-			toolTipHandler.setLastHighlightNodeChange(TimeUtils.millis());
-			cursorModelInstance.transform.setTranslation(newNode.getCol() + 0.5f, 0, newNode.getRow() + 0.5f);
-			colorizeCursor(newNode);
+			mouseEnteredNewNode(newNode);
 		}
+	}
+
+	private void mouseEnteredNewNode(final MapGraphNode newNode) {
+		toolTipHandler.displayToolTip(null);
+		toolTipHandler.setLastHighlightNodeChange(TimeUtils.millis());
+		int col = newNode.getCol();
+		int row = newNode.getRow();
+		cursorModelInstance.transform.setTranslation(col + 0.5f, newNode.getHeight(), row + 0.5f);
+		colorizeCursor(newNode);
 	}
 
 	private void colorizeCursor(final MapGraphNode newNode) {

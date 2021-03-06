@@ -65,7 +65,7 @@ public class PathPlanHandler {
 		decal.rotateX(90);
 		decal.rotateZ(directionVector.angleDeg());
 		Vector3 pos = auxVector3_1.set(currentNode.getCol() + 0.5f, ARROW_HEIGHT, currentNode.getRow() + 0.5f);
-		decal.setPosition(pos.add(directionVector.x, 0, directionVector.y));
+		decal.setPosition(pos.add(directionVector.x, currentNode.getHeight(), directionVector.y));
 	}
 
 	public void init(final PooledEngine engine) {

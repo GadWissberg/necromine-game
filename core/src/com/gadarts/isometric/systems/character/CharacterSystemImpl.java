@@ -377,12 +377,21 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void enteredNewNode(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
-		Decal decal = ComponentsMapper.characterDecal.get(entity).getDecal();
-		Vector3 position = decal.getPosition();
-		decal.setPosition(position.x, newNode.getHeight() + CharacterTypes.BILLBOARD_Y, position.z);
+		fixHeightPositionOfDecals(entity, newNode);
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCharacterNodeChanged(entity, oldNode, newNode);
 		}
+	}
+
+	private void fixHeightPositionOfDecals(final Entity entity, final MapGraphNode newNode) {
+		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(entity);
+		Decal decal = characterDecalComponent.getDecal();
+		Vector3 position = decal.getPosition();
+		float newNodeHeight = newNode.getHeight();
+		decal.setPosition(position.x, newNodeHeight + CharacterTypes.BILLBOARD_Y, position.z);
+		Decal shadowDecal = characterDecalComponent.getShadowDecal();
+		Vector3 shadowPos = shadowDecal.getPosition();
+		shadowDecal.setPosition(shadowPos.x, position.y - CharacterDecalComponent.SHADOW_OFFSET_Y, shadowPos.z);
 	}
 
 	private void translateCharacter(final Entity entity, final CharacterDecalComponent characterDecalComponent) {

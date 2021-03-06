@@ -15,11 +15,11 @@ import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_Y;
 
 @Getter
 public class CharacterDecalComponent implements GameComponent {
-	private static final Vector3 auxVector3 = new Vector3();
-	private static final Vector2 auxVector2 = new Vector2();
 	public static final float SHADOW_OPACITY = 0.6f;
 	public static final float SHADOW_OFFSET_Z = 0.4f;
-	private static final float SHADOW_OFFSET_Y = BILLBOARD_Y - 0.1f;
+	public static final float SHADOW_OFFSET_Y = BILLBOARD_Y - 0.1f;
+	private static final Vector3 auxVector3 = new Vector3();
+	private static final Vector2 auxVector2 = new Vector2();
 	private Decal decal;
 	private Decal shadowDecal;
 	private CharacterAnimations animations;
