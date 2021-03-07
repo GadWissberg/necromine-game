@@ -29,7 +29,7 @@ public class WorldEnvironment extends Environment implements Disposable {
 				1f,
 				300
 		);
-		shadowLight.set(0.1f, 0.1f, 0.1f, 0, -1f, -1f);
+		shadowLight.set(0.1f, 0.1f, 0.1f, 0, -1f, -0.5f);
 		add(shadowLight);
 		shadowMap = shadowLight;
 	}
