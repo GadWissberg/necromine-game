@@ -9,7 +9,6 @@ import lombok.Setter;
 
 @Getter
 public class MapGraphNode {
-	public static final int BLOCK_DIAGONAL = 2;
 	private final Array<Connection<MapGraphNode>> connections;
 	private int col;
 	private int row;

@@ -19,10 +19,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.ObstacleComponent;
-import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
-import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterSoundData;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.model.GameModelInstance;
@@ -58,22 +55,9 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
-import static com.gadarts.necromine.assets.MapJsonKeys.CHARACTERS;
-import static com.gadarts.necromine.assets.MapJsonKeys.COL;
-import static com.gadarts.necromine.assets.MapJsonKeys.DEPTH;
-import static com.gadarts.necromine.assets.MapJsonKeys.DIRECTION;
-import static com.gadarts.necromine.assets.MapJsonKeys.EAST;
-import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHT;
-import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHTS;
-import static com.gadarts.necromine.assets.MapJsonKeys.MATRIX;
-import static com.gadarts.necromine.assets.MapJsonKeys.ROW;
-import static com.gadarts.necromine.assets.MapJsonKeys.TILES;
-import static com.gadarts.necromine.assets.MapJsonKeys.TYPE;
-import static com.gadarts.necromine.assets.MapJsonKeys.WEST;
-import static com.gadarts.necromine.assets.MapJsonKeys.WIDTH;
-import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_Y;
-import static com.gadarts.necromine.model.characters.CharacterTypes.ENEMY;
-import static com.gadarts.necromine.model.characters.CharacterTypes.PLAYER;
+import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
+import static com.gadarts.necromine.assets.MapJsonKeys.*;
+import static com.gadarts.necromine.model.characters.CharacterTypes.*;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
 import static com.gadarts.necromine.model.characters.Direction.SOUTH;
 
@@ -81,414 +65,417 @@ import static com.gadarts.necromine.model.characters.Direction.SOUTH;
  * Creates the map.
  */
 public final class MapBuilder implements Disposable {
-    public static final String TEMP_PATH = "core/assets/maps/test_map.json";
-    public static final char EMPTY_TILE = '0';
-    private static final CharacterSoundData auxCharacterSoundData = new CharacterSoundData();
-    private static final Vector2 auxVector2_1 = new Vector2();
-    private static final Vector3 auxVector3_1 = new Vector3();
-    private static final Vector3 auxVector3_2 = new Vector3();
-    private static final Vector3 auxVector3_3 = new Vector3();
-    private static final Vector3 auxVector3_4 = new Vector3();
-    private static final Vector3 auxVector3_5 = new Vector3();
-    private static final String REGION_NAME_BULLET = "bullet";
-    private static final String KEY_LIGHTS = "lights";
-    private static final String KEY_ENVIRONMENT = "environment";
-    private static final String KEY_PICKUPS = "pickups";
-    private static final BoundingBox auxBoundingBox = new BoundingBox();
-    private final GameAssetsManager assetManager;
-    private final PooledEngine engine;
-    private final ModelBuilder modelBuilder;
-    private final Model floorModel;
-    private final Gson gson = new Gson();
-    private WallCreator wallCreator;
+	public static final String TEMP_PATH = "core/assets/maps/test_map.json";
+	public static final char EMPTY_TILE = '0';
+	private static final CharacterSoundData auxCharacterSoundData = new CharacterSoundData();
+	private static final Vector2 auxVector2_1 = new Vector2();
+	private static final Vector3 auxVector3_1 = new Vector3();
+	private static final Vector3 auxVector3_2 = new Vector3();
+	private static final Vector3 auxVector3_3 = new Vector3();
+	private static final Vector3 auxVector3_4 = new Vector3();
+	private static final Vector3 auxVector3_5 = new Vector3();
+	private static final String REGION_NAME_BULLET = "bullet";
+	private static final String KEY_LIGHTS = "lights";
+	private static final String KEY_ENVIRONMENT = "environment";
+	private static final String KEY_PICKUPS = "pickups";
+	private static final BoundingBox auxBoundingBox = new BoundingBox();
+	private final GameAssetsManager assetManager;
+	private final PooledEngine engine;
+	private final ModelBuilder modelBuilder;
+	private final Model floorModel;
+	private final Gson gson = new Gson();
+	private WallCreator wallCreator;
 
-    public MapBuilder(final GameAssetsManager assetManager, final PooledEngine engine) {
-        this.assetManager = assetManager;
-        this.engine = engine;
-        this.modelBuilder = new ModelBuilder();
-        this.wallCreator = new WallCreator(assetManager);
-        floorModel = createFloorModel();
-    }
+	public MapBuilder(final GameAssetsManager assetManager, final PooledEngine engine) {
+		this.assetManager = assetManager;
+		this.engine = engine;
+		this.modelBuilder = new ModelBuilder();
+		this.wallCreator = new WallCreator(assetManager);
+		floorModel = createFloorModel();
+	}
 
-    private void addCharBaseComponents(final EntityBuilder entityBuilder,
-                                       final Atlases atlas,
-                                       final Vector3 position,
-                                       final Entity target,
-                                       final Sounds painSound,
-                                       final Sounds deathSound,
-                                       final Direction direction, final int health) {
-        SpriteType spriteType = SpriteType.IDLE;
-        CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
-        characterSpriteData.init(direction, spriteType, 1);
-        auxCharacterSoundData.set(painSound, deathSound);
-        entityBuilder.addCharacterComponent(characterSpriteData, target, auxCharacterSoundData, health)
-                .addCharacterDecalComponent(assetManager.get(atlas.name()), spriteType, direction, position)
-                .addCollisionComponent()
-                .addAnimationComponent();
-    }
+	private void addCharBaseComponents(final EntityBuilder entityBuilder,
+									   final Atlases atlas,
+									   final Vector3 position,
+									   final Entity target,
+									   final Sounds painSound,
+									   final Sounds deathSound,
+									   final Direction direction, final int health) {
+		SpriteType spriteType = SpriteType.IDLE;
+		CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
+		characterSpriteData.init(direction, spriteType, 1);
+		auxCharacterSoundData.set(painSound, deathSound);
+		entityBuilder.addCharacterComponent(characterSpriteData, target, auxCharacterSoundData, health)
+				.addCharacterDecalComponent(assetManager.get(atlas.name()), spriteType, direction, position)
+				.addCollisionComponent()
+				.addAnimationComponent();
+	}
 
-    private void createAndAdd3dCursor() {
-        Model model = assetManager.getModel(Assets.Models.CURSOR);
-        model.calculateBoundingBox(auxBoundingBox);
-        EntityBuilder.beginBuildingEntity(engine)
-                .addModelInstanceComponent(new GameModelInstance(model, auxBoundingBox, false), true, false)
-                .addCursorComponent()
-                .finishAndAddToEngine();
-    }
+	private void createAndAdd3dCursor() {
+		Model model = assetManager.getModel(Assets.Models.CURSOR);
+		model.calculateBoundingBox(auxBoundingBox);
+		EntityBuilder.beginBuildingEntity(engine)
+				.addModelInstanceComponent(new GameModelInstance(model, auxBoundingBox, false), true, false)
+				.addCursorComponent()
+				.finishAndAddToEngine();
+	}
 
-    private Model createFloorModel() {
-        modelBuilder.begin();
-        MeshPartBuilder meshPartBuilder = modelBuilder.part("floor",
-                GL20.GL_TRIANGLES,
-                Usage.Position | Usage.Normal | Usage.TextureCoordinates,
-                createFloorMaterial());
-        createRect(meshPartBuilder);
-        return modelBuilder.end();
-    }
+	private Model createFloorModel() {
+		modelBuilder.begin();
+		MeshPartBuilder meshPartBuilder = modelBuilder.part("floor",
+				GL20.GL_TRIANGLES,
+				Usage.Position | Usage.Normal | Usage.TextureCoordinates,
+				createFloorMaterial());
+		createRect(meshPartBuilder);
+		return modelBuilder.end();
+	}
 
-    private void createRect(final MeshPartBuilder meshPartBuilder) {
-        meshPartBuilder.setUVRange(0, 0, 1, 1);
-        final float OFFSET = -0.5f;
-        meshPartBuilder.rect(
-                auxVector3_4.set(OFFSET, 0, 1 + OFFSET),
-                auxVector3_1.set(1 + OFFSET, 0, 1 + OFFSET),
-                auxVector3_2.set(1 + OFFSET, 0, OFFSET),
-                auxVector3_3.set(OFFSET, 0, OFFSET),
-                auxVector3_5.set(0, 1, 0));
-    }
+	private void createRect(final MeshPartBuilder meshPartBuilder) {
+		meshPartBuilder.setUVRange(0, 0, 1, 1);
+		final float OFFSET = -0.5f;
+		meshPartBuilder.rect(
+				auxVector3_4.set(OFFSET, 0, 1 + OFFSET),
+				auxVector3_1.set(1 + OFFSET, 0, 1 + OFFSET),
+				auxVector3_2.set(1 + OFFSET, 0, OFFSET),
+				auxVector3_3.set(OFFSET, 0, OFFSET),
+				auxVector3_5.set(0, 1, 0));
+	}
 
-    private Material createFloorMaterial() {
-        Material material = new Material();
-        material.id = "floor_test";
-        return material;
-    }
+	private Material createFloorMaterial() {
+		Material material = new Material();
+		material.id = "floor_test";
+		return material;
+	}
 
-    public MapGraph inflateTestMap() {
-        createAndAdd3dCursor();
-        JsonObject mapJsonObject = gson.fromJson(Gdx.files.internal(TEMP_PATH).reader(), JsonObject.class);
-        inflateAllElements(mapJsonObject);
-        MapGraph mapGraph = new MapGraph(engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
-                engine.getEntitiesFor(Family.all(WallComponent.class).get()),
-                engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()),
-                engine);
-        inflateHeights(mapJsonObject, mapGraph);
-        return mapGraph;
-    }
+	public MapGraph inflateTestMap() {
+		createAndAdd3dCursor();
+		JsonObject mapJsonObject = gson.fromJson(Gdx.files.internal(TEMP_PATH).reader(), JsonObject.class);
+		int[][] graphMatrix = inflateAllElements(mapJsonObject);
+		MapGraph mapGraph = new MapGraph(graphMatrix, engine);
+		inflateHeights(mapJsonObject, mapGraph);
+		return mapGraph;
+	}
 
-    private void inflateAllElements(final JsonObject mapJsonObject) {
-        inflateTiles(mapJsonObject);
-        inflateCharacters(mapJsonObject);
-        inflateLights(mapJsonObject);
-        inflateEnvironment(mapJsonObject);
-        inflatePickups(mapJsonObject);
-    }
+	private int[][] inflateAllElements(final JsonObject mapJsonObject) {
+		int[][] graphMatrix = inflateTiles(mapJsonObject);
+		inflateCharacters(mapJsonObject);
+		inflateLights(mapJsonObject);
+		inflateEnvironment(mapJsonObject);
+		inflatePickups(mapJsonObject);
+		return graphMatrix;
+	}
 
-    private void inflateCharacters(final JsonObject mapJsonObject) {
-        Arrays.stream(CharacterTypes.values()).forEach(type -> {
-            String typeName = type.name().toLowerCase();
-            JsonObject charactersJsonObject = mapJsonObject.getAsJsonObject(CHARACTERS);
-            if (charactersJsonObject.has(typeName)) {
-                JsonArray array = charactersJsonObject.get(typeName).getAsJsonArray();
-                array.forEach(characterJsonElement -> {
-                    if (type == PLAYER) {
-                        inflatePlayer((JsonObject) characterJsonElement);
-                    } else if (type == ENEMY) {
-                        inflateEnemy((JsonObject) characterJsonElement);
-                    }
-                });
-            }
-        });
-    }
+	private void inflateCharacters(final JsonObject mapJsonObject) {
+		Arrays.stream(CharacterTypes.values()).forEach(type -> {
+			String typeName = type.name().toLowerCase();
+			JsonObject charactersJsonObject = mapJsonObject.getAsJsonObject(CHARACTERS);
+			if (charactersJsonObject.has(typeName)) {
+				JsonArray array = charactersJsonObject.get(typeName).getAsJsonArray();
+				array.forEach(characterJsonElement -> {
+					if (type == PLAYER) {
+						inflatePlayer((JsonObject) characterJsonElement);
+					} else if (type == ENEMY) {
+						inflateEnemy((JsonObject) characterJsonElement);
+					}
+				});
+			}
+		});
+	}
 
-    private void inflateLights(final JsonObject mapJsonObject) {
-        JsonArray lights = mapJsonObject.getAsJsonArray(KEY_LIGHTS);
-        lights.forEach(element -> {
-            JsonObject lightJsonObject = element.getAsJsonObject();
-            int row = lightJsonObject.get(ROW).getAsInt();
-            int col = lightJsonObject.get(COL).getAsInt();
-            EntityBuilder.beginBuildingEntity(engine)
-                    .addLightComponent(auxVector3_1.set(col + 0.5f, 2f, row + 0.5f), 1f, 4f)
-                    .finishAndAddToEngine();
-        });
-    }
+	private void inflateLights(final JsonObject mapJsonObject) {
+		JsonArray lights = mapJsonObject.getAsJsonArray(KEY_LIGHTS);
+		lights.forEach(element -> {
+			JsonObject lightJsonObject = element.getAsJsonObject();
+			int row = lightJsonObject.get(ROW).getAsInt();
+			int col = lightJsonObject.get(COL).getAsInt();
+			EntityBuilder.beginBuildingEntity(engine)
+					.addLightComponent(auxVector3_1.set(col + 0.5f, 2f, row + 0.5f), 1f, 4f)
+					.finishAndAddToEngine();
+		});
+	}
 
-    private void inflateEnvironment(final JsonObject mapJsonObject) {
-        JsonArray envs = mapJsonObject.getAsJsonArray(KEY_ENVIRONMENT);
-        envs.forEach(element -> {
-            JsonObject envJsonObject = element.getAsJsonObject();
-            int dirIndex = envJsonObject.get(DIRECTION).getAsInt();
-            EnvironmentDefinitions type = EnvironmentDefinitions.values()[envJsonObject.get(TYPE).getAsInt()];
-            EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
-            MapCoord coord = new MapCoord(envJsonObject.get(ROW).getAsInt(), envJsonObject.get(COL).getAsInt());
-            inflateEnvSpecifiedComponent(coord, type, builder, Direction.values()[dirIndex]);
-            inflateEnvModelInstanceComponent(coord, dirIndex, type, builder);
-            inflateEnvironmentEntity(builder);
-        });
-    }
+	private void inflateEnvironment(final JsonObject mapJsonObject) {
+		JsonArray envs = mapJsonObject.getAsJsonArray(KEY_ENVIRONMENT);
+		envs.forEach(element -> {
+			JsonObject envJsonObject = element.getAsJsonObject();
+			int dirIndex = envJsonObject.get(DIRECTION).getAsInt();
+			EnvironmentDefinitions type = EnvironmentDefinitions.values()[envJsonObject.get(TYPE).getAsInt()];
+			EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
+			MapCoord coord = new MapCoord(envJsonObject.get(ROW).getAsInt(), envJsonObject.get(COL).getAsInt());
+			inflateEnvSpecifiedComponent(coord, type, builder, Direction.values()[dirIndex]);
+			inflateEnvModelInstanceComponent(coord, dirIndex, type, builder);
+			inflateEnvironmentEntity(builder);
+		});
+	}
 
-    private void inflatePickups(final JsonObject mapJsonObject) {
-        JsonArray pickups = mapJsonObject.getAsJsonArray(KEY_PICKUPS);
-        pickups.forEach(element -> {
-            JsonObject pickJsonObject = element.getAsJsonObject();
-            WeaponsDefinitions type = WeaponsDefinitions.values()[pickJsonObject.get(TYPE).getAsInt()];
-            TextureAtlas.AtlasRegion bulletRegion = null;
-            if (!type.isMelee()) {
-                bulletRegion = assetManager.getAtlas(Atlases.findByRelatedWeapon(type)).findRegion(REGION_NAME_BULLET);
-            }
-            inflatePickupEntity(pickJsonObject, type, bulletRegion);
-        });
-    }
+	private void inflatePickups(final JsonObject mapJsonObject) {
+		JsonArray pickups = mapJsonObject.getAsJsonArray(KEY_PICKUPS);
+		pickups.forEach(element -> {
+			JsonObject pickJsonObject = element.getAsJsonObject();
+			WeaponsDefinitions type = WeaponsDefinitions.values()[pickJsonObject.get(TYPE).getAsInt()];
+			TextureAtlas.AtlasRegion bulletRegion = null;
+			if (!type.isMelee()) {
+				bulletRegion = assetManager.getAtlas(Atlases.findByRelatedWeapon(type)).findRegion(REGION_NAME_BULLET);
+			}
+			inflatePickupEntity(pickJsonObject, type, bulletRegion);
+		});
+	}
 
-    private void inflatePickupEntity(final JsonObject pickJsonObject,
-                                     final WeaponsDefinitions type,
-                                     final TextureAtlas.AtlasRegion bulletRegion) {
-        EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
-        inflatePickupModel(builder, pickJsonObject, type);
-        builder.addPickUpComponentAsWeapon(type, assetManager.getTexture(type.getImage()), bulletRegion)
-                .finishAndAddToEngine();
-    }
+	private void inflatePickupEntity(final JsonObject pickJsonObject,
+									 final WeaponsDefinitions type,
+									 final TextureAtlas.AtlasRegion bulletRegion) {
+		EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
+		inflatePickupModel(builder, pickJsonObject, type);
+		builder.addPickUpComponentAsWeapon(type, assetManager.getTexture(type.getImage()), bulletRegion)
+				.finishAndAddToEngine();
+	}
 
-    private void inflatePickupModel(final EntityBuilder builder,
-                                    final JsonObject pickJsonObject,
-                                    final WeaponsDefinitions type) {
-        MapCoord coord = new MapCoord(pickJsonObject.get(ROW).getAsInt(), pickJsonObject.get(COL).getAsInt());
-        Assets.Models modelDefinition = type.getModelDefinition();
-        String fileName = GameServices.BOUNDING_BOX_PREFIX + modelDefinition.getFilePath();
-        ModelBoundingBox boundingBox = assetManager.get(fileName, ModelBoundingBox.class);
-        GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(modelDefinition), boundingBox);
-        modelInstance.transform.setTranslation(auxVector3_1.set(coord.getCol() + 0.5f, 0, coord.getRow() + 0.5f));
-        builder.addModelInstanceComponent(modelInstance, true);
-    }
+	private void inflatePickupModel(final EntityBuilder builder,
+									final JsonObject pickJsonObject,
+									final WeaponsDefinitions type) {
+		MapCoord coord = new MapCoord(pickJsonObject.get(ROW).getAsInt(), pickJsonObject.get(COL).getAsInt());
+		Assets.Models modelDefinition = type.getModelDefinition();
+		String fileName = GameServices.BOUNDING_BOX_PREFIX + modelDefinition.getFilePath();
+		ModelBoundingBox boundingBox = assetManager.get(fileName, ModelBoundingBox.class);
+		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(modelDefinition), boundingBox);
+		modelInstance.transform.setTranslation(auxVector3_1.set(coord.getCol() + 0.5f, 0, coord.getRow() + 0.5f));
+		builder.addModelInstanceComponent(modelInstance, true);
+	}
 
-    private void inflateEnvModelInstanceComponent(final MapCoord coord,
-                                                  final int directionIndex,
-                                                  final EnvironmentDefinitions type,
-                                                  final EntityBuilder builder) {
-        GameModelInstance mi = inflateEnvironmentModelInstance(coord.getRow(), coord.getCol(), directionIndex, type);
-        builder.addModelInstanceComponent(mi, true, type.isCastShadow());
-    }
+	private void inflateEnvModelInstanceComponent(final MapCoord coord,
+												  final int directionIndex,
+												  final EnvironmentDefinitions type,
+												  final EntityBuilder builder) {
+		GameModelInstance mi = inflateEnvironmentModelInstance(coord.getRow(), coord.getCol(), directionIndex, type);
+		builder.addModelInstanceComponent(mi, true, type.isCastShadow());
+	}
 
-    private void inflateEnvironmentEntity(final EntityBuilder builder) {
-        builder.addCollisionComponent()
-                .finishAndAddToEngine();
-    }
+	private void inflateEnvironmentEntity(final EntityBuilder builder) {
+		builder.addCollisionComponent()
+				.finishAndAddToEngine();
+	}
 
-    private void inflateEnvSpecifiedComponent(final MapCoord coord,
-                                              final EnvironmentDefinitions type,
-                                              final EntityBuilder builder,
-                                              final Direction facingDirection) {
-        int col = coord.getCol();
-        int row = coord.getRow();
-        if (type.isWall()) {
-            int halfWidth = type.getWidth() / 2;
-            int halfDepth = type.getDepth() / 2;
-            if (facingDirection == NORTH || facingDirection == SOUTH) {
-                int swap = halfWidth;
-                halfWidth = halfDepth;
-                halfDepth = swap;
-            }
-            builder.addWallComponent(col - halfWidth, row - halfDepth, col + Math.max(halfWidth, 1) - 1, row + Math.max(halfDepth, 1) - 1);
-        } else {
-            builder.addObstacleComponent(col, row, type);
-        }
-    }
+	private void inflateEnvSpecifiedComponent(final MapCoord coord,
+											  final EnvironmentDefinitions type,
+											  final EntityBuilder builder,
+											  final Direction facingDirection) {
+		int col = coord.getCol();
+		int row = coord.getRow();
+		if (type.isWall()) {
+			int halfWidth = type.getWidth() / 2;
+			int halfDepth = type.getDepth() / 2;
+			if (facingDirection == NORTH || facingDirection == SOUTH) {
+				int swap = halfWidth;
+				halfWidth = halfDepth;
+				halfDepth = swap;
+			}
+			builder.addWallComponent(col - halfWidth, row - halfDepth, col + Math.max(halfWidth, 1) - 1, row + Math.max(halfDepth, 1) - 1);
+		} else {
+			builder.addObstacleComponent(col, row, type);
+		}
+	}
 
-    private GameModelInstance inflateEnvironmentModelInstance(final int row,
-                                                              final int col,
-                                                              final int directionIndex,
-                                                              final EnvironmentDefinitions type) {
-        String fileName = GameServices.BOUNDING_BOX_PREFIX + type.getModelDefinition().getFilePath();
-        ModelBoundingBox box = assetManager.get(fileName, ModelBoundingBox.class);
-        GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()), box);
-        Direction direction = Direction.values()[directionIndex];
-        modelInstance.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
-        modelInstance.transform.rotate(Vector3.Y, -1 * direction.getDirection(auxVector2_1).angleDeg());
-        modelInstance.transform.translate(type.getOffset(auxVector3_1));
-        EnvironmentDefinitions.handleEvenSize(type, modelInstance, direction);
-        modelInstance.getAdditionalRenderData().getBoundingBox().mul(modelInstance.transform);
-        return modelInstance;
-    }
+	private GameModelInstance inflateEnvironmentModelInstance(final int row,
+															  final int col,
+															  final int directionIndex,
+															  final EnvironmentDefinitions type) {
+		String fileName = GameServices.BOUNDING_BOX_PREFIX + type.getModelDefinition().getFilePath();
+		ModelBoundingBox box = assetManager.get(fileName, ModelBoundingBox.class);
+		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()), box);
+		Direction direction = Direction.values()[directionIndex];
+		modelInstance.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
+		modelInstance.transform.rotate(Vector3.Y, -1 * direction.getDirection(auxVector2_1).angleDeg());
+		modelInstance.transform.translate(type.getOffset(auxVector3_1));
+		EnvironmentDefinitions.handleEvenSize(type, modelInstance, direction);
+		modelInstance.getAdditionalRenderData().getBoundingBox().mul(modelInstance.transform);
+		return modelInstance;
+	}
 
-    private void inflateTiles(final JsonObject mapJsonObject) {
-        JsonObject tilesJsonObject = mapJsonObject.get(TILES).getAsJsonObject();
-        int width = tilesJsonObject.get(WIDTH).getAsInt();
-        int depth = tilesJsonObject.get(DEPTH).getAsInt();
-        String matrix = tilesJsonObject.get(MATRIX).getAsString();
-        floorModel.calculateBoundingBox(auxBoundingBox);
-        IntStream.range(0, depth).forEach(row ->
-                IntStream.range(0, width).forEach(col -> {
-                    char currentChar = matrix.charAt(row * width + col % width);
-                    if (currentChar != EMPTY_TILE) {
-                        inflateTile(row, col, currentChar);
-                    }
-                }));
-    }
+	private int[][] inflateTiles(final JsonObject mapJsonObject) {
+		JsonObject tilesJsonObject = mapJsonObject.get(TILES).getAsJsonObject();
+		int width = tilesJsonObject.get(WIDTH).getAsInt();
+		int depth = tilesJsonObject.get(DEPTH).getAsInt();
+		String matrix = tilesJsonObject.get(MATRIX).getAsString();
+		floorModel.calculateBoundingBox(auxBoundingBox);
+		int[][] graphMatrix = new int[MAP_SIZE][MAP_SIZE];
+		IntStream.range(0, depth).forEach(row ->
+				IntStream.range(0, width).forEach(col -> {
+					char currentChar = matrix.charAt(row * width + col % width);
+					int tileValue = currentChar - '1';
+					if (currentChar != EMPTY_TILE) {
+						inflateTile(row, col, tileValue);
+					}
+					int forbidden = MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN.ordinal();
+					graphMatrix[row][col] = tileValue == forbidden ? forbidden : MapNodesTypes.PASSABLE_NODE.ordinal();
+				}));
+		return graphMatrix;
+	}
 
-    private void inflateHeights(final JsonObject mapJsonObject, final MapGraph mapGraph) {
-        JsonElement heightsElement = mapJsonObject.get(TILES).getAsJsonObject().get(HEIGHTS);
-        Optional.ofNullable(heightsElement).ifPresent(element -> {
-            JsonArray heights = element.getAsJsonArray();
-            heights.forEach(jsonElement -> {
-                JsonObject tileJsonObject = jsonElement.getAsJsonObject();
-                int row = tileJsonObject.get(ROW).getAsInt();
-                int col = tileJsonObject.get(COL).getAsInt();
-                float height = tileJsonObject.get(HEIGHT).getAsFloat();
-                MapGraphNode node = mapGraph.getNode(col, row);
-                node.setHeight(height);
-                ComponentsMapper.modelInstance.get(node.getEntity()).getModelInstance().transform.translate(0, height, 0);
-                inflateWalls(tileJsonObject, node, height, mapGraph);
-            });
-        });
-        mapGraph.applyConnections();
-    }
+	private void inflateHeights(final JsonObject mapJsonObject, final MapGraph mapGraph) {
+		JsonElement heightsElement = mapJsonObject.get(TILES).getAsJsonObject().get(HEIGHTS);
+		Optional.ofNullable(heightsElement).ifPresent(element -> {
+			JsonArray heights = element.getAsJsonArray();
+			heights.forEach(jsonElement -> {
+				JsonObject tileJsonObject = jsonElement.getAsJsonObject();
+				int row = tileJsonObject.get(ROW).getAsInt();
+				int col = tileJsonObject.get(COL).getAsInt();
+				float height = tileJsonObject.get(HEIGHT).getAsFloat();
+				MapGraphNode node = mapGraph.getNode(col, row);
+				node.setHeight(height);
+				ComponentsMapper.modelInstance.get(node.getEntity()).getModelInstance().transform.translate(0, height, 0);
+				inflateWalls(tileJsonObject, node, height, mapGraph);
+			});
+		});
+		mapGraph.applyConnections();
+	}
 
-    private void inflateWalls(final JsonObject tileJsonObject,
-                              final MapGraphNode node,
-                              final float height,
-                              final MapGraph mapGraph) {
-        inflateEastWall(wallCreator, tileJsonObject, node, height, mapGraph);
-        inflateSouthWall(wallCreator, tileJsonObject, node, height, mapGraph);
-        inflateWestWall(wallCreator, tileJsonObject, node, height, mapGraph);
-        inflateNorthWall(wallCreator, tileJsonObject, node, height, mapGraph);
-    }
+	private void inflateWalls(final JsonObject tileJsonObject,
+							  final MapGraphNode node,
+							  final float height,
+							  final MapGraph mapGraph) {
+		inflateEastWall(wallCreator, tileJsonObject, node, height, mapGraph);
+		inflateSouthWall(wallCreator, tileJsonObject, node, height, mapGraph);
+		inflateWestWall(wallCreator, tileJsonObject, node, height, mapGraph);
+		inflateNorthWall(wallCreator, tileJsonObject, node, height, mapGraph);
+	}
 
-    private void inflateEastWall(final WallCreator wallCreator,
-                                 final JsonObject tileJsonObject,
-                                 final MapGraphNode node,
-                                 final float height, final MapGraph mapGraph) {
-        int row = node.getRow();
-        int col = node.getCol();
-        String east = Utils.getStringFromJsonOrDefault(tileJsonObject, EAST, FloorsTextures.FLOOR_0.getName());
-        FloorsTextures definition = FloorsTextures.valueOf(east);
-        MapNodeData n = new MapNodeData(row, col, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
-        n.setEastWall(WallCreator.createEastWall(n, wallCreator.getWallModel(), assetManager, definition));
-        MapNodeData eastNode = new MapNodeData(row, col + 1, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
-        n.lift(height);
-        Entity entity = mapGraph.getNode(eastNode.getCol(), eastNode.getRow()).getEntity();
-        Optional.ofNullable(entity)
-                .ifPresent(e -> eastNode.lift(ComponentsMapper.modelInstance.get(e).getModelInstance().transform.getTranslation(auxVector3_1).y));
-        WallCreator.adjustWallBetweenEastAndWest(eastNode, n);
-        inflateWall(n.getEastWall());
-    }
+	private void inflateEastWall(final WallCreator wallCreator,
+								 final JsonObject tileJsonObject,
+								 final MapGraphNode node,
+								 final float height, final MapGraph mapGraph) {
+		int row = node.getRow();
+		int col = node.getCol();
+		String east = Utils.getStringFromJsonOrDefault(tileJsonObject, EAST, FloorsTextures.FLOOR_0.getName());
+		FloorsTextures definition = FloorsTextures.valueOf(east);
+		MapNodeData n = new MapNodeData(row, col, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+		n.setEastWall(WallCreator.createEastWall(n, wallCreator.getWallModel(), assetManager, definition));
+		MapNodeData eastNode = new MapNodeData(row, col + 1, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+		n.lift(height);
+		Entity entity = mapGraph.getNode(eastNode.getCol(), eastNode.getRow()).getEntity();
+		Optional.ofNullable(entity)
+				.ifPresent(e -> eastNode.lift(ComponentsMapper.modelInstance.get(e).getModelInstance().transform.getTranslation(auxVector3_1).y));
+		WallCreator.adjustWallBetweenEastAndWest(eastNode, n);
+		inflateWall(n.getEastWall());
+	}
 
-    private void inflateSouthWall(final WallCreator wallCreator,
-                                  final JsonObject tileJsonObject,
-                                  final MapGraphNode node, final float height, final MapGraph mapGraph) {
-        String south = Utils.getStringFromJsonOrDefault(tileJsonObject, MapJsonKeys.SOUTH, FloorsTextures.FLOOR_0.getName());
-        FloorsTextures definition = FloorsTextures.valueOf(south);
-        MapNodeData n = new MapNodeData(node.getRow(), node.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
-        n.setSouthWall(WallCreator.createSouthWall(n, wallCreator.getWallModel(), assetManager, definition));
-        MapNodeData southNode = new MapNodeData(n.getRow() + 1, n.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
-        n.lift(height);
-        Entity entity = mapGraph.getNode(southNode.getCol(), southNode.getRow()).getEntity();
-        Optional.ofNullable(entity)
-                .ifPresent(e -> southNode.lift(ComponentsMapper.modelInstance.get(e).getModelInstance().transform.getTranslation(auxVector3_1).y));
-        WallCreator.adjustWallBetweenNorthAndSouth(southNode, n);
-        inflateWall(n.getSouthWall());
-    }
+	private void inflateSouthWall(final WallCreator wallCreator,
+								  final JsonObject tileJsonObject,
+								  final MapGraphNode node, final float height, final MapGraph mapGraph) {
+		String south = Utils.getStringFromJsonOrDefault(tileJsonObject, MapJsonKeys.SOUTH, FloorsTextures.FLOOR_0.getName());
+		FloorsTextures definition = FloorsTextures.valueOf(south);
+		MapNodeData n = new MapNodeData(node.getRow(), node.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+		n.setSouthWall(WallCreator.createSouthWall(n, wallCreator.getWallModel(), assetManager, definition));
+		MapNodeData southNode = new MapNodeData(n.getRow() + 1, n.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+		n.lift(height);
+		Entity entity = mapGraph.getNode(southNode.getCol(), southNode.getRow()).getEntity();
+		Optional.ofNullable(entity)
+				.ifPresent(e -> southNode.lift(ComponentsMapper.modelInstance.get(e).getModelInstance().transform.getTranslation(auxVector3_1).y));
+		WallCreator.adjustWallBetweenNorthAndSouth(southNode, n);
+		inflateWall(n.getSouthWall());
+	}
 
-    private void inflateWestWall(final WallCreator wallCreator,
-                                 final JsonObject tileJsonObject,
-                                 final MapGraphNode node, final float height, final MapGraph mapGraph) {
-        String west = Utils.getStringFromJsonOrDefault(tileJsonObject, WEST, FloorsTextures.FLOOR_0.getName());
-        FloorsTextures definition = FloorsTextures.valueOf(west);
-        MapNodeData nodeData = new MapNodeData(node.getRow(), node.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
-        nodeData.setWestWall(WallCreator.createWestWall(nodeData, wallCreator.getWallModel(), assetManager, definition));
-        MapNodeData westNodeData = new MapNodeData(nodeData.getRow(), nodeData.getCol() - 1, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
-        nodeData.lift(height);
-        Optional.ofNullable(mapGraph.getNode(westNodeData.getCol(), westNodeData.getRow()).getEntity())
-                .ifPresent(entity -> westNodeData.lift(ComponentsMapper.modelInstance.get(entity).getModelInstance().transform.getTranslation(auxVector3_1).y));
-        WallCreator.adjustWallBetweenEastAndWest(nodeData, westNodeData);
-        inflateWall(nodeData.getWestWall());
-    }
+	private void inflateWestWall(final WallCreator wallCreator,
+								 final JsonObject tileJsonObject,
+								 final MapGraphNode node, final float height, final MapGraph mapGraph) {
+		String west = Utils.getStringFromJsonOrDefault(tileJsonObject, WEST, FloorsTextures.FLOOR_0.getName());
+		FloorsTextures definition = FloorsTextures.valueOf(west);
+		MapNodeData nodeData = new MapNodeData(node.getRow(), node.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+		nodeData.setWestWall(WallCreator.createWestWall(nodeData, wallCreator.getWallModel(), assetManager, definition));
+		MapNodeData westNodeData = new MapNodeData(nodeData.getRow(), nodeData.getCol() - 1, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+		nodeData.lift(height);
+		Optional.ofNullable(mapGraph.getNode(westNodeData.getCol(), westNodeData.getRow()).getEntity())
+				.ifPresent(entity -> westNodeData.lift(ComponentsMapper.modelInstance.get(entity).getModelInstance().transform.getTranslation(auxVector3_1).y));
+		WallCreator.adjustWallBetweenEastAndWest(nodeData, westNodeData);
+		inflateWall(nodeData.getWestWall());
+	}
 
-    private void inflateNorthWall(final WallCreator wallCreator,
-                                  final JsonObject tileJsonObject,
-                                  final MapGraphNode node, final float height, final MapGraph mapGraph) {
-        String north = Utils.getStringFromJsonOrDefault(tileJsonObject, MapJsonKeys.NORTH, FloorsTextures.FLOOR_0.getName());
-        FloorsTextures definition = FloorsTextures.valueOf(north);
-        MapNodeData n = new MapNodeData(node.getRow(), node.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
-        n.setNorthWall(WallCreator.createNorthWall(n, wallCreator.getWallModel(), assetManager, definition));
-        MapNodeData northNode = new MapNodeData(n.getRow() - 1, n.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
-        n.lift(height);
-        Entity entity = mapGraph.getNode(northNode.getCol(), northNode.getRow()).getEntity();
-        Optional.ofNullable(entity)
-                .ifPresent(e -> northNode.lift(ComponentsMapper.modelInstance.get(e).getModelInstance().transform.getTranslation(auxVector3_1).y));
-        WallCreator.adjustWallBetweenNorthAndSouth(n, northNode);
-        inflateWall(n.getNorthWall());
-    }
+	private void inflateNorthWall(final WallCreator wallCreator,
+								  final JsonObject tileJsonObject,
+								  final MapGraphNode node, final float height, final MapGraph mapGraph) {
+		String north = Utils.getStringFromJsonOrDefault(tileJsonObject, MapJsonKeys.NORTH, FloorsTextures.FLOOR_0.getName());
+		FloorsTextures definition = FloorsTextures.valueOf(north);
+		MapNodeData n = new MapNodeData(node.getRow(), node.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+		n.setNorthWall(WallCreator.createNorthWall(n, wallCreator.getWallModel(), assetManager, definition));
+		MapNodeData northNode = new MapNodeData(n.getRow() - 1, n.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+		n.lift(height);
+		Entity entity = mapGraph.getNode(northNode.getCol(), northNode.getRow()).getEntity();
+		Optional.ofNullable(entity)
+				.ifPresent(e -> northNode.lift(ComponentsMapper.modelInstance.get(e).getModelInstance().transform.getTranslation(auxVector3_1).y));
+		WallCreator.adjustWallBetweenNorthAndSouth(n, northNode);
+		inflateWall(n.getNorthWall());
+	}
 
-    private void inflateWall(final Wall eastWall) {
-        BoundingBox boundingBox = eastWall.getModelInstance().calculateBoundingBox(new BoundingBox());
-        GameModelInstance modelInstance = new GameModelInstance(eastWall.getModelInstance(), boundingBox, true);
-        EntityBuilder.beginBuildingEntity(engine)
-                .addModelInstanceComponent(modelInstance, true, false)
-                .finishAndAddToEngine();
-    }
+	private void inflateWall(final Wall eastWall) {
+		BoundingBox boundingBox = eastWall.getModelInstance().calculateBoundingBox(new BoundingBox());
+		GameModelInstance modelInstance = new GameModelInstance(eastWall.getModelInstance(), boundingBox, true);
+		EntityBuilder.beginBuildingEntity(engine)
+				.addModelInstanceComponent(modelInstance, true, false)
+				.finishAndAddToEngine();
+	}
 
-    private void inflateTile(final int row, final int col, final char currentChar) {
-        GameModelInstance mi = new GameModelInstance(floorModel, auxBoundingBox);
-        Texture texture = assetManager.getTexture(FloorsTextures.values()[currentChar - '1']);
-        texture.setWrap(Repeat, Repeat);
-        mi.materials.get(0).set(TextureAttribute.createDiffuse(texture));
-        mi.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
-        EntityBuilder.beginBuildingEntity(engine)
-                .addModelInstanceComponent(mi, true)
-                .addFloorComponent()
-                .finishAndAddToEngine();
-    }
+	private void inflateTile(final int row, final int col, final int value) {
+		GameModelInstance mi = new GameModelInstance(floorModel, auxBoundingBox);
+		Texture texture = assetManager.getTexture(FloorsTextures.values()[value]);
+		texture.setWrap(Repeat, Repeat);
+		mi.materials.get(0).set(TextureAttribute.createDiffuse(texture));
+		mi.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
+		EntityBuilder.beginBuildingEntity(engine)
+				.addModelInstanceComponent(mi, true)
+				.addFloorComponent()
+				.finishAndAddToEngine();
+	}
 
-    private void inflateEnemy(final JsonObject characterJsonObject) {
-        int index = characterJsonObject.get(TYPE).getAsInt();
-        Enemies type = Enemies.values()[index];
-        EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(type);
-        Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        Vector3 position = inflateCharacterPosition(characterJsonObject);
-        addCharBaseComponents(
-                entityBuilder,
-                type.getAtlasDefinition(),
-                position,
-                player,
-                Sounds.ENEMY_PAIN,
-                Sounds.ENEMY_DEATH,
-                Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
-                2);
-        entityBuilder.finishAndAddToEngine();
-    }
+	private void inflateEnemy(final JsonObject characterJsonObject) {
+		int index = characterJsonObject.get(TYPE).getAsInt();
+		Enemies type = Enemies.values()[index];
+		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(type);
+		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+		Vector3 position = inflateCharacterPosition(characterJsonObject);
+		addCharBaseComponents(
+				entityBuilder,
+				type.getAtlasDefinition(),
+				position,
+				player,
+				Sounds.ENEMY_PAIN,
+				Sounds.ENEMY_DEATH,
+				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
+				2);
+		entityBuilder.finishAndAddToEngine();
+	}
 
-    private void inflatePlayer(final JsonObject characterJsonObject) {
-        Weapon weapon = initializeStartingWeapon();
-        CharacterAnimations general = assetManager.get(Atlases.PLAYER_GENERIC.name());
-        EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
-        addCharBaseComponents(
-                builder,
-                Atlases.PLAYER_AXE_PICK,
-                inflateCharacterPosition(characterJsonObject),
-                null,
-                Sounds.PLAYER_PAIN,
-                Sounds.PLAYER_DEATH,
-                Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
-                16);
-        builder.finishAndAddToEngine();
-    }
+	private void inflatePlayer(final JsonObject characterJsonObject) {
+		Weapon weapon = initializeStartingWeapon();
+		CharacterAnimations general = assetManager.get(Atlases.PLAYER_GENERIC.name());
+		EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
+		addCharBaseComponents(
+				builder,
+				Atlases.PLAYER_AXE_PICK,
+				inflateCharacterPosition(characterJsonObject),
+				null,
+				Sounds.PLAYER_PAIN,
+				Sounds.PLAYER_DEATH,
+				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
+				16);
+		builder.finishAndAddToEngine();
+	}
 
-    private Vector3 inflateCharacterPosition(final com.google.gson.JsonElement characterJsonElement) {
-        JsonObject asJsonObject = characterJsonElement.getAsJsonObject();
-        int col = asJsonObject.get(COL).getAsInt();
-        int row = asJsonObject.get(ROW).getAsInt();
-        return auxVector3_1.set(col + 0.5f, BILLBOARD_Y, row + 0.5f);
-    }
+	private Vector3 inflateCharacterPosition(final com.google.gson.JsonElement characterJsonElement) {
+		JsonObject asJsonObject = characterJsonElement.getAsJsonObject();
+		int col = asJsonObject.get(COL).getAsInt();
+		int row = asJsonObject.get(ROW).getAsInt();
+		return auxVector3_1.set(col + 0.5f, BILLBOARD_Y, row + 0.5f);
+	}
 
-    private Weapon initializeStartingWeapon() {
-        Weapon weapon = Pools.obtain(Weapon.class);
-        Texture image = assetManager.getTexture(WeaponsDefinitions.AXE_PICK.getImage());
-        weapon.init(WeaponsDefinitions.AXE_PICK, 0, 0, image);
-        return weapon;
-    }
+	private Weapon initializeStartingWeapon() {
+		Weapon weapon = Pools.obtain(Weapon.class);
+		Texture image = assetManager.getTexture(WeaponsDefinitions.AXE_PICK.getImage());
+		weapon.init(WeaponsDefinitions.AXE_PICK, 0, 0, image);
+		return weapon;
+	}
 
-    @Override
-    public void dispose() {
-        floorModel.dispose();
-        wallCreator.dispose();
-    }
+	@Override
+	public void dispose() {
+		floorModel.dispose();
+		wallCreator.dispose();
+	}
 }
