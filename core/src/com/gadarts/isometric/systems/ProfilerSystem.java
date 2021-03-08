@@ -44,7 +44,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	private static final String LABEL_GL_VERTEX_COUNT = "Vertex count: ";
 	private static final String VISIBLE_OBJECTS_STRING = "Visible objects: ";
 	private static final String LABEL_VERSION = "Version: ";
-	private static final int VERTEX_COUNT_WARNING_LIMIT = 30000;
+	private static final int VERTEX_COUNT_WARNING_LIMIT = 35000;
 	private static final String SUFFIX_MB = "MB";
 	private GLProfiler glProfiler;
 	private StringBuilder stringBuilder;
