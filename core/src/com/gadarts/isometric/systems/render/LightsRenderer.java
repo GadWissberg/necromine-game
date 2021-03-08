@@ -123,7 +123,7 @@ public class LightsRenderer {
 		Vector3 lightPosition = lightComponent.getPosition(auxVector3_1);
 		Vector3 modelPosition = modelInstance.transform.getTranslation(auxVector3_2);
 		float distance = lightPosition.dst(modelPosition);
-		if (distance <= LightComponent.LIGHT_RADIUS) {
+		if (distance <= LightComponent.LIGHT_MAX_RADIUS) {
 			nearbyLights.add(light);
 		}
 	}
