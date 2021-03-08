@@ -196,7 +196,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		if (menuTable.isVisible()) return;
 		MapGraphNode newNode = services.getMap().getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
 		MapGraphNode oldNode = services.getMap().getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
-		if (newNode != null && !newNode.equals(oldNode)) {
+		if (!newNode.equals(oldNode)) {
 			mouseEnteredNewNode(newNode);
 		}
 	}

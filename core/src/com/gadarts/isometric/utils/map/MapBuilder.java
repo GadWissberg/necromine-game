@@ -19,7 +19,10 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.ObstacleComponent;
+import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
+import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterSoundData;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.model.GameModelInstance;
@@ -55,7 +58,6 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
-import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
 import static com.gadarts.necromine.assets.MapJsonKeys.*;
 import static com.gadarts.necromine.model.characters.CharacterTypes.*;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
@@ -150,19 +152,21 @@ public final class MapBuilder implements Disposable {
 	public MapGraph inflateTestMap() {
 		createAndAdd3dCursor();
 		JsonObject mapJsonObject = gson.fromJson(Gdx.files.internal(TEMP_PATH).reader(), JsonObject.class);
-		int[][] graphMatrix = inflateAllElements(mapJsonObject);
-		MapGraph mapGraph = new MapGraph(graphMatrix, engine);
+		inflateAllElements(mapJsonObject);
+		MapGraph mapGraph = new MapGraph(engine.getEntitiesFor(Family.all(CharacterComponent.class).get()),
+				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
+				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()),
+				engine);
 		inflateHeights(mapJsonObject, mapGraph);
 		return mapGraph;
 	}
 
-	private int[][] inflateAllElements(final JsonObject mapJsonObject) {
-		int[][] graphMatrix = inflateTiles(mapJsonObject);
+	private void inflateAllElements(final JsonObject mapJsonObject) {
+		inflateTiles(mapJsonObject);
 		inflateCharacters(mapJsonObject);
 		inflateLights(mapJsonObject);
 		inflateEnvironment(mapJsonObject);
 		inflatePickups(mapJsonObject);
-		return graphMatrix;
 	}
 
 	private void inflateCharacters(final JsonObject mapJsonObject) {
@@ -291,24 +295,19 @@ public final class MapBuilder implements Disposable {
 		return modelInstance;
 	}
 
-	private int[][] inflateTiles(final JsonObject mapJsonObject) {
+	private void inflateTiles(final JsonObject mapJsonObject) {
 		JsonObject tilesJsonObject = mapJsonObject.get(TILES).getAsJsonObject();
 		int width = tilesJsonObject.get(WIDTH).getAsInt();
 		int depth = tilesJsonObject.get(DEPTH).getAsInt();
 		String matrix = tilesJsonObject.get(MATRIX).getAsString();
 		floorModel.calculateBoundingBox(auxBoundingBox);
-		int[][] graphMatrix = new int[MAP_SIZE][MAP_SIZE];
 		IntStream.range(0, depth).forEach(row ->
 				IntStream.range(0, width).forEach(col -> {
 					char currentChar = matrix.charAt(row * width + col % width);
-					int tileValue = currentChar - '1';
 					if (currentChar != EMPTY_TILE) {
-						inflateTile(row, col, tileValue);
+						inflateTile(row, col, currentChar);
 					}
-					int forbidden = MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN.ordinal();
-					graphMatrix[row][col] = tileValue == forbidden ? forbidden : MapNodesTypes.PASSABLE_NODE.ordinal();
 				}));
-		return graphMatrix;
 	}
 
 	private void inflateHeights(final JsonObject mapJsonObject, final MapGraph mapGraph) {
@@ -413,9 +412,9 @@ public final class MapBuilder implements Disposable {
 				.finishAndAddToEngine();
 	}
 
-	private void inflateTile(final int row, final int col, final int value) {
+	private void inflateTile(final int row, final int col, final char currentChar) {
 		GameModelInstance mi = new GameModelInstance(floorModel, auxBoundingBox);
-		Texture texture = assetManager.getTexture(FloorsTextures.values()[value]);
+		Texture texture = assetManager.getTexture(FloorsTextures.values()[currentChar - '1']);
 		texture.setWrap(Repeat, Repeat);
 		mi.materials.get(0).set(TextureAttribute.createDiffuse(texture));
 		mi.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
