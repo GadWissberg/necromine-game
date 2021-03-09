@@ -4,16 +4,16 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.gadarts.necromine.model.MapNodesTypes;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 public class MapGraphNode {
-	public static final int BLOCK_DIAGONAL = 2;
 	private final Array<Connection<MapGraphNode>> connections;
 	private int col;
 	private int row;
-	private int type;
+	private MapNodesTypes type;
 
 	@Setter
 	private float height;
@@ -21,7 +21,7 @@ public class MapGraphNode {
 	@Setter
 	private Entity entity;
 
-	public MapGraphNode(final int col, final int row, final int type, final int connections) {
+	public MapGraphNode(final int col, final int row, final MapNodesTypes type, final int connections) {
 		this.col = col;
 		this.row = row;
 		this.type = type;
@@ -51,15 +51,6 @@ public class MapGraphNode {
 		if (row != that.row) return false;
 		if (type != that.type) return false;
 		return connections.equals(that.connections);
-	}
-
-	@Override
-	public int hashCode() {
-		int result = col;
-		result = 31 * result + row;
-		result = 31 * result + type;
-		result = 31 * result + connections.hashCode();
-		return result;
 	}
 
 	public int getIndex() {

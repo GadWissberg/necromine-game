@@ -11,7 +11,11 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.FloorComponent;
+import com.gadarts.isometric.components.ObstacleComponent;
+import com.gadarts.isometric.components.PickUpComponent;
+import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
@@ -80,7 +84,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		});
 		for (int x = 0; x < MAP_SIZE; x++) {
 			for (int y = 0; y < MAP_SIZE; y++) {
-				nodes.add(new MapGraphNode(x, y, map[y][x], 8));
+				nodes.add(new MapGraphNode(x, y, MapNodesTypes.values()[map[y][x]], 8));
 			}
 		}
 		ImmutableArray<Entity> floorEntities = engine.getEntitiesFor(Family.all(FloorComponent.class).get());
@@ -116,7 +120,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		List<MapGraphNode> availableNodes = auxNodesList_2;
 		for (MapGraphNode nearbyNode : nodesAround) {
 			boolean isRevealed = fowMap[nearbyNode.getRow()][nearbyNode.getCol()] != 0;
-			if (nearbyNode.getType() == 0 && getAliveEnemyFromNode(enemiesEntities, nearbyNode) == null && isRevealed) {
+			if (nearbyNode.getType() == MapNodesTypes.PASSABLE_NODE && getAliveEnemyFromNode(enemiesEntities, nearbyNode) == null && isRevealed) {
 				availableNodes.add(nearbyNode);
 			}
 		}
@@ -148,8 +152,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private void addConnection(final MapGraphNode source, final int xOffset, final int yOffset) {
 		MapGraphNode target = getNode(source.getCol() + xOffset, source.getRow() + yOffset);
 		float heightDiff = Math.abs(source.getHeight() - target.getHeight());
-		int ordinal = MapNodesTypes.PASSABLE_NODE.ordinal();
-		if (target.getType() == ordinal && heightDiff <= PASSABLE_MAX_HEIGHT_DIFF && isDiagonalPossible(source, target)) {
+		if (target.getType() == MapNodesTypes.PASSABLE_NODE && heightDiff <= PASSABLE_MAX_HEIGHT_DIFF && isDiagonalPossible(source, target)) {
 			source.getConnections().add(new MapGraphConnection<>(source, target));
 		}
 	}
@@ -215,11 +218,11 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private boolean checkIfConnectionPassable(final Connection<MapGraphNode> con) {
 		MapGraphNode fromNode = con.getFromNode();
 		MapGraphNode toNode = con.getToNode();
-		boolean result = fromNode.getType() == 0 && toNode.getType() == 0;
+		boolean result = fromNode.getType() == MapNodesTypes.PASSABLE_NODE && toNode.getType() == MapNodesTypes.PASSABLE_NODE;
 		result &= Math.abs(fromNode.getCol() - toNode.getCol()) < 2 && Math.abs(fromNode.getRow() - toNode.getRow()) < 2;
 		if ((fromNode.getCol() != toNode.getCol()) && (fromNode.getRow() != toNode.getRow())) {
-			result &= getNode(fromNode.getCol(), toNode.getRow()).getType() != MapGraphNode.BLOCK_DIAGONAL;
-			result &= getNode(toNode.getCol(), fromNode.getRow()).getType() != MapGraphNode.BLOCK_DIAGONAL;
+			result &= getNode(fromNode.getCol(), toNode.getRow()).getType() != MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN;
+			result &= getNode(toNode.getCol(), fromNode.getRow()).getType() != MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN;
 		}
 		return result;
 	}
