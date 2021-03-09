@@ -58,6 +58,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
+import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
 import static com.gadarts.necromine.assets.MapJsonKeys.*;
 import static com.gadarts.necromine.model.characters.CharacterTypes.*;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
@@ -342,6 +343,7 @@ public final class MapBuilder implements Disposable {
 								 final JsonObject tileJsonObject,
 								 final MapGraphNode node,
 								 final float height, final MapGraph mapGraph) {
+		if (node.getCol() >= MAP_SIZE - 1) return;
 		int row = node.getRow();
 		int col = node.getCol();
 		String east = Utils.getStringFromJsonOrDefault(tileJsonObject, EAST, FloorsTextures.FLOOR_0.getName());
@@ -360,6 +362,7 @@ public final class MapBuilder implements Disposable {
 	private void inflateSouthWall(final WallCreator wallCreator,
 								  final JsonObject tileJsonObject,
 								  final MapGraphNode node, final float height, final MapGraph mapGraph) {
+		if (node.getRow() >= MAP_SIZE - 1) return;
 		String south = Utils.getStringFromJsonOrDefault(tileJsonObject, MapJsonKeys.SOUTH, FloorsTextures.FLOOR_0.getName());
 		FloorsTextures definition = FloorsTextures.valueOf(south);
 		MapNodeData n = new MapNodeData(node.getRow(), node.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
@@ -376,6 +379,7 @@ public final class MapBuilder implements Disposable {
 	private void inflateWestWall(final WallCreator wallCreator,
 								 final JsonObject tileJsonObject,
 								 final MapGraphNode node, final float height, final MapGraph mapGraph) {
+		if (node.getCol() == 0) return;
 		String west = Utils.getStringFromJsonOrDefault(tileJsonObject, WEST, FloorsTextures.FLOOR_0.getName());
 		FloorsTextures definition = FloorsTextures.valueOf(west);
 		MapNodeData nodeData = new MapNodeData(node.getRow(), node.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
@@ -391,6 +395,7 @@ public final class MapBuilder implements Disposable {
 	private void inflateNorthWall(final WallCreator wallCreator,
 								  final JsonObject tileJsonObject,
 								  final MapGraphNode node, final float height, final MapGraph mapGraph) {
+		if (node.getRow() == 0) return;
 		String north = Utils.getStringFromJsonOrDefault(tileJsonObject, MapJsonKeys.NORTH, FloorsTextures.FLOOR_0.getName());
 		FloorsTextures definition = FloorsTextures.valueOf(north);
 		MapNodeData n = new MapNodeData(node.getRow(), node.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
