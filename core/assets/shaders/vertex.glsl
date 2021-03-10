@@ -194,6 +194,9 @@ void main() {
     #endif// normalFlag
 
     #ifdef lightingFlag
+    #if    defined(ambientLightFlag)
+    vec3 ambientLight = u_ambientLight;
+    #elif defined(ambientFlag)
     vec3 ambientLight = vec3(0.0);
     #endif
 
@@ -212,12 +215,12 @@ void main() {
     #ifdef ambientFlag
     #ifdef separateAmbientFlag
     v_ambientLight = ambientLight;
-    v_lightDiffuse = ambientLight;
+    v_lightDiffuse = vec3(0.0);
     #else
     v_lightDiffuse = ambientLight;
     #endif//separateAmbientFlag
     #else
-    v_lightDiffuse = ambientLight;
+    v_lightDiffuse = vec3(0.0);
     #endif//ambientFlag
 
 
@@ -238,4 +241,5 @@ void main() {
         #endif// specularFlag
     }
         #endif// numDirectionalLights
+        #endif
 }

@@ -1,6 +1,7 @@
 package com.gadarts.isometric.systems.render.shaders.main;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.math.MathUtils;
@@ -10,6 +11,7 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.LightComponent;
 import com.gadarts.isometric.components.model.AdditionalRenderData;
 import com.gadarts.isometric.systems.render.DrawFlags;
+import com.gadarts.isometric.systems.render.WorldEnvironment;
 import com.gadarts.isometric.utils.map.MapGraph;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class MainShader extends DefaultShader {
 	public static final String UNIFORM_MODEL_X = "u_model_x";
 	public static final String UNIFORM_MODEL_Y = "u_model_y";
 	public static final String UNIFORM_FOW_MAP = "u_fow_map[0]";
+	public static final String UNIFORM_AMBIENT_LIGHT = "u_ambient_light";
 	public static final int MAX_LIGHTS = 8;
 	public static final int LIGHT_EXTRA_DATA_SIZE = 2;
 	private static final Vector3 auxVector = new Vector3();
@@ -47,6 +50,7 @@ public class MainShader extends DefaultShader {
 	private int modelWidthLocation;
 	private int modelDepthLocation;
 	private int fowMapLocation;
+	private int ambientLightLocation;
 	private int modelXLocation;
 	private int modelYLocation;
 
@@ -77,11 +81,15 @@ public class MainShader extends DefaultShader {
 		modelXLocation = program.getUniformLocation(UNIFORM_MODEL_X);
 		modelYLocation = program.getUniformLocation(UNIFORM_MODEL_Y);
 		fowMapLocation = program.getUniformLocation(UNIFORM_FOW_MAP);
+		ambientLightLocation = program.getUniformLocation(UNIFORM_AMBIENT_LIGHT);
 	}
 
 	@Override
 	public void render(final Renderable renderable) {
 		boolean cancelRender = false;
+		WorldEnvironment environment = (WorldEnvironment) renderable.environment;
+		Color ambientColor = environment.getAmbientColor();
+		program.setUniformf(ambientLightLocation, ambientColor.r, ambientColor.g, ambientColor.b);
 		AdditionalRenderData additionalRenderData = (AdditionalRenderData) renderable.userData;
 		if (renderable.userData != null && additionalRenderData.isAffectedByLight()) {
 			cancelRender = applyAdditionalRenderData(renderable);

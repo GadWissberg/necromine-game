@@ -128,6 +128,7 @@ uniform float u_fow_map[16];
 uniform int u_model_x;
 uniform int u_model_y;
 
+uniform vec3 u_ambient_light;
 void main() {
     #if defined(normalFlag)
     vec3 normal = v_normal;
@@ -189,6 +190,7 @@ void main() {
             }
             gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;
         }
+        gl_FragColor.rgb += diffuse.rgb * (u_ambient_light.rgb + v_lightDiffuse);
         float flooredX = floor(v_frag_pos.x);
         float flooredZ = floor(v_frag_pos.z);
         if (!fragOutside){

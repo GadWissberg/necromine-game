@@ -11,11 +11,8 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.FloorComponent;
-import com.gadarts.isometric.components.ObstacleComponent;
-import com.gadarts.isometric.components.PickUpComponent;
-import com.gadarts.isometric.components.WallComponent;
+import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
@@ -47,17 +44,21 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	@Getter
 	private final int[][] fowMap;
 
+	@Getter
+	private final float ambient;
+
 	@Setter(AccessLevel.PACKAGE)
 	@Getter(AccessLevel.PACKAGE)
 	MapGraphNode currentDestination;
 
-	public MapGraph(final ImmutableArray<Entity> characterEntities,
+	public MapGraph(final float ambient,
 					final ImmutableArray<Entity> wallEntities,
 					final ImmutableArray<Entity> obstacleEntities,
 					final PooledEngine engine) {
+		this.ambient = ambient;
 		this.pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
 		this.obstacleEntities = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
-		this.characterEntities = characterEntities;
+		this.characterEntities = engine.getEntitiesFor(Family.all(CharacterComponent.class).get());
 		this.nodes = new Array<>(MAP_SIZE * MAP_SIZE);
 		this.fowMap = new int[MAP_SIZE][MAP_SIZE];
 		int[][] map = new int[MAP_SIZE][MAP_SIZE];

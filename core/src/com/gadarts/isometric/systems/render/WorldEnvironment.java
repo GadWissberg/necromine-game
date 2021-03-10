@@ -4,21 +4,25 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.systems.camera.CameraSystemImpl;
 import lombok.Getter;
 
 public class WorldEnvironment extends Environment implements Disposable {
-	public static final float AMBIENT = 0.1f;
-	private static final Color ambientLightColor = new Color(AMBIENT, AMBIENT, AMBIENT, 1);
+	@Getter
+	private final Color ambientColor;
 
 	@Getter
 	private LightsRenderer lightsRenderer;
 
 	@Getter
 	private DirectionalShadowLight shadowLight;
+
+	public WorldEnvironment(final float ambient) {
+		this.ambientColor = new Color(ambient, ambient, ambient, 1);
+	}
 
 	public void initializeModelShadowLight() {
 		shadowLight = new DirectionalShadowLight(
@@ -36,7 +40,11 @@ public class WorldEnvironment extends Environment implements Disposable {
 
 	public void initialize(final ImmutableArray<Entity> lightsEntities) {
 		lightsRenderer = new LightsRenderer(lightsEntities);
-		set(new ColorAttribute(ColorAttribute.AmbientLight, ambientLightColor));
+		DirectionalLight directionalLight = new DirectionalLight();
+		directionalLight.direction.set(-0.3f, -0.5f, -1);
+		float r = 0.3f;
+		directionalLight.color.set(r, r, r, 1f);
+		add(directionalLight);
 		initializeModelShadowLight();
 	}
 

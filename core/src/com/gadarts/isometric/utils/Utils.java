@@ -72,4 +72,14 @@ public class Utils {
 		}
 		return result;
 	}
+
+	public static float getFloatFromJsonOrDefault(final JsonObject jsonObject,
+												  final String key,
+												  final float defaultValue) {
+		float result = defaultValue;
+		if (jsonObject.has(key)) {
+			result = jsonObject.get(key).getAsFloat();
+		}
+		return result;
+	}
 }

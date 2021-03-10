@@ -23,7 +23,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	public static final int VIEWPORT_WIDTH = NecromineGame.RESOLUTION_WIDTH / 75;
 	public static final int VIEWPORT_HEIGHT = NecromineGame.RESOLUTION_HEIGHT / 75;
 	public static final float SCROLL_SCALE = 0.12f;
-	public static final int CAMERA_HEIGHT = 6;
+	public static final int CAMERA_HEIGHT = 10;
 	public static final float FAR = 100f;
 	private static final float NEAR = 0.01f;
 	private static final Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);

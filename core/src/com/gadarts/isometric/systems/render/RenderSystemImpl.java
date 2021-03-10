@@ -24,6 +24,7 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.decal.SimpleDecalComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
+import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
@@ -63,12 +64,18 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Quaternion auxQuat = new Quaternion();
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
 
-	private final WorldEnvironment environment = new WorldEnvironment();
+	private WorldEnvironment environment;
 	private final DrawFlags drawFlags = new DrawFlags();
 	private RenderBatches renderBatches;
 	private RenderSystemRelatedEntities renderSystemRelatedEntities;
 	private boolean ready;
 	private int numberOfVisible;
+
+	@Override
+	public void init(final GameServices services) {
+		super.init(services);
+		environment = new WorldEnvironment(services.getMap().getAmbient());
+	}
 
 	private void resetDisplay(final Color color) {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
