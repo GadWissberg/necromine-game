@@ -22,4 +22,5 @@ public class DefaultGameSettings {
 	public static final boolean DISABLE_SHADOWS = false;
 	public static final boolean DISABLE_FRUSTUM_CULLING = true;
 	public static final boolean MENU_ON_STARTUP = false;
+	public static final boolean FULL_SCREEN = false;
 }

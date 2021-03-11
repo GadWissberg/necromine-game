@@ -23,9 +23,10 @@ public class MainShader extends DefaultShader {
 	public static final String UNIFORM_MODEL_WIDTH = "u_model_width";
 	public static final String UNIFORM_MODEL_DEPTH = "u_model_depth";
 	public static final String UNIFORM_MODEL_X = "u_model_x";
-	public static final String UNIFORM_MODEL_Y = "u_model_y";
+	public static final String UNIFORM_MODEL_Z = "u_model_z";
 	public static final String UNIFORM_FOW_MAP = "u_fow_map[0]";
 	public static final String UNIFORM_AMBIENT_LIGHT = "u_ambient_light";
+	public static final String UNIFORM_COLOR_WHEN_OUTSIDE = "u_color_when_outside";
 	public static final int MAX_LIGHTS = 8;
 	public static final int LIGHT_EXTRA_DATA_SIZE = 2;
 	private static final Vector3 auxVector = new Vector3();
@@ -51,6 +52,7 @@ public class MainShader extends DefaultShader {
 	private int modelDepthLocation;
 	private int fowMapLocation;
 	private int ambientLightLocation;
+	private int colorWhenOutsideLocation;
 	private int modelXLocation;
 	private int modelYLocation;
 
@@ -79,9 +81,10 @@ public class MainShader extends DefaultShader {
 		modelWidthLocation = program.getUniformLocation(UNIFORM_MODEL_WIDTH);
 		modelDepthLocation = program.getUniformLocation(UNIFORM_MODEL_DEPTH);
 		modelXLocation = program.getUniformLocation(UNIFORM_MODEL_X);
-		modelYLocation = program.getUniformLocation(UNIFORM_MODEL_Y);
+		modelYLocation = program.getUniformLocation(UNIFORM_MODEL_Z);
 		fowMapLocation = program.getUniformLocation(UNIFORM_FOW_MAP);
 		ambientLightLocation = program.getUniformLocation(UNIFORM_AMBIENT_LIGHT);
+		colorWhenOutsideLocation = program.getUniformLocation(UNIFORM_COLOR_WHEN_OUTSIDE);
 	}
 
 	@Override
@@ -91,6 +94,7 @@ public class MainShader extends DefaultShader {
 		Color ambientColor = environment.getAmbientColor();
 		program.setUniformf(ambientLightLocation, ambientColor.r, ambientColor.g, ambientColor.b);
 		AdditionalRenderData additionalRenderData = (AdditionalRenderData) renderable.userData;
+		program.setUniformf(colorWhenOutsideLocation, additionalRenderData.getColorWhenOutside());
 		if (renderable.userData != null && additionalRenderData.isAffectedByLight()) {
 			cancelRender = applyAdditionalRenderData(renderable);
 		} else {

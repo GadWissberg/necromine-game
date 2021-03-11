@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
@@ -86,7 +87,7 @@ public final class MapBuilder implements Disposable {
 	private final ModelBuilder modelBuilder;
 	private final Model floorModel;
 	private final Gson gson = new Gson();
-	private WallCreator wallCreator;
+	private final WallCreator wallCreator;
 
 	public MapBuilder(final GameAssetsManager assetManager, final PooledEngine engine) {
 		this.assetManager = assetManager;
@@ -252,6 +253,7 @@ public final class MapBuilder implements Disposable {
 												  final EnvironmentDefinitions type,
 												  final EntityBuilder builder) {
 		GameModelInstance mi = inflateEnvironmentModelInstance(coord.getRow(), coord.getCol(), directionIndex, type);
+		mi.getAdditionalRenderData().setColorWhenOutside(Color.WHITE);
 		builder.addModelInstanceComponent(mi, true, type.isCastShadow());
 	}
 
@@ -356,9 +358,9 @@ public final class MapBuilder implements Disposable {
 		int col = node.getCol();
 		if (col >= MAP_SIZE - 1) return;
 		int eastCol = col + 1;
-		if (height != mapGraph.getNode(eastCol, node.getRow()).getHeight()) {
-			String east = Utils.getStringFromJsonOrDefault(tileJsonObject, EAST, FloorsTextures.FLOOR_0.getName());
-			FloorsTextures definition = FloorsTextures.valueOf(east);
+		JsonElement east = tileJsonObject.get(EAST);
+		if (height != mapGraph.getNode(eastCol, node.getRow()).getHeight() && east != null) {
+			FloorsTextures definition = FloorsTextures.valueOf(east.getAsString());
 			MapNodeData nodeData = new MapNodeData(row, col, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 			nodeData.setEastWall(WallCreator.createEastWall(nodeData, wallCreator.getWallModel(), assetManager, definition));
 			MapNodeData eastNode = new MapNodeData(row, eastCol, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
@@ -379,9 +381,9 @@ public final class MapBuilder implements Disposable {
 		int col = node.getCol();
 		if (row >= MAP_SIZE - 1) return;
 		int southNodeRow = row + 1;
-		if (height != mapGraph.getNode(col, southNodeRow).getHeight()) {
-			String south = Utils.getStringFromJsonOrDefault(tileJsonObject, MapJsonKeys.SOUTH, FloorsTextures.FLOOR_0.getName());
-			FloorsTextures definition = FloorsTextures.valueOf(south);
+		JsonElement south = tileJsonObject.get(MapJsonKeys.SOUTH);
+		if (height != mapGraph.getNode(col, southNodeRow).getHeight() && south != null) {
+			FloorsTextures definition = FloorsTextures.valueOf(south.getAsString());
 			MapNodeData nodeData = new MapNodeData(row, col, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 			nodeData.setSouthWall(WallCreator.createSouthWall(nodeData, wallCreator.getWallModel(), assetManager, definition));
 			MapNodeData southNode = new MapNodeData(southNodeRow, nodeData.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
@@ -402,9 +404,9 @@ public final class MapBuilder implements Disposable {
 		int row = node.getRow();
 		if (col == 0) return;
 		int westNodeCol = col - 1;
-		if (westNodeCol >= 0 && height != mapGraph.getNode(westNodeCol, row).getHeight()) {
-			String west = Utils.getStringFromJsonOrDefault(tileJsonObject, WEST, FloorsTextures.FLOOR_0.getName());
-			FloorsTextures definition = FloorsTextures.valueOf(west);
+		JsonElement west = tileJsonObject.get(WEST);
+		if (westNodeCol >= 0 && height != mapGraph.getNode(westNodeCol, row).getHeight() && west != null) {
+			FloorsTextures definition = FloorsTextures.valueOf(west.getAsString());
 			MapNodeData nodeData = new MapNodeData(row, col, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 			nodeData.setWestWall(WallCreator.createWestWall(nodeData, wallCreator.getWallModel(), assetManager, definition));
 			MapNodeData westNodeData = new MapNodeData(nodeData.getRow(), westNodeCol, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
@@ -424,9 +426,9 @@ public final class MapBuilder implements Disposable {
 		int row = node.getRow();
 		if (row == 0) return;
 		int northNodeRow = row - 1;
-		if (height != mapGraph.getNode(col, northNodeRow).getHeight()) {
-			String north = Utils.getStringFromJsonOrDefault(tileJsonObject, MapJsonKeys.NORTH, FloorsTextures.FLOOR_0.getName());
-			FloorsTextures definition = FloorsTextures.valueOf(north);
+		JsonElement north = tileJsonObject.get(MapJsonKeys.NORTH);
+		if (height != mapGraph.getNode(col, northNodeRow).getHeight() && north != null) {
+			FloorsTextures definition = FloorsTextures.valueOf(north.getAsString());
 			MapNodeData n = new MapNodeData(row, col, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 			n.setNorthWall(WallCreator.createNorthWall(n, wallCreator.getWallModel(), assetManager, definition));
 			MapNodeData northNode = new MapNodeData(northNodeRow, n.getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
@@ -441,7 +443,7 @@ public final class MapBuilder implements Disposable {
 
 	private void inflateWall(final Wall eastWall) {
 		BoundingBox boundingBox = eastWall.getModelInstance().calculateBoundingBox(new BoundingBox());
-		GameModelInstance modelInstance = new GameModelInstance(eastWall.getModelInstance(), boundingBox, true);
+		GameModelInstance modelInstance = new GameModelInstance(eastWall.getModelInstance(), boundingBox, true, Color.WHITE);
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true, false)
 				.finishAndAddToEngine();

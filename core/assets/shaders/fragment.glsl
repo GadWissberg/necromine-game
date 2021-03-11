@@ -126,9 +126,10 @@ uniform int u_model_width;
 uniform int u_model_depth;
 uniform float u_fow_map[16];
 uniform int u_model_x;
-uniform int u_model_y;
+uniform int u_model_z;
 
 uniform vec3 u_ambient_light;
+uniform vec4 u_color_when_outside;
 void main() {
     #if defined(normalFlag)
     vec3 normal = v_normal;
@@ -168,12 +169,11 @@ void main() {
     #if defined(ambientFlag) && defined(separateAmbientFlag)
     #ifdef shadowMapFlag
 
-    int numberOfRows = int(max(v_frag_pos.z, 0.0) - float(max(u_model_y, 0)))*u_model_width;
+    int numberOfRows = int(max(v_frag_pos.z, 0.0) - float(max(u_model_z, 0)))*u_model_width;
     int horizontalOffset = int(max(v_frag_pos.x, 0.0)-float(max(u_model_x, 0)));
     int nodeIndex = numberOfRows + horizontalOffset;
-    float bias = 0.01;
-    bool fragOutside = v_frag_pos.z - float(u_model_y) >= float(u_model_depth) + bias || v_frag_pos.x - float(u_model_x) >= float(u_model_width) + bias;
-    int fragFowValue = (fragOutside)? 1 : int(u_fow_map[nodeIndex]);
+    bool fragOutside = v_frag_pos.z - float(u_model_z) >= float(u_model_depth) || v_frag_pos.x - float(u_model_x) >= float(u_model_width);
+    int fragFowValue = (fragOutside) ? 1 : int(u_fow_map[nodeIndex]);
     gl_FragColor.rgb = vec3(0.0);
     if (u_model_width == 0 || (fragFowValue > 0)){
         if (u_number_of_lights > -1){
@@ -226,6 +226,8 @@ void main() {
             if ((fragFowValue & 256) == 0){
                 gl_FragColor.rgb *= min(2.0*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ)), 1.0);
             }
+        } else {
+            gl_FragColor.rgb *= u_color_when_outside.rgb;
         }
     } else {
         gl_FragColor.rgb = vec3(0.0);

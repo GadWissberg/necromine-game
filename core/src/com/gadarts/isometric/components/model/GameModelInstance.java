@@ -1,5 +1,6 @@
 package com.gadarts.isometric.components.model;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -11,9 +12,10 @@ public class GameModelInstance extends ModelInstance {
 
 	public GameModelInstance(final ModelInstance modelInstance,
 							 final BoundingBox boundingBox,
-							 final boolean affectedByLight) {
+							 final boolean affectedByLight,
+							 final Color colorWhenOutside) {
 		super(modelInstance);
-		this.additionalRenderData = new AdditionalRenderData(affectedByLight, boundingBox);
+		this.additionalRenderData = new AdditionalRenderData(affectedByLight, boundingBox, colorWhenOutside);
 		userData = additionalRenderData;
 	}
 
@@ -23,7 +25,8 @@ public class GameModelInstance extends ModelInstance {
 
 	public GameModelInstance(final Model model, final BoundingBox boundingBox, final boolean affectedByLight) {
 		super(model);
-		this.additionalRenderData = new AdditionalRenderData(affectedByLight, boundingBox);
+		this.additionalRenderData = new AdditionalRenderData(affectedByLight, boundingBox, Color.BLACK);
 		userData = additionalRenderData;
 	}
+
 }

@@ -3,6 +3,7 @@ package com.gadarts.isometric.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.gadarts.isometric.NecromineGame;
+import com.gadarts.isometric.utils.DefaultGameSettings;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,6 +42,7 @@ public class DesktopLauncher {
 		config.height = NecromineGame.RESOLUTION_HEIGHT;
 		config.resizable = false;
 		config.samples = 3;
+		config.fullscreen = DefaultGameSettings.FULL_SCREEN;
 		return config;
 	}
 
