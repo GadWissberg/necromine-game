@@ -63,11 +63,11 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		this.fowMap = new int[MAP_SIZE][MAP_SIZE];
 		int[][] map = new int[MAP_SIZE][MAP_SIZE];
 		wallEntities.forEach(wall -> {
-			WallComponent wallComponent = ComponentsMapper.wall.get(wall);
-			int topLeftX = wallComponent.getTopLeftX();
-			int topLeftY = wallComponent.getTopLeftY();
-			int bottomRightX = wallComponent.getBottomRightX();
-			int bottomRightY = wallComponent.getBottomRightY();
+			ObstacleWallComponent obstacleWallComponent = ComponentsMapper.obstacleWall.get(wall);
+			int topLeftX = obstacleWallComponent.getTopLeftX();
+			int topLeftY = obstacleWallComponent.getTopLeftY();
+			int bottomRightX = obstacleWallComponent.getBottomRightX();
+			int bottomRightY = obstacleWallComponent.getBottomRightY();
 			if (topLeftX >= 0 && topLeftY >= 0 && bottomRightX >= 0 && bottomRightY >= 0) {
 				for (int x = topLeftX; x <= bottomRightX; x++) {
 					for (int y = topLeftY; y <= bottomRightY; y++) {

@@ -16,7 +16,6 @@ public class GameModelInstance extends ModelInstance {
 							 final Color colorWhenOutside) {
 		super(modelInstance);
 		this.additionalRenderData = new AdditionalRenderData(affectedByLight, boundingBox, colorWhenOutside);
-		userData = additionalRenderData;
 	}
 
 	public GameModelInstance(final Model model, final BoundingBox boundingBox) {
@@ -26,7 +25,6 @@ public class GameModelInstance extends ModelInstance {
 	public GameModelInstance(final Model model, final BoundingBox boundingBox, final boolean affectedByLight) {
 		super(model);
 		this.additionalRenderData = new AdditionalRenderData(affectedByLight, boundingBox, Color.BLACK);
-		userData = additionalRenderData;
 	}
 
 }

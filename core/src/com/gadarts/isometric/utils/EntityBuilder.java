@@ -22,6 +22,7 @@ import com.gadarts.isometric.components.player.Item;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.necromine.model.EnvironmentDefinitions;
+import com.gadarts.necromine.model.MapNodeData;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.Enemies;
 import com.gadarts.necromine.model.characters.SpriteType;
@@ -63,6 +64,14 @@ public final class EntityBuilder {
 												   final boolean castShadow) {
 		ModelInstanceComponent component = engine.createComponent(ModelInstanceComponent.class);
 		component.init(modelInstance, visible, castShadow);
+		currentEntity.add(component);
+		component.getModelInstance().userData = currentEntity;
+		return instance;
+	}
+
+	public EntityBuilder addWallComponent(final MapNodeData parentNode) {
+		WallComponent component = engine.createComponent(WallComponent.class);
+		component.init(parentNode);
 		currentEntity.add(component);
 		return instance;
 	}
@@ -165,13 +174,13 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addWallComponent(final int topLeftX,
-										  final int topLeftY,
-										  final int bottomRightX,
-										  final int bottomRightY) {
-		WallComponent wallComponent = engine.createComponent(WallComponent.class);
-		wallComponent.init(topLeftX, topLeftY, bottomRightX, bottomRightY);
-		currentEntity.add(wallComponent);
+	public EntityBuilder addObstacleWallComponent(final int topLeftX,
+												  final int topLeftY,
+												  final int bottomRightX,
+												  final int bottomRightY) {
+		ObstacleWallComponent obstacleWallComponent = engine.createComponent(ObstacleWallComponent.class);
+		obstacleWallComponent.init(topLeftX, topLeftY, bottomRightX, bottomRightY);
+		currentEntity.add(obstacleWallComponent);
 		return instance;
 	}
 

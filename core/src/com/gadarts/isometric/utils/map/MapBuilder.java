@@ -21,7 +21,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.ObstacleComponent;
-import com.gadarts.isometric.components.WallComponent;
+import com.gadarts.isometric.components.ObstacleWallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterSoundData;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
@@ -156,7 +156,7 @@ public final class MapBuilder implements Disposable {
 		inflateAllElements(mapJsonObject);
 		MapGraph mapGraph = new MapGraph(
 				Utils.getFloatFromJsonOrDefault(mapJsonObject, MapJsonKeys.AMBIENT, 0),
-				engine.getEntitiesFor(Family.all(WallComponent.class).get()),
+				engine.getEntitiesFor(Family.all(ObstacleWallComponent.class).get()),
 				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()),
 				engine);
 		inflateHeights(mapJsonObject, mapGraph);
@@ -276,7 +276,7 @@ public final class MapBuilder implements Disposable {
 				halfWidth = halfDepth;
 				halfDepth = swap;
 			}
-			builder.addWallComponent(col - halfWidth, row - halfDepth, col + Math.max(halfWidth, 1) - 1, row + Math.max(halfDepth, 1) - 1);
+			builder.addObstacleWallComponent(col - halfWidth, row - halfDepth, col + Math.max(halfWidth, 1) - 1, row + Math.max(halfDepth, 1) - 1);
 		} else {
 			builder.addObstacleComponent(col, row, type);
 		}
@@ -368,8 +368,9 @@ public final class MapBuilder implements Disposable {
 			Entity entity = mapGraph.getNode(eastNode.getCol(), eastNode.getRow()).getEntity();
 			Optional.ofNullable(entity)
 					.ifPresent(e -> eastNode.lift(ComponentsMapper.modelInstance.get(e).getModelInstance().transform.getTranslation(auxVector3_1).y));
-			WallCreator.adjustWallBetweenEastAndWest(eastNode, nodeData);
-			inflateWall(nodeData.getEastWall());
+			WallCreator.adjustWallBetweenEastAndWest(eastNode, nodeData, true);
+			boolean westHigherThanEast = node.getHeight() > eastNode.getHeight();
+			inflateWall(nodeData.getEastWall(), westHigherThanEast ? eastNode : nodeData);
 		}
 	}
 
@@ -392,7 +393,8 @@ public final class MapBuilder implements Disposable {
 			Optional.ofNullable(entity)
 					.ifPresent(e -> southNode.lift(ComponentsMapper.modelInstance.get(e).getModelInstance().transform.getTranslation(auxVector3_1).y));
 			WallCreator.adjustWallBetweenNorthAndSouth(southNode, nodeData);
-			inflateWall(nodeData.getSouthWall());
+			boolean northHigherThanSouth = node.getHeight() > southNode.getHeight();
+			inflateWall(nodeData.getSouthWall(), northHigherThanSouth ? southNode : nodeData);
 		}
 	}
 
@@ -413,8 +415,9 @@ public final class MapBuilder implements Disposable {
 			nodeData.lift(height);
 			Optional.ofNullable(mapGraph.getNode(westNodeData.getCol(), westNodeData.getRow()).getEntity())
 					.ifPresent(entity -> westNodeData.lift(ComponentsMapper.modelInstance.get(entity).getModelInstance().transform.getTranslation(auxVector3_1).y));
-			WallCreator.adjustWallBetweenEastAndWest(nodeData, westNodeData);
-			inflateWall(nodeData.getWestWall());
+			WallCreator.adjustWallBetweenEastAndWest(nodeData, westNodeData, true);
+			boolean eastHigherThanWest = node.getHeight() > westNodeData.getHeight();
+			inflateWall(nodeData.getWestWall(), eastHigherThanWest ? westNodeData : nodeData);
 		}
 	}
 
@@ -437,15 +440,18 @@ public final class MapBuilder implements Disposable {
 			Optional.ofNullable(entity)
 					.ifPresent(e -> northNode.lift(ComponentsMapper.modelInstance.get(e).getModelInstance().transform.getTranslation(auxVector3_1).y));
 			WallCreator.adjustWallBetweenNorthAndSouth(n, northNode);
-			inflateWall(n.getNorthWall());
+			boolean northHigherThanSouth = node.getHeight() > northNode.getHeight();
+			inflateWall(n.getNorthWall(), northHigherThanSouth ? northNode : n);
 		}
 	}
 
-	private void inflateWall(final Wall eastWall) {
-		BoundingBox boundingBox = eastWall.getModelInstance().calculateBoundingBox(new BoundingBox());
-		GameModelInstance modelInstance = new GameModelInstance(eastWall.getModelInstance(), boundingBox, true, Color.WHITE);
+	private void inflateWall(final Wall wall, final MapNodeData parentNode) {
+		BoundingBox boundingBox = wall.getModelInstance().calculateBoundingBox(new BoundingBox());
+		GameModelInstance modelInstance = new GameModelInstance(wall.getModelInstance(), boundingBox, true, Color.WHITE);
+		modelInstance.getAdditionalRenderData().setApplyAmbientOcclusion(true);
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true, false)
+				.addWallComponent(parentNode)
 				.finishAndAddToEngine();
 	}
 

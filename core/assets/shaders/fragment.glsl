@@ -126,10 +126,16 @@ uniform int u_model_width;
 uniform int u_model_depth;
 uniform float u_fow_map[16];
 uniform int u_model_x;
+uniform float u_model_y;
 uniform int u_model_z;
 
 uniform vec3 u_ambient_light;
 uniform vec4 u_color_when_outside;
+uniform int u_apply_ambient_occlusion;
+
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
 void main() {
     #if defined(normalFlag)
     vec3 normal = v_normal;
@@ -191,6 +197,9 @@ void main() {
             gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;
         }
         gl_FragColor.rgb += diffuse.rgb * (u_ambient_light.rgb + v_lightDiffuse);
+        if (u_apply_ambient_occlusion == 1){
+            gl_FragColor.rgb *= min(1.0, v_frag_pos.y - u_model_y);
+        }
         float flooredX = floor(v_frag_pos.x);
         float flooredZ = floor(v_frag_pos.z);
         if (!fragOutside){

@@ -9,7 +9,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.LightComponent;
+import com.gadarts.isometric.components.ModelInstanceComponent;
+import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.model.AdditionalRenderData;
+import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.systems.render.DrawFlags;
 import com.gadarts.isometric.systems.render.WorldEnvironment;
 import com.gadarts.isometric.utils.map.MapGraph;
@@ -23,10 +26,12 @@ public class MainShader extends DefaultShader {
 	public static final String UNIFORM_MODEL_WIDTH = "u_model_width";
 	public static final String UNIFORM_MODEL_DEPTH = "u_model_depth";
 	public static final String UNIFORM_MODEL_X = "u_model_x";
+	public static final String UNIFORM_MODEL_Y = "u_model_y";
 	public static final String UNIFORM_MODEL_Z = "u_model_z";
 	public static final String UNIFORM_FOW_MAP = "u_fow_map[0]";
 	public static final String UNIFORM_AMBIENT_LIGHT = "u_ambient_light";
 	public static final String UNIFORM_COLOR_WHEN_OUTSIDE = "u_color_when_outside";
+	public static final String UNIFORM_APPLY_AMBIENT_OCCLUSION = "u_apply_ambient_occlusion";
 	public static final int MAX_LIGHTS = 8;
 	public static final int LIGHT_EXTRA_DATA_SIZE = 2;
 	private static final Vector3 auxVector = new Vector3();
@@ -53,8 +58,10 @@ public class MainShader extends DefaultShader {
 	private int fowMapLocation;
 	private int ambientLightLocation;
 	private int colorWhenOutsideLocation;
+	private int applyAmbientOcclusionLocation;
 	private int modelXLocation;
 	private int modelYLocation;
+	private int modelZLocation;
 
 	public MainShader(final Renderable renderable,
 					  final Config shaderConfig,
@@ -81,10 +88,12 @@ public class MainShader extends DefaultShader {
 		modelWidthLocation = program.getUniformLocation(UNIFORM_MODEL_WIDTH);
 		modelDepthLocation = program.getUniformLocation(UNIFORM_MODEL_DEPTH);
 		modelXLocation = program.getUniformLocation(UNIFORM_MODEL_X);
-		modelYLocation = program.getUniformLocation(UNIFORM_MODEL_Z);
+		modelYLocation = program.getUniformLocation(UNIFORM_MODEL_Y);
+		modelZLocation = program.getUniformLocation(UNIFORM_MODEL_Z);
 		fowMapLocation = program.getUniformLocation(UNIFORM_FOW_MAP);
 		ambientLightLocation = program.getUniformLocation(UNIFORM_AMBIENT_LIGHT);
 		colorWhenOutsideLocation = program.getUniformLocation(UNIFORM_COLOR_WHEN_OUTSIDE);
+		applyAmbientOcclusionLocation = program.getUniformLocation(UNIFORM_APPLY_AMBIENT_OCCLUSION);
 	}
 
 	@Override
@@ -93,8 +102,9 @@ public class MainShader extends DefaultShader {
 		WorldEnvironment environment = (WorldEnvironment) renderable.environment;
 		Color ambientColor = environment.getAmbientColor();
 		program.setUniformf(ambientLightLocation, ambientColor.r, ambientColor.g, ambientColor.b);
-		AdditionalRenderData additionalRenderData = (AdditionalRenderData) renderable.userData;
-		program.setUniformf(colorWhenOutsideLocation, additionalRenderData.getColorWhenOutside());
+		Entity entity = (Entity) renderable.userData;
+		GameModelInstance modelInstance = ComponentsMapper.modelInstance.get(entity).getModelInstance();
+		AdditionalRenderData additionalRenderData = modelInstance.getAdditionalRenderData();
 		if (renderable.userData != null && additionalRenderData.isAffectedByLight()) {
 			cancelRender = applyAdditionalRenderData(renderable);
 		} else {
@@ -106,9 +116,25 @@ public class MainShader extends DefaultShader {
 	}
 
 	private boolean applyAdditionalRenderData(final Renderable renderable) {
-		AdditionalRenderData additionalRenderData = (AdditionalRenderData) renderable.userData;
+		Entity entity = (Entity) renderable.userData;
+		ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
+		AdditionalRenderData additionalRenderData = modelInstanceComponent.getModelInstance().getAdditionalRenderData();
+		program.setUniformf(colorWhenOutsideLocation, additionalRenderData.getColorWhenOutside());
+		applyAmbientOcclusion(additionalRenderData, entity);
 		applyLights(additionalRenderData);
 		return applyFow(renderable, additionalRenderData);
+	}
+
+	private void applyAmbientOcclusion(final AdditionalRenderData additionalRenderData,
+									   final Entity entity) {
+		boolean applyAmbientOcclusion = additionalRenderData.isApplyAmbientOcclusion();
+		if (applyAmbientOcclusion) {
+			WallComponent wallComponent = ComponentsMapper.wall.get(entity);
+			int row = wallComponent.getParentNode().getRow();
+			int col = wallComponent.getParentNode().getCol();
+			program.setUniformf(modelYLocation, map.getNode(col, row).getHeight());
+		}
+		program.setUniformi(applyAmbientOcclusionLocation, applyAmbientOcclusion ? 1 : 0);
 	}
 
 	private void applyLights(final AdditionalRenderData additionalRenderData) {
@@ -156,7 +182,7 @@ public class MainShader extends DefaultShader {
 			program.setUniformi(modelWidthLocation, width);
 			program.setUniformi(modelDepthLocation, depth);
 			program.setUniformi(modelXLocation, x);
-			program.setUniformi(modelYLocation, z);
+			program.setUniformi(modelZLocation, z);
 			program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * depth);
 		}
 		return false;

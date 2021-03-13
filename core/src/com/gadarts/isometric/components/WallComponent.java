@@ -1,23 +1,18 @@
 package com.gadarts.isometric.components;
 
+import com.gadarts.necromine.model.MapNodeData;
 import lombok.Getter;
 
 @Getter
 public class WallComponent implements GameComponent {
-	private int topLeftX;
-	private int topLeftY;
-	private int bottomRightX;
-	private int bottomRightY;
+	private MapNodeData parentNode;
+
+	public void init(final MapNodeData parentNode) {
+		this.parentNode = parentNode;
+	}
 
 	@Override
 	public void reset() {
 
-	}
-
-	public void init(final int topLeftX, final int topLeftY, final int bottomRightX, final int bottomRightY) {
-		this.topLeftX = topLeftX;
-		this.topLeftY = topLeftY;
-		this.bottomRightX = bottomRightX;
-		this.bottomRightY = bottomRightY;
 	}
 }

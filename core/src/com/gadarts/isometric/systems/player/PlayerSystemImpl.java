@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.CharacterAnimation;
 import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.WallComponent;
+import com.gadarts.isometric.components.ObstacleWallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
@@ -199,7 +199,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		ComponentsMapper.player.get(player).getStorage().subscribeForEvents(this);
 		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
-		walls = engine.getEntitiesFor(Family.all(WallComponent.class).get());
+		walls = engine.getEntitiesFor(Family.all(ObstacleWallComponent.class).get());
 	}
 
 	@Override
@@ -387,7 +387,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private boolean isWallBlocksReveal(final Vector2 srcNodePosition,
 									   final Vector2 nodeToReveal,
 									   final Entity wall) {
-		WallComponent wallComp = ComponentsMapper.wall.get(wall);
+		ObstacleWallComponent wallComp = ComponentsMapper.obstacleWall.get(wall);
 		int width = Math.abs(wallComp.getBottomRightX() - wallComp.getTopLeftX()) + 1;
 		int height = Math.abs(wallComp.getBottomRightY() - wallComp.getTopLeftY()) + 1;
 		Rectangle wallRect = auxRect.set(wallComp.getTopLeftX(), wallComp.getTopLeftY(), width, height);
@@ -395,7 +395,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		return !nodeInWall && Intersector.intersectSegmentRectangle(srcNodePosition, nodeToReveal, wallRect);
 	}
 
-	private boolean isNodeInWall(final Vector2 nodeToReveal, final WallComponent wallComp) {
+	private boolean isNodeInWall(final Vector2 nodeToReveal, final ObstacleWallComponent wallComp) {
 		int col = (int) nodeToReveal.x;
 		int row = (int) nodeToReveal.y;
 		return wallComp.getTopLeftX() <= col
