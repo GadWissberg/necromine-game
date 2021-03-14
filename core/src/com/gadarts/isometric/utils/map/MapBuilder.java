@@ -59,8 +59,22 @@ import java.util.stream.IntStream;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
 import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
-import static com.gadarts.necromine.assets.MapJsonKeys.*;
-import static com.gadarts.necromine.model.characters.CharacterTypes.*;
+import static com.gadarts.necromine.assets.MapJsonKeys.CHARACTERS;
+import static com.gadarts.necromine.assets.MapJsonKeys.COL;
+import static com.gadarts.necromine.assets.MapJsonKeys.DEPTH;
+import static com.gadarts.necromine.assets.MapJsonKeys.DIRECTION;
+import static com.gadarts.necromine.assets.MapJsonKeys.EAST;
+import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHT;
+import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHTS;
+import static com.gadarts.necromine.assets.MapJsonKeys.MATRIX;
+import static com.gadarts.necromine.assets.MapJsonKeys.ROW;
+import static com.gadarts.necromine.assets.MapJsonKeys.TILES;
+import static com.gadarts.necromine.assets.MapJsonKeys.TYPE;
+import static com.gadarts.necromine.assets.MapJsonKeys.WEST;
+import static com.gadarts.necromine.assets.MapJsonKeys.WIDTH;
+import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_Y;
+import static com.gadarts.necromine.model.characters.CharacterTypes.ENEMY;
+import static com.gadarts.necromine.model.characters.CharacterTypes.PLAYER;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
 import static com.gadarts.necromine.model.characters.Direction.SOUTH;
 
@@ -461,6 +475,7 @@ public final class MapBuilder implements Disposable {
 		texture.setWrap(Repeat, Repeat);
 		mi.materials.get(0).set(TextureAttribute.createDiffuse(texture));
 		mi.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
+		mi.getAdditionalRenderData().setColorWhenOutside(Color.WHITE);
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(mi, true)
 				.addFloorComponent()
