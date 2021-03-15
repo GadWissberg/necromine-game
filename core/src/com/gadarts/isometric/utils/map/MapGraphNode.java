@@ -15,6 +15,7 @@ public class MapGraphNode {
 	private int row;
 	private MapNodesTypes type;
 
+
 	@Setter
 	private float height;
 

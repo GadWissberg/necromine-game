@@ -19,9 +19,6 @@ public class AdditionalRenderData {
 	private final boolean affectedByLight;
 
 	@Setter
-	private boolean applyAmbientOcclusion;
-
-	@Setter
 	private Color colorWhenOutside;
 
 	public AdditionalRenderData(final boolean affectedByLight,

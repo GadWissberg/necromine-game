@@ -36,7 +36,9 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private static final List<MapGraphNode> auxNodesList_2 = new ArrayList<>();
 	private static final float PASSABLE_MAX_HEIGHT_DIFF = 0.3f;
 
+	@Getter
 	private final Array<MapGraphNode> nodes;
+
 	private final ImmutableArray<Entity> characterEntities;
 	private final ImmutableArray<Entity> pickupEntities;
 	private final ImmutableArray<Entity> obstacleEntities;

@@ -31,7 +31,8 @@ public class MainShader extends DefaultShader {
 	public static final String UNIFORM_FOW_MAP = "u_fow_map[0]";
 	public static final String UNIFORM_AMBIENT_LIGHT = "u_ambient_light";
 	public static final String UNIFORM_COLOR_WHEN_OUTSIDE = "u_color_when_outside";
-	public static final String UNIFORM_APPLY_AMBIENT_OCCLUSION = "u_apply_ambient_occlusion";
+	public static final String UNIFORM_APPLY_WALL_AMBIENT_OCCLUSION = "u_apply_wall_ambient_occlusion";
+	public static final String UNIFORM_APPLY_FLOOR_AMBIENT_OCCLUSION = "u_apply_floor_ambient_occlusion";
 	public static final int MAX_LIGHTS = 8;
 	public static final int LIGHT_EXTRA_DATA_SIZE = 2;
 	private static final Vector3 auxVector = new Vector3();
@@ -58,7 +59,8 @@ public class MainShader extends DefaultShader {
 	private int fowMapLocation;
 	private int ambientLightLocation;
 	private int colorWhenOutsideLocation;
-	private int applyAmbientOcclusionLocation;
+	private int applyWallAmbientOcclusionLocation;
+	private int applyFloorAmbientOcclusionLocation;
 	private int modelXLocation;
 	private int modelYLocation;
 	private int modelZLocation;
@@ -93,7 +95,8 @@ public class MainShader extends DefaultShader {
 		fowMapLocation = program.getUniformLocation(UNIFORM_FOW_MAP);
 		ambientLightLocation = program.getUniformLocation(UNIFORM_AMBIENT_LIGHT);
 		colorWhenOutsideLocation = program.getUniformLocation(UNIFORM_COLOR_WHEN_OUTSIDE);
-		applyAmbientOcclusionLocation = program.getUniformLocation(UNIFORM_APPLY_AMBIENT_OCCLUSION);
+		applyWallAmbientOcclusionLocation = program.getUniformLocation(UNIFORM_APPLY_WALL_AMBIENT_OCCLUSION);
+		applyFloorAmbientOcclusionLocation = program.getUniformLocation(UNIFORM_APPLY_FLOOR_AMBIENT_OCCLUSION);
 	}
 
 	@Override
@@ -120,21 +123,29 @@ public class MainShader extends DefaultShader {
 		ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 		AdditionalRenderData additionalRenderData = modelInstanceComponent.getModelInstance().getAdditionalRenderData();
 		program.setUniformf(colorWhenOutsideLocation, additionalRenderData.getColorWhenOutside());
-		applyAmbientOcclusion(additionalRenderData, entity);
+		applyAmbientOcclusion(entity);
 		applyLights(additionalRenderData);
 		return applyFow(renderable, additionalRenderData);
 	}
 
-	private void applyAmbientOcclusion(final AdditionalRenderData additionalRenderData,
-									   final Entity entity) {
-		boolean applyAmbientOcclusion = additionalRenderData.isApplyAmbientOcclusion();
-		if (applyAmbientOcclusion) {
-			WallComponent wallComponent = ComponentsMapper.wall.get(entity);
-			int row = wallComponent.getParentNode().getRow();
-			int col = wallComponent.getParentNode().getCol();
-			program.setUniformf(modelYLocation, map.getNode(col, row).getHeight());
+	private void applyAmbientOcclusion(final Entity entity) {
+		if (ComponentsMapper.wall.has(entity)) {
+			applyWallAmbientOcclusion(entity);
+		} else if (ComponentsMapper.floor.has(entity)) {
+			program.setUniformi(applyWallAmbientOcclusionLocation, 0);
+			program.setUniformi(applyFloorAmbientOcclusionLocation, ComponentsMapper.floor.get(entity).getAmbientOcclusion());
+		} else {
+			program.setUniformi(applyWallAmbientOcclusionLocation, 0);
+			program.setUniformi(applyFloorAmbientOcclusionLocation, 0);
 		}
-		program.setUniformi(applyAmbientOcclusionLocation, applyAmbientOcclusion ? 1 : 0);
+	}
+
+	private void applyWallAmbientOcclusion(final Entity entity) {
+		WallComponent wallComponent = ComponentsMapper.wall.get(entity);
+		int row = wallComponent.getParentNode().getRow();
+		int col = wallComponent.getParentNode().getCol();
+		program.setUniformf(modelYLocation, map.getNode(col, row).getHeight());
+		program.setUniformi(applyWallAmbientOcclusionLocation, 1);
 	}
 
 	private void applyLights(final AdditionalRenderData additionalRenderData) {

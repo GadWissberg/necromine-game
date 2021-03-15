@@ -20,6 +20,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.FloorComponent;
 import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.ObstacleWallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
@@ -59,22 +60,8 @@ import java.util.stream.IntStream;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
 import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
-import static com.gadarts.necromine.assets.MapJsonKeys.CHARACTERS;
-import static com.gadarts.necromine.assets.MapJsonKeys.COL;
-import static com.gadarts.necromine.assets.MapJsonKeys.DEPTH;
-import static com.gadarts.necromine.assets.MapJsonKeys.DIRECTION;
-import static com.gadarts.necromine.assets.MapJsonKeys.EAST;
-import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHT;
-import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHTS;
-import static com.gadarts.necromine.assets.MapJsonKeys.MATRIX;
-import static com.gadarts.necromine.assets.MapJsonKeys.ROW;
-import static com.gadarts.necromine.assets.MapJsonKeys.TILES;
-import static com.gadarts.necromine.assets.MapJsonKeys.TYPE;
-import static com.gadarts.necromine.assets.MapJsonKeys.WEST;
-import static com.gadarts.necromine.assets.MapJsonKeys.WIDTH;
-import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_Y;
-import static com.gadarts.necromine.model.characters.CharacterTypes.ENEMY;
-import static com.gadarts.necromine.model.characters.CharacterTypes.PLAYER;
+import static com.gadarts.necromine.assets.MapJsonKeys.*;
+import static com.gadarts.necromine.model.characters.CharacterTypes.*;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
 import static com.gadarts.necromine.model.characters.Direction.SOUTH;
 
@@ -174,7 +161,54 @@ public final class MapBuilder implements Disposable {
 				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()),
 				engine);
 		inflateHeights(mapJsonObject, mapGraph);
+		generateFloorAmbientOcclusions(mapGraph);
 		return mapGraph;
+	}
+
+	private void generateFloorAmbientOcclusions(final MapGraph mapGraph) {
+		mapGraph.getNodes().forEach(node -> generateFloorAmbientOcclusion(mapGraph, node));
+	}
+
+	private void generateFloorAmbientOcclusion(final MapGraph mapGraph, final MapGraphNode node) {
+		int nodeCol = node.getCol();
+		int nodeRow = node.getRow();
+		generateFloorEastWestAmbientOcclusions(mapGraph, node, nodeCol, nodeRow);
+		generateFloorNorthSouthAmbientOcclusions(mapGraph, node, nodeCol, nodeRow);
+	}
+
+	private void generateFloorNorthSouthAmbientOcclusions(final MapGraph mapGraph,
+														  final MapGraphNode node,
+														  final int nodeCol,
+														  final int nodeRow) {
+		if (nodeRow + 1 < MAP_SIZE) {
+			Optional.ofNullable(mapGraph.getNode(nodeCol, nodeRow + 1))
+					.ifPresent(south -> applyAmbientOcclusion(node, south, FloorComponent.AMBIENT_OCCLUSION_MASK_SOUTH));
+		}
+		if (nodeRow - 1 >= 0) {
+			Optional.ofNullable(mapGraph.getNode(nodeCol, nodeRow - 1))
+					.ifPresent(north -> applyAmbientOcclusion(node, north, FloorComponent.AMBIENT_OCCLUSION_MASK_NORTH));
+		}
+	}
+
+	private void generateFloorEastWestAmbientOcclusions(final MapGraph mapGraph,
+														final MapGraphNode node,
+														final int nodeCol,
+														final int nodeRow) {
+		if (nodeCol + 1 < MAP_SIZE) {
+			Optional.ofNullable(mapGraph.getNode(nodeCol + 1, nodeRow))
+					.ifPresent(east -> applyAmbientOcclusion(node, east, FloorComponent.AMBIENT_OCCLUSION_MASK_EAST));
+		}
+		if (nodeCol - 1 >= 0) {
+			Optional.ofNullable(mapGraph.getNode(nodeCol - 1, nodeRow))
+					.ifPresent(west -> applyAmbientOcclusion(node, west, FloorComponent.AMBIENT_OCCLUSION_MASK_WEST));
+		}
+	}
+
+	private void applyAmbientOcclusion(final MapGraphNode selected, final MapGraphNode neighbor, final int mask) {
+		if (neighbor.getHeight() > selected.getHeight()) {
+			FloorComponent floorComponent = ComponentsMapper.floor.get(selected.getEntity());
+			floorComponent.setAmbientOcclusion(floorComponent.getAmbientOcclusion() | mask);
+		}
 	}
 
 	private void inflateAllElements(final JsonObject mapJsonObject) {
@@ -462,7 +496,6 @@ public final class MapBuilder implements Disposable {
 	private void inflateWall(final Wall wall, final MapNodeData parentNode) {
 		BoundingBox boundingBox = wall.getModelInstance().calculateBoundingBox(new BoundingBox());
 		GameModelInstance modelInstance = new GameModelInstance(wall.getModelInstance(), boundingBox, true, Color.WHITE);
-		modelInstance.getAdditionalRenderData().setApplyAmbientOcclusion(true);
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true, false)
 				.addWallComponent(parentNode)

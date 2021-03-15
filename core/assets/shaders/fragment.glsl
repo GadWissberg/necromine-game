@@ -131,7 +131,8 @@ uniform int u_model_z;
 
 uniform vec3 u_ambient_light;
 uniform vec4 u_color_when_outside;
-uniform int u_apply_ambient_occlusion;
+uniform int u_apply_wall_ambient_occlusion;
+uniform int u_apply_floor_ambient_occlusion;
 
 float map(float value, float min1, float max1, float min2, float max2) {
     return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
@@ -201,11 +202,25 @@ void main() {
             gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;
         }
         gl_FragColor.rgb += diffuse.rgb * (u_ambient_light.rgb + v_lightDiffuse);
-        if (u_apply_ambient_occlusion == 1){
-            gl_FragColor.rgb *= min(1.0, v_frag_pos.y - u_model_y);
-        }
+
         float flooredX = float(u_model_x);
         float flooredZ = float(u_model_z);
+        if (u_apply_wall_ambient_occlusion == 1){
+            gl_FragColor.rgb *= min(1.0, v_frag_pos.y - u_model_y);
+        } else if (u_apply_floor_ambient_occlusion > 0) {
+            if ((u_apply_floor_ambient_occlusion & 1) == 1){
+                gl_FragColor.rgb *= min(2.0*(flooredX + 1.0 - v_frag_pos.x), 1.0);
+            }
+            if ((u_apply_floor_ambient_occlusion & 2) == 2){
+                gl_FragColor.rgb *= min(2.0*(flooredZ + 1.0 - v_frag_pos.z), 1.0);
+            }
+            if ((u_apply_floor_ambient_occlusion & 4) == 4){
+                gl_FragColor.rgb *= min(2.0*(v_frag_pos.x - flooredX), 1.0);
+            }
+            if ((u_apply_floor_ambient_occlusion & 8) == 8){
+                gl_FragColor.rgb *= min(2.0*(v_frag_pos.z - flooredZ), 1.0);
+            }
+        }
         if (!fragOutside){
             // Bottom-Right
             if ((fragFowValue & 2) == 0){
@@ -239,6 +254,7 @@ void main() {
             if ((fragFowValue & 256) == 0){
                 gl_FragColor.rgb *= min(2.0*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ)), 1.0);
             }
+
         } else {
             gl_FragColor.rgb *= u_color_when_outside.rgb;
         }
