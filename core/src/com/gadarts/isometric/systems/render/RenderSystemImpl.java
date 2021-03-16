@@ -18,7 +18,11 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.AnimationComponent;
+import com.gadarts.isometric.components.CharacterAnimation;
+import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.LightComponent;
+import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
@@ -231,7 +235,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			MapGraph map = services.getMap();
 			MapGraphNode characterNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_1));
 			if (!drawFlags.isDrawFow() || map.getFowMap()[characterNode.getRow()][characterNode.getCol()] == 1) {
-				environment.getLightsRenderer().setDecalColorAccordingToLights(entity);
+				environment.getLightsRenderer().setDecalColorAccordingToLights(entity, environment);
 				decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
 				decalBatch.add(decal);
 				decalBatch.add(shadowDecal);

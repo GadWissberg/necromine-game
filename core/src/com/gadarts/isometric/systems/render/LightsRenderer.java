@@ -69,7 +69,7 @@ public class LightsRenderer {
 		);
 	}
 
-	void setDecalColorAccordingToLights(final Entity entity) {
+	void setDecalColorAccordingToLights(final Entity entity, WorldEnvironment environment) {
 		Decal decal = ComponentsMapper.characterDecal.get(entity).getDecal();
 		if (shouldApplyLightsOnDecal(entity, ComponentsMapper.character.get(entity).getCharacterSpriteData())) {
 			float minDistance = Float.MAX_VALUE;
@@ -77,6 +77,8 @@ public class LightsRenderer {
 			if (minDistance == Float.MAX_VALUE) {
 				decal.setColor(DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, DECAL_DARKEST_COLOR, 1f);
 			}
+			Color color = decal.getColor().add(environment.getAmbientColor());
+			decal.setColor(color);
 		} else {
 			decal.setColor(Color.WHITE);
 		}
