@@ -1,377 +1,1517 @@
 {
+  "ambient": 0.2,
   "target": 5,
   "tiles": {
     "width": 20,
     "depth": 20,
-    "matrix": "0000000000000000000004444440000000000000044444400000000000000444444000000000000004444444444444000000044444400444440000000444444004444400000000040000000400000000000400000004000000000004444400040000000000044444444400000000000444440000000000000004000000000000000000040000000000000000044444000000000000000444440000000000000004444400000000000000044444000000000000000000000000000000000000000000000000000000"
+    "matrix": "AQEBAQEBAQEIBQUFBgEBAQEBAQEBAwMDAwMDAQgFBQUGAQMDAwMDAQEDAwMDAwMBCAUFBQYBAwMDAwMBAQMDAwMDAwEIBQUFBgEDAwMDAwEBAwMDAwMDAQgFBQUGAQMDAwMDAQEDAwMDAwMBCAUFBQYBAwMDAwMBAQEBAQEBAQEIBQUFBgEBAQEDAwEJCQkJCQkJCQsFBQUGAQEBAQMDAQUFBQUFBQUFBQUFBQYBAQEBAwMBBQUFBQUFBQUFBQUFBgEBAQEDAwEFBQUFBQUFBQUFBQUGAQEBAQMDAQcHBwcHBwcHDQUFBQYBAwMDAwMBAQEBAQEBAQEIBQUFBgEDAwMDAwEBAwMDAwMDAQgFBQUGAQMDAwMDAQEDAwMDAwMBCAUFBQYBAwMDAwMBAQMDAwMDAwEIBQUFBgEDAwMDAwEBAwMDAwMDAQgFBQUGAQMDAwMDAQEDAwMDAwMBCAUFBQYBAwMDAwMBAQMDAwMDAwEIBQUFBgEDAwMDAwEBAQEBAQEBAQgFBQUGAQEBAQEBAQ\u003d\u003d",
+    "heights": [
+      {
+        "row": 0,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "height": 0.2
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "height": 0.2
+      },
+      {
+        "row": 0,
+        "col": 3,
+        "height": 0.2
+      },
+      {
+        "row": 0,
+        "col": 4,
+        "height": 0.2
+      },
+      {
+        "row": 0,
+        "col": 5,
+        "height": 0.2
+      },
+      {
+        "row": 0,
+        "col": 6,
+        "height": 0.2
+      },
+      {
+        "row": 0,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 0,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 0,
+        "col": 14,
+        "height": 0.2
+      },
+      {
+        "row": 0,
+        "col": 15,
+        "height": 0.2
+      },
+      {
+        "row": 0,
+        "col": 16,
+        "height": 0.2
+      },
+      {
+        "row": 0,
+        "col": 17,
+        "height": 0.2
+      },
+      {
+        "row": 0,
+        "col": 18,
+        "height": 0.2
+      },
+      {
+        "row": 0,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "height": 8.0,
+        "west": "FLOOR_PAVEMENT_0",
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "height": 8.0,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 3,
+        "height": 8.0,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 4,
+        "height": 8.0,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 5,
+        "height": 8.0,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 6,
+        "height": 8.0,
+        "east": "WALL_BRICK_1",
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 14,
+        "height": 7.0,
+        "west": "WALL_BRICK_3",
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 15,
+        "height": 7.0,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 16,
+        "height": 7.0,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 17,
+        "height": 7.0,
+        "west": "FLOOR_PAVEMENT_0",
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0",
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 1,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 2,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "height": 8.0,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "height": 8.0
+      },
+      {
+        "row": 2,
+        "col": 3,
+        "height": 8.0
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "height": 8.0
+      },
+      {
+        "row": 2,
+        "col": 5,
+        "height": 8.0
+      },
+      {
+        "row": 2,
+        "col": 6,
+        "height": 8.0,
+        "east": "WALL_BRICK_1"
+      },
+      {
+        "row": 2,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 2,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 2,
+        "col": 14,
+        "height": 7.0,
+        "west": "WALL_BRICK_3"
+      },
+      {
+        "row": 2,
+        "col": 15,
+        "height": 7.0
+      },
+      {
+        "row": 2,
+        "col": 16,
+        "height": 7.0
+      },
+      {
+        "row": 2,
+        "col": 17,
+        "height": 7.0,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 2,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 2,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 3,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 3,
+        "col": 1,
+        "height": 8.0,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "height": 8.0
+      },
+      {
+        "row": 3,
+        "col": 3,
+        "height": 8.0
+      },
+      {
+        "row": 3,
+        "col": 4,
+        "height": 8.0
+      },
+      {
+        "row": 3,
+        "col": 5,
+        "height": 8.0
+      },
+      {
+        "row": 3,
+        "col": 6,
+        "height": 8.0,
+        "east": "WALL_BRICK_1"
+      },
+      {
+        "row": 3,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 3,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 3,
+        "col": 14,
+        "height": 7.0,
+        "west": "WALL_BRICK_3"
+      },
+      {
+        "row": 3,
+        "col": 15,
+        "height": 7.0
+      },
+      {
+        "row": 3,
+        "col": 16,
+        "height": 7.0
+      },
+      {
+        "row": 3,
+        "col": 17,
+        "height": 7.0,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 3,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 3,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 4,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 4,
+        "col": 1,
+        "height": 8.0,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 4,
+        "col": 2,
+        "height": 8.0
+      },
+      {
+        "row": 4,
+        "col": 3,
+        "height": 8.0
+      },
+      {
+        "row": 4,
+        "col": 4,
+        "height": 8.0
+      },
+      {
+        "row": 4,
+        "col": 5,
+        "height": 8.0
+      },
+      {
+        "row": 4,
+        "col": 6,
+        "height": 8.0,
+        "east": "WALL_BRICK_1"
+      },
+      {
+        "row": 4,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 4,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 4,
+        "col": 14,
+        "height": 7.0,
+        "west": "WALL_BRICK_3"
+      },
+      {
+        "row": 4,
+        "col": 15,
+        "height": 7.0
+      },
+      {
+        "row": 4,
+        "col": 16,
+        "height": 7.0
+      },
+      {
+        "row": 4,
+        "col": 17,
+        "height": 7.0,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 4,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 4,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 5,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 5,
+        "col": 1,
+        "height": 8.0,
+        "south": "WALL_BRICK_1",
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 5,
+        "col": 2,
+        "height": 8.0,
+        "south": "WALL_BRICK_1"
+      },
+      {
+        "row": 5,
+        "col": 3,
+        "height": 8.0,
+        "south": "WALL_BRICK_1"
+      },
+      {
+        "row": 5,
+        "col": 4,
+        "height": 8.0,
+        "south": "WALL_BRICK_1"
+      },
+      {
+        "row": 5,
+        "col": 5,
+        "height": 8.0,
+        "south": "WALL_BRICK_1"
+      },
+      {
+        "row": 5,
+        "col": 6,
+        "height": 8.0,
+        "east": "WALL_BRICK_1",
+        "south": "WALL_BRICK_1"
+      },
+      {
+        "row": 5,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 5,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 5,
+        "col": 14,
+        "height": 7.0,
+        "south": "WALL_BRICK_3",
+        "west": "WALL_BRICK_3"
+      },
+      {
+        "row": 5,
+        "col": 15,
+        "height": 7.0,
+        "south": "WALL_BRICK_3"
+      },
+      {
+        "row": 5,
+        "col": 16,
+        "height": 7.0,
+        "south": "WALL_BRICK_3"
+      },
+      {
+        "row": 5,
+        "col": 17,
+        "height": 7.0,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 5,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 5,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 6,
+        "col": 0,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 6,
+        "col": 1,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 6,
+        "col": 2,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 6,
+        "col": 4,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 6,
+        "col": 5,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 6,
+        "col": 6,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 6,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0",
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 6,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 6,
+        "col": 14,
+        "height": 0.2
+      },
+      {
+        "row": 6,
+        "col": 15,
+        "height": 0.2
+      },
+      {
+        "row": 6,
+        "col": 16,
+        "height": 0.2
+      },
+      {
+        "row": 6,
+        "col": 17,
+        "height": 7.0,
+        "west": "FLOOR_1"
+      },
+      {
+        "row": 6,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 6,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 7,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 7,
+        "col": 14,
+        "height": 0.2
+      },
+      {
+        "row": 7,
+        "col": 15,
+        "height": 0.2
+      },
+      {
+        "row": 7,
+        "col": 16,
+        "height": 0.2
+      },
+      {
+        "row": 7,
+        "col": 17,
+        "height": 7.0,
+        "west": "FLOOR_1"
+      },
+      {
+        "row": 7,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 7,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 8,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 8,
+        "col": 14,
+        "height": 0.2
+      },
+      {
+        "row": 8,
+        "col": 15,
+        "height": 0.2
+      },
+      {
+        "row": 8,
+        "col": 16,
+        "height": 0.2
+      },
+      {
+        "row": 8,
+        "col": 17,
+        "height": 7.0,
+        "west": "FLOOR_1"
+      },
+      {
+        "row": 8,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 8,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 9,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 9,
+        "col": 14,
+        "height": 0.2
+      },
+      {
+        "row": 9,
+        "col": 15,
+        "height": 0.2
+      },
+      {
+        "row": 9,
+        "col": 16,
+        "height": 0.2
+      },
+      {
+        "row": 9,
+        "col": 17,
+        "height": 7.0,
+        "west": "FLOOR_1"
+      },
+      {
+        "row": 9,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 9,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 10,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 10,
+        "col": 14,
+        "height": 0.2
+      },
+      {
+        "row": 10,
+        "col": 15,
+        "height": 0.2
+      },
+      {
+        "row": 10,
+        "col": 16,
+        "height": 0.2
+      },
+      {
+        "row": 10,
+        "col": 17,
+        "height": 7.0,
+        "west": "FLOOR_1"
+      },
+      {
+        "row": 10,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 10,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 11,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 11,
+        "col": 14,
+        "height": 7.0,
+        "west": "WALL_BRICK_3",
+        "north": "WALL_BRICK_3"
+      },
+      {
+        "row": 11,
+        "col": 15,
+        "height": 7.0,
+        "north": "WALL_BRICK_3"
+      },
+      {
+        "row": 11,
+        "col": 16,
+        "height": 7.0,
+        "north": "WALL_BRICK_3"
+      },
+      {
+        "row": 11,
+        "col": 17,
+        "height": 7.0,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 11,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0",
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 11,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 12,
+        "col": 0,
+        "height": 0.2,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 12,
+        "col": 1,
+        "height": 0.2,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 12,
+        "col": 2,
+        "height": 0.2,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 12,
+        "col": 3,
+        "height": 0.2,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 12,
+        "col": 4,
+        "height": 0.2,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 12,
+        "col": 5,
+        "height": 0.2,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 12,
+        "col": 6,
+        "height": 0.2,
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 12,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0",
+        "north": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 12,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 12,
+        "col": 14,
+        "height": 7.0,
+        "west": "WALL_BRICK_3"
+      },
+      {
+        "row": 12,
+        "col": 15,
+        "height": 7.0
+      },
+      {
+        "row": 12,
+        "col": 16,
+        "height": 7.0
+      },
+      {
+        "row": 12,
+        "col": 17,
+        "height": 7.0
+      },
+      {
+        "row": 12,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 12,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 13,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 13,
+        "col": 1,
+        "height": 9.0,
+        "west": "FLOOR_PAVEMENT_0",
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 13,
+        "col": 2,
+        "height": 9.0,
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 13,
+        "col": 3,
+        "height": 9.0,
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 13,
+        "col": 4,
+        "height": 9.0,
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 13,
+        "col": 5,
+        "height": 9.0,
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 13,
+        "col": 6,
+        "height": 9.0,
+        "east": "WALL_BRICK_2",
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 13,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 13,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 13,
+        "col": 14,
+        "height": 7.0,
+        "west": "WALL_BRICK_3"
+      },
+      {
+        "row": 13,
+        "col": 15,
+        "height": 7.0
+      },
+      {
+        "row": 13,
+        "col": 16,
+        "height": 7.0
+      },
+      {
+        "row": 13,
+        "col": 17,
+        "height": 7.0
+      },
+      {
+        "row": 13,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 13,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 14,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 14,
+        "col": 1,
+        "height": 9.0,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 14,
+        "col": 2,
+        "height": 9.0
+      },
+      {
+        "row": 14,
+        "col": 3,
+        "height": 9.0
+      },
+      {
+        "row": 14,
+        "col": 4,
+        "height": 9.0
+      },
+      {
+        "row": 14,
+        "col": 5,
+        "height": 9.0
+      },
+      {
+        "row": 14,
+        "col": 6,
+        "height": 9.0,
+        "east": "WALL_BRICK_2"
+      },
+      {
+        "row": 14,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 14,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 14,
+        "col": 14,
+        "height": 7.0,
+        "west": "WALL_BRICK_3"
+      },
+      {
+        "row": 14,
+        "col": 15,
+        "height": 7.0
+      },
+      {
+        "row": 14,
+        "col": 16,
+        "height": 7.0
+      },
+      {
+        "row": 14,
+        "col": 17,
+        "height": 7.0
+      },
+      {
+        "row": 14,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 14,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 15,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 15,
+        "col": 1,
+        "height": 9.0,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 15,
+        "col": 2,
+        "height": 9.0
+      },
+      {
+        "row": 15,
+        "col": 3,
+        "height": 9.0
+      },
+      {
+        "row": 15,
+        "col": 4,
+        "height": 9.0
+      },
+      {
+        "row": 15,
+        "col": 5,
+        "height": 9.0
+      },
+      {
+        "row": 15,
+        "col": 6,
+        "height": 9.0,
+        "east": "WALL_BRICK_2"
+      },
+      {
+        "row": 15,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 15,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 15,
+        "col": 14,
+        "height": 7.0,
+        "west": "WALL_BRICK_3"
+      },
+      {
+        "row": 15,
+        "col": 15,
+        "height": 7.0
+      },
+      {
+        "row": 15,
+        "col": 16,
+        "height": 7.0
+      },
+      {
+        "row": 15,
+        "col": 17,
+        "height": 7.0
+      },
+      {
+        "row": 15,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 15,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 16,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 16,
+        "col": 1,
+        "height": 9.0,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 16,
+        "col": 2,
+        "height": 9.0
+      },
+      {
+        "row": 16,
+        "col": 3,
+        "height": 9.0
+      },
+      {
+        "row": 16,
+        "col": 4,
+        "height": 9.0
+      },
+      {
+        "row": 16,
+        "col": 5,
+        "height": 9.0
+      },
+      {
+        "row": 16,
+        "col": 6,
+        "height": 9.0,
+        "east": "WALL_BRICK_2"
+      },
+      {
+        "row": 16,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 16,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 16,
+        "col": 14,
+        "height": 7.0,
+        "west": "WALL_BRICK_3"
+      },
+      {
+        "row": 16,
+        "col": 15,
+        "height": 7.0
+      },
+      {
+        "row": 16,
+        "col": 16,
+        "height": 7.0
+      },
+      {
+        "row": 16,
+        "col": 17,
+        "height": 7.0
+      },
+      {
+        "row": 16,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 16,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 17,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 17,
+        "col": 1,
+        "height": 9.0,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 17,
+        "col": 2,
+        "height": 9.0
+      },
+      {
+        "row": 17,
+        "col": 3,
+        "height": 9.0
+      },
+      {
+        "row": 17,
+        "col": 4,
+        "height": 9.0
+      },
+      {
+        "row": 17,
+        "col": 5,
+        "height": 9.0
+      },
+      {
+        "row": 17,
+        "col": 6,
+        "height": 9.0,
+        "east": "WALL_BRICK_2"
+      },
+      {
+        "row": 17,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 17,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 17,
+        "col": 14,
+        "height": 7.0,
+        "west": "WALL_BRICK_3"
+      },
+      {
+        "row": 17,
+        "col": 15,
+        "height": 7.0
+      },
+      {
+        "row": 17,
+        "col": 16,
+        "height": 7.0
+      },
+      {
+        "row": 17,
+        "col": 17,
+        "height": 7.0
+      },
+      {
+        "row": 17,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 17,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 18,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 18,
+        "col": 1,
+        "height": 9.0,
+        "south": "FLOOR_PAVEMENT_0",
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 18,
+        "col": 2,
+        "height": 9.0,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 18,
+        "col": 3,
+        "height": 9.0,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 18,
+        "col": 4,
+        "height": 9.0,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 18,
+        "col": 5,
+        "height": 9.0,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 18,
+        "col": 6,
+        "height": 9.0,
+        "east": "WALL_BRICK_2",
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 18,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 18,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 18,
+        "col": 14,
+        "height": 7.0,
+        "south": "FLOOR_PAVEMENT_0",
+        "west": "WALL_BRICK_3"
+      },
+      {
+        "row": 18,
+        "col": 15,
+        "height": 7.0,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 18,
+        "col": 16,
+        "height": 7.0,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 18,
+        "col": 17,
+        "height": 7.0,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 18,
+        "col": 18,
+        "height": 7.0,
+        "east": "FLOOR_PAVEMENT_0",
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 18,
+        "col": 19,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 0,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 1,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 2,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 3,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 4,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 5,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 6,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 7,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 19,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 19,
+        "col": 14,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 15,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 16,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 17,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 18,
+        "height": 0.2
+      },
+      {
+        "row": 19,
+        "col": 19,
+        "height": 0.2
+      }
+    ]
   },
   "characters": {
     "player": [
       {
-        "row": 2,
-        "col": 2,
-        "direction": 1,
+        "row": 9,
+        "col": 1,
+        "direction": 2,
         "type": 0
       }
     ],
     "enemy": [
       {
-        "row": 4,
-        "col": 4,
-        "direction": 1,
+        "row": 8,
+        "col": 7,
+        "direction": 2,
+        "type": 0
+      },
+      {
+        "row": 10,
+        "col": 8,
+        "direction": 2,
         "type": 0
       },
       {
         "row": 6,
-        "col": 11,
-        "direction": 5,
-        "type": 0
-      },
-      {
-        "row": 4,
-        "col": 13,
-        "direction": 6,
-        "type": 0
-      },
-      {
-        "row": 6,
-        "col": 9,
-        "direction": 4,
-        "type": 0
-      },
-      {
-        "row": 11,
-        "col": 6,
-        "direction": 5,
-        "type": 0
-      },
-      {
-        "row": 9,
-        "col": 5,
-        "direction": 6,
-        "type": 0
-      },
-      {
-        "row": 16,
-        "col": 4,
-        "direction": 5,
-        "type": 0
-      },
-      {
-        "row": 16,
-        "col": 2,
-        "direction": 3,
+        "col": 15,
+        "direction": 7,
         "type": 0
       }
     ],
     "npc": []
   },
-  "environment": [
-    {
-      "row": 3,
-      "col": 0,
-      "direction": 2,
-      "type": 0
-    },
-    {
-      "row": 0,
-      "col": 3,
-      "direction": 0,
-      "type": 0
-    },
-    {
-      "row": 6,
-      "col": 0,
-      "direction": 2,
-      "type": 1
-    },
-    {
-      "row": 7,
-      "col": 2,
-      "direction": 4,
-      "type": 1
-    },
-    {
-      "row": 7,
-      "col": 5,
-      "direction": 4,
-      "type": 1
-    },
-    {
-      "row": 6,
-      "col": 7,
-      "direction": 6,
-      "type": 1
-    },
-    {
-      "row": 3,
-      "col": 7,
-      "direction": 6,
-      "type": 1
-    },
-    {
-      "row": 3,
-      "col": 9,
-      "direction": 0,
-      "type": 0
-    },
-    {
-      "row": 3,
-      "col": 12,
-      "direction": 0,
-      "type": 1
-    },
-    {
-      "row": 5,
-      "col": 14,
-      "direction": 6,
-      "type": 1
-    },
-    {
-      "row": 7,
-      "col": 13,
-      "direction": 4,
-      "type": 1
-    },
-    {
-      "row": 7,
-      "col": 10,
-      "direction": 4,
-      "type": 1
-    },
-    {
-      "row": 6,
-      "col": 8,
-      "direction": 2,
-      "type": 1
-    },
-    {
-      "row": 5,
-      "col": 8,
-      "direction": 4,
-      "type": 1
-    },
-    {
-      "row": 9,
-      "col": 12,
-      "direction": 6,
-      "type": 0
-    },
-    {
-      "row": 11,
-      "col": 10,
-      "direction": 4,
-      "type": 0
-    },
-    {
-      "row": 12,
-      "col": 6,
-      "direction": 4,
-      "type": 0
-    },
-    {
-      "row": 8,
-      "col": 6,
-      "direction": 0,
-      "type": 0
-    },
-    {
-      "row": 9,
-      "col": 9,
-      "direction": 0,
-      "type": 1
-    },
-    {
-      "row": 9,
-      "col": 10,
-      "direction": 2,
-      "type": 1
-    },
-    {
-      "row": 9,
-      "col": 2,
-      "direction": 2,
-      "type": 0
-    },
-    {
-      "row": 12,
-      "col": 2,
-      "direction": 2,
-      "type": 1
-    },
-    {
-      "row": 13,
-      "col": 2,
-      "direction": 0,
-      "type": 1
-    },
-    {
-      "row": 16,
-      "col": 0,
-      "direction": 2,
-      "type": 0
-    },
-    {
-      "row": 16,
-      "col": 6,
-      "direction": 6,
-      "type": 0
-    },
-    {
-      "row": 13,
-      "col": 5,
-      "direction": 0,
-      "type": 1
-    },
-    {
-      "row": 18,
-      "col": 3,
-      "direction": 4,
-      "type": 0
-    },
-    {
-      "row": 13,
-      "col": 4,
-      "direction": 6,
-      "type": 1
-    },
-    {
-      "row": 0,
-      "col": 6,
-      "direction": 0,
-      "type": 1
-    },
-    {
-      "row": 2,
-      "col": 5,
-      "direction": 2,
-      "type": 5
-    },
-    {
-      "row": 5,
-      "col": 5,
-      "direction": 2,
-      "type": 5
-    },
-    {
-      "row": 5,
-      "col": 2,
-      "direction": 2,
-      "type": 5
-    },
-    {
-      "row": 10,
-      "col": 4,
-      "direction": 2,
-      "type": 5
-    },
-    {
-      "row": 10,
-      "col": 6,
-      "direction": 2,
-      "type": 5
-    },
-    {
-      "row": 7,
-      "col": 3,
-      "direction": 4,
-      "type": 2
-    },
-    {
-      "row": 12,
-      "col": 3,
-      "direction": 4,
-      "type": 2
-    },
-    {
-      "row": 7,
-      "col": 11,
-      "direction": 4,
-      "type": 2
-    },
-    {
-      "row": 4,
-      "col": 7,
-      "direction": 6,
-      "type": 3
-    },
-    {
-      "row": 10,
-      "col": 8,
-      "direction": 6,
-      "type": 3
-    },
-    {
-      "row": 13,
-      "col": 3,
-      "direction": 0,
-      "type": 3
-    },
-    {
-      "row": 8,
-      "col": 3,
-      "direction": 0,
-      "type": 3
-    },
-    {
-      "row": 10,
-      "col": 10,
-      "direction": 2,
-      "type": 4
-    },
-    {
-      "row": 4,
-      "col": 8,
-      "direction": 2,
-      "type": 4
-    },
-    {
-      "row": 10,
-      "col": 8,
-      "direction": 2,
-      "type": 2
-    },
-    {
-      "row": 10,
-      "col": 9,
-      "direction": 2,
-      "type": 2
-    },
-    {
-      "row": 8,
-      "col": 4,
-      "direction": 6,
-      "type": 1
-    }
-  ],
-  "pickups": [
-    {
-      "row": 5,
-      "col": 11,
-      "type": 1
-    },
-    {
-      "row": 16,
-      "col": 3,
-      "type": 2
-    }
-  ],
+  "environment": [],
+  "pickups": [],
   "lights": [
     {
       "row": 3,
-      "col": 3
-    },
-    {
-      "row": 10,
-      "col": 5
-    },
-    {
-      "row": 5,
-      "col": 11
+      "col": 10,
+      "type": 0
     },
     {
       "row": 15,
-      "col": 3
+      "col": 10,
+      "type": 0
+    },
+    {
+      "row": 9,
+      "col": 6,
+      "type": 0
     }
   ]
 }
