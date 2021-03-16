@@ -59,6 +59,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
+import static com.gadarts.isometric.components.FloorComponent.*;
 import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
 import static com.gadarts.necromine.assets.MapJsonKeys.*;
 import static com.gadarts.necromine.model.characters.CharacterTypes.*;
@@ -174,6 +175,43 @@ public final class MapBuilder implements Disposable {
 		int nodeRow = node.getRow();
 		generateFloorEastWestAmbientOcclusions(mapGraph, node, nodeCol, nodeRow);
 		generateFloorNorthSouthAmbientOcclusions(mapGraph, node, nodeCol, nodeRow);
+		generateFloorDiagonalAmbientOcclusions(mapGraph, node, nodeCol, nodeRow);
+	}
+
+	private void generateFloorDiagonalAmbientOcclusions(final MapGraph mapGraph,
+														final MapGraphNode node,
+														final int nodeCol,
+														final int nodeRow) {
+		generateFloorDiagonalSouthAmbientOcclusions(mapGraph, node, nodeCol, nodeRow);
+		generateFloorDiagonalNorthAmbientOcclusions(mapGraph, node, nodeCol, nodeRow);
+	}
+
+	private void generateFloorDiagonalNorthAmbientOcclusions(final MapGraph mapGraph,
+															 final MapGraphNode node,
+															 final int nodeCol,
+															 final int nodeRow) {
+		if (nodeCol - 1 >= 0 && nodeRow - 1 >= 0) {
+			Optional.ofNullable(mapGraph.getNode(nodeCol - 1, nodeRow - 1))
+					.ifPresent(northWest -> applyAmbientOcclusion(node, northWest, AO_MASK_NORTH_WEST));
+		}
+		if (nodeCol + 1 >= 0 && nodeRow - 1 >= 0) {
+			Optional.ofNullable(mapGraph.getNode(nodeCol + 1, nodeRow - 1))
+					.ifPresent(northEast -> applyAmbientOcclusion(node, northEast, AO_MASK_NORTH_EAST));
+		}
+	}
+
+	private void generateFloorDiagonalSouthAmbientOcclusions(final MapGraph mapGraph,
+															 final MapGraphNode node,
+															 final int nodeCol,
+															 final int nodeRow) {
+		if (nodeCol + 1 < MAP_SIZE && nodeRow + 1 < MAP_SIZE) {
+			Optional.ofNullable(mapGraph.getNode(nodeCol + 1, nodeRow + 1))
+					.ifPresent(southEast -> applyAmbientOcclusion(node, southEast, AO_MASK_SOUTH_EAST));
+		}
+		if (nodeCol - 1 >= 0 && nodeRow + 1 < MAP_SIZE) {
+			Optional.ofNullable(mapGraph.getNode(nodeCol - 1, nodeRow + 1))
+					.ifPresent(southWest -> applyAmbientOcclusion(node, southWest, AO_MASK_SOUTH_WEST));
+		}
 	}
 
 	private void generateFloorNorthSouthAmbientOcclusions(final MapGraph mapGraph,
@@ -182,11 +220,11 @@ public final class MapBuilder implements Disposable {
 														  final int nodeRow) {
 		if (nodeRow + 1 < MAP_SIZE) {
 			Optional.ofNullable(mapGraph.getNode(nodeCol, nodeRow + 1))
-					.ifPresent(south -> applyAmbientOcclusion(node, south, FloorComponent.AMBIENT_OCCLUSION_MASK_SOUTH));
+					.ifPresent(south -> applyAmbientOcclusion(node, south, AO_MASK_SOUTH));
 		}
 		if (nodeRow - 1 >= 0) {
 			Optional.ofNullable(mapGraph.getNode(nodeCol, nodeRow - 1))
-					.ifPresent(north -> applyAmbientOcclusion(node, north, FloorComponent.AMBIENT_OCCLUSION_MASK_NORTH));
+					.ifPresent(north -> applyAmbientOcclusion(node, north, AO_MASK_NORTH));
 		}
 	}
 
@@ -194,13 +232,15 @@ public final class MapBuilder implements Disposable {
 														final MapGraphNode node,
 														final int nodeCol,
 														final int nodeRow) {
-		if (nodeCol + 1 < MAP_SIZE) {
-			Optional.ofNullable(mapGraph.getNode(nodeCol + 1, nodeRow))
-					.ifPresent(east -> applyAmbientOcclusion(node, east, FloorComponent.AMBIENT_OCCLUSION_MASK_EAST));
+		int eastCol = nodeCol + 1;
+		if (eastCol < MAP_SIZE) {
+			Optional.ofNullable(mapGraph.getNode(eastCol, nodeRow))
+					.ifPresent(east -> applyAmbientOcclusion(node, east, AO_MASK_EAST));
 		}
-		if (nodeCol - 1 >= 0) {
-			Optional.ofNullable(mapGraph.getNode(nodeCol - 1, nodeRow))
-					.ifPresent(west -> applyAmbientOcclusion(node, west, FloorComponent.AMBIENT_OCCLUSION_MASK_WEST));
+		int westCol = nodeCol - 1;
+		if (westCol >= 0) {
+			Optional.ofNullable(mapGraph.getNode(westCol, nodeRow))
+					.ifPresent(west -> applyAmbientOcclusion(node, west, AO_MASK_WEST));
 		}
 	}
 

@@ -146,6 +146,7 @@ public class MainShader extends DefaultShader {
 		int col = wallComponent.getParentNode().getCol();
 		program.setUniformf(modelYLocation, map.getNode(col, row).getHeight());
 		program.setUniformi(applyWallAmbientOcclusionLocation, 1);
+		program.setUniformi(applyFloorAmbientOcclusionLocation, 0);
 	}
 
 	private void applyLights(final AdditionalRenderData additionalRenderData) {

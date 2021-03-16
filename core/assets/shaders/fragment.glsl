@@ -208,17 +208,47 @@ void main() {
         if (u_apply_wall_ambient_occlusion == 1){
             gl_FragColor.rgb *= min(1.0, v_frag_pos.y - u_model_y);
         } else if (u_apply_floor_ambient_occlusion > 0) {
+
+            float strength = 8.0;
+            float diag = 1.2;
+            // East
             if ((u_apply_floor_ambient_occlusion & 1) == 1){
-                gl_FragColor.rgb *= min(2.0*(flooredX + 1.0 - v_frag_pos.x), 1.0);
+                gl_FragColor.rgb *= min(strength*(flooredX + 1.0 - v_frag_pos.x), 1.0);
             }
+
+            // South-East
             if ((u_apply_floor_ambient_occlusion & 2) == 2){
-                gl_FragColor.rgb *= min(2.0*(flooredZ + 1.0 - v_frag_pos.z), 1.0);
+                gl_FragColor.rgb *= min(strength*diag*length(vec3(flooredX+1.0, 0.0, flooredZ+1.0) - vec3(v_frag_pos.xyz)), 1.0);
             }
+
+            // South
             if ((u_apply_floor_ambient_occlusion & 4) == 4){
-                gl_FragColor.rgb *= min(2.0*(v_frag_pos.x - flooredX), 1.0);
+                gl_FragColor.rgb *= min(strength*(flooredZ + 1.0 - v_frag_pos.z), 1.0);
             }
+
+            // South-West
             if ((u_apply_floor_ambient_occlusion & 8) == 8){
-                gl_FragColor.rgb *= min(2.0*(v_frag_pos.z - flooredZ), 1.0);
+                gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ+1.0)), 1.0);
+            }
+
+            // West
+            if ((u_apply_floor_ambient_occlusion & 16) == 16){
+                gl_FragColor.rgb *= min(strength*(v_frag_pos.x - flooredX), 1.0);
+            }
+
+            // North-West
+            if ((u_apply_floor_ambient_occlusion & 32) == 32){
+                gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ)), 1.0);
+            }
+
+            // North
+            if ((u_apply_floor_ambient_occlusion & 64) == 64){
+                gl_FragColor.rgb *= min(strength*(v_frag_pos.z - flooredZ), 1.0);
+            }
+
+            // North-East
+            if ((u_apply_floor_ambient_occlusion & 128) == 128){
+                gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)-vec3(flooredX+1.0, 0.0, flooredZ)), 1.0);
             }
         }
         if (!fragOutside){
