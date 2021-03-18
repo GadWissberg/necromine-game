@@ -133,10 +133,12 @@ uniform vec3 u_ambient_light;
 uniform vec4 u_color_when_outside;
 uniform int u_apply_wall_ambient_occlusion;
 uniform int u_apply_floor_ambient_occlusion;
+uniform vec3 u_skip_color;
 
 float map(float value, float min1, float max1, float min2, float max2) {
     return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
 }
+
 void main() {
     #if defined(normalFlag)
     vec3 normal = v_normal;
@@ -195,21 +197,31 @@ void main() {
     int frag_fow_value = (frag_outside) ? 1 : int(u_fow_map[nodeIndex]);
     gl_FragColor.rgb = vec3(0.0);
     if (u_model_width == 0 || (frag_fow_value > 0)){
-        if (u_number_of_lights > -1){
-            for (int i = 0; i< u_number_of_lights; i++){
-                vec3 light =u_lights_positions[i];
-                vec3 sub = light.xyz - v_frag_pos.xyz;
-                vec3 lightDir = normalize(sub);
-                float distance = length(sub);
-                vec2 extra = u_lights_extra_data[i];
-                float attenuation = 4.0 * extra.x / (1.0 + (0.001*distance) + (0.5*distance*distance));
-                float dot_value = dot(v_normal, lightDir);
-                float intensity = max(dot_value, 0.0);
-                gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
+        bool skip_color_disabled = u_skip_color.r == 0.0 && u_skip_color.r == 0.0 && u_skip_color.r == 0.0;
+
+        bool diff_than_skip_color =  u_skip_color.r != diffuse.r
+        && u_skip_color.g != diffuse.g
+        && u_skip_color.b != diffuse.b;
+
+        if (skip_color_disabled || (!skip_color_disabled && diff_than_skip_color)){
+            if (u_number_of_lights > -1){
+                for (int i = 0; i< u_number_of_lights; i++){
+                    vec3 light =u_lights_positions[i];
+                    vec3 sub = light.xyz - v_frag_pos.xyz;
+                    vec3 lightDir = normalize(sub);
+                    float distance = length(sub);
+                    vec2 extra = u_lights_extra_data[i];
+                    float attenuation = 4.0 * extra.x / (1.0 + (0.001*distance) + (0.5*distance*distance));
+                    float dot_value = dot(v_normal, lightDir);
+                    float intensity = max(dot_value, 0.0);
+                    gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
+                }
+                gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;
             }
-            gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;
+            gl_FragColor.rgb += diffuse.rgb * (u_ambient_light.rgb + v_lightDiffuse);
+        } else {
+            gl_FragColor.rgb = diffuse.rgb;
         }
-        gl_FragColor.rgb += diffuse.rgb * (u_ambient_light.rgb + v_lightDiffuse);
 
         float flooredX = one_unit_size ? float(u_model_x) : floor(v_frag_pos.x);
         float flooredZ = one_unit_size ? float(u_model_z) : floor(v_frag_pos.z);

@@ -59,10 +59,31 @@ import java.util.Base64;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static com.gadarts.isometric.components.FloorComponent.*;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_EAST;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_NORTH;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_NORTH_EAST;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_NORTH_WEST;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_SOUTH;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_SOUTH_EAST;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_SOUTH_WEST;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_WEST;
 import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
-import static com.gadarts.necromine.assets.MapJsonKeys.*;
-import static com.gadarts.necromine.model.characters.CharacterTypes.*;
+import static com.gadarts.necromine.assets.MapJsonKeys.CHARACTERS;
+import static com.gadarts.necromine.assets.MapJsonKeys.COL;
+import static com.gadarts.necromine.assets.MapJsonKeys.DEPTH;
+import static com.gadarts.necromine.assets.MapJsonKeys.DIRECTION;
+import static com.gadarts.necromine.assets.MapJsonKeys.EAST;
+import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHT;
+import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHTS;
+import static com.gadarts.necromine.assets.MapJsonKeys.MATRIX;
+import static com.gadarts.necromine.assets.MapJsonKeys.ROW;
+import static com.gadarts.necromine.assets.MapJsonKeys.TILES;
+import static com.gadarts.necromine.assets.MapJsonKeys.TYPE;
+import static com.gadarts.necromine.assets.MapJsonKeys.WEST;
+import static com.gadarts.necromine.assets.MapJsonKeys.WIDTH;
+import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_Y;
+import static com.gadarts.necromine.model.characters.CharacterTypes.ENEMY;
+import static com.gadarts.necromine.model.characters.CharacterTypes.PLAYER;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
 import static com.gadarts.necromine.model.characters.Direction.SOUTH;
 
@@ -376,7 +397,7 @@ public final class MapBuilder implements Disposable {
 															  final EnvironmentDefinitions type) {
 		String fileName = GameServices.BOUNDING_BOX_PREFIX + type.getModelDefinition().getFilePath();
 		ModelBoundingBox box = assetManager.get(fileName, ModelBoundingBox.class);
-		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()), box);
+		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()), box, type.getModelDefinition());
 		Direction direction = Direction.values()[directionIndex];
 		modelInstance.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
 		modelInstance.transform.rotate(Vector3.Y, -1 * direction.getDirection(auxVector2_1).angleDeg());
