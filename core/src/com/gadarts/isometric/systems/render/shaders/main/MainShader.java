@@ -122,7 +122,7 @@ public class MainShader extends DefaultShader {
         }
     }
 
-    private boolean applyAdditionalRenderData(final Renderable renderable, GameModelInstance modelInstance) {
+    private boolean applyAdditionalRenderData(final Renderable renderable, final GameModelInstance modelInstance) {
         Entity entity = (Entity) renderable.userData;
         ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
         AdditionalRenderData additionalRenderData = modelInstanceComponent.getModelInstance().getAdditionalRenderData();
@@ -133,7 +133,7 @@ public class MainShader extends DefaultShader {
         return applyFow(renderable, additionalRenderData);
     }
 
-    private void applySkipColor(GameModelInstance modelInstance) {
+    private void applySkipColor(final GameModelInstance modelInstance) {
         Assets.Models modelDefinition = modelInstance.getModelDefinition();
         if (modelDefinition != null && modelDefinition.getSkipColor() != null) {
             Color skipColor = modelDefinition.getSkipColor();

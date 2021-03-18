@@ -1,5 +1,5 @@
 {
-  "ambient": 0.2,
+  "ambient": 0.1,
   "target": 5,
   "tiles": {
     "width": 20,
@@ -1497,8 +1497,80 @@
   },
   "environment": [
     {
-      "row": 8,
+      "row": 6,
+      "col": 2,
+      "direction": 2,
+      "type": 6
+    },
+    {
+      "row": 6,
       "col": 5,
+      "direction": 2,
+      "type": 6
+    },
+    {
+      "row": 12,
+      "col": 2,
+      "direction": 2,
+      "type": 6
+    },
+    {
+      "row": 12,
+      "col": 6,
+      "direction": 2,
+      "type": 6
+    },
+    {
+      "row": 4,
+      "col": 7,
+      "direction": 2,
+      "type": 6
+    },
+    {
+      "row": 1,
+      "col": 7,
+      "direction": 2,
+      "type": 6
+    },
+    {
+      "row": 14,
+      "col": 7,
+      "direction": 2,
+      "type": 6
+    },
+    {
+      "row": 17,
+      "col": 7,
+      "direction": 2,
+      "type": 6
+    },
+    {
+      "row": 17,
+      "col": 13,
+      "direction": 2,
+      "type": 6
+    },
+    {
+      "row": 14,
+      "col": 13,
+      "direction": 2,
+      "type": 6
+    },
+    {
+      "row": 11,
+      "col": 13,
+      "direction": 2,
+      "type": 6
+    },
+    {
+      "row": 5,
+      "col": 13,
+      "direction": 2,
+      "type": 6
+    },
+    {
+      "row": 2,
+      "col": 13,
       "direction": 2,
       "type": 6
     }
@@ -1515,8 +1587,7 @@
     },
     {
       "row": 8,
-      "col": 5,
-      "type": 6
+      "col": 5
     }
   ]
 }

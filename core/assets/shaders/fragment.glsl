@@ -203,8 +203,8 @@ void main() {
         bool skip_color_disabled = u_skip_color.r == 0.0 && u_skip_color.g == 0.0 && u_skip_color.b == 0.0;
 
         bool diff_than_skip_color =  modified_skip_color.r != diffuse.r
-        && modified_skip_color.g != diffuse.g
-        && modified_skip_color.b != diffuse.b;
+        || modified_skip_color.g != diffuse.g
+        || modified_skip_color.b != diffuse.b;
 
         if (skip_color_disabled || diff_than_skip_color){
             if (u_number_of_lights > -1){
