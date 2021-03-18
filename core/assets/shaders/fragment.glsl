@@ -144,10 +144,13 @@ void main() {
     vec3 normal = v_normal;
     #endif// normalFlag
 
+    vec3 modified_skip_color = u_skip_color;
+
     #if defined(diffuseTextureFlag) && defined(diffuseColorFlag) && defined(colorFlag)
     vec4 diffuse = texture2D(u_diffuseTexture, v_diffuseUV) * u_diffuseColor * v_color;
     #elif defined(diffuseTextureFlag) && defined(diffuseColorFlag)
     vec4 diffuse = texture2D(u_diffuseTexture, v_diffuseUV) * u_diffuseColor;
+    modified_skip_color = (vec4(modified_skip_color, 1.0) * u_diffuseColor).rgb;
     #elif defined(diffuseTextureFlag) && defined(colorFlag)
     vec4 diffuse = texture2D(u_diffuseTexture, v_diffuseUV) * v_color;
     #elif defined(diffuseTextureFlag)
@@ -197,13 +200,13 @@ void main() {
     int frag_fow_value = (frag_outside) ? 1 : int(u_fow_map[nodeIndex]);
     gl_FragColor.rgb = vec3(0.0);
     if (u_model_width == 0 || (frag_fow_value > 0)){
-        bool skip_color_disabled = u_skip_color.r == 0.0 && u_skip_color.r == 0.0 && u_skip_color.r == 0.0;
+        bool skip_color_disabled = u_skip_color.r == 0.0 && u_skip_color.g == 0.0 && u_skip_color.b == 0.0;
 
-        bool diff_than_skip_color =  u_skip_color.r != diffuse.r
-        && u_skip_color.g != diffuse.g
-        && u_skip_color.b != diffuse.b;
+        bool diff_than_skip_color =  modified_skip_color.r != diffuse.r
+        && modified_skip_color.g != diffuse.g
+        && modified_skip_color.b != diffuse.b;
 
-        if (skip_color_disabled || (!skip_color_disabled && diff_than_skip_color)){
+        if (skip_color_disabled || diff_than_skip_color){
             if (u_number_of_lights > -1){
                 for (int i = 0; i< u_number_of_lights; i++){
                     vec3 light =u_lights_positions[i];
