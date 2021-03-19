@@ -48,46 +48,24 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
 	@Getter
 	private final float ambient;
+	private final PooledEngine engine;
 
 	@Setter(AccessLevel.PACKAGE)
 	@Getter(AccessLevel.PACKAGE)
 	MapGraphNode currentDestination;
 
 	public MapGraph(final float ambient,
-					final ImmutableArray<Entity> wallEntities,
-					final ImmutableArray<Entity> obstacleEntities,
 					final PooledEngine engine) {
+		this.engine = engine;
 		this.ambient = ambient;
 		this.pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
 		this.obstacleEntities = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
 		this.characterEntities = engine.getEntitiesFor(Family.all(CharacterComponent.class).get());
 		this.nodes = new Array<>(MAP_SIZE * MAP_SIZE);
 		this.fowMap = new int[MAP_SIZE][MAP_SIZE];
-		int[][] map = new int[MAP_SIZE][MAP_SIZE];
-		wallEntities.forEach(wall -> {
-			ObstacleWallComponent obstacleWallComponent = ComponentsMapper.obstacleWall.get(wall);
-			int topLeftX = obstacleWallComponent.getTopLeftX();
-			int topLeftY = obstacleWallComponent.getTopLeftY();
-			int bottomRightX = obstacleWallComponent.getBottomRightX();
-			int bottomRightY = obstacleWallComponent.getBottomRightY();
-			if (topLeftX >= 0 && topLeftY >= 0 && bottomRightX >= 0 && bottomRightY >= 0) {
-				for (int x = topLeftX; x <= bottomRightX; x++) {
-					for (int y = topLeftY; y <= bottomRightY; y++) {
-						map[y][x] = MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN.ordinal();
-					}
-				}
-			}
-		});
-		obstacleEntities.forEach(obstacle -> {
-			ObstacleComponent obstacleComponent = ComponentsMapper.obstacle.get(obstacle);
-			EnvironmentDefinitions definition = obstacleComponent.getDefinition();
-			MapNodesTypes nodeType = definition.getNodeType();
-			int current = map[obstacleComponent.getY()][obstacleComponent.getX()];
-			map[obstacleComponent.getY()][obstacleComponent.getX()] = Math.max(nodeType.ordinal(), current);
-		});
 		for (int x = 0; x < MAP_SIZE; x++) {
 			for (int y = 0; y < MAP_SIZE; y++) {
-				nodes.add(new MapGraphNode(x, y, MapNodesTypes.values()[map[y][x]], 8));
+				nodes.add(new MapGraphNode(x, y, MapNodesTypes.values()[MapNodesTypes.PASSABLE_NODE.ordinal()], 8));
 			}
 		}
 		ImmutableArray<Entity> floorEntities = engine.getEntitiesFor(Family.all(FloorComponent.class).get());
@@ -360,4 +338,34 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 
+	public MapGraphNode getNode(final MapCoord coord) {
+		return getNode(coord.getCol(), coord.getRow());
+	}
+
+	public void init() {
+		ImmutableArray<Entity> wallEntities = engine.getEntitiesFor(Family.all(ObstacleWallComponent.class).get());
+		wallEntities.forEach(wall -> {
+			ObstacleWallComponent obstacleWallComponent = ComponentsMapper.obstacleWall.get(wall);
+			int topLeftX = obstacleWallComponent.getTopLeftX();
+			int topLeftY = obstacleWallComponent.getTopLeftY();
+			int bottomRightX = obstacleWallComponent.getBottomRightX();
+			int bottomRightY = obstacleWallComponent.getBottomRightY();
+			if (topLeftX >= 0 && topLeftY >= 0 && bottomRightX >= 0 && bottomRightY >= 0) {
+				for (int x = topLeftX; x <= bottomRightX; x++) {
+					for (int z = topLeftY; z <= bottomRightY; z++) {
+						getNode(x, z).setType(MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+					}
+				}
+			}
+		});
+		obstacleEntities.forEach(obstacle -> {
+			ObstacleComponent obstacleComponent = ComponentsMapper.obstacle.get(obstacle);
+			EnvironmentDefinitions definition = obstacleComponent.getDefinition();
+			MapNodesTypes nodeType = definition.getNodeType();
+			MapGraphNode node = getNode(obstacleComponent.getX(), obstacleComponent.getY());
+			int max = Math.max(nodeType.ordinal(), node.getType().ordinal());
+			node.setType(MapNodesTypes.values()[max]);
+		});
+		applyConnections();
+	}
 }

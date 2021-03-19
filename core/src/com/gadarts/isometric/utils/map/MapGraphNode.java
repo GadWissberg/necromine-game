@@ -13,6 +13,8 @@ public class MapGraphNode {
 	private final Array<Connection<MapGraphNode>> connections;
 	private int col;
 	private int row;
+
+	@Setter
 	private MapNodesTypes type;
 
 

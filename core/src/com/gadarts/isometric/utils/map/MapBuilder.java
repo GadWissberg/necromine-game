@@ -21,8 +21,6 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.FloorComponent;
-import com.gadarts.isometric.components.ObstacleComponent;
-import com.gadarts.isometric.components.ObstacleWallComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterSoundData;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
@@ -59,31 +57,10 @@ import java.util.Base64;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_EAST;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_NORTH;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_NORTH_EAST;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_NORTH_WEST;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_SOUTH;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_SOUTH_EAST;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_SOUTH_WEST;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_WEST;
+import static com.gadarts.isometric.components.FloorComponent.*;
 import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
-import static com.gadarts.necromine.assets.MapJsonKeys.CHARACTERS;
-import static com.gadarts.necromine.assets.MapJsonKeys.COL;
-import static com.gadarts.necromine.assets.MapJsonKeys.DEPTH;
-import static com.gadarts.necromine.assets.MapJsonKeys.DIRECTION;
-import static com.gadarts.necromine.assets.MapJsonKeys.EAST;
-import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHT;
-import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHTS;
-import static com.gadarts.necromine.assets.MapJsonKeys.MATRIX;
-import static com.gadarts.necromine.assets.MapJsonKeys.ROW;
-import static com.gadarts.necromine.assets.MapJsonKeys.TILES;
-import static com.gadarts.necromine.assets.MapJsonKeys.TYPE;
-import static com.gadarts.necromine.assets.MapJsonKeys.WEST;
-import static com.gadarts.necromine.assets.MapJsonKeys.WIDTH;
-import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_Y;
-import static com.gadarts.necromine.model.characters.CharacterTypes.ENEMY;
-import static com.gadarts.necromine.model.characters.CharacterTypes.PLAYER;
+import static com.gadarts.necromine.assets.MapJsonKeys.*;
+import static com.gadarts.necromine.model.characters.CharacterTypes.*;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
 import static com.gadarts.necromine.model.characters.Direction.SOUTH;
 
@@ -175,13 +152,13 @@ public final class MapBuilder implements Disposable {
 	public MapGraph inflateTestMap() {
 		createAndAdd3dCursor();
 		JsonObject mapJsonObject = gson.fromJson(Gdx.files.internal(TEMP_PATH).reader(), JsonObject.class);
-		inflateAllElements(mapJsonObject);
+		inflateTiles(mapJsonObject);
 		MapGraph mapGraph = new MapGraph(
 				Utils.getFloatFromJsonOrDefault(mapJsonObject, MapJsonKeys.AMBIENT, 0),
-				engine.getEntitiesFor(Family.all(ObstacleWallComponent.class).get()),
-				engine.getEntitiesFor(Family.all(ObstacleComponent.class).get()),
 				engine);
 		inflateHeights(mapJsonObject, mapGraph);
+		inflateAllElements(mapJsonObject, mapGraph);
+		mapGraph.init();
 		generateFloorAmbientOcclusions(mapGraph);
 		return mapGraph;
 	}
@@ -272,15 +249,14 @@ public final class MapBuilder implements Disposable {
 		}
 	}
 
-	private void inflateAllElements(final JsonObject mapJsonObject) {
-		inflateTiles(mapJsonObject);
-		inflateCharacters(mapJsonObject);
-		inflateLights(mapJsonObject);
-		inflateEnvironment(mapJsonObject);
-		inflatePickups(mapJsonObject);
+	private void inflateAllElements(final JsonObject mapJsonObject, final MapGraph mapGraph) {
+		inflateCharacters(mapJsonObject, mapGraph);
+		inflateLights(mapJsonObject, mapGraph);
+		inflateEnvironment(mapJsonObject, mapGraph);
+		inflatePickups(mapJsonObject, mapGraph);
 	}
 
-	private void inflateCharacters(final JsonObject mapJsonObject) {
+	private void inflateCharacters(final JsonObject mapJsonObject, final MapGraph mapGraph) {
 		Arrays.stream(CharacterTypes.values()).forEach(type -> {
 			String typeName = type.name().toLowerCase();
 			JsonObject charactersJsonObject = mapJsonObject.getAsJsonObject(CHARACTERS);
@@ -288,28 +264,30 @@ public final class MapBuilder implements Disposable {
 				JsonArray array = charactersJsonObject.get(typeName).getAsJsonArray();
 				array.forEach(characterJsonElement -> {
 					if (type == PLAYER) {
-						inflatePlayer((JsonObject) characterJsonElement);
+						inflatePlayer((JsonObject) characterJsonElement, mapGraph);
 					} else if (type == ENEMY) {
-						inflateEnemy((JsonObject) characterJsonElement);
+						inflateEnemy((JsonObject) characterJsonElement, mapGraph);
 					}
 				});
 			}
 		});
 	}
 
-	private void inflateLights(final JsonObject mapJsonObject) {
+	private void inflateLights(final JsonObject mapJsonObject, final MapGraph mapGraph) {
 		JsonArray lights = mapJsonObject.getAsJsonArray(KEY_LIGHTS);
 		lights.forEach(element -> {
 			JsonObject lightJsonObject = element.getAsJsonObject();
 			int row = lightJsonObject.get(ROW).getAsInt();
 			int col = lightJsonObject.get(COL).getAsInt();
+			Vector3 position = auxVector3_1.set(col + 0.5f, 2f, row + 0.5f);
+			position.add(0, mapGraph.getNode(col, row).getHeight(), 0);
 			EntityBuilder.beginBuildingEntity(engine)
-					.addLightComponent(auxVector3_1.set(col + 0.5f, 2f, row + 0.5f), 1f, 4f)
+					.addLightComponent(position, 1f, 4f)
 					.finishAndAddToEngine();
 		});
 	}
 
-	private void inflateEnvironment(final JsonObject mapJsonObject) {
+	private void inflateEnvironment(final JsonObject mapJsonObject, final MapGraph mapGraph) {
 		JsonArray envs = mapJsonObject.getAsJsonArray(KEY_ENVIRONMENT);
 		envs.forEach(element -> {
 			JsonObject envJsonObject = element.getAsJsonObject();
@@ -318,12 +296,12 @@ public final class MapBuilder implements Disposable {
 			EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
 			MapCoord coord = new MapCoord(envJsonObject.get(ROW).getAsInt(), envJsonObject.get(COL).getAsInt());
 			inflateEnvSpecifiedComponent(coord, type, builder, Direction.values()[dirIndex]);
-			inflateEnvModelInstanceComponent(coord, dirIndex, type, builder);
+			inflateEnvModelInstanceComponent(mapGraph.getNode(coord.getCol(), coord.getRow()), dirIndex, type, builder);
 			inflateEnvironmentEntity(builder);
 		});
 	}
 
-	private void inflatePickups(final JsonObject mapJsonObject) {
+	private void inflatePickups(final JsonObject mapJsonObject, final MapGraph mapGraph) {
 		JsonArray pickups = mapJsonObject.getAsJsonArray(KEY_PICKUPS);
 		pickups.forEach(element -> {
 			JsonObject pickJsonObject = element.getAsJsonObject();
@@ -332,36 +310,38 @@ public final class MapBuilder implements Disposable {
 			if (!type.isMelee()) {
 				bulletRegion = assetManager.getAtlas(Atlases.findByRelatedWeapon(type)).findRegion(REGION_NAME_BULLET);
 			}
-			inflatePickupEntity(pickJsonObject, type, bulletRegion);
+			inflatePickupEntity(pickJsonObject, type, bulletRegion, mapGraph);
 		});
 	}
 
 	private void inflatePickupEntity(final JsonObject pickJsonObject,
 									 final WeaponsDefinitions type,
-									 final TextureAtlas.AtlasRegion bulletRegion) {
+									 final TextureAtlas.AtlasRegion bulletRegion,
+									 final MapGraph mapGraph) {
 		EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
-		inflatePickupModel(builder, pickJsonObject, type);
+		inflatePickupModel(builder, pickJsonObject, type, mapGraph);
 		builder.addPickUpComponentAsWeapon(type, assetManager.getTexture(type.getImage()), bulletRegion)
 				.finishAndAddToEngine();
 	}
 
 	private void inflatePickupModel(final EntityBuilder builder,
 									final JsonObject pickJsonObject,
-									final WeaponsDefinitions type) {
+									final WeaponsDefinitions type, final MapGraph mapGraph) {
 		MapCoord coord = new MapCoord(pickJsonObject.get(ROW).getAsInt(), pickJsonObject.get(COL).getAsInt());
 		Assets.Models modelDefinition = type.getModelDefinition();
 		String fileName = GameServices.BOUNDING_BOX_PREFIX + modelDefinition.getFilePath();
 		ModelBoundingBox boundingBox = assetManager.get(fileName, ModelBoundingBox.class);
 		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(modelDefinition), boundingBox);
 		modelInstance.transform.setTranslation(auxVector3_1.set(coord.getCol() + 0.5f, 0, coord.getRow() + 0.5f));
+		modelInstance.transform.translate(0, mapGraph.getNode(coord).getHeight(), 0);
 		builder.addModelInstanceComponent(modelInstance, true);
 	}
 
-	private void inflateEnvModelInstanceComponent(final MapCoord coord,
+	private void inflateEnvModelInstanceComponent(final MapGraphNode node,
 												  final int directionIndex,
 												  final EnvironmentDefinitions type,
 												  final EntityBuilder builder) {
-		GameModelInstance mi = inflateEnvironmentModelInstance(coord.getRow(), coord.getCol(), directionIndex, type);
+		GameModelInstance mi = inflateEnvironmentModelInstance(node, directionIndex, type);
 		mi.getAdditionalRenderData().setColorWhenOutside(Color.WHITE);
 		builder.addModelInstanceComponent(mi, true, type.isCastShadow());
 	}
@@ -391,19 +371,19 @@ public final class MapBuilder implements Disposable {
 		}
 	}
 
-	private GameModelInstance inflateEnvironmentModelInstance(final int row,
-															  final int col,
+	private GameModelInstance inflateEnvironmentModelInstance(final MapGraphNode node,
 															  final int directionIndex,
 															  final EnvironmentDefinitions type) {
 		String fileName = GameServices.BOUNDING_BOX_PREFIX + type.getModelDefinition().getFilePath();
 		ModelBoundingBox box = assetManager.get(fileName, ModelBoundingBox.class);
 		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()), box, type.getModelDefinition());
 		Direction direction = Direction.values()[directionIndex];
-		modelInstance.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
+		modelInstance.transform.setTranslation(auxVector3_1.set(node.getCol() + 0.5f, 0, node.getRow() + 0.5f));
 		modelInstance.transform.rotate(Vector3.Y, -1 * direction.getDirection(auxVector2_1).angleDeg());
 		modelInstance.transform.translate(type.getOffset(auxVector3_1));
 		EnvironmentDefinitions.handleEvenSize(type, modelInstance, direction);
 		modelInstance.getAdditionalRenderData().getBoundingBox().mul(modelInstance.transform);
+		modelInstance.transform.translate(0, node.getHeight(), 0);
 		return modelInstance;
 	}
 
@@ -442,7 +422,6 @@ public final class MapBuilder implements Disposable {
 				inflateWalls(tileJsonObject, node, height, mapGraph);
 			});
 		});
-		mapGraph.applyConnections();
 	}
 
 	private MapGraphNode getNodeByJson(final MapGraph mapGraph, final JsonObject tileJsonObject) {
@@ -577,12 +556,12 @@ public final class MapBuilder implements Disposable {
 				.finishAndAddToEngine();
 	}
 
-	private void inflateEnemy(final JsonObject characterJsonObject) {
+	private void inflateEnemy(final JsonObject characterJsonObject, final MapGraph mapGraph) {
 		int index = characterJsonObject.get(TYPE).getAsInt();
 		Enemies type = Enemies.values()[index];
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(type);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		Vector3 position = inflateCharacterPosition(characterJsonObject);
+		Vector3 position = inflateCharacterPosition(characterJsonObject, mapGraph);
 		addCharBaseComponents(
 				entityBuilder,
 				type.getAtlasDefinition(),
@@ -595,14 +574,15 @@ public final class MapBuilder implements Disposable {
 		entityBuilder.finishAndAddToEngine();
 	}
 
-	private void inflatePlayer(final JsonObject characterJsonObject) {
+	private void inflatePlayer(final JsonObject characterJsonObject, final MapGraph mapGraph) {
 		Weapon weapon = initializeStartingWeapon();
 		CharacterAnimations general = assetManager.get(Atlases.PLAYER_GENERIC.name());
 		EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
+		Vector3 position = inflateCharacterPosition(characterJsonObject, mapGraph);
 		addCharBaseComponents(
 				builder,
 				Atlases.PLAYER_AXE_PICK,
-				inflateCharacterPosition(characterJsonObject),
+				position,
 				null,
 				Sounds.PLAYER_PAIN,
 				Sounds.PLAYER_DEATH,
@@ -611,11 +591,12 @@ public final class MapBuilder implements Disposable {
 		builder.finishAndAddToEngine();
 	}
 
-	private Vector3 inflateCharacterPosition(final com.google.gson.JsonElement characterJsonElement) {
+	private Vector3 inflateCharacterPosition(final JsonElement characterJsonElement, final MapGraph mapGraph) {
 		JsonObject asJsonObject = characterJsonElement.getAsJsonObject();
 		int col = asJsonObject.get(COL).getAsInt();
 		int row = asJsonObject.get(ROW).getAsInt();
-		return auxVector3_1.set(col + 0.5f, BILLBOARD_Y, row + 0.5f);
+		Vector3 position = auxVector3_1.set(col + 0.5f, BILLBOARD_Y, row + 0.5f);
+		return position.add(0, mapGraph.getNode(col, row).getHeight(), 0);
 	}
 
 	private Weapon initializeStartingWeapon() {
