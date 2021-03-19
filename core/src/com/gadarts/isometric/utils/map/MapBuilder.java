@@ -366,9 +366,6 @@ public final class MapBuilder implements Disposable {
 		return mi;
 	}
 
-	private void inflateEnvironmentEntity(final EntityBuilder builder) {
-	}
-
 	private void inflateEnvSpecifiedComponent(final MapCoord coord,
 											  final EnvironmentDefinitions type,
 											  final EntityBuilder builder,

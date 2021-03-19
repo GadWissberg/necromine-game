@@ -37,7 +37,7 @@ public class LightsRenderer {
 
 	private float applyLightOnDecal(final Decal decal, float minDistance, final Entity light) {
 		float distance = ComponentsMapper.light.get(light).getPosition(auxVector3_1).dst(decal.getPosition());
-		float maxLightDistanceForDecal = ComponentsMapper.light.get(light).getRadius() * 2;
+		float maxLightDistanceForDecal = ComponentsMapper.light.get(light).getRadius();
 		if (distance <= maxLightDistanceForDecal) {
 			minDistance = calculateDecalColorAffectedByLight(decal, minDistance, distance, maxLightDistanceForDecal);
 		}
