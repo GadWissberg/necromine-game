@@ -143,33 +143,33 @@
         "col": 14,
         "height": 7.0,
         "west": "WALL_BRICK_3",
-        "north": "FLOOR_PAVEMENT_0"
+        "north": "WALL_BRICK_3"
       },
       {
         "row": 1,
         "col": 15,
         "height": 7.0,
-        "north": "FLOOR_PAVEMENT_0"
+        "north": "WALL_BRICK_3"
       },
       {
         "row": 1,
         "col": 16,
         "height": 7.0,
-        "north": "FLOOR_PAVEMENT_0"
+        "north": "WALL_BRICK_3"
       },
       {
         "row": 1,
         "col": 17,
         "height": 7.0,
         "west": "FLOOR_PAVEMENT_0",
-        "north": "FLOOR_PAVEMENT_0"
+        "north": "WALL_BRICK_3"
       },
       {
         "row": 1,
         "col": 18,
         "height": 7.0,
         "east": "FLOOR_PAVEMENT_0",
-        "north": "FLOOR_PAVEMENT_0"
+        "north": "WALL_BRICK_3"
       },
       {
         "row": 1,
@@ -1498,96 +1498,41 @@
   "environment": [
     {
       "row": 6,
-      "col": 2,
-      "direction": 2,
-      "type": 6
-    },
-    {
-      "row": 6,
-      "col": 5,
+      "col": 0,
       "direction": 2,
       "type": 6
     },
     {
       "row": 12,
-      "col": 2,
+      "col": 4,
       "direction": 2,
       "type": 6
     },
     {
-      "row": 12,
-      "col": 6,
-      "direction": 2,
-      "type": 6
-    },
-    {
-      "row": 4,
-      "col": 7,
-      "direction": 2,
-      "type": 6
-    },
-    {
-      "row": 1,
-      "col": 7,
-      "direction": 2,
-      "type": 6
-    },
-    {
-      "row": 14,
+      "row": 13,
       "col": 7,
       "direction": 2,
       "type": 6
     },
     {
       "row": 17,
-      "col": 7,
-      "direction": 2,
-      "type": 6
-    },
-    {
-      "row": 17,
-      "col": 13,
-      "direction": 2,
-      "type": 6
-    },
-    {
-      "row": 14,
-      "col": 13,
-      "direction": 2,
-      "type": 6
-    },
-    {
-      "row": 11,
       "col": 13,
       "direction": 2,
       "type": 6
     },
     {
       "row": 5,
-      "col": 13,
+      "col": 7,
       "direction": 2,
       "type": 6
     },
     {
-      "row": 2,
+      "row": 1,
       "col": 13,
       "direction": 2,
       "type": 6
     }
   ],
   "pickups": [],
-  "lights": [
-    {
-      "row": 3,
-      "col": 10
-    },
-    {
-      "row": 15,
-      "col": 10
-    },
-    {
-      "row": 8,
-      "col": 5
-    }
-  ]
+  "lights": []
 }

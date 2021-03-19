@@ -251,7 +251,7 @@ public final class MapBuilder implements Disposable {
 
 	private void inflateAllElements(final JsonObject mapJsonObject, final MapGraph mapGraph) {
 		inflateCharacters(mapJsonObject, mapGraph);
-		inflateLights(mapJsonObject, mapGraph);
+//		inflateLights(mapJsonObject, mapGraph);
 		inflateEnvironment(mapJsonObject, mapGraph);
 		inflatePickups(mapJsonObject, mapGraph);
 	}
@@ -290,14 +290,33 @@ public final class MapBuilder implements Disposable {
 	private void inflateEnvironment(final JsonObject mapJsonObject, final MapGraph mapGraph) {
 		JsonArray envs = mapJsonObject.getAsJsonArray(KEY_ENVIRONMENT);
 		envs.forEach(element -> {
-			JsonObject envJsonObject = element.getAsJsonObject();
-			int dirIndex = envJsonObject.get(DIRECTION).getAsInt();
-			EnvironmentDefinitions type = EnvironmentDefinitions.values()[envJsonObject.get(TYPE).getAsInt()];
 			EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
+			JsonObject envJsonObject = element.getAsJsonObject();
 			MapCoord coord = new MapCoord(envJsonObject.get(ROW).getAsInt(), envJsonObject.get(COL).getAsInt());
-			inflateEnvSpecifiedComponent(coord, type, builder, Direction.values()[dirIndex]);
-			inflateEnvModelInstanceComponent(mapGraph.getNode(coord.getCol(), coord.getRow()), dirIndex, type, builder);
-			inflateEnvironmentEntity(builder);
+			inflateEnvComponents(mapGraph, builder, envJsonObject, coord);
+			builder.finishAndAddToEngine();
+		});
+	}
+
+	private void inflateEnvComponents(final MapGraph mapGraph,
+									  final EntityBuilder builder,
+									  final JsonObject envJsonObject,
+									  final MapCoord coord) {
+		int dirIndex = envJsonObject.get(DIRECTION).getAsInt();
+		EnvironmentDefinitions type = EnvironmentDefinitions.values()[envJsonObject.get(TYPE).getAsInt()];
+		inflateEnvSpecifiedComponent(coord, type, builder, Direction.values()[dirIndex]);
+		MapGraphNode node = mapGraph.getNode(coord.getCol(), coord.getRow());
+		GameModelInstance mi = inflateEnvModelInstanceComponent(node, dirIndex, type, builder);
+		inflateEnvLightComponent(builder, type, mi);
+		builder.addCollisionComponent();
+	}
+
+	private void inflateEnvLightComponent(final EntityBuilder builder,
+										  final EnvironmentDefinitions type,
+										  final GameModelInstance mi) {
+		Optional.ofNullable(type.getLightEmission()).ifPresent(l -> {
+			Vector3 position = mi.transform.getTranslation(auxVector3_1).add(l.getRelativePosition(auxVector3_2));
+			builder.addLightComponent(position, l.getIntensity(), l.getRadius());
 		});
 	}
 
@@ -337,18 +356,17 @@ public final class MapBuilder implements Disposable {
 		builder.addModelInstanceComponent(modelInstance, true);
 	}
 
-	private void inflateEnvModelInstanceComponent(final MapGraphNode node,
-												  final int directionIndex,
-												  final EnvironmentDefinitions type,
-												  final EntityBuilder builder) {
+	private GameModelInstance inflateEnvModelInstanceComponent(final MapGraphNode node,
+															   final int directionIndex,
+															   final EnvironmentDefinitions type,
+															   final EntityBuilder builder) {
 		GameModelInstance mi = inflateEnvironmentModelInstance(node, directionIndex, type);
 		mi.getAdditionalRenderData().setColorWhenOutside(Color.WHITE);
 		builder.addModelInstanceComponent(mi, true, type.isCastShadow());
+		return mi;
 	}
 
 	private void inflateEnvironmentEntity(final EntityBuilder builder) {
-		builder.addCollisionComponent()
-				.finishAndAddToEngine();
 	}
 
 	private void inflateEnvSpecifiedComponent(final MapCoord coord,

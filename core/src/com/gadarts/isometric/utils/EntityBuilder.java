@@ -34,13 +34,14 @@ import lombok.Setter;
 import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_SCALE;
 
 public final class EntityBuilder {
+	public static final String MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST = "Call beginBuildingEntity() first!";
 	private static final EntityBuilder instance = new EntityBuilder();
 	private final static Vector2 auxVector = new Vector2();
+	private Entity currentEntity;
 
 	@Setter(AccessLevel.PRIVATE)
 	private PooledEngine engine;
 
-	private Entity currentEntity;
 
 	private EntityBuilder() {
 	}
@@ -62,6 +63,7 @@ public final class EntityBuilder {
 	public EntityBuilder addModelInstanceComponent(final GameModelInstance modelInstance,
 												   final boolean visible,
 												   final boolean castShadow) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		ModelInstanceComponent component = engine.createComponent(ModelInstanceComponent.class);
 		component.init(modelInstance, visible, castShadow);
 		currentEntity.add(component);
@@ -70,6 +72,7 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addWallComponent(final MapNodeData parentNode) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		WallComponent component = engine.createComponent(WallComponent.class);
 		component.init(parentNode);
 		currentEntity.add(component);
@@ -77,11 +80,13 @@ public final class EntityBuilder {
 	}
 
 	public Entity finishAndAddToEngine() {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		engine.addEntity(currentEntity);
 		return finish();
 	}
 
 	public Entity finish() {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		Entity result = currentEntity;
 		instance.reset();
 		return result;
@@ -93,12 +98,14 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addCursorComponent() {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		CursorComponent cursorComponent = engine.createComponent(CursorComponent.class);
 		currentEntity.add(cursorComponent);
 		return instance;
 	}
 
 	public EntityBuilder addPlayerComponent(final Weapon selectedWeapon, final CharacterAnimations general) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		PlayerComponent playerComponent = engine.createComponent(PlayerComponent.class);
 		playerComponent.init(selectedWeapon, general);
 		currentEntity.add(playerComponent);
@@ -109,6 +116,7 @@ public final class EntityBuilder {
 											   final Entity target,
 											   final CharacterSoundData characterSoundData,
 											   final int health) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		CharacterComponent charComponent = engine.createComponent(CharacterComponent.class);
 		charComponent.init(characterSpriteData, characterSoundData, health);
 		charComponent.setTarget(target);
@@ -120,6 +128,7 @@ public final class EntityBuilder {
 													final SpriteType spriteType,
 													final Direction direction,
 													final Vector3 position) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		CharacterDecalComponent characterDecalComponent = engine.createComponent(CharacterDecalComponent.class);
 		characterDecalComponent.init(animations, spriteType, direction, position);
 		currentEntity.add(characterDecalComponent);
@@ -127,6 +136,7 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addSimpleDecalComponent(final Vector3 position, final Texture texture, final boolean visible) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		SimpleDecalComponent simpleDecalComponent = engine.createComponent(SimpleDecalComponent.class);
 		simpleDecalComponent.init(texture, visible);
 		Decal decal = simpleDecalComponent.getDecal();
@@ -139,14 +149,19 @@ public final class EntityBuilder {
 	public EntityBuilder addSimpleDecalComponent(final Vector3 position,
 												 final TextureRegion textureRegion,
 												 final Vector3 rotationAroundAxis) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		SimpleDecalComponent simpleDecalComponent = engine.createComponent(SimpleDecalComponent.class);
 		simpleDecalComponent.init(textureRegion, true);
 		Decal decal = simpleDecalComponent.getDecal();
+		initializeSimpleDecal(position, rotationAroundAxis, decal);
+		currentEntity.add(simpleDecalComponent);
+		return instance;
+	}
+
+	private void initializeSimpleDecal(final Vector3 position, final Vector3 rotationAroundAxis, final Decal decal) {
 		decal.setPosition(position);
 		decal.setScale(BILLBOARD_SCALE);
 		rotateSimpleDecal(decal, rotationAroundAxis);
-		currentEntity.add(simpleDecalComponent);
-		return instance;
 	}
 
 	private void rotateSimpleDecal(final Decal decal, final Vector3 rotationAroundAxis) {
@@ -156,6 +171,7 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addEnemyComponent(final Enemies enemyDefinition) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		EnemyComponent component = engine.createComponent(EnemyComponent.class);
 		component.init(enemyDefinition);
 		currentEntity.add(component);
@@ -163,12 +179,14 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addAnimationComponent() {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		AnimationComponent animComponent = engine.createComponent(AnimationComponent.class);
 		currentEntity.add(animComponent);
 		return instance;
 	}
 
 	public EntityBuilder addFloorComponent() {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		FloorComponent floorComponent = engine.createComponent(FloorComponent.class);
 		currentEntity.add(floorComponent);
 		return instance;
@@ -178,6 +196,7 @@ public final class EntityBuilder {
 												  final int topLeftY,
 												  final int bottomRightX,
 												  final int bottomRightY) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		ObstacleWallComponent obstacleWallComponent = engine.createComponent(ObstacleWallComponent.class);
 		obstacleWallComponent.init(topLeftX, topLeftY, bottomRightX, bottomRightY);
 		currentEntity.add(obstacleWallComponent);
@@ -185,6 +204,7 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addObstacleComponent(final int x, final int y, final EnvironmentDefinitions definition) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		ObstacleComponent obstacleComponent = engine.createComponent(ObstacleComponent.class);
 		obstacleComponent.init(x, y, definition);
 		currentEntity.add(obstacleComponent);
@@ -194,6 +214,7 @@ public final class EntityBuilder {
 	public EntityBuilder addPickUpComponentAsWeapon(final WeaponsDefinitions definition,
 													final Texture displayImage,
 													final TextureAtlas.AtlasRegion bulletRegion) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		Weapon weapon = (Weapon) addPickUpComponent(Weapon.class, definition, displayImage);
 		weapon.setBulletTextureRegion(bulletRegion);
 		return instance;
@@ -202,6 +223,7 @@ public final class EntityBuilder {
 	private Item addPickUpComponent(final Class<? extends Item> type,
 									final ItemDefinition definition,
 									final Texture displayImage) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		Item pickup = Pools.obtain(type);
 		pickup.init(definition, 0, 0, displayImage);
 		PickUpComponent pickupComponent = engine.createComponent(PickUpComponent.class);
@@ -212,11 +234,13 @@ public final class EntityBuilder {
 
 	public EntityBuilder addPickUpComponent(final ItemDefinition definition,
 											final Texture displayImage) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		addPickUpComponent(Item.class, definition, displayImage);
 		return instance;
 	}
 
 	public EntityBuilder addBulletComponent(final Vector3 initialPosition, final Vector2 direction, final Entity owner) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
 		bulletComponent.init(auxVector.set(initialPosition.x, initialPosition.z), direction, owner);
 		currentEntity.add(bulletComponent);
@@ -224,12 +248,14 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addCollisionComponent() {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		CollisionComponent collisionComponent = engine.createComponent(CollisionComponent.class);
 		currentEntity.add(collisionComponent);
 		return instance;
 	}
 
 	public EntityBuilder addLightComponent(final Vector3 position, final float intensity, final float radius) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		LightComponent lightComponent = engine.createComponent(LightComponent.class);
 		lightComponent.init(position, intensity, radius);
 		currentEntity.add(lightComponent);
