@@ -307,15 +307,18 @@ public final class MapBuilder implements Disposable {
 		inflateEnvSpecifiedComponent(coord, type, builder, Direction.values()[dirIndex]);
 		MapGraphNode node = mapGraph.getNode(coord.getCol(), coord.getRow());
 		GameModelInstance mi = inflateEnvModelInstanceComponent(node, dirIndex, type, builder);
-		inflateEnvLightComponent(builder, type, mi);
+		inflateEnvLightComponent(builder, type, mi, dirIndex);
 		builder.addCollisionComponent();
 	}
 
 	private void inflateEnvLightComponent(final EntityBuilder builder,
 										  final EnvironmentDefinitions type,
-										  final GameModelInstance mi) {
+										  final GameModelInstance mi,
+										  final int dirIndex) {
 		Optional.ofNullable(type.getLightEmission()).ifPresent(l -> {
-			Vector3 position = mi.transform.getTranslation(auxVector3_1).add(l.getRelativePosition(auxVector3_2));
+			float degrees = Direction.values()[dirIndex].getDirection(auxVector2_1).angleDeg();
+			Vector3 relativePosition = l.getRelativePosition(auxVector3_2).rotate(Vector3.Y, degrees);
+			Vector3 position = mi.transform.getTranslation(auxVector3_1).add(relativePosition);
 			builder.addLightComponent(position, l.getIntensity(), l.getRadius());
 		});
 	}
