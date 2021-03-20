@@ -1497,12 +1497,6 @@
   },
   "environment": [
     {
-      "row": 12,
-      "col": 4,
-      "direction": 2,
-      "type": 6
-    },
-    {
       "row": 6,
       "col": 0,
       "direction": 2,
@@ -1537,6 +1531,60 @@
       "col": 13,
       "direction": 6,
       "type": 6
+    },
+    {
+      "row": 2,
+      "col": 7,
+      "direction": 2,
+      "type": 7
+    },
+    {
+      "row": 6,
+      "col": 2,
+      "direction": 0,
+      "type": 7
+    },
+    {
+      "row": 12,
+      "col": 4,
+      "direction": 6,
+      "type": 6
+    },
+    {
+      "row": 12,
+      "col": 2,
+      "direction": 4,
+      "type": 7
+    },
+    {
+      "row": 16,
+      "col": 7,
+      "direction": 2,
+      "type": 7
+    },
+    {
+      "row": 15,
+      "col": 13,
+      "direction": 6,
+      "type": 7
+    },
+    {
+      "row": 3,
+      "col": 13,
+      "direction": 6,
+      "type": 7
+    },
+    {
+      "row": 8,
+      "col": 16,
+      "direction": 6,
+      "type": 7
+    },
+    {
+      "row": 7,
+      "col": 5,
+      "direction": 2,
+      "type": 8
     }
   ],
   "pickups": [],
