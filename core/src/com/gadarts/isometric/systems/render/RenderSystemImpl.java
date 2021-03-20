@@ -257,9 +257,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		modelBatch.begin(camera);
 		for (Entity entity : renderSystemRelatedEntities.getModelInstanceEntities()) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
-			boolean isWall = ComponentsMapper.obstacleWall.has(entity);
+			boolean isWall = ComponentsMapper.obstacle.has(entity) && ComponentsMapper.obstacle.get(entity).getType().isWall();
 			if ((!modelInstanceComponent.isVisible())
-					|| (!drawFlags.isDrawEnv() && ComponentsMapper.obstacleWall.has(entity))
+					|| (!drawFlags.isDrawEnv() && ComponentsMapper.obstacle.has(entity))
 					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())
 					|| (!renderWallsAndFloor && (isWall || ComponentsMapper.floor.has(entity)))
 					|| (!drawFlags.isDrawCursor() && ComponentsMapper.cursor.has(entity))

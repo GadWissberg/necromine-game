@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.FloorComponent;
-import com.gadarts.isometric.components.ObstacleWallComponent;
+import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.PickUpComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
@@ -344,9 +344,9 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	public void init() {
-		obstaclesEntities = engine.getEntitiesFor(Family.all(ObstacleWallComponent.class).get());
+		obstaclesEntities = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
 		obstaclesEntities.forEach(wall -> {
-			ObstacleWallComponent obstacleWallComponent = ComponentsMapper.obstacleWall.get(wall);
+			ObstacleComponent obstacleWallComponent = ComponentsMapper.obstacle.get(wall);
 			int topLeftX = obstacleWallComponent.getTopLeftX();
 			int topLeftY = obstacleWallComponent.getTopLeftY();
 			int bottomRightX = obstacleWallComponent.getBottomRightX();
@@ -354,7 +354,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 			if (topLeftX >= 0 && topLeftY >= 0 && bottomRightX >= 0 && bottomRightY >= 0) {
 				for (int x = topLeftX; x <= bottomRightX; x++) {
 					for (int z = topLeftY; z <= bottomRightY; z++) {
-						ObstacleWallComponent obstacleComponent = ComponentsMapper.obstacleWall.get(wall);
+						ObstacleComponent obstacleComponent = ComponentsMapper.obstacle.get(wall);
 						getNode(x, z).setType(obstacleComponent.getType().getNodeType());
 					}
 				}

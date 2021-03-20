@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.ObstacleWallComponent;
+import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -73,7 +73,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
-		walls = engine.getEntitiesFor(Family.all(ObstacleWallComponent.class).get());
+		walls = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
 	}
 
 
@@ -232,7 +232,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	private Rectangle initializeRectOfWall(final Entity wall) {
-		ObstacleWallComponent wallComp = ComponentsMapper.obstacleWall.get(wall);
+		ObstacleComponent wallComp = ComponentsMapper.obstacle.get(wall);
 		return auxRect.set(wallComp.getTopLeftX(), wallComp.getTopLeftY(),
 				Math.abs(wallComp.getTopLeftX() - (wallComp.getBottomRightX() + 1)),
 				Math.abs(wallComp.getTopLeftY() - (wallComp.getBottomRightY() + 1)));

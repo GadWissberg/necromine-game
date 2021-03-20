@@ -11,7 +11,7 @@ public class ComponentsMapper {
 	public static final ComponentMapper<ModelInstanceComponent> modelInstance = ComponentMapper.getFor(ModelInstanceComponent.class);
 	public static final ComponentMapper<CursorComponent> cursor = ComponentMapper.getFor(CursorComponent.class);
 	public static final ComponentMapper<PickUpComponent> pickup = ComponentMapper.getFor(PickUpComponent.class);
-	public static final ComponentMapper<ObstacleWallComponent> obstacleWall = ComponentMapper.getFor(ObstacleWallComponent.class);
+	public static final ComponentMapper<ObstacleComponent> obstacle = ComponentMapper.getFor(ObstacleComponent.class);
 	public static final ComponentMapper<WallComponent> wall = ComponentMapper.getFor(WallComponent.class);
 	public static final ComponentMapper<EnemyComponent> enemy = ComponentMapper.getFor(EnemyComponent.class);
 	public static final ComponentMapper<PlayerComponent> player = ComponentMapper.getFor(PlayerComponent.class);

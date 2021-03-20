@@ -5,7 +5,7 @@ import com.gadarts.necromine.model.EnvironmentDefinitions;
 import lombok.Getter;
 
 @Getter
-public class ObstacleWallComponent implements GameComponent {
+public class ObstacleComponent implements GameComponent {
 	private int topLeftX;
 	private int topLeftY;
 	private int bottomRightX;

@@ -42,7 +42,7 @@ public class ToolTipHandler implements Disposable {
 			return ComponentsMapper.pickup.get(pickup).getItem().getDefinition().getDisplayName();
 		} else {
 			Entity obstacle = map.getObstacleFromNode(cursorNode);
-			return obstacle != null ? ComponentsMapper.obstacleWall.get(obstacle).getType().getDisplayName() : null;
+			return obstacle != null ? ComponentsMapper.obstacle.get(obstacle).getType().getDisplayName() : null;
 		}
 	}
 
