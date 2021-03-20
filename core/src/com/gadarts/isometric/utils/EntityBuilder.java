@@ -192,22 +192,12 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addObstacleWallComponent(final int topLeftX,
-												  final int topLeftY,
-												  final int bottomRightX,
-												  final int bottomRightY) {
+	public EntityBuilder addObstacleWallComponent(final Vector2 topLeft,
+												  final Vector2 bottomRight, EnvironmentDefinitions type) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		ObstacleWallComponent obstacleWallComponent = engine.createComponent(ObstacleWallComponent.class);
-		obstacleWallComponent.init(topLeftX, topLeftY, bottomRightX, bottomRightY);
+		obstacleWallComponent.init(topLeft, bottomRight, type);
 		currentEntity.add(obstacleWallComponent);
-		return instance;
-	}
-
-	public EntityBuilder addObstacleComponent(final int x, final int y, final EnvironmentDefinitions definition) {
-		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
-		ObstacleComponent obstacleComponent = engine.createComponent(ObstacleComponent.class);
-		obstacleComponent.init(x, y, definition);
-		currentEntity.add(obstacleComponent);
 		return instance;
 	}
 

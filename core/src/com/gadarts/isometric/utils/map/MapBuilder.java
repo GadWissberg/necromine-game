@@ -71,6 +71,7 @@ public final class MapBuilder implements Disposable {
 	public static final String TEMP_PATH = "core/assets/maps/test_map.json";
 	private static final CharacterSoundData auxCharacterSoundData = new CharacterSoundData();
 	private static final Vector2 auxVector2_1 = new Vector2();
+	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final Vector3 auxVector3_3 = new Vector3();
@@ -375,18 +376,16 @@ public final class MapBuilder implements Disposable {
 											  final Direction facingDirection) {
 		int col = coord.getCol();
 		int row = coord.getRow();
-		if (type.isWall()) {
-			int halfWidth = type.getWidth() / 2;
-			int halfDepth = type.getDepth() / 2;
-			if (facingDirection == NORTH || facingDirection == SOUTH) {
-				int swap = halfWidth;
-				halfWidth = halfDepth;
-				halfDepth = swap;
-			}
-			builder.addObstacleWallComponent(col - halfWidth, row - halfDepth, col + Math.max(halfWidth, 1) - 1, row + Math.max(halfDepth, 1) - 1);
-		} else {
-			builder.addObstacleComponent(col, row, type);
+		int halfWidth = type.getWidth() / 2;
+		int halfDepth = type.getDepth() / 2;
+		if (facingDirection == NORTH || facingDirection == SOUTH) {
+			int swap = halfWidth;
+			halfWidth = halfDepth;
+			halfDepth = swap;
 		}
+		Vector2 topLeft = auxVector2_1.set(col - halfWidth, row - halfDepth);
+		Vector2 bottomRight = auxVector2_2.set(col + Math.max(halfWidth, 1) - 1, row + Math.max(halfDepth, 1) - 1);
+		builder.addObstacleWallComponent(topLeft, bottomRight, type);
 	}
 
 	private GameModelInstance inflateEnvironmentModelInstance(final MapGraphNode node,

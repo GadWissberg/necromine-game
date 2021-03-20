@@ -11,14 +11,16 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.FloorComponent;
+import com.gadarts.isometric.components.ObstacleWallComponent;
+import com.gadarts.isometric.components.PickUpComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.commands.CharacterCommand;
 import com.gadarts.isometric.utils.Utils;
-import com.gadarts.necromine.model.EnvironmentDefinitions;
 import com.gadarts.necromine.model.MapNodesTypes;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -41,7 +43,6 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
 	private final ImmutableArray<Entity> characterEntities;
 	private final ImmutableArray<Entity> pickupEntities;
-	private final ImmutableArray<Entity> obstacleEntities;
 
 	@Getter
 	private final int[][] fowMap;
@@ -53,13 +54,13 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	@Setter(AccessLevel.PACKAGE)
 	@Getter(AccessLevel.PACKAGE)
 	MapGraphNode currentDestination;
+	private ImmutableArray<Entity> obstaclesEntities;
 
 	public MapGraph(final float ambient,
 					final PooledEngine engine) {
 		this.engine = engine;
 		this.ambient = ambient;
 		this.pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
-		this.obstacleEntities = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
 		this.characterEntities = engine.getEntitiesFor(Family.all(CharacterComponent.class).get());
 		this.nodes = new Array<>(MAP_SIZE * MAP_SIZE);
 		this.fowMap = new int[MAP_SIZE][MAP_SIZE];
@@ -326,7 +327,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
 	public Entity getObstacleFromNode(final MapGraphNode node) {
 		Entity result = null;
-		for (Entity obstacle : obstacleEntities) {
+		for (Entity obstacle : obstaclesEntities) {
 			ModelInstance modelInstance = ComponentsMapper.modelInstance.get(obstacle).getModelInstance();
 			MapGraphNode pickupNode = getNode(modelInstance.transform.getTranslation(auxVector3));
 			if (pickupNode.equals(node)) {
@@ -343,8 +344,8 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	public void init() {
-		ImmutableArray<Entity> wallEntities = engine.getEntitiesFor(Family.all(ObstacleWallComponent.class).get());
-		wallEntities.forEach(wall -> {
+		obstaclesEntities = engine.getEntitiesFor(Family.all(ObstacleWallComponent.class).get());
+		obstaclesEntities.forEach(wall -> {
 			ObstacleWallComponent obstacleWallComponent = ComponentsMapper.obstacleWall.get(wall);
 			int topLeftX = obstacleWallComponent.getTopLeftX();
 			int topLeftY = obstacleWallComponent.getTopLeftY();
@@ -353,18 +354,11 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 			if (topLeftX >= 0 && topLeftY >= 0 && bottomRightX >= 0 && bottomRightY >= 0) {
 				for (int x = topLeftX; x <= bottomRightX; x++) {
 					for (int z = topLeftY; z <= bottomRightY; z++) {
-						getNode(x, z).setType(MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
+						ObstacleWallComponent obstacleComponent = ComponentsMapper.obstacleWall.get(wall);
+						getNode(x, z).setType(obstacleComponent.getType().getNodeType());
 					}
 				}
 			}
-		});
-		obstacleEntities.forEach(obstacle -> {
-			ObstacleComponent obstacleComponent = ComponentsMapper.obstacle.get(obstacle);
-			EnvironmentDefinitions definition = obstacleComponent.getDefinition();
-			MapNodesTypes nodeType = definition.getNodeType();
-			MapGraphNode node = getNode(obstacleComponent.getX(), obstacleComponent.getY());
-			int max = Math.max(nodeType.ordinal(), node.getType().ordinal());
-			node.setType(MapNodesTypes.values()[max]);
 		});
 		applyConnections();
 	}

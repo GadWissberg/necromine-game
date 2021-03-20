@@ -387,6 +387,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private boolean isWallBlocksReveal(final Vector2 srcNodePosition,
 									   final Vector2 nodeToReveal,
 									   final Entity wall) {
+		if (!ComponentsMapper.obstacleWall.get(wall).getType().isWall()) return false;
 		ObstacleWallComponent wallComp = ComponentsMapper.obstacleWall.get(wall);
 		int width = Math.abs(wallComp.getBottomRightX() - wallComp.getTopLeftX()) + 1;
 		int height = Math.abs(wallComp.getBottomRightY() - wallComp.getTopLeftY()) + 1;

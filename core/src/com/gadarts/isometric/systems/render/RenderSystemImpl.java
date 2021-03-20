@@ -18,11 +18,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.gadarts.isometric.components.AnimationComponent;
-import com.gadarts.isometric.components.CharacterAnimation;
-import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.LightComponent;
-import com.gadarts.isometric.components.ModelInstanceComponent;
+import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
@@ -263,7 +259,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 			boolean isWall = ComponentsMapper.obstacleWall.has(entity);
 			if ((!modelInstanceComponent.isVisible())
-					|| (!drawFlags.isDrawEnv() && ComponentsMapper.obstacle.has(entity))
+					|| (!drawFlags.isDrawEnv() && ComponentsMapper.obstacleWall.has(entity))
 					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())
 					|| (!renderWallsAndFloor && (isWall || ComponentsMapper.floor.has(entity)))
 					|| (!drawFlags.isDrawCursor() && ComponentsMapper.cursor.has(entity))
