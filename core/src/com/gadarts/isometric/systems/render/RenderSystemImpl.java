@@ -18,7 +18,11 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.AnimationComponent;
+import com.gadarts.isometric.components.CharacterAnimation;
+import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.LightComponent;
+import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
@@ -257,9 +261,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		modelBatch.begin(camera);
 		for (Entity entity : renderSystemRelatedEntities.getModelInstanceEntities()) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
-			boolean isWall = ComponentsMapper.obstacle.has(entity) && ComponentsMapper.obstacle.get(entity).getType().isWall();
+			boolean isObstacle = ComponentsMapper.obstacle.has(entity);
+			boolean isWall = isObstacle && ComponentsMapper.obstacle.get(entity).getType().isWall();
 			if ((!modelInstanceComponent.isVisible())
-					|| (!drawFlags.isDrawEnv() && ComponentsMapper.obstacle.has(entity))
+					|| (!drawFlags.isDrawEnv() && isObstacle)
 					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())
 					|| (!renderWallsAndFloor && (isWall || ComponentsMapper.floor.has(entity)))
 					|| (!drawFlags.isDrawCursor() && ComponentsMapper.cursor.has(entity))
@@ -267,7 +272,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				continue;
 			}
 			GameModelInstance modelInstance = modelInstanceComponent.getModelInstance();
-			if (isWall) {
+			if (isObstacle && ComponentsMapper.obstacle.get(entity).getType().isRenderWhenFrontOnly()) {
 				float angleAround = MathUtils.round(modelInstance.transform.getRotation(auxQuat).getAngleAround(Vector3.Y));
 				Vector2 cameraAngle = auxVector2_2.set(camera.direction.x, camera.direction.z);
 				float angle = auxVector2_1.set(1, 0).setAngleDeg(angleAround + (angleAround < 90 || angleAround > 270 || angleAround == 180 ? 0 : 180)).angleDeg(cameraAngle);
