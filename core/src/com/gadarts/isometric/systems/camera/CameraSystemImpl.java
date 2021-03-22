@@ -132,13 +132,14 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
     }
 
     private void initCamera() {
-        Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
-        Intersector.intersectRayPlane(ray, groundPlane, rotationPoint);
         Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).get(0);
         Vector2 nodePosition = ComponentsMapper.characterDecal.get(player).getNodePosition(auxVector2_1);
         camera.position.set(nodePosition.x + START_OFFSET, CAMERA_HEIGHT, nodePosition.y + START_OFFSET);
         camera.direction.rotate(Vector3.X, -45);
         camera.direction.rotate(Vector3.Y, 45);
+        camera.update();
+        Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+        Intersector.intersectRayPlane(ray, groundPlane, rotationPoint);
     }
 
     @Override
