@@ -1591,6 +1591,12 @@
       "col": 7,
       "direction": 2,
       "type": 6
+    },
+    {
+      "row": 12,
+      "col": 7,
+      "direction": 2,
+      "type": 10
     }
   ],
   "pickups": [],
