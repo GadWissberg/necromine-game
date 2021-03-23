@@ -1475,21 +1475,21 @@
     ],
     "enemy": [
       {
-        "row": 8,
-        "col": 7,
-        "direction": 2,
-        "type": 0
-      },
-      {
-        "row": 10,
-        "col": 8,
-        "direction": 2,
+        "row": 6,
+        "col": 15,
+        "direction": 7,
         "type": 0
       },
       {
         "row": 6,
-        "col": 15,
-        "direction": 7,
+        "col": 10,
+        "direction": 0,
+        "type": 0
+      },
+      {
+        "row": 8,
+        "col": 13,
+        "direction": 6,
         "type": 0
       }
     ],
@@ -1593,10 +1593,70 @@
       "type": 6
     },
     {
-      "row": 12,
-      "col": 7,
+      "row": 6,
+      "col": 1,
+      "direction": 2,
+      "type": 11
+    },
+    {
+      "row": 6,
+      "col": 14,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 7,
+      "col": 14,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 8,
+      "col": 14,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 9,
+      "col": 14,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 10,
+      "col": 14,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 6,
+      "col": 13,
+      "direction": 0,
+      "type": 6
+    },
+    {
+      "row": 10,
+      "col": 13,
+      "direction": 2,
+      "type": 11
+    },
+    {
+      "row": 7,
+      "col": 13,
       "direction": 2,
       "type": 10
+    },
+    {
+      "row": 4,
+      "col": 12,
+      "direction": 0,
+      "type": 9
+    },
+    {
+      "row": 12,
+      "col": 13,
+      "direction": 6,
+      "type": 7
     }
   ],
   "pickups": [],
