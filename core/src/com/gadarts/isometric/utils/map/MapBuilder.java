@@ -11,10 +11,10 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -83,6 +83,7 @@ public final class MapBuilder implements Disposable {
 	private static final String KEY_ENVIRONMENT = "environment";
 	private static final String KEY_PICKUPS = "pickups";
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
+	private static final Matrix4 auxMatrix = new Matrix4();
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
 	private final ModelBuilder modelBuilder;
@@ -403,7 +404,6 @@ public final class MapBuilder implements Disposable {
 		modelInstance.transform.rotate(Vector3.Y, -1 * direction.getDirection(auxVector2_1).angleDeg());
 		modelInstance.transform.translate(type.getOffset(auxVector3_1));
 		EnvironmentDefinitions.handleEvenSize(type, modelInstance, direction);
-		modelInstance.getAdditionalRenderData().getBoundingBox(auxBoundingBox).mul(modelInstance.transform);
 		modelInstance.transform.translate(0, node.getHeight() + height, 0);
 		return modelInstance;
 	}
@@ -433,12 +433,8 @@ public final class MapBuilder implements Disposable {
 				MapGraphNode node = getNodeByJson(mapGraph, tileJsonObject);
 				float height = tileJsonObject.get(HEIGHT).getAsFloat();
 				node.setHeight(height);
-				Optional.ofNullable(node.getEntity()).ifPresent(e -> {
-					GameModelInstance modelInstance = ComponentsMapper.modelInstance.get(e).getModelInstance();
-					modelInstance.transform.translate(0, height, 0);
-					BoundingBox bBox = modelInstance.calculateBoundingBox(auxBoundingBox).mul(modelInstance.transform);
-					modelInstance.getAdditionalRenderData().setBoundingBox(bBox);
-				});
+				Optional.ofNullable(node.getEntity()).ifPresent(e ->
+						ComponentsMapper.modelInstance.get(e).getModelInstance().transform.translate(0, height, 0));
 			});
 			heights.forEach(jsonElement -> {
 				JsonObject tileJsonObject = jsonElement.getAsJsonObject();
@@ -561,12 +557,11 @@ public final class MapBuilder implements Disposable {
 	}
 
 	private void inflateWall(final Wall wall, final MapNodeData parentNode) {
-		ModelInstance wallModelInstance = wall.getModelInstance();
-		BoundingBox bBox = wallModelInstance.calculateBoundingBox(new BoundingBox()).mul(wallModelInstance.transform);
+		BoundingBox bBox = wall.getModelInstance().calculateBoundingBox(new BoundingBox());
 		avoidZeroDimensions(bBox);
-		GameModelInstance modelInstance = new GameModelInstance(wallModelInstance, bBox, true, Color.WHITE);
-		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(modelInstance, true, false)
+		bBox.mul(auxMatrix.set(wall.getModelInstance().transform).setTranslation(Vector3.Zero));
+		GameModelInstance modelInstance = new GameModelInstance(wall.getModelInstance(), bBox, true, Color.WHITE);
+		EntityBuilder.beginBuildingEntity(engine).addModelInstanceComponent(modelInstance, true, false)
 				.addWallComponent(parentNode)
 				.finishAndAddToEngine();
 	}
@@ -589,7 +584,7 @@ public final class MapBuilder implements Disposable {
 		GameModelInstance mi = new GameModelInstance(floorModel);
 		mi.materials.get(0).set(TextureAttribute.createDiffuse(assetManager.getTexture(FloorsTextures.values()[chr - 1])));
 		mi.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
-		mi.getAdditionalRenderData().setBoundingBox(mi.calculateBoundingBox(auxBoundingBox).mul(mi.transform));
+		mi.getAdditionalRenderData().setBoundingBox(mi.calculateBoundingBox(auxBoundingBox));
 		mi.getAdditionalRenderData().setColorWhenOutside(Color.WHITE);
 		EntityBuilder.beginBuildingEntity(engine).addModelInstanceComponent(mi, true)
 				.addFloorComponent()

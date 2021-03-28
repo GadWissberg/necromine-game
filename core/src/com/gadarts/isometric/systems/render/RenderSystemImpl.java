@@ -62,6 +62,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
+	private static final Vector3 auxVector3_3 = new Vector3();
 	private static final Quaternion auxQuat = new Quaternion();
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
 
@@ -243,11 +244,12 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private boolean isVisible(final Camera camera, final Entity entity) {
 		if (DefaultGameSettings.DISABLE_FRUSTUM_CULLING) return true;
 		ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
+		Vector3 position = modelInstanceComponent.getModelInstance().transform.getTranslation(auxVector3_1);
 		AdditionalRenderData additionalRenderData = modelInstanceComponent.getModelInstance().getAdditionalRenderData();
 		BoundingBox boundingBox = additionalRenderData.getBoundingBox(auxBoundingBox);
-		boundingBox.getCenter(auxVector3_1);
-		auxBoundingBox.getDimensions(auxVector3_2);
-		return camera.frustum.boundsInFrustum(auxVector3_1, auxVector3_2);
+		Vector3 center = boundingBox.getCenter(auxVector3_3);
+		Vector3 dim = auxBoundingBox.getDimensions(auxVector3_2);
+		return camera.frustum.boundsInFrustum(position.add(center), dim);
 	}
 
 	private void renderModels(final Camera camera,
