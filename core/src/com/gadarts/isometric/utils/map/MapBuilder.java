@@ -252,7 +252,7 @@ public final class MapBuilder implements Disposable {
 
 	private void inflateAllElements(final JsonObject mapJsonObject, final MapGraph mapGraph) {
 		inflateCharacters(mapJsonObject, mapGraph);
-//		inflateLights(mapJsonObject, mapGraph);
+		inflateLights(mapJsonObject, mapGraph);
 		inflateEnvironment(mapJsonObject, mapGraph);
 		inflatePickups(mapJsonObject, mapGraph);
 	}
@@ -307,7 +307,7 @@ public final class MapBuilder implements Disposable {
 		EnvironmentDefinitions type = EnvironmentDefinitions.values()[envJsonObject.get(TYPE).getAsInt()];
 		inflateEnvSpecifiedComponent(coord, type, builder, Direction.values()[dirIndex]);
 		MapGraphNode node = mapGraph.getNode(coord.getCol(), coord.getRow());
-		GameModelInstance mi = inflateEnvModelInstanceComponent(node, dirIndex, type, builder);
+		GameModelInstance mi = inflateEnvModelInstanceComponent(node, envJsonObject, type, builder);
 		inflateEnvLightComponent(builder, type, mi, dirIndex);
 		builder.addCollisionComponent();
 	}
@@ -361,10 +361,12 @@ public final class MapBuilder implements Disposable {
 	}
 
 	private GameModelInstance inflateEnvModelInstanceComponent(final MapGraphNode node,
-															   final int directionIndex,
+															   final JsonObject envJsonObject,
 															   final EnvironmentDefinitions type,
 															   final EntityBuilder builder) {
-		GameModelInstance mi = inflateEnvironmentModelInstance(node, directionIndex, type);
+		int dirIndex = envJsonObject.get(DIRECTION).getAsInt();
+		float height = envJsonObject.get(HEIGHT).getAsFloat();
+		GameModelInstance mi = inflateEnvironmentModelInstance(node, dirIndex, type, height);
 		mi.getAdditionalRenderData().setColorWhenOutside(Color.WHITE);
 		builder.addModelInstanceComponent(mi, true, type.isCastShadow());
 		return mi;
@@ -390,7 +392,8 @@ public final class MapBuilder implements Disposable {
 
 	private GameModelInstance inflateEnvironmentModelInstance(final MapGraphNode node,
 															  final int directionIndex,
-															  final EnvironmentDefinitions type) {
+															  final EnvironmentDefinitions type,
+															  final float height) {
 		String fileName = GameServices.BOUNDING_BOX_PREFIX + type.getModelDefinition().getFilePath();
 		ModelBoundingBox box = assetManager.get(fileName, ModelBoundingBox.class);
 		GameModelInstance modelInstance = new GameModelInstance(assetManager.getModel(type.getModelDefinition()), box, type.getModelDefinition());
@@ -400,7 +403,7 @@ public final class MapBuilder implements Disposable {
 		modelInstance.transform.translate(type.getOffset(auxVector3_1));
 		EnvironmentDefinitions.handleEvenSize(type, modelInstance, direction);
 		modelInstance.getAdditionalRenderData().getBoundingBox().mul(modelInstance.transform);
-		modelInstance.transform.translate(0, node.getHeight(), 0);
+		modelInstance.transform.translate(0, node.getHeight() + height, 0);
 		return modelInstance;
 	}
 
