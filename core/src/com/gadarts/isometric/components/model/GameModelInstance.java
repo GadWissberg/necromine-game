@@ -28,6 +28,10 @@ public class GameModelInstance extends ModelInstance {
         this(model, boundingBox, true, null);
     }
 
+    public GameModelInstance(final Model model) {
+        this(model, null, true, null);
+    }
+
     public GameModelInstance(final Model model,
                              final BoundingBox boundingBox,
                              final boolean affectedByLight,

@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -402,7 +403,7 @@ public final class MapBuilder implements Disposable {
 		modelInstance.transform.rotate(Vector3.Y, -1 * direction.getDirection(auxVector2_1).angleDeg());
 		modelInstance.transform.translate(type.getOffset(auxVector3_1));
 		EnvironmentDefinitions.handleEvenSize(type, modelInstance, direction);
-		modelInstance.getAdditionalRenderData().getBoundingBox().mul(modelInstance.transform);
+		modelInstance.getAdditionalRenderData().getBoundingBox(auxBoundingBox).mul(modelInstance.transform);
 		modelInstance.transform.translate(0, node.getHeight() + height, 0);
 		return modelInstance;
 	}
@@ -432,8 +433,12 @@ public final class MapBuilder implements Disposable {
 				MapGraphNode node = getNodeByJson(mapGraph, tileJsonObject);
 				float height = tileJsonObject.get(HEIGHT).getAsFloat();
 				node.setHeight(height);
-				Optional.ofNullable(node.getEntity()).ifPresent(e ->
-						ComponentsMapper.modelInstance.get(e).getModelInstance().transform.translate(0, height, 0));
+				Optional.ofNullable(node.getEntity()).ifPresent(e -> {
+					GameModelInstance modelInstance = ComponentsMapper.modelInstance.get(e).getModelInstance();
+					modelInstance.transform.translate(0, height, 0);
+					BoundingBox bBox = modelInstance.calculateBoundingBox(auxBoundingBox).mul(modelInstance.transform);
+					modelInstance.getAdditionalRenderData().setBoundingBox(bBox);
+				});
 			});
 			heights.forEach(jsonElement -> {
 				JsonObject tileJsonObject = jsonElement.getAsJsonObject();
@@ -556,22 +561,37 @@ public final class MapBuilder implements Disposable {
 	}
 
 	private void inflateWall(final Wall wall, final MapNodeData parentNode) {
-		BoundingBox boundingBox = wall.getModelInstance().calculateBoundingBox(new BoundingBox());
-		GameModelInstance modelInstance = new GameModelInstance(wall.getModelInstance(), boundingBox, true, Color.WHITE);
+		ModelInstance wallModelInstance = wall.getModelInstance();
+		BoundingBox bBox = wallModelInstance.calculateBoundingBox(new BoundingBox()).mul(wallModelInstance.transform);
+		avoidZeroDimensions(bBox);
+		GameModelInstance modelInstance = new GameModelInstance(wallModelInstance, bBox, true, Color.WHITE);
 		EntityBuilder.beginBuildingEntity(engine)
 				.addModelInstanceComponent(modelInstance, true, false)
 				.addWallComponent(parentNode)
 				.finishAndAddToEngine();
 	}
 
-	private void inflateTile(final int row, final int col, final byte currentChar) {
-		GameModelInstance mi = new GameModelInstance(floorModel, auxBoundingBox);
-		Texture texture = assetManager.getTexture(FloorsTextures.values()[currentChar - 1]);
-		mi.materials.get(0).set(TextureAttribute.createDiffuse(texture));
+	private void avoidZeroDimensions(final BoundingBox bBox) {
+		Vector3 center = bBox.getCenter(auxVector3_1);
+		if (bBox.getWidth() == 0) {
+			center.x += 0.01;
+		}
+		if (bBox.getHeight() == 0) {
+			center.y += 0.01;
+		}
+		if (bBox.getDepth() == 0) {
+			center.z += 0.01;
+		}
+		bBox.ext(center);
+	}
+
+	private void inflateTile(final int row, final int col, final byte chr) {
+		GameModelInstance mi = new GameModelInstance(floorModel);
+		mi.materials.get(0).set(TextureAttribute.createDiffuse(assetManager.getTexture(FloorsTextures.values()[chr - 1])));
 		mi.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
+		mi.getAdditionalRenderData().setBoundingBox(mi.calculateBoundingBox(auxBoundingBox).mul(mi.transform));
 		mi.getAdditionalRenderData().setColorWhenOutside(Color.WHITE);
-		EntityBuilder.beginBuildingEntity(engine)
-				.addModelInstanceComponent(mi, true)
+		EntityBuilder.beginBuildingEntity(engine).addModelInstanceComponent(mi, true)
 				.addFloorComponent()
 				.finishAndAddToEngine();
 	}

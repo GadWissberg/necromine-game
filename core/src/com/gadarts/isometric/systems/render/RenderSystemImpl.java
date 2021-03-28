@@ -18,15 +18,12 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.gadarts.isometric.components.AnimationComponent;
-import com.gadarts.isometric.components.CharacterAnimation;
-import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.LightComponent;
-import com.gadarts.isometric.components.ModelInstanceComponent;
+import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.decal.SimpleDecalComponent;
+import com.gadarts.isometric.components.model.AdditionalRenderData;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.EventsNotifier;
@@ -246,11 +243,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private boolean isVisible(final Camera camera, final Entity entity) {
 		if (DefaultGameSettings.DISABLE_FRUSTUM_CULLING) return true;
 		ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
-		modelInstanceComponent.getModelInstance().transform.getTranslation(auxVector3_1);
-		auxVector3_1.add(modelInstanceComponent.getBoundingBox(auxBoundingBox).getCenter(auxVector3_2));
+		AdditionalRenderData additionalRenderData = modelInstanceComponent.getModelInstance().getAdditionalRenderData();
+		BoundingBox boundingBox = additionalRenderData.getBoundingBox(auxBoundingBox);
+		boundingBox.getCenter(auxVector3_1);
 		auxBoundingBox.getDimensions(auxVector3_2);
-		float max = max(auxVector3_2.x, max(auxVector3_2.y, auxVector3_2.z)) * 2;
-		auxVector3_2.set(max, max, max);
 		return camera.frustum.boundsInFrustum(auxVector3_1, auxVector3_2);
 	}
 

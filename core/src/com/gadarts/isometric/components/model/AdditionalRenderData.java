@@ -3,6 +3,7 @@ package com.gadarts.isometric.components.model;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,9 +16,10 @@ import java.util.List;
 @Getter
 public class AdditionalRenderData {
 	private final List<Entity> nearbyLights = new ArrayList<>();
-	private final BoundingBox boundingBox = new BoundingBox();
 	private final boolean affectedByLight;
 
+	@Getter(AccessLevel.NONE)
+	private final BoundingBox boundingBox = new BoundingBox();
 	@Setter
 	private Color colorWhenOutside;
 
@@ -25,7 +27,17 @@ public class AdditionalRenderData {
 								final BoundingBox boundingBox,
 								final Color colorWhenOutside) {
 		this.affectedByLight = affectedByLight;
-		this.boundingBox.set(boundingBox);
+		if (boundingBox != null) {
+			this.boundingBox.set(boundingBox);
+		}
 		this.colorWhenOutside = colorWhenOutside;
+	}
+
+	public void setBoundingBox(final BoundingBox boundingBox) {
+		this.boundingBox.set(boundingBox);
+	}
+
+	public BoundingBox getBoundingBox(final BoundingBox output) {
+		return output.set(boundingBox);
 	}
 }
