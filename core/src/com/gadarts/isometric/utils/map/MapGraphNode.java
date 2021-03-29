@@ -8,6 +8,8 @@ import com.gadarts.necromine.model.MapNodesTypes;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.awt.*;
+
 @Getter
 public class MapGraphNode {
 	private final Array<Connection<MapGraphNode>> connections;
@@ -56,8 +58,8 @@ public class MapGraphNode {
 		return connections.equals(that.connections);
 	}
 
-	public int getIndex() {
-		return col * MapGraph.MAP_SIZE + row;
+	public int getIndex(final Dimension mapSize) {
+		return col * mapSize.width + row;
 	}
 
 	public MapGraphNode set(final MapGraphNode newValue) {

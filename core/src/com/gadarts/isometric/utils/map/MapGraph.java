@@ -26,11 +26,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEventsSubscriber {
-	public static final int MAP_SIZE = 20;
 	private static final Array<Connection<MapGraphNode>> auxConnectionsList = new Array<>();
 	private static final Vector3 auxVector3 = new Vector3();
 	private static final Vector2 auxVector2 = new Vector2();
@@ -50,22 +50,23 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	@Getter
 	private final float ambient;
 	private final PooledEngine engine;
+	private final Dimension mapSize;
 
 	@Setter(AccessLevel.PACKAGE)
 	@Getter(AccessLevel.PACKAGE)
 	MapGraphNode currentDestination;
 	private ImmutableArray<Entity> obstaclesEntities;
 
-	public MapGraph(final float ambient,
-					final PooledEngine engine) {
+	public MapGraph(final float ambient, Dimension mapSize, final PooledEngine engine) {
+		this.mapSize = mapSize;
 		this.engine = engine;
 		this.ambient = ambient;
 		this.pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
 		this.characterEntities = engine.getEntitiesFor(Family.all(CharacterComponent.class).get());
-		this.nodes = new Array<>(MAP_SIZE * MAP_SIZE);
-		this.fowMap = new int[MAP_SIZE][MAP_SIZE];
-		for (int x = 0; x < MAP_SIZE; x++) {
-			for (int y = 0; y < MAP_SIZE; y++) {
+		this.nodes = new Array<>(mapSize.width * mapSize.height);
+		this.fowMap = new int[mapSize.height][mapSize.width];
+		for (int x = 0; x < mapSize.width; x++) {
+			for (int y = 0; y < mapSize.height; y++) {
 				nodes.add(new MapGraphNode(x, y, MapNodesTypes.values()[MapNodesTypes.PASSABLE_NODE.ordinal()], 8));
 			}
 		}
@@ -78,18 +79,18 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	void applyConnections() {
-		for (int x = 0; x < MAP_SIZE; x++) {
-			int idx = x * MAP_SIZE;
-			for (int y = 0; y < MAP_SIZE; y++) {
+		for (int x = 0; x < mapSize.width; x++) {
+			int idx = x * mapSize.width;
+			for (int y = 0; y < mapSize.height; y++) {
 				MapGraphNode n = nodes.get(idx + y);
 				if (x > 0) addConnection(n, -1, 0);
-				if (x > 0 && y < MAP_SIZE - 1) addConnection(n, -1, 1);
+				if (x > 0 && y < mapSize.height - 1) addConnection(n, -1, 1);
 				if (x > 0 && y > 0) addConnection(n, -1, -1);
 				if (y > 0) addConnection(n, 0, -1);
-				if (y > 0 && x < MAP_SIZE - 1) addConnection(n, 1, -1);
-				if (x < MAP_SIZE - 1) addConnection(n, 1, 0);
-				if (x < MAP_SIZE - 1 && y < MAP_SIZE - 1) addConnection(n, 1, 1);
-				if (y < MAP_SIZE - 1) addConnection(n, 0, 1);
+				if (y > 0 && x < mapSize.width - 1) addConnection(n, 1, -1);
+				if (x < mapSize.width - 1) addConnection(n, 1, 0);
+				if (x < mapSize.width - 1 && y < mapSize.height - 1) addConnection(n, 1, 1);
+				if (y < mapSize.height - 1) addConnection(n, 0, 1);
 			}
 		}
 	}
@@ -128,7 +129,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	public MapGraphNode getNode(final int col, final int row) {
-		return nodes.get(Math.min(col, MAP_SIZE - 1) * MAP_SIZE + Math.min(row, MAP_SIZE - 1));
+		return nodes.get(Math.min(col, mapSize.width - 1) * mapSize.width + Math.min(row, mapSize.height - 1));
 	}
 
 	private void addConnection(final MapGraphNode source, final int xOffset, final int yOffset) {
@@ -175,7 +176,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
 	@Override
 	public int getIndex(final MapGraphNode node) {
-		return node.getIndex();
+		return node.getIndex(mapSize);
 	}
 
 	@Override
@@ -229,7 +230,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		if (node.getCol() > 0) {
 			output.add(getNode(node.getCol() - 1, node.getRow()));
 		}
-		if (node.getCol() < MAP_SIZE - 1) {
+		if (node.getCol() < mapSize.width - 1) {
 			output.add(getNode(node.getCol() + 1, node.getRow()));
 		}
 		return output;
@@ -243,7 +244,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 				output.add(getNode(x - 1, y - 1));
 			}
 			output.add(getNode(x, y - 1));
-			if (x < MAP_SIZE - 1) {
+			if (x < mapSize.width - 1) {
 				output.add(getNode(x + 1, y - 1));
 			}
 		}
@@ -252,12 +253,12 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private void getThreeInFront(final MapGraphNode node, final List<MapGraphNode> output) {
 		int x = node.getCol();
 		int y = node.getRow();
-		if (y < MAP_SIZE - 1) {
+		if (y < mapSize.height - 1) {
 			if (x > 0) {
 				output.add(getNode(x - 1, y + 1));
 			}
 			output.add(getNode(x, y + 1));
-			if (x < MAP_SIZE - 1) {
+			if (x < mapSize.width - 1) {
 				output.add(getNode(x + 1, y + 1));
 			}
 		}
@@ -361,5 +362,13 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 			}
 		});
 		applyConnections();
+	}
+
+	public int getWidth() {
+		return mapSize.width;
+	}
+
+	public int getDepth() {
+		return mapSize.height;
 	}
 }

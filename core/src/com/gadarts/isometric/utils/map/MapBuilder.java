@@ -53,13 +53,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static com.gadarts.isometric.components.FloorComponent.*;
-import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
 import static com.gadarts.necromine.assets.MapJsonKeys.*;
 import static com.gadarts.necromine.model.characters.CharacterTypes.*;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
@@ -155,9 +155,11 @@ public final class MapBuilder implements Disposable {
 	public MapGraph inflateTestMap() {
 		createAndAdd3dCursor();
 		JsonObject mapJsonObject = gson.fromJson(Gdx.files.internal(TEMP_PATH).reader(), JsonObject.class);
-		inflateTiles(mapJsonObject);
+		JsonObject tilesJsonObject = mapJsonObject.get(TILES).getAsJsonObject();
+		Dimension mapSize = inflateTiles(tilesJsonObject);
 		MapGraph mapGraph = new MapGraph(
 				Utils.getFloatFromJsonOrDefault(mapJsonObject, MapJsonKeys.AMBIENT, 0),
+				mapSize,
 				engine);
 		inflateHeights(mapJsonObject, mapGraph);
 		inflateAllElements(mapJsonObject, mapGraph);
@@ -205,11 +207,12 @@ public final class MapBuilder implements Disposable {
 															 final MapGraphNode node,
 															 final int nodeCol,
 															 final int nodeRow) {
-		if (nodeCol + 1 < MAP_SIZE && nodeRow + 1 < MAP_SIZE) {
+		int depth = mapGraph.getDepth();
+		if (nodeCol + 1 < mapGraph.getWidth() && nodeRow + 1 < depth) {
 			Optional.ofNullable(mapGraph.getNode(nodeCol + 1, nodeRow + 1))
 					.ifPresent(southEast -> applyAmbientOcclusion(node, southEast, AO_MASK_SOUTH_EAST));
 		}
-		if (nodeCol - 1 >= 0 && nodeRow + 1 < MAP_SIZE) {
+		if (nodeCol - 1 >= 0 && nodeRow + 1 < depth) {
 			Optional.ofNullable(mapGraph.getNode(nodeCol - 1, nodeRow + 1))
 					.ifPresent(southWest -> applyAmbientOcclusion(node, southWest, AO_MASK_SOUTH_WEST));
 		}
@@ -219,7 +222,7 @@ public final class MapBuilder implements Disposable {
 														  final MapGraphNode node,
 														  final int nodeCol,
 														  final int nodeRow) {
-		if (nodeRow + 1 < MAP_SIZE) {
+		if (nodeRow + 1 < mapGraph.getDepth()) {
 			Optional.ofNullable(mapGraph.getNode(nodeCol, nodeRow + 1))
 					.ifPresent(south -> applyAmbientOcclusion(node, south, AO_MASK_SOUTH));
 		}
@@ -234,7 +237,7 @@ public final class MapBuilder implements Disposable {
 														final int nodeCol,
 														final int nodeRow) {
 		int eastCol = nodeCol + 1;
-		if (eastCol < MAP_SIZE) {
+		if (eastCol < mapGraph.getWidth()) {
 			Optional.ofNullable(mapGraph.getNode(eastCol, nodeRow))
 					.ifPresent(east -> applyAmbientOcclusion(node, east, AO_MASK_EAST));
 		}
@@ -408,20 +411,19 @@ public final class MapBuilder implements Disposable {
 		return modelInstance;
 	}
 
-	private void inflateTiles(final JsonObject mapJsonObject) {
-		JsonObject tilesJsonObject = mapJsonObject.get(TILES).getAsJsonObject();
-		int width = tilesJsonObject.get(WIDTH).getAsInt();
-		int depth = tilesJsonObject.get(DEPTH).getAsInt();
+	private Dimension inflateTiles(final JsonObject tilesJsonObject) {
+		Dimension mapSize = new Dimension(tilesJsonObject.get(WIDTH).getAsInt(), tilesJsonObject.get(DEPTH).getAsInt());
 		String matrix = tilesJsonObject.get(MATRIX).getAsString();
 		byte[] matrixByte = Base64.getDecoder().decode(matrix.getBytes());
 		floorModel.calculateBoundingBox(auxBoundingBox);
-		IntStream.range(0, depth).forEach(row ->
-				IntStream.range(0, width).forEach(col -> {
-					byte currentValue = matrixByte[row * width + col % width];
+		IntStream.range(0, mapSize.height).forEach(row ->
+				IntStream.range(0, mapSize.width).forEach(col -> {
+					byte currentValue = matrixByte[row * mapSize.width + col % mapSize.width];
 					if (currentValue != 0) {
 						inflateTile(row, col, currentValue);
 					}
 				}));
+		return mapSize;
 	}
 
 	private void inflateHeights(final JsonObject mapJsonObject, final MapGraph mapGraph) {
@@ -467,7 +469,7 @@ public final class MapBuilder implements Disposable {
 								 final MapGraph mapGraph) {
 		int row = node.getRow();
 		int col = node.getCol();
-		if (col >= MAP_SIZE - 1) return;
+		if (col >= mapGraph.getWidth() - 1) return;
 		int eastCol = col + 1;
 		JsonElement east = tileJsonObject.get(EAST);
 		if (height != mapGraph.getNode(eastCol, node.getRow()).getHeight() && east != null) {
@@ -491,7 +493,7 @@ public final class MapBuilder implements Disposable {
 								  final MapGraph mapGraph) {
 		int row = node.getRow();
 		int col = node.getCol();
-		if (row >= MAP_SIZE - 1) return;
+		if (row >= mapGraph.getDepth() - 1) return;
 		int southNodeRow = row + 1;
 		JsonElement south = tileJsonObject.get(MapJsonKeys.SOUTH);
 		if (height != mapGraph.getNode(col, southNodeRow).getHeight() && south != null) {

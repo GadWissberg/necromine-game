@@ -17,7 +17,6 @@ import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 import lombok.Getter;
 
-import static com.gadarts.isometric.utils.map.MapGraph.MAP_SIZE;
 
 public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscriber>
         implements CameraSystem,
@@ -75,9 +74,9 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
     private void setCameraTranslationClamped(final Vector3 direction, final float alpha) {
         Vector3 originalPosition = auxVector3_3.set(camera.position);
         Vector3 newPosition = auxVector3_2.set(camera.position).add(direction.x, 0, direction.z);
-        auxVector3_1.x = clampTranslation(camera.position.x, newPosition.x);
+        auxVector3_1.x = clampTranslation(camera.position.x, newPosition.x, services.getMap().getWidth());
         auxVector3_1.y = camera.position.y;
-        auxVector3_1.z = clampTranslation(camera.position.z, newPosition.z);
+        auxVector3_1.z = clampTranslation(camera.position.z, newPosition.z, services.getMap().getDepth());
         camera.position.interpolate(auxVector3_1, alpha, Interpolation.smooth2);
         cameraMoved(auxVector3_1.set(camera.position).sub(originalPosition));
     }
@@ -89,10 +88,10 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
         rotationPoint.add(delta);
     }
 
-    private float clampTranslation(final float cameraFrag, final float newPositionFrag) {
+    private float clampTranslation(final float cameraFrag, final float newPositionFrag, final int edge) {
         boolean canMoveWhenCameraOnLeftEdge = cameraFrag < 0 && newPositionFrag >= cameraFrag;
-        boolean canMoveWhenCameraOnRightEdge = cameraFrag > MAP_SIZE && newPositionFrag <= cameraFrag;
-        boolean isInSideMap = cameraFrag >= 0 && cameraFrag <= MAP_SIZE;
+        boolean canMoveWhenCameraOnRightEdge = cameraFrag > edge && newPositionFrag <= cameraFrag;
+        boolean isInSideMap = cameraFrag >= 0 && cameraFrag <= edge;
         if (canMoveWhenCameraOnLeftEdge || canMoveWhenCameraOnRightEdge || isInSideMap) {
             return newPositionFrag;
         } else {
