@@ -4,7 +4,7 @@
   "tiles": {
     "width": 40,
     "depth": 40,
-    "matrix": "AQEBAQEBAQEKBREFCAEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAEDAwMDAwMBCgURBQgBAwMDAwMBAAAAAAAAAAAAAAAAAAAAAAAAAAABAwMDAwMDAQoHEQUIAQMDAwMDAQAAAAAAAAAAAAAAAAAAAAAAAAAAAQMDAwMDAwEKBREFCAEDAwMDAwEAAAAAAAAAAAAAAAAAAAAAAAAAAAEDAwMDAwMBCgURBQgBAwMDAwMBAAAAAAsLCwsLCwsNCAAAAAAAAAABAwMDAwMDAQoFEQUIAQMDAwMDAQAAAAAFBQUFBQURBQgAAAAAAAAAAQEBAQEBAQEKBREFCAEBAQEDAwEAAAAAEBAQBQUFBQUIAAAAAAAAAAsLCwsLCwsLDQURBQgBAQEBAwMBAAAAAAUFBQUFBxEFCAAAAAAAAAAFBQUFBwUFBQUGEQUIAQEBAQMDAQAAAAAQEBAFBQUFBQgAAAAAAAAAEBAQEBAQEBAFBREFCAEBAQEDAwEAAAAABQUFBQUFEQUIAAAAAAAAAAUFBQUFBQUFBQURBQgBAQEBAwMBAAAAABAQEAUFBQUFCAAAAAAAAAAJCQkJCQkJCQ8FEQUIAQMDAwMDAQAAAAAFBQUFBQURBQgAAAAAAAAAAQEBAQEBAQEKBQUFCAEDAwMDAwEAAAAACQkJCQ8FBQUIAAAAAAAAAAECAgICAgIBCgURBQgBAwMDAwMBAAAAAAAAAAAKBREFCAAAAAAAAAABAgICAgICAQoFBQUIAQMDAwMDAQAAAAAAAAAACgUFBQgAAAAAAAAAAQICAgICAgEKBREGCAEDAwMDAwEAAAAAAAAAAAoFEQUIAAAAAAAAAAECAgICAgIBCgUFBQgBAwMDAwMBAAAAAAAAAAAKBQUFCAAAAAAAAAABAgICAgICAQoFEQUIAQMDAwMDAQAAAAAAAAAACgURBQgAAAAAAAAAAQICAgICAgEKBQUFCAEDAwMDAwEAAAAAAAAAAAoFBQUIAAAAAAAAAAEBAQEBAQEBCgURBQgBAQEBAQEBAAAAAAAAAAAKBREFCAAAAAAAAAABBAQEBAQEAQoFBQUIAAAAAAAAAAAAAAAAAAAACgUFBQgAAAAAAAAAAQQEBAQEBAEKBREFCAAAAAAAAAAAAAAAAAAAAAoFEQUIAAAAAAAAAAEEBAQEBAQBCgUFBQgAAAAAAAAAAAAAAAAAAAAKBQUFCAAAAAAAAAABBAQEBAQEAQoFEQUIAAAAAAAAAAAAAAAAAAAACgURBQgAAAAAAAAAAQQEBAQEBAEKBQUFCAAAAAAAAAAAAAAAAAAAAAoFBQUIAAAAAAAAAAEEBAQEBAQBCgURBQgAAAAAAAAAAAAAAAAAAAAKBREFCAAAAAAAAAABBAQEBAQEAQoFBQUIAAAAAAAAAAAAAAAAAAAACgUFBQgAAAAAAAAAAQEBAQEBAQEKBREFCAAAAAAAAAAAAAAAAAAAAAoFEQUIAAAAAAAAAAECBAQEBAIBCgUFBQgAAAAAAAAAAAAAAAAAAAAKBQUFCAAAAAAAAAABBAQEBAQEAQoFEQUIAAAAAAAAAAAAAAAAAAAACgURBQgAAAAAAAAAAQQEBAQEBAEKBQUFDAsLCwsLCwsLCwsLCwsLCw0FBQUIAAAAAAAAAAEEBAQEBAQBCgUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFCAAAAAAAAAABBAQEBAQEAQoFBRAQEBAQEBAQEBAQEBAQEBAQEBAFBQgAAAAAAAAAAQIEBAQEAgEKBwUFBQUFBQUFBQUFBQUFBQUFBQUGBQUIAAAAAAAAAAEBAQEBAQEBDQ4JCQkJCQkJCQkJCQkJCQkJCQkPBQUFCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgURBQgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoFBQUIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKBREFCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgUFBQgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoFEQUIAAAAAAAAAA\u003d\u003d",
+    "matrix": "AQEBAQEBAQEKBREFCAEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAEDAwMDAwMBCgURBQgBAwMDAwMBAAAAAAAAAAAAAAAAAAAAAAAAAAABAwMDAwMDAQoHEQUIAQMDAwMDAQAAAAAAAAAAAAAAAAAAAAAAAAAAAQMDAwMDAwEKBREFCAEDAwMDAwEAAAAAAAAAAAAAAAAAAAAAAAAAAAEDAwMDAwMBCgURBQgBAwMDAwMBAAAAAAsLCwsLCwsNCAAAAAAAAAABAwMDAwMDAQoFEQUIAQMDAwMDAQAAAAAFBQUFBQURBQgAAAAAAAAAAQEBAQEBAQEKBREFCAEBAQEDAwEAAAAAEBAQBQUFBQUIAAAAAAAAAAsLCwsLCwsLDQURBQgBAQEBAwMBAAAAAAUFBQUFBxEFCAAAAAAAAAAFBQUFBwUFBQUGEQUIAQEBAQMDAQAAAAAQEBAFBQUFBQgAAAAAAAAAEBAQEBAQEBAFBREFCAEBAQEDAwEAAAAABQUFBQUFEQUIAAAAAAAAAAUFBQUFBQUFBQURBQgBAQEBAwMBAAAAABAQEAUFBQUFCAAAAAAAAAAJCQkJCQkJCQ8FEQUIAQMDAwMDAQAAAAAFBQUFBQURBQgAAAAAAAAAAQEBAQEBAQEKBQUFCAEDAwMDAwEAAAAACQkJCQ8FBQUIAAAAAAAAAAECAgICAgIBCgURBQgBAwMDAwMBAAAAAAAAAAAKBREFCAAAAAAAAAABAgICAgICAQoFBQUIAQMDAwMDAQAAAAAAAAAACgUFBQgAAAAAAAAAAQICAgICAgEKBREGCAEDAwMDAwEAAAAAAAAAAAoFEQUIAAAAAAAAAAECAgICAgIBCgUFBQgBAwMDAwMBAAAAAAAAAAAKBQUFCAAAAAAAAAABAgICAgICAQoFEQUIAQMDAwMDAQAAAAAAAAAACgURBQgAAAAAAAAAAQICAgICAgEKBQUFCAEDAwMDAwEAAAAAAAAAAAoFBQUIAAAAAAAAAAEBAQEBAQEBCgURBQgBAQEBAQEBAAAAAAAAAAAKBREFCAAAAAAAAAABBAQEBAQEAQoFBQUIAQMDAwMDAwMDAwMDAwMACgUFBQgAAAAAAAAAAQQEBAQEBAEKBREFCAECAgIDAwMDAwMDAwMDAAoFEQUIAAAAAAAAAAEEBAQEBAQBCgUFBQgBAgICAwMDAwMDAwMDAwAKBQUFCAAAAAAAAAABBAQEBAQEAQoFEQUIAQICAgMDAwMDAwMDAwMACgURBQgAAAAAAAAAAQQEBAQEBAEKBQUFCAECAgIDAwMDAwMDAwMDAAoFBQUIAAAAAAAAAAEEBAQEBAQBCgURBQgBAgICAwMDAwMDAwMDAwAKBREFCAAAAAAAAAABBAQEBAQEAQoFBQUIAQICAgMDAwMDAwMDAwMACgUFBQgAAAAAAAAAAQEBAQEBAQEKBREFCAECAgIDAwMDAwMDAwMDAAoFEQUIAAAAAAAAAAECBAQEBAIBCgUFBQgBAwMDAwMDAwMDAwMDAwAKBQUFCAAAAAAAAAABBAQEBAQEAQoFEQUIAQEBAQEBAQEBAQEBAAAACgURBQgAAAAAAAAAAQQEBAQEBAEKBQUFDAsLCwsLCwsLCwsLCwsLCw0FBQUIAAAAAAAAAAEEBAQEBAQBCgUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFCAAAAAAAAAABBAQEBAQEAQoFBRAQEBAQEBAQEBAQEBAQEBAQEBAFBQgAAAAAAAAAAQIEBAQEAgEKBwUFBQUFBQUFBQUFBQUFBQUFBQUGBQUIAAAAAAAAAAEBAQEBAQEBDQ4JCQkJCQkJCQkJCQkJCQkJCQkPBQUFCAAAAAAAAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICCgURBQgAAAAAAAAAAgICAgICAgICAgICAgICAgICAgICAgICAgICAgoFBQUIAAAAAAAAAAICAgICAgICAgICAgICAgICAgICAgICAgICAgIKBREFCAAAAAAAAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICCgUFBQgAAAAAAAAAAgICAgICAgICAgICAgICAgICAgICAgICAgICAgoFEQUIAAAAAAAAAA\u003d\u003d",
     "heights": [
       {
         "row": 0,
@@ -1532,6 +1532,86 @@
         "east": "FLOOR_PAVEMENT_0"
       },
       {
+        "row": 20,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 20,
+        "col": 14,
+        "height": 7.0,
+        "west": "WALL_BRICK_2",
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 20,
+        "col": 15,
+        "height": 7.0,
+        "south": "WALL_BRICK_2",
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 20,
+        "col": 16,
+        "height": 7.0,
+        "south": "WALL_BRICK_2",
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 20,
+        "col": 17,
+        "height": 7.0,
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 20,
+        "col": 18,
+        "height": 7.0,
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 20,
+        "col": 19,
+        "height": 7.0,
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 20,
+        "col": 20,
+        "height": 7.0
+      },
+      {
+        "row": 20,
+        "col": 21,
+        "height": 7.0
+      },
+      {
+        "row": 20,
+        "col": 22,
+        "height": 7.0
+      },
+      {
+        "row": 20,
+        "col": 23,
+        "height": 7.0
+      },
+      {
+        "row": 20,
+        "col": 24,
+        "height": 7.0
+      },
+      {
+        "row": 20,
+        "col": 25,
+        "height": 7.0
+      },
+      {
+        "row": 20,
+        "col": 26,
+        "height": 7.0
+      },
+      {
         "row": 21,
         "col": 0,
         "height": 0.2
@@ -1575,6 +1655,82 @@
         "east": "FLOOR_PAVEMENT_0"
       },
       {
+        "row": 21,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 21,
+        "col": 14,
+        "height": 0.4,
+        "west": "FLOOR_PAVEMENT_0",
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 21,
+        "col": 15,
+        "height": 0.6,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 21,
+        "col": 16,
+        "height": 0.8,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 21,
+        "col": 17,
+        "height": 7.0,
+        "west": "WALL_BRICK_2"
+      },
+      {
+        "row": 21,
+        "col": 18,
+        "height": 7.0
+      },
+      {
+        "row": 21,
+        "col": 19,
+        "height": 7.0
+      },
+      {
+        "row": 21,
+        "col": 20,
+        "height": 7.0
+      },
+      {
+        "row": 21,
+        "col": 21,
+        "height": 7.0
+      },
+      {
+        "row": 21,
+        "col": 22,
+        "height": 7.0
+      },
+      {
+        "row": 21,
+        "col": 23,
+        "height": 7.0
+      },
+      {
+        "row": 21,
+        "col": 24,
+        "height": 7.0
+      },
+      {
+        "row": 21,
+        "col": 25,
+        "height": 7.0
+      },
+      {
+        "row": 21,
+        "col": 26,
+        "height": 7.0
+      },
+      {
         "row": 22,
         "col": 0,
         "height": 0.2
@@ -1618,6 +1774,81 @@
         "east": "FLOOR_PAVEMENT_0"
       },
       {
+        "row": 22,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 22,
+        "col": 14,
+        "height": 0.4,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 22,
+        "col": 15,
+        "height": 0.6,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 22,
+        "col": 16,
+        "height": 0.8,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 22,
+        "col": 17,
+        "height": 7.0,
+        "west": "WALL_BRICK_2"
+      },
+      {
+        "row": 22,
+        "col": 18,
+        "height": 7.0
+      },
+      {
+        "row": 22,
+        "col": 19,
+        "height": 7.0
+      },
+      {
+        "row": 22,
+        "col": 20,
+        "height": 7.0
+      },
+      {
+        "row": 22,
+        "col": 21,
+        "height": 7.0
+      },
+      {
+        "row": 22,
+        "col": 22,
+        "height": 7.0
+      },
+      {
+        "row": 22,
+        "col": 23,
+        "height": 7.0
+      },
+      {
+        "row": 22,
+        "col": 24,
+        "height": 7.0
+      },
+      {
+        "row": 22,
+        "col": 25,
+        "height": 7.0
+      },
+      {
+        "row": 22,
+        "col": 26,
+        "height": 7.0
+      },
+      {
         "row": 23,
         "col": 0,
         "height": 0.2
@@ -1661,6 +1892,81 @@
         "east": "FLOOR_PAVEMENT_0"
       },
       {
+        "row": 23,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 23,
+        "col": 14,
+        "height": 0.4,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 23,
+        "col": 15,
+        "height": 0.6,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 23,
+        "col": 16,
+        "height": 0.8,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 23,
+        "col": 17,
+        "height": 7.0,
+        "west": "WALL_BRICK_2"
+      },
+      {
+        "row": 23,
+        "col": 18,
+        "height": 7.0
+      },
+      {
+        "row": 23,
+        "col": 19,
+        "height": 7.0
+      },
+      {
+        "row": 23,
+        "col": 20,
+        "height": 7.0
+      },
+      {
+        "row": 23,
+        "col": 21,
+        "height": 7.0
+      },
+      {
+        "row": 23,
+        "col": 22,
+        "height": 7.0
+      },
+      {
+        "row": 23,
+        "col": 23,
+        "height": 7.0
+      },
+      {
+        "row": 23,
+        "col": 24,
+        "height": 7.0
+      },
+      {
+        "row": 23,
+        "col": 25,
+        "height": 7.0
+      },
+      {
+        "row": 23,
+        "col": 26,
+        "height": 7.0
+      },
+      {
         "row": 24,
         "col": 0,
         "height": 0.2
@@ -1704,6 +2010,81 @@
         "east": "FLOOR_PAVEMENT_0"
       },
       {
+        "row": 24,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 24,
+        "col": 14,
+        "height": 0.4,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 24,
+        "col": 15,
+        "height": 0.6,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 24,
+        "col": 16,
+        "height": 0.8,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 24,
+        "col": 17,
+        "height": 7.0,
+        "west": "WALL_BRICK_2"
+      },
+      {
+        "row": 24,
+        "col": 18,
+        "height": 7.0
+      },
+      {
+        "row": 24,
+        "col": 19,
+        "height": 7.0
+      },
+      {
+        "row": 24,
+        "col": 20,
+        "height": 7.0
+      },
+      {
+        "row": 24,
+        "col": 21,
+        "height": 7.0
+      },
+      {
+        "row": 24,
+        "col": 22,
+        "height": 7.0
+      },
+      {
+        "row": 24,
+        "col": 23,
+        "height": 7.0
+      },
+      {
+        "row": 24,
+        "col": 24,
+        "height": 7.0
+      },
+      {
+        "row": 24,
+        "col": 25,
+        "height": 7.0
+      },
+      {
+        "row": 24,
+        "col": 26,
+        "height": 7.0
+      },
+      {
         "row": 25,
         "col": 0,
         "height": 0.2
@@ -1745,6 +2126,81 @@
         "col": 7,
         "height": 0.2,
         "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 25,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 25,
+        "col": 14,
+        "height": 0.4,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 25,
+        "col": 15,
+        "height": 0.6,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 25,
+        "col": 16,
+        "height": 0.8,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 25,
+        "col": 17,
+        "height": 7.0,
+        "west": "WALL_BRICK_2"
+      },
+      {
+        "row": 25,
+        "col": 18,
+        "height": 7.0
+      },
+      {
+        "row": 25,
+        "col": 19,
+        "height": 7.0
+      },
+      {
+        "row": 25,
+        "col": 20,
+        "height": 7.0
+      },
+      {
+        "row": 25,
+        "col": 21,
+        "height": 7.0
+      },
+      {
+        "row": 25,
+        "col": 22,
+        "height": 7.0
+      },
+      {
+        "row": 25,
+        "col": 23,
+        "height": 7.0
+      },
+      {
+        "row": 25,
+        "col": 24,
+        "height": 7.0
+      },
+      {
+        "row": 25,
+        "col": 25,
+        "height": 7.0
+      },
+      {
+        "row": 25,
+        "col": 26,
+        "height": 7.0
       },
       {
         "row": 26,
@@ -1796,6 +2252,81 @@
         "east": "FLOOR_PAVEMENT_0"
       },
       {
+        "row": 26,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 26,
+        "col": 14,
+        "height": 0.4,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 26,
+        "col": 15,
+        "height": 0.6,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 26,
+        "col": 16,
+        "height": 0.8,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 26,
+        "col": 17,
+        "height": 7.0,
+        "west": "WALL_BRICK_2"
+      },
+      {
+        "row": 26,
+        "col": 18,
+        "height": 7.0
+      },
+      {
+        "row": 26,
+        "col": 19,
+        "height": 7.0
+      },
+      {
+        "row": 26,
+        "col": 20,
+        "height": 7.0
+      },
+      {
+        "row": 26,
+        "col": 21,
+        "height": 7.0
+      },
+      {
+        "row": 26,
+        "col": 22,
+        "height": 7.0
+      },
+      {
+        "row": 26,
+        "col": 23,
+        "height": 7.0
+      },
+      {
+        "row": 26,
+        "col": 24,
+        "height": 7.0
+      },
+      {
+        "row": 26,
+        "col": 25,
+        "height": 7.0
+      },
+      {
+        "row": 26,
+        "col": 26,
+        "height": 7.0
+      },
+      {
         "row": 27,
         "col": 0,
         "height": 0.2
@@ -1835,6 +2366,82 @@
         "col": 7,
         "height": 0.2,
         "east": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 27,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 27,
+        "col": 14,
+        "height": 0.4,
+        "south": "WALL_BRICK_2",
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 27,
+        "col": 15,
+        "height": 0.6,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 27,
+        "col": 16,
+        "height": 0.8,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 27,
+        "col": 17,
+        "height": 7.0,
+        "west": "WALL_BRICK_2"
+      },
+      {
+        "row": 27,
+        "col": 18,
+        "height": 7.0
+      },
+      {
+        "row": 27,
+        "col": 19,
+        "height": 7.0
+      },
+      {
+        "row": 27,
+        "col": 20,
+        "height": 7.0
+      },
+      {
+        "row": 27,
+        "col": 21,
+        "height": 7.0
+      },
+      {
+        "row": 27,
+        "col": 22,
+        "height": 7.0
+      },
+      {
+        "row": 27,
+        "col": 23,
+        "height": 7.0
+      },
+      {
+        "row": 27,
+        "col": 24,
+        "height": 7.0
+      },
+      {
+        "row": 27,
+        "col": 25,
+        "height": 7.0
+      },
+      {
+        "row": 27,
+        "col": 26,
+        "height": 7.0
       },
       {
         "row": 28,
@@ -1886,6 +2493,91 @@
         "west": "WALL_BRICK_2"
       },
       {
+        "row": 28,
+        "col": 13,
+        "height": 0.2,
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 28,
+        "col": 14,
+        "height": 7.0,
+        "south": "WALL_BRICK_2",
+        "west": "WALL_BRICK_2"
+      },
+      {
+        "row": 28,
+        "col": 15,
+        "height": 7.0,
+        "south": "WALL_BRICK_2",
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 28,
+        "col": 16,
+        "height": 7.0,
+        "south": "WALL_BRICK_2",
+        "north": "WALL_BRICK_2"
+      },
+      {
+        "row": 28,
+        "col": 17,
+        "height": 7.0,
+        "south": "WALL_BRICK_2"
+      },
+      {
+        "row": 28,
+        "col": 18,
+        "height": 7.0,
+        "south": "WALL_BRICK_2"
+      },
+      {
+        "row": 28,
+        "col": 19,
+        "height": 7.0,
+        "south": "WALL_BRICK_2"
+      },
+      {
+        "row": 28,
+        "col": 20,
+        "height": 7.0,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 28,
+        "col": 21,
+        "height": 7.0,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 28,
+        "col": 22,
+        "height": 7.0,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 28,
+        "col": 23,
+        "height": 7.0,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 28,
+        "col": 24,
+        "height": 7.0,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 28,
+        "col": 25,
+        "height": 7.0
+      },
+      {
+        "row": 28,
+        "col": 26,
+        "height": 7.0
+      },
+      {
         "row": 29,
         "col": 0,
         "height": 0.2,
@@ -1927,6 +2619,80 @@
         "height": 0.2,
         "east": "FLOOR_PAVEMENT_0",
         "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 29,
+        "col": 13,
+        "height": 0.2,
+        "east": "FLOOR_PAVEMENT_0",
+        "south": "FLOOR_PAVEMENT_0",
+        "west": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 29,
+        "col": 14,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 29,
+        "col": 15,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 29,
+        "col": 16,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 29,
+        "col": 17,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 29,
+        "col": 18,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 29,
+        "col": 19,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 29,
+        "col": 20,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 29,
+        "col": 21,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 29,
+        "col": 22,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 29,
+        "col": 23,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
+      },
+      {
+        "row": 29,
+        "col": 24,
+        "height": 0.2,
+        "south": "FLOOR_PAVEMENT_0"
       },
       {
         "row": 30,
@@ -2185,6 +2951,41 @@
         "col": 13,
         "height": 0.0,
         "direction": 6,
+        "type": 0
+      },
+      {
+        "row": 22,
+        "col": 7,
+        "height": 0.0,
+        "direction": 3,
+        "type": 0
+      },
+      {
+        "row": 31,
+        "col": 12,
+        "height": 0.0,
+        "direction": 5,
+        "type": 0
+      },
+      {
+        "row": 31,
+        "col": 10,
+        "height": 0.0,
+        "direction": 4,
+        "type": 0
+      },
+      {
+        "row": 37,
+        "col": 5,
+        "height": 0.0,
+        "direction": 2,
+        "type": 0
+      },
+      {
+        "row": 38,
+        "col": 7,
+        "height": 0.0,
+        "direction": 3,
         "type": 0
       }
     ],
@@ -2813,8 +3614,264 @@
       "height": 0.0,
       "direction": 0,
       "type": 9
+    },
+    {
+      "row": 19,
+      "col": 15,
+      "height": 2.2,
+      "direction": 0,
+      "type": 13
+    },
+    {
+      "row": 19,
+      "col": 15,
+      "height": 4.2,
+      "direction": 0,
+      "type": 13
+    },
+    {
+      "row": 19,
+      "col": 17,
+      "height": 2.2,
+      "direction": 0,
+      "type": 13
+    },
+    {
+      "row": 19,
+      "col": 17,
+      "height": 4.2,
+      "direction": 0,
+      "type": 13
+    },
+    {
+      "row": 17,
+      "col": 19,
+      "height": 2.2,
+      "direction": 2,
+      "type": 13
+    },
+    {
+      "row": 17,
+      "col": 19,
+      "height": 4.2,
+      "direction": 2,
+      "type": 13
+    },
+    {
+      "row": 12,
+      "col": 19,
+      "height": 2.2,
+      "direction": 2,
+      "type": 13
+    },
+    {
+      "row": 12,
+      "col": 19,
+      "height": 4.2,
+      "direction": 2,
+      "type": 13
+    },
+    {
+      "row": 7,
+      "col": 19,
+      "height": 2.2,
+      "direction": 2,
+      "type": 13
+    },
+    {
+      "row": 7,
+      "col": 19,
+      "height": 4.2,
+      "direction": 2,
+      "type": 13
+    },
+    {
+      "row": 2,
+      "col": 19,
+      "height": 2.2,
+      "direction": 2,
+      "type": 13
+    },
+    {
+      "row": 2,
+      "col": 19,
+      "height": 4.2,
+      "direction": 2,
+      "type": 13
+    },
+    {
+      "row": 29,
+      "col": 14,
+      "height": 0.0,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 30,
+      "col": 14,
+      "height": 0.0,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 31,
+      "col": 14,
+      "height": 0.0,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 32,
+      "col": 14,
+      "height": 0.0,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 33,
+      "col": 14,
+      "height": 0.0,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 34,
+      "col": 14,
+      "height": 0.0,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 35,
+      "col": 14,
+      "height": 0.0,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 36,
+      "col": 14,
+      "height": 0.0,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 37,
+      "col": 14,
+      "height": 0.0,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 38,
+      "col": 14,
+      "height": 0.0,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 39,
+      "col": 14,
+      "height": 0.0,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 19,
+      "col": 15,
+      "height": 0.0,
+      "direction": 2,
+      "type": 5
+    },
+    {
+      "row": 22,
+      "col": 16,
+      "height": 0.8,
+      "direction": 2,
+      "type": 5
+    },
+    {
+      "row": 26,
+      "col": 16,
+      "height": 0.8,
+      "direction": 2,
+      "type": 5
+    },
+    {
+      "row": 24,
+      "col": 16,
+      "height": 0.8,
+      "direction": 6,
+      "type": 7
+    },
+    {
+      "row": 23,
+      "col": 16,
+      "height": 3.0,
+      "direction": 6,
+      "type": 13
+    },
+    {
+      "row": 25,
+      "col": 16,
+      "height": 3.0,
+      "direction": 6,
+      "type": 13
+    },
+    {
+      "row": 0,
+      "col": 15,
+      "height": 0.0,
+      "direction": 2,
+      "type": 12
+    },
+    {
+      "row": 23,
+      "col": 13,
+      "height": 0.0,
+      "direction": 0,
+      "type": 6
+    },
+    {
+      "row": 29,
+      "col": 13,
+      "height": 0.0,
+      "direction": 0,
+      "type": 6
     }
   ],
-  "pickups": [],
-  "lights": []
+  "pickups": [
+    {
+      "row": 8,
+      "col": 15,
+      "height": 0.0,
+      "type": 1
+    },
+    {
+      "row": 24,
+      "col": 15,
+      "height": 0.0,
+      "type": 2
+    }
+  ],
+  "lights": [
+    {
+      "row": 37,
+      "col": 11,
+      "height": 0.0,
+      "type": 0
+    },
+    {
+      "row": 37,
+      "col": 3,
+      "height": 0.0,
+      "type": 0
+    },
+    {
+      "row": 37,
+      "col": 3,
+      "height": 0.0,
+      "type": 0
+    }
+  ]
 }
