@@ -18,7 +18,11 @@ import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
-import com.gadarts.isometric.components.player.*;
+import com.gadarts.isometric.components.player.Item;
+import com.gadarts.isometric.components.player.PlayerComponent;
+import com.gadarts.isometric.components.player.PlayerStorage;
+import com.gadarts.isometric.components.player.PlayerStorageEventsSubscriber;
+import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.CharacterSystem;
@@ -197,7 +201,9 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 		player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		ComponentsMapper.player.get(player).getStorage().subscribeForEvents(this);
+		PlayerComponent playerComponent = ComponentsMapper.player.get(player);
+		playerComponent.setDisabled(true);
+		playerComponent.getStorage().subscribeForEvents(this);
 		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		walls = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
 	}

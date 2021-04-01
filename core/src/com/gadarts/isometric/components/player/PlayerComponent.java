@@ -4,11 +4,15 @@ import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.components.GameComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class PlayerComponent implements GameComponent {
 	private final PlayerStorage storage = new PlayerStorage();
 	private CharacterAnimations generalAnimations;
+
+	@Setter
+	private boolean disabled;
 
 	@Override
 	public void reset() {

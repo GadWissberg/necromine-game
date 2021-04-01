@@ -18,7 +18,11 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.AnimationComponent;
+import com.gadarts.isometric.components.CharacterAnimation;
+import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.LightComponent;
+import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
@@ -37,6 +41,8 @@ import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
 import com.gadarts.isometric.systems.hud.console.ConsoleEventsSubscriber;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
+import com.gadarts.isometric.systems.player.PlayerSystem;
+import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
@@ -54,6 +60,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		RenderSystem,
 		EntityListener,
 		HudSystemEventsSubscriber,
+		PlayerSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
 		EventsNotifier<RenderSystemEventsSubscriber>,
 		ConsoleEventsSubscriber {
@@ -77,6 +84,14 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	public void init(final GameServices services) {
 		super.init(services);
 		environment = new WorldEnvironment(services.getMap().getAmbient());
+	}
+
+	@Override
+	public void onPlayerSystemReady(PlayerSystem playerSystem) {
+		addSystem(PlayerSystem.class, playerSystem);
+		if (ComponentsMapper.player.get(playerSystem.getPlayer()).isDisabled()) {
+			drawFlags.setDrawFow(false);
+		}
 	}
 
 	private void resetDisplay(final Color color) {
@@ -161,7 +176,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 									  final boolean renderCorpse) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(entity);
 		boolean dead = characterComponent.getCharacterSpriteData().getSpriteType() == SpriteType.DEAD;
-		if ((renderCorpse && !dead) || (!renderCorpse && dead)) {
+		boolean isPlayerDisabled = ComponentsMapper.player.has(entity) && ComponentsMapper.player.get(entity).isDisabled();
+		if ((renderCorpse && !dead) || (!renderCorpse && dead) || isPlayerDisabled) {
 			return;
 		}
 		DecalBatch decalBatch = renderBatches.getDecalBatch();

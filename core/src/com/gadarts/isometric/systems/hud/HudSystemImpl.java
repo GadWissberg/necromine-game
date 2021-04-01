@@ -109,7 +109,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
 		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), services.getSoundPlayer());
 		addHudTable();
-		addMenuTable();
 		cursor = getEngine().getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 	}
 
@@ -131,7 +130,11 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		BitmapFont smallFont = services.getAssetManager().get("chubgothic_40.ttf", BitmapFont.class);
 		Label.LabelStyle style = new Label.LabelStyle(smallFont, MenuOption.FONT_COLOR_REGULAR);
 		GlobalApplicationService global = services.getGlobalApplicationService();
-		Arrays.stream(MenuOptions.values()).forEach(o -> menuTable.add(new MenuOption(o, style, global, this)).row());
+		Arrays.stream(MenuOptions.values()).forEach(o -> {
+			if (o.getValidation().validate(getSystem(PlayerSystem.class).getPlayer())) {
+				menuTable.add(new MenuOption(o, style, global, this)).row();
+			}
+		});
 	}
 
 	private Label createLogo() {
@@ -292,7 +295,8 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	@Override
 	public void keyDown(final int keycode) {
-		if (keycode == Input.Keys.ESCAPE) {
+		boolean playerDisabled = ComponentsMapper.player.get(getSystem(PlayerSystem.class).getPlayer()).isDisabled();
+		if (keycode == Input.Keys.ESCAPE && !playerDisabled) {
 			toggleMenu(!isMenuOpen());
 		}
 	}
@@ -301,6 +305,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	@Override
 	public void onPlayerSystemReady(final PlayerSystem playerSystem) {
 		addSystem(PlayerSystem.class, playerSystem);
+		addMenuTable();
 	}
 
 	@Override
