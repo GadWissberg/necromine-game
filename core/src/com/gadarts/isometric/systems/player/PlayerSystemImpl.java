@@ -18,11 +18,7 @@ import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
-import com.gadarts.isometric.components.player.Item;
-import com.gadarts.isometric.components.player.PlayerComponent;
-import com.gadarts.isometric.components.player.PlayerStorage;
-import com.gadarts.isometric.components.player.PlayerStorageEventsSubscriber;
-import com.gadarts.isometric.components.player.Weapon;
+import com.gadarts.isometric.components.player.*;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.CharacterSystem;
@@ -202,7 +198,6 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		super.addedToEngine(engine);
 		player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		PlayerComponent playerComponent = ComponentsMapper.player.get(player);
-		playerComponent.setDisabled(true);
 		playerComponent.getStorage().subscribeForEvents(this);
 		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		walls = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
@@ -353,9 +348,22 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		pathPlanHandler = new PathPlanHandler(services.getAssetManager());
 		pathPlanHandler.init((PooledEngine) getEngine());
 		revealRadius(PLAYER_VISION_RAD, ComponentsMapper.characterDecal.get(player).getNodePosition(auxVector2_1));
-		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onPlayerSystemReady(this);
+		if (!services.isInGame()) {
+			disablePlayer();
 		}
+		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onPlayerSystemReady(this, player);
+		}
+	}
+
+	private void disablePlayer() {
+		changePlayerStatus(true);
+	}
+
+	private void changePlayerStatus(final boolean disabled) {
+		PlayerComponent playerComponent = ComponentsMapper.player.get(player);
+		playerComponent.setDisabled(disabled);
+		subscribers.forEach(subscriber -> subscriber.onPlayerStatusChanged(disabled));
 	}
 
 	private void revealRadius(final int radius, final Vector2 srcPosition) {
@@ -449,5 +457,9 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	@Override
 	public void onEnemyAwaken(final Entity enemy) {
 		revealRadius(ENEMY_AWAKEN_RADIUS, ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1));
+	}
+
+	public void enablePlayer() {
+		changePlayerStatus(false);
 	}
 }

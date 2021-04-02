@@ -18,11 +18,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.gadarts.isometric.components.AnimationComponent;
-import com.gadarts.isometric.components.CharacterAnimation;
-import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.LightComponent;
-import com.gadarts.isometric.components.ModelInstanceComponent;
+import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
@@ -87,11 +83,14 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	@Override
-	public void onPlayerSystemReady(PlayerSystem playerSystem) {
+	public void onPlayerSystemReady(final PlayerSystem playerSystem, final Entity player) {
 		addSystem(PlayerSystem.class, playerSystem);
-		if (ComponentsMapper.player.get(playerSystem.getPlayer()).isDisabled()) {
-			drawFlags.setDrawFow(false);
-		}
+		drawFlags.setDrawFow(!ComponentsMapper.player.get(player).isDisabled());
+	}
+
+	@Override
+	public void onPlayerStatusChanged(final boolean disabled) {
+		drawFlags.setDrawFow(!disabled);
 	}
 
 	private void resetDisplay(final Color color) {
@@ -281,7 +280,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 					|| (!drawFlags.isDrawEnv() && isObstacle)
 					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())
 					|| (!renderWallsAndFloor && (isWall || ComponentsMapper.floor.has(entity)))
-					|| (!drawFlags.isDrawCursor() && ComponentsMapper.cursor.has(entity))
+					|| (ComponentsMapper.cursor.has(entity) && (ComponentsMapper.cursor.get(entity).isDisabled() || !drawFlags.isDrawCursor()))
 					|| !isVisible(getSystem(CameraSystem.class).getCamera(), entity)) {
 				continue;
 			}

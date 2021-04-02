@@ -23,7 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.gadarts.isometric.GlobalApplicationService;
+import com.gadarts.isometric.GlobalGameService;
 import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
@@ -112,6 +112,11 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		cursor = getEngine().getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 	}
 
+	@Override
+	public void onPlayerStatusChanged(final boolean disabled) {
+		ComponentsMapper.cursor.get(cursor).setDisabled(disabled);
+	}
+
 	private void addMenuTable() {
 		menuTable = addTable();
 		menuTable.setName(TABLE_NAME_MENU);
@@ -129,7 +134,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private void addMenuOptions(final Table menuTable) {
 		BitmapFont smallFont = services.getAssetManager().get("chubgothic_40.ttf", BitmapFont.class);
 		Label.LabelStyle style = new Label.LabelStyle(smallFont, MenuOption.FONT_COLOR_REGULAR);
-		GlobalApplicationService global = services.getGlobalApplicationService();
+		GlobalGameService global = services.getGlobalGameService();
 		Arrays.stream(MenuOptions.values()).forEach(o -> {
 			if (o.getValidation().validate(getSystem(PlayerSystem.class).getPlayer())) {
 				menuTable.add(new MenuOption(o, style, global, this)).row();
@@ -303,7 +308,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 
 	@Override
-	public void onPlayerSystemReady(final PlayerSystem playerSystem) {
+	public void onPlayerSystemReady(final PlayerSystem playerSystem, final Entity player) {
 		addSystem(PlayerSystem.class, playerSystem);
 		addMenuTable();
 	}

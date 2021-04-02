@@ -1,5 +1,6 @@
 package com.gadarts.isometric.systems.turns;
 
+import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
@@ -12,7 +13,7 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 		PlayerSystemEventsSubscriber,
 		EnemySystemEventsSubscriber {
 
-	private Turns currentTurn = Turns.PLAYER;
+	private Turns currentTurn;
 	private long currentTurnId;
 	private boolean enemyTurnDone;
 	private boolean playerTurnDone;
@@ -25,6 +26,12 @@ public class TurnsSystemImpl extends GameEntitySystem<TurnsSystemEventsSubscribe
 	@Override
 	public void dispose() {
 
+	}
+
+	@Override
+	public void init(final GameServices services) {
+		super.init(services);
+		currentTurn = Turns.PLAYER;
 	}
 
 	@Override

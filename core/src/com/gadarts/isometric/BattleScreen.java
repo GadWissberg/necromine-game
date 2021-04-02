@@ -1,12 +1,15 @@
 package com.gadarts.isometric;
 
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Screen;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.SystemsHandler;
+import com.gadarts.isometric.systems.hud.HudSystemImpl;
+import com.gadarts.isometric.systems.player.PlayerSystemImpl;
 
-public class BattleScreen implements Screen, GlobalApplicationService {
-	private SystemsHandler systemsHandler;
+public class BattleScreen implements Screen, GlobalGameService {
 	private final GameServices services;
+	private SystemsHandler systemsHandler;
 
 	public BattleScreen() {
 		services = new GameServices(this);
@@ -50,11 +53,15 @@ public class BattleScreen implements Screen, GlobalApplicationService {
 		services.dispose();
 	}
 
+
 	@Override
-	public void restartGame() {
-		systemsHandler.dispose();
+	public void startNewGame() {
 		services.createAndSetEngine();
 		services.createAndSetMap();
-		systemsHandler = new SystemsHandler(services);
+		services.setInGame(true);
+		systemsHandler.reset();
+		PooledEngine engine = services.getEngine();
+		engine.getSystem(PlayerSystemImpl.class).enablePlayer();
+		engine.getSystem(HudSystemImpl.class).toggleMenu(false);
 	}
 }

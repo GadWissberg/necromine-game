@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.gadarts.isometric.GlobalApplicationService;
+import com.gadarts.isometric.GlobalGameService;
 
 import java.util.Optional;
 
@@ -15,7 +15,7 @@ public class MenuOption extends Label {
 
 	public MenuOption(final MenuOptions option,
 					  final LabelStyle optionStyle,
-					  final GlobalApplicationService globalApplicationService,
+					  final GlobalGameService globalGameService,
 					  final HudSystem hudSystem) {
 		super(option.getLabel(), new LabelStyle(optionStyle));
 		addListener(new ClickListener() {
@@ -32,7 +32,7 @@ public class MenuOption extends Label {
 			@Override
 			public void clicked(final InputEvent event, final float x, final float y) {
 				super.clicked(event, x, y);
-				Optional.ofNullable(option.getAction()).ifPresent(action -> action.run(globalApplicationService, hudSystem));
+				Optional.ofNullable(option.getAction()).ifPresent(action -> action.run(globalGameService, hudSystem));
 			}
 
 			@Override

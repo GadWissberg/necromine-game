@@ -38,6 +38,7 @@ public class SoundPlayer {
 		if (!isMusicEnabled()) return;
 		Music music = assetManager.getMelody(melody);
 		music.setVolume(MELODY_VOLUME);
+		music.setLooping(true);
 		music.play();
 	}
 
@@ -52,12 +53,16 @@ public class SoundPlayer {
 		playSound(sounds[randomSound]);
 	}
 
-	public void playSound(final Assets.Sounds sound) {
+	public void playSound(final Assets.Sounds soundDef) {
 		if (!isSfxEnabled()) return;
-		boolean randPitch = sound.isRandomPitch();
-		boolean randomBoolean = MathUtils.randomBoolean();
-		float pitch = 1 + (randPitch ? (randomBoolean ? 1 : -1) : 0) * MathUtils.random(-PITCH_OFFSET, PITCH_OFFSET);
-		assetManager.getSound(sound).play(1f, pitch, 0);
+		boolean rand = MathUtils.randomBoolean();
+		boolean randomPitch = soundDef.isRandomPitch();
+		float pitch = 1 + (randomPitch ? (rand ? 1 : -1) : 0) * MathUtils.random(-PITCH_OFFSET, PITCH_OFFSET);
+		if (!soundDef.isLoop()) {
+			assetManager.getSound(soundDef).play(1F, pitch, 0);
+		} else {
+			assetManager.getSound(soundDef).loop(1F, 1, 0);
+		}
 	}
 
 }

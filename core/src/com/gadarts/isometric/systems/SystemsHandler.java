@@ -19,10 +19,13 @@ public class SystemsHandler implements Disposable, ConsoleEventsSubscriber {
 	private final Map<Class<? extends SystemEventsSubscriber>, Class<? extends GameEntitySystem>> subscribersInterfaces = new HashMap<>();
 	private final GameServices services;
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	public SystemsHandler(final GameServices services) {
 		this.services = services;
 		services.getConsoleImpl().subscribeForEvents(this);
+		initSystems();
+	}
+
+	private void initSystems() {
 		PooledEngine engine = services.getEngine();
 		Arrays.stream(Systems.values()).forEach(system -> {
 			GameSystem implementation = system.getImplementation();
@@ -87,5 +90,9 @@ public class SystemsHandler implements Disposable, ConsoleEventsSubscriber {
 				sub.onConsoleDeactivated();
 			}
 		});
+	}
+
+	public void reset() {
+		initSystems();
 	}
 }

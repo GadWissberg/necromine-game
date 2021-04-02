@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.utils.Disposable;
-import com.gadarts.isometric.GlobalApplicationService;
+import com.gadarts.isometric.GlobalGameService;
 import com.gadarts.isometric.components.CharacterAnimation;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.systems.hud.HudSystemImpl;
@@ -20,6 +20,7 @@ import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 
@@ -29,21 +30,29 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	private static final String MSG_ENABLED = "%s enabled.";
 	private static final String MSG_DISABLED = "%s disabled.";
 
-	private final GlobalApplicationService globalApplicationService;
+	private final GlobalGameService globalGameService;
 	private final ConsoleImpl consoleImpl;
 	private final SoundPlayer soundPlayer;
+
+	@Setter
+	private boolean inGame;
 	private PooledEngine engine;
 	private MapGraph map;
 	private GameAssetsManager assetManager;
 
-	public GameServices(final GlobalApplicationService globalApplicationService) {
-		this.globalApplicationService = globalApplicationService;
+	public GameServices(final GlobalGameService globalGameService) {
+		this(globalGameService, false);
+	}
+
+	public GameServices(final GlobalGameService globalGameService, final boolean inGame) {
+		this.globalGameService = globalGameService;
 		createAndSetEngine();
 		createAssetsManagerAndLoadAssets();
 		createAndSetMap();
 		consoleImpl = new ConsoleImpl();
 		consoleImpl.subscribeForEvents(this);
 		soundPlayer = new SoundPlayer(assetManager);
+		this.inGame = inGame;
 	}
 
 	public void createAndSetEngine() {
@@ -135,6 +144,7 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	public void init() {
 		initializeConsole();
 		soundPlayer.playMusic(Assets.Melody.TEST);
+		soundPlayer.playSound(Assets.Sounds.AMB_WIND);
 	}
 
 	private void initializeConsole() {
