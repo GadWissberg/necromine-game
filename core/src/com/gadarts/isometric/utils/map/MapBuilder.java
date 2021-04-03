@@ -69,7 +69,7 @@ import static com.gadarts.necromine.model.characters.Direction.SOUTH;
  * Creates the map.
  */
 public final class MapBuilder implements Disposable {
-	public static final String TEMP_PATH = "core/assets/maps/test_map.json";
+	public static final String TEMP_PATH = "core/assets/maps/coalmine.json";
 	private static final CharacterSoundData auxCharacterSoundData = new CharacterSoundData();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
@@ -84,6 +84,7 @@ public final class MapBuilder implements Disposable {
 	private static final String KEY_PICKUPS = "pickups";
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
 	private static final Matrix4 auxMatrix = new Matrix4();
+	public static final int PLAYER_HEALTH = 32;
 	private final GameAssetsManager assetManager;
 	private final PooledEngine engine;
 	private final ModelBuilder modelBuilder;
@@ -624,7 +625,7 @@ public final class MapBuilder implements Disposable {
 				Sounds.PLAYER_PAIN,
 				Sounds.PLAYER_DEATH,
 				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
-				16);
+				PLAYER_HEALTH);
 		builder.finishAndAddToEngine();
 	}
 

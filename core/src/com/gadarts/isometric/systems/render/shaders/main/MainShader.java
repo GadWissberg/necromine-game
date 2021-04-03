@@ -193,7 +193,8 @@ public class MainShader extends DefaultShader {
 				for (int col = 0; col < width; col++) {
 					int mapRow = Math.max(z + row, 0);
 					int mapCol = Math.max(x + col, 0);
-					int fowMapValue = map.getFowMap()[mapRow][mapCol];
+					boolean isValidCoordinate = mapRow < map.getDepth() && mapCol < map.getWidth();
+					int fowMapValue = isValidCoordinate ? map.getFowMap()[mapRow][mapCol] : 0;
 					int currentIndex = row * width + col;
 					if (fowMapValue == 1) {
 						fowMapArray[currentIndex] = calculateFowValueBasedOnNeighbours(mapRow, mapCol);
