@@ -9,10 +9,10 @@ import com.gadarts.isometric.systems.player.PlayerSystemImpl;
 
 public class BattleScreen implements Screen, GlobalGameService {
 	private final GameServices services;
-	private SystemsHandler systemsHandler;
+	private final SystemsHandler systemsHandler;
 
 	public BattleScreen() {
-		services = new GameServices(this);
+		services = new GameServices(this, false, "city");
 		systemsHandler = new SystemsHandler(services);
 		services.init();
 	}
@@ -55,11 +55,11 @@ public class BattleScreen implements Screen, GlobalGameService {
 
 
 	@Override
-	public void startNewGame(String city) {
+	public void startNewGame(final String map) {
 		services.createAndSetEngine();
-		services.createAndSetMap();
+		services.createAndSetMap(map);
 		services.setInGame(true);
-		systemsHandler.reset();
+		systemsHandler.reset(services);
 		PooledEngine engine = services.getEngine();
 		engine.getSystem(PlayerSystemImpl.class).enablePlayer();
 		engine.getSystem(HudSystemImpl.class).toggleMenu(false);

@@ -6,4 +6,8 @@ public interface GameSystem {
 	void init(final GameServices gameServices);
 
 	void activate();
+
+	default void reset() {
+
+	}
 }

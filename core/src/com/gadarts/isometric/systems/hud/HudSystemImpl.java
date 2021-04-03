@@ -110,6 +110,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), services.getSoundPlayer());
 		addHudTable();
 		cursor = getEngine().getEntitiesFor(Family.all(CursorComponent.class).get()).first();
+		stage.addActor(services.getConsoleImpl());
 	}
 
 	@Override
@@ -121,7 +122,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		menuTable = addTable();
 		menuTable.setName(TABLE_NAME_MENU);
 		menuTable.add(createLogo()).row();
-		addMenuOptions(menuTable);
+		applyMenuOptions(MainMenuOptions.values());
 		menuTable.toFront();
 		toggleMenu(DefaultGameSettings.MENU_ON_STARTUP);
 	}
@@ -131,11 +132,12 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		stage.getRoot().findActor(TABLE_NAME_HUD).setTouchable(active ? Touchable.disabled : Touchable.enabled);
 	}
 
-	private void addMenuOptions(final Table menuTable) {
+	public void applyMenuOptions(final MenuOptionDefinition[] options) {
+		menuTable.clear();
 		BitmapFont smallFont = services.getAssetManager().get("chubgothic_40.ttf", BitmapFont.class);
 		Label.LabelStyle style = new Label.LabelStyle(smallFont, MenuOption.FONT_COLOR_REGULAR);
 		GlobalGameService global = services.getGlobalGameService();
-		Arrays.stream(MainMenuOptions.values()).forEach(o -> {
+		Arrays.stream(options).forEach(o -> {
 			if (o.getValidation().validate(getSystem(PlayerSystem.class).getPlayer())) {
 				menuTable.add(new MenuOption(o, style, global, this)).row();
 			}
@@ -302,7 +304,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	public void keyDown(final int keycode) {
 		boolean playerDisabled = ComponentsMapper.player.get(getSystem(PlayerSystem.class).getPlayer()).isDisabled();
 		if (keycode == Input.Keys.ESCAPE && !playerDisabled) {
-			toggleMenu(!isMenuOpen());
+			toggleMenu(isMenuClosed());
 		}
 	}
 
@@ -346,8 +348,8 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	@Override
-	public boolean isMenuOpen() {
-		return menuTable.isVisible();
+	public boolean isMenuClosed() {
+		return !menuTable.isVisible();
 	}
 
 

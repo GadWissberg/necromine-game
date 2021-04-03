@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.GlobalGameService;
 import com.gadarts.isometric.components.CharacterAnimation;
 import com.gadarts.isometric.components.character.CharacterAnimations;
-import com.gadarts.isometric.systems.hud.HudSystemImpl;
 import com.gadarts.isometric.systems.hud.console.*;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
 import com.gadarts.isometric.utils.SoundPlayer;
@@ -40,28 +39,31 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	private MapGraph map;
 	private GameAssetsManager assetManager;
 
-	public GameServices(final GlobalGameService globalGameService) {
-		this(globalGameService, false);
-	}
-
-	public GameServices(final GlobalGameService globalGameService, final boolean inGame) {
+	public GameServices(final GlobalGameService globalGameService, final boolean inGame, final String map) {
 		this.globalGameService = globalGameService;
 		createAndSetEngine();
 		createAssetsManagerAndLoadAssets();
-		createAndSetMap();
-		consoleImpl = new ConsoleImpl();
-		consoleImpl.subscribeForEvents(this);
+		createAndSetMap(map);
+		consoleImpl = createConsole();
 		soundPlayer = new SoundPlayer(assetManager);
 		this.inGame = inGame;
+	}
+
+	private ConsoleImpl createConsole() {
+		final ConsoleImpl consoleImpl;
+		consoleImpl = new ConsoleImpl();
+		consoleImpl.subscribeForEvents(this);
+		consoleImpl.init(assetManager);
+		return consoleImpl;
 	}
 
 	public void createAndSetEngine() {
 		this.engine = new PooledEngine();
 	}
 
-	public void createAndSetMap() {
+	public void createAndSetMap(final String map) {
 		MapBuilder mapBuilder = new MapBuilder(assetManager, engine);
-		this.map = mapBuilder.inflateTestMap();
+		this.map = mapBuilder.inflateTestMap(map);
 	}
 
 	private void createAssetsManagerAndLoadAssets() {
@@ -142,16 +144,9 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	}
 
 	public void init() {
-		initializeConsole();
 		soundPlayer.playMusic(Assets.Melody.TEST);
 		soundPlayer.playSound(Assets.Sounds.AMB_WIND);
 	}
-
-	private void initializeConsole() {
-		consoleImpl.init(assetManager);
-		engine.getSystem(HudSystemImpl.class).getStage().addActor(consoleImpl);
-	}
-
 
 	@Override
 	public void onConsoleActivated() {

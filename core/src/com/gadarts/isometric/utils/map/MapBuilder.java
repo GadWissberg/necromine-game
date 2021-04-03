@@ -54,6 +54,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.awt.*;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
@@ -69,7 +70,7 @@ import static com.gadarts.necromine.model.characters.Direction.SOUTH;
  * Creates the map.
  */
 public final class MapBuilder implements Disposable {
-	public static final String INITIAL_MAP = "core/assets/maps/city.json";
+	public static final String MAP_PATH_TEMP = "core/assets/maps/%s.json";
 	private static final CharacterSoundData auxCharacterSoundData = new CharacterSoundData();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
@@ -153,9 +154,10 @@ public final class MapBuilder implements Disposable {
 		return material;
 	}
 
-	public MapGraph inflateTestMap() {
+	public MapGraph inflateTestMap(final String map) {
 		createAndAdd3dCursor();
-		JsonObject mapJsonObject = gson.fromJson(Gdx.files.internal(INITIAL_MAP).reader(), JsonObject.class);
+		Reader reader = Gdx.files.internal(String.format(MAP_PATH_TEMP, map)).reader();
+		JsonObject mapJsonObject = gson.fromJson(reader, JsonObject.class);
 		JsonObject tilesJsonObject = mapJsonObject.get(TILES).getAsJsonObject();
 		Dimension mapSize = inflateTiles(tilesJsonObject);
 		MapGraph mapGraph = new MapGraph(

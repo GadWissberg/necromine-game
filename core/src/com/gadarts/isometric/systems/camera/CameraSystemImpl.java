@@ -51,7 +51,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
 		HudSystem hudSystem = getSystem(HudSystem.class);
-		if (!DefaultGameSettings.DEBUG_INPUT && !rotateCamera && !hudSystem.hasOpenWindows() && !hudSystem.isMenuOpen()) {
+		if (!DefaultGameSettings.DEBUG_INPUT && !rotateCamera && !hudSystem.hasOpenWindows() && hudSystem.isMenuClosed()) {
 			handleHorizontalScroll();
 			handleVerticalScroll();
 		}
@@ -169,7 +169,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	@Override
 	public void touchDragged(final int screenX, final int screenY) {
-		if (rotateCamera && !getSystem(HudSystem.class).isMenuOpen()) {
+		if (rotateCamera && getSystem(HudSystem.class).isMenuClosed()) {
 			camera.rotateAround(rotationPoint, Vector3.Y, (lastRightPressMousePosition.x - screenX) / 2f);
 			lastRightPressMousePosition.set(screenX, screenY);
 		}

@@ -92,7 +92,8 @@ public class SystemsHandler implements Disposable, ConsoleEventsSubscriber {
 		});
 	}
 
-	public void reset() {
+	public void reset(final GameServices services) {
+		Arrays.stream(Systems.values()).forEach(system -> system.getImplementation().reset());
 		initSystems();
 	}
 }

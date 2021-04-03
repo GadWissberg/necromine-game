@@ -12,7 +12,7 @@ public enum MainMenuOptions implements MenuOptionDefinition {
 	CONTINUE("Continue",
 			(GlobalGameService globalGameService, HudSystem hudSystem) -> hudSystem.toggleMenu(false),
 			player -> !ComponentsMapper.player.get(player).isDisabled()),
-	NEW("New Game", (GlobalGameService globalGameService, HudSystem hudSystem) -> globalGameService.startNewGame("city"), NewGameMenuOptions.values()),
+	NEW("New Game", NewGameMenuOptions.values()),
 	LOAD("Load Game"),
 	SAVE("Save Game"),
 	OPTIONS("Options"),
@@ -36,7 +36,7 @@ public enum MainMenuOptions implements MenuOptionDefinition {
 		this(label, action, validation, null);
 	}
 
-	MainMenuOptions(final String label, final MenuOptionAction menuOptionAction, final NewGameMenuOptions[] subOptions) {
-		this(label, menuOptionAction, player -> true, subOptions);
+	MainMenuOptions(final String label, final NewGameMenuOptions[] subOptions) {
+		this(label, null, player -> true, subOptions);
 	}
 }

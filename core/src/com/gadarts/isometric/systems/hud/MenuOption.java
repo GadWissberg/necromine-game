@@ -7,13 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gadarts.isometric.GlobalGameService;
 
-import java.util.Optional;
-
 public class MenuOption extends Label {
 	static final Color FONT_COLOR_REGULAR = Color.RED;
 	private static final Color FONT_COLOR_HOVER = Color.YELLOW;
 
-	public MenuOption(final MainMenuOptions option,
+	public MenuOption(final MenuOptionDefinition option,
 					  final LabelStyle optionStyle,
 					  final GlobalGameService globalGameService,
 					  final HudSystem hudSystem) {
@@ -32,7 +30,15 @@ public class MenuOption extends Label {
 			@Override
 			public void clicked(final InputEvent event, final float x, final float y) {
 				super.clicked(event, x, y);
-				Optional.ofNullable(option.getAction()).ifPresent(action -> action.run(globalGameService, hudSystem));
+				MenuOptionAction action = option.getAction();
+				if (action != null) {
+					action.run(globalGameService, hudSystem);
+				} else {
+					MenuOptionDefinition[] subOptions = option.getSubOptions();
+					if (subOptions != null) {
+						hudSystem.applyMenuOptions(subOptions);
+					}
+				}
 			}
 
 			@Override

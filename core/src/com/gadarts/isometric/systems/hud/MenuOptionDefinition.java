@@ -5,5 +5,9 @@ public interface MenuOptionDefinition {
 
 	MenuOptionAction getAction();
 
-	MenuOptionValidation getValidation();
+	MenuOptionDefinition[] getSubOptions();
+
+	default MenuOptionValidation getValidation() {
+		return player -> true;
+	}
 }

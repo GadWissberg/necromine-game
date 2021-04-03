@@ -16,13 +16,14 @@ public class InputSystemImpl extends GameEntitySystem<InputSystemEventsSubscribe
 
 	private CameraInputController debugInput;
 
-
 	private void initializeInputProcessor(final CameraSystem cameraSystem) {
 		InputProcessor input;
 		if (DefaultGameSettings.DEBUG_INPUT) {
 			input = createDebugInput(cameraSystem);
 		} else {
 			input = createMultiplexer();
+			InputMultiplexer multiplexer = (InputMultiplexer) input;
+			multiplexer.addProcessor(services.getConsoleImpl());
 		}
 		Gdx.input.setInputProcessor(input);
 	}
@@ -131,5 +132,11 @@ public class InputSystemImpl extends GameEntitySystem<InputSystemEventsSubscribe
 		if (DefaultGameSettings.DEBUG_INPUT) return;
 		InputMultiplexer inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
 		inputMultiplexer.addProcessor(0, inputProcessor);
+	}
+
+	@Override
+	public void reset() {
+		InputMultiplexer inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
+		inputMultiplexer.clear();
 	}
 }

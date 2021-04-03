@@ -1,28 +1,22 @@
 package com.gadarts.isometric.systems.hud;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Getter
 public enum NewGameMenuOptions implements MenuOptionDefinition {
-	COAL_MINE("Coal-Mine", (globalGameService, hudSystem) -> {
+	CITY("City", (globalGameService, hudSystem) -> {
+		globalGameService.startNewGame("city");
+	}),
+	COAL_MINE("Coal Mine", (globalGameService, hudSystem) -> {
 		globalGameService.startNewGame("coalmine");
 	});
 	private final String label;
 	private final MenuOptionAction action;
 
-
 	@Override
-	public String getLabel() {
-		return label;
-	}
-
-	@Override
-	public MenuOptionAction getAction() {
-		return action;
-	}
-
-	@Override
-	public MenuOptionValidation getValidation() {
+	public MenuOptionDefinition[] getSubOptions() {
 		return null;
 	}
 }

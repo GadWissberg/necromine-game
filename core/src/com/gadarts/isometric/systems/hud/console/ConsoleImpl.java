@@ -2,7 +2,6 @@ package com.gadarts.isometric.systems.hud.console;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
@@ -20,7 +19,6 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.gadarts.isometric.systems.hud.console.commands.CommandInvoke;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
-import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.necromine.assets.GameAssetsManager;
 
 import java.util.Arrays;
@@ -73,10 +71,6 @@ public class ConsoleImpl extends Table implements Console, InputProcessor {
 		setBackground(new TextureRegionDrawable(consoleTextures.getBackgroundTexture()));
 		setSize(Gdx.graphics.getWidth(), consoleTextures.getBackgroundTexture().getHeight());
 		consoleInputHistoryHandler = new ConsoleInputHistoryHandler();
-		if (!DefaultGameSettings.DEBUG_INPUT) {
-			InputMultiplexer multiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
-			multiplexer.addProcessor(this);
-		}
 		input.setTextFieldFilter((textField, c) -> c != '\t');
 		input.setTextFieldListener((textField, c) -> {
 			if (c == GRAVE_ASCII) {
