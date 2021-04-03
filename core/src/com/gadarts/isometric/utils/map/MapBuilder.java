@@ -69,7 +69,7 @@ import static com.gadarts.necromine.model.characters.Direction.SOUTH;
  * Creates the map.
  */
 public final class MapBuilder implements Disposable {
-	public static final String TEMP_PATH = "core/assets/maps/coalmine.json";
+	public static final String INITIAL_MAP = "core/assets/maps/city.json";
 	private static final CharacterSoundData auxCharacterSoundData = new CharacterSoundData();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
@@ -155,7 +155,7 @@ public final class MapBuilder implements Disposable {
 
 	public MapGraph inflateTestMap() {
 		createAndAdd3dCursor();
-		JsonObject mapJsonObject = gson.fromJson(Gdx.files.internal(TEMP_PATH).reader(), JsonObject.class);
+		JsonObject mapJsonObject = gson.fromJson(Gdx.files.internal(INITIAL_MAP).reader(), JsonObject.class);
 		JsonObject tilesJsonObject = mapJsonObject.get(TILES).getAsJsonObject();
 		Dimension mapSize = inflateTiles(tilesJsonObject);
 		MapGraph mapGraph = new MapGraph(

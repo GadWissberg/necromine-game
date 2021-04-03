@@ -13,7 +13,7 @@ public class MenuOption extends Label {
 	static final Color FONT_COLOR_REGULAR = Color.RED;
 	private static final Color FONT_COLOR_HOVER = Color.YELLOW;
 
-	public MenuOption(final MenuOptions option,
+	public MenuOption(final MainMenuOptions option,
 					  final LabelStyle optionStyle,
 					  final GlobalGameService globalGameService,
 					  final HudSystem hudSystem) {

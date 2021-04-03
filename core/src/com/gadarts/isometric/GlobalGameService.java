@@ -2,5 +2,5 @@ package com.gadarts.isometric;
 
 public interface GlobalGameService {
 
-	void startNewGame();
+	void startNewGame(String map);
 }

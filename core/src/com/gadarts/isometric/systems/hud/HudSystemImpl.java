@@ -135,7 +135,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		BitmapFont smallFont = services.getAssetManager().get("chubgothic_40.ttf", BitmapFont.class);
 		Label.LabelStyle style = new Label.LabelStyle(smallFont, MenuOption.FONT_COLOR_REGULAR);
 		GlobalGameService global = services.getGlobalGameService();
-		Arrays.stream(MenuOptions.values()).forEach(o -> {
+		Arrays.stream(MainMenuOptions.values()).forEach(o -> {
 			if (o.getValidation().validate(getSystem(PlayerSystem.class).getPlayer())) {
 				menuTable.add(new MenuOption(o, style, global, this)).row();
 			}

@@ -8,11 +8,11 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum MenuOptions {
+public enum MainMenuOptions implements MenuOptionDefinition {
 	CONTINUE("Continue",
 			(GlobalGameService globalGameService, HudSystem hudSystem) -> hudSystem.toggleMenu(false),
 			player -> !ComponentsMapper.player.get(player).isDisabled()),
-	NEW("New Game", (GlobalGameService globalGameService, HudSystem hudSystem) -> globalGameService.startNewGame()),
+	NEW("New Game", (GlobalGameService globalGameService, HudSystem hudSystem) -> globalGameService.startNewGame("city"), NewGameMenuOptions.values()),
 	LOAD("Load Game"),
 	SAVE("Save Game"),
 	OPTIONS("Options"),
@@ -22,12 +22,21 @@ public enum MenuOptions {
 	private final String label;
 	private final MenuOptionAction action;
 	private final MenuOptionValidation validation;
+	private final MenuOptionDefinition[] subOptions;
 
-	MenuOptions(final String label) {
+	MainMenuOptions(final String label) {
 		this(label, null, player -> true);
 	}
 
-	MenuOptions(final String label, final MenuOptionAction action) {
+	MainMenuOptions(final String label, final MenuOptionAction action) {
 		this(label, action, player -> true);
+	}
+
+	MainMenuOptions(final String label, final MenuOptionAction action, final MenuOptionValidation validation) {
+		this(label, action, validation, null);
+	}
+
+	MainMenuOptions(final String label, final MenuOptionAction menuOptionAction, final NewGameMenuOptions[] subOptions) {
+		this(label, menuOptionAction, player -> true, subOptions);
 	}
 }
