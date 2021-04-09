@@ -75,6 +75,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private RenderSystemRelatedEntities renderSystemRelatedEntities;
 	private boolean ready;
 	private int numberOfVisible;
+	private Camera camera;
 
 	@Override
 	public void init(final GameServices services) {
@@ -93,7 +94,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		drawFlags.setDrawFow(!disabled);
 	}
 
-	private void resetDisplay(final Color color) {
+	private void resetDisplay(@SuppressWarnings("SameParameterValue") final Color color) {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		int sam = Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0;
 		Gdx.gl.glClearColor(color.r, color.g, color.b, 1);
@@ -147,12 +148,23 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private void renderSimpleDecals() {
 		DecalBatch decalBatch = renderBatches.getDecalBatch();
 		for (Entity entity : renderSystemRelatedEntities.getSimpleDecalsEntities()) {
-			SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
-			if (simpleDecalComponent.isVisible()) {
-				decalBatch.add(simpleDecalComponent.getDecal());
-			}
+			renderSimpleDecal(decalBatch, entity);
 		}
 		decalBatch.flush();
+	}
+
+	private void renderSimpleDecal(final DecalBatch decalBatch, final Entity entity) {
+		SimpleDecalComponent simpleDecal = ComponentsMapper.simpleDecal.get(entity);
+		if (simpleDecal.isVisible()) {
+			Decal decal = simpleDecal.getDecal();
+			MapGraphNode node = services.getMap().getNode((int) decal.getPosition().x, (int) decal.getPosition().z);
+			if (!simpleDecal.isAffectedByFow() || services.getMap().getFowMap()[node.getRow()][node.getCol()] > 0) {
+				if (simpleDecal.isBillboard()) {
+					decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
+				}
+				decalBatch.add(decal);
+			}
+		}
 	}
 
 	private void renderLiveCharacters(final float deltaTime, final Camera camera) {
@@ -190,6 +202,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		CharacterAnimations animations = characterDecalComponent.getAnimations();
 		Decal shadowDecal = characterDecalComponent.getShadowDecal();
 		Vector3 decalPosition = decal.getPosition();
+		boolean isEnemy = ComponentsMapper.enemy.has(entity);
 		if ((!sameSpriteType || !sameDirection)) {
 			characterDecalComponent.initializeSprite(spriteType, direction);
 			if (ComponentsMapper.animation.has(entity)) {
@@ -244,7 +257,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				}
 			}
 		}
-		if (drawFlags.isDrawEnemy() || !ComponentsMapper.enemy.has(entity)) {
+		if (drawFlags.isDrawEnemy() || !isEnemy) {
 			MapGraph map = services.getMap();
 			MapGraphNode characterNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_1));
 			if (!drawFlags.isDrawFow() || map.getFowMap()[characterNode.getRow()][characterNode.getCol()] == 1) {
@@ -313,7 +326,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		addSystem(CameraSystem.class, cameraSystem);
-		Camera camera = cameraSystem.getCamera();
+		camera = cameraSystem.getCamera();
 		GameAssetsManager assetManager = services.getAssetManager();
 		this.renderBatches = new RenderBatches(camera, assetManager, services.getMap(), drawFlags);
 		environment.initialize(getEngine().getEntitiesFor(Family.all(LightComponent.class).get()));

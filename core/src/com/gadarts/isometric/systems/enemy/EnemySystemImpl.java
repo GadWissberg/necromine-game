@@ -23,6 +23,7 @@ import com.gadarts.isometric.systems.character.commands.CharacterCommands;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
+import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.assets.Assets;
@@ -36,6 +37,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		RenderSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber {
 
+	public static final float SKILL_FLOWER_HEIGHT = 2.5F;
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
@@ -43,8 +45,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private static final CharacterCommand auxCommand = new CharacterCommand();
 	private static final float MAX_SIGHT = 7;
 	private static final Rectangle auxRect = new Rectangle();
-	private static final float ENEMY_HALF_FOV_ANGLE = 75f;
-
+	private static final float ENEMY_HALF_FOV_ANGLE = 75F;
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
 	private TurnsSystem turnsSystem;
@@ -117,12 +118,10 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 
-
 	@Override
 	public void onTurnsSystemReady(final TurnsSystem turnsSystem) {
 		this.turnsSystem = turnsSystem;
 	}
-
 
 
 	@Override
@@ -139,7 +138,6 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			subscriber.onEnemyFinishedTurn();
 		}
 	}
-
 
 
 	@Override
@@ -163,19 +161,29 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 
-
-
 	@Override
 	public void onFrameChanged(final Entity entity, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
 		SpriteType spriteType = ComponentsMapper.character.get(entity).getCharacterSpriteData().getSpriteType();
 		if (ComponentsMapper.enemy.has(entity)) {
 			if (spriteType == SpriteType.ATTACK) {
-				if (newFrame.index == ComponentsMapper.character.get(entity).getCharacterSpriteData().getHitFrameIndex()) {
-					services.getSoundPlayer().playSound(ComponentsMapper.enemy.get(entity).getEnemyDefinition().getAttackSound());
-				}
+				onFrameChangedOfAttack(entity, newFrame);
+			} else if (spriteType == SpriteType.RUN) {
+				onFrameChangedOfRun(entity);
 			}
 		} else if (ComponentsMapper.player.has(entity) && spriteType == SpriteType.RUN) {
 			checkLineOfSightForEnemies(entity);
+		}
+	}
+
+	private void onFrameChangedOfRun(final Entity entity) {
+		Vector3 position = ComponentsMapper.characterDecal.get(entity).getDecal().getPosition();
+		ComponentsMapper.simpleDecal.get(entity).getDecal().setPosition(position.x, SKILL_FLOWER_HEIGHT, position.z);
+	}
+
+	private void onFrameChangedOfAttack(final Entity entity, final TextureAtlas.AtlasRegion newFrame) {
+		if (newFrame.index == ComponentsMapper.character.get(entity).getCharacterSpriteData().getHitFrameIndex()) {
+			SoundPlayer soundPlayer = services.getSoundPlayer();
+			soundPlayer.playSound(ComponentsMapper.enemy.get(entity).getEnemyDefinition().getAttackSound());
 		}
 	}
 

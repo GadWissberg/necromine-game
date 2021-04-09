@@ -10,6 +10,10 @@ import lombok.Setter;
 @Getter
 public class SimpleDecalComponent implements GameComponent {
 	private Decal decal;
+	private boolean billboard;
+
+	@Setter
+	private boolean affectedByFow;
 
 	@Setter
 	private boolean visible;
@@ -24,8 +28,17 @@ public class SimpleDecalComponent implements GameComponent {
 		init(new TextureRegion(texture), visible);
 	}
 
+	public void init(final Texture texture, final boolean visible, final boolean billboard) {
+		init(new TextureRegion(texture), visible, billboard);
+	}
+
 	public void init(final TextureRegion textureRegion, final boolean visible) {
+		init(textureRegion, visible, false);
+	}
+
+	public void init(final TextureRegion textureRegion, final boolean visible, final boolean billboard) {
 		decal = Decal.newDecal(textureRegion, true);
 		this.visible = visible;
+		this.billboard = billboard;
 	}
 }

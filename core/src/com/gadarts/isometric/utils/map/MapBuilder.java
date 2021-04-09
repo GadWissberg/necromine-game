@@ -25,11 +25,13 @@ import com.gadarts.isometric.components.FloorComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterSoundData;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
+import com.gadarts.isometric.components.decal.SimpleDecalComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.services.ModelBoundingBox;
+import com.gadarts.isometric.systems.enemy.EnemySystemImpl;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.Utils;
 import com.gadarts.necromine.WallCreator;
@@ -611,7 +613,10 @@ public final class MapBuilder implements Disposable {
 				Sounds.ENEMY_DEATH,
 				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
 				2);
-		entityBuilder.finishAndAddToEngine();
+		Texture skillFlowerTexture = assetManager.getTexture(Assets.UiTextures.SKILL_FLOWER_CENTER);
+		position.y = EnemySystemImpl.SKILL_FLOWER_HEIGHT;
+		entityBuilder.addSimpleDecalComponent(position, skillFlowerTexture, true, true);
+		entityBuilder.finishAndAddToEngine().getComponent(SimpleDecalComponent.class).setAffectedByFow(true);
 	}
 
 	private void inflatePlayer(final JsonObject characterJsonObject, final MapGraph mapGraph) {
