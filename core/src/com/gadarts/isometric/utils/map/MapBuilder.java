@@ -616,7 +616,9 @@ public final class MapBuilder implements Disposable {
 		Texture skillFlowerTexture = assetManager.getTexture(Assets.UiTextures.SKILL_FLOWER_CENTER);
 		position.y = EnemySystemImpl.SKILL_FLOWER_HEIGHT;
 		entityBuilder.addSimpleDecalComponent(position, skillFlowerTexture, true, true);
-		entityBuilder.finishAndAddToEngine().getComponent(SimpleDecalComponent.class).setAffectedByFow(true);
+		Entity entity = entityBuilder.finishAndAddToEngine();
+		SimpleDecalComponent simpleDecalComponent = entity.getComponent(SimpleDecalComponent.class);
+		simpleDecalComponent.setAffectedByFow(true);
 	}
 
 	private void inflatePlayer(final JsonObject characterJsonObject, final MapGraph mapGraph) {

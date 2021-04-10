@@ -1,6 +1,7 @@
 package com.gadarts.isometric.systems.render;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
@@ -18,6 +19,7 @@ public class RenderBatches implements Disposable {
 	private final DecalBatch decalBatch;
 	private final MainShaderProvider shaderProvider;
 	private final ModelBatch shadowBatch;
+	private final SpriteBatch spriteBatch;
 
 	public RenderBatches(final Camera camera,
 						 final GameAssetsManager assetsManager,
@@ -28,6 +30,7 @@ public class RenderBatches implements Disposable {
 		GameCameraGroupStrategy groupStrategy = new GameCameraGroupStrategy(camera, assetsManager);
 		this.decalBatch = new DecalBatch(DECALS_POOL_SIZE, groupStrategy);
 		this.shadowBatch = new ModelBatch(new DepthShaderProvider());
+		this.spriteBatch = new SpriteBatch();
 	}
 
 	@Override

@@ -8,6 +8,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -68,19 +71,23 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Vector3 auxVector3_3 = new Vector3();
 	private static final Quaternion auxQuat = new Quaternion();
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
-
-	private WorldEnvironment environment;
 	private final DrawFlags drawFlags = new DrawFlags();
+	private final StringBuilder stringBuilder = new StringBuilder();
+	private WorldEnvironment environment;
 	private RenderBatches renderBatches;
 	private RenderSystemRelatedEntities renderSystemRelatedEntities;
 	private boolean ready;
 	private int numberOfVisible;
 	private Camera camera;
+	private BitmapFont skillFlowerFont;
+	private GlyphLayout skillFlowerGlyph;
 
 	@Override
 	public void init(final GameServices services) {
 		super.init(services);
 		environment = new WorldEnvironment(services.getMap().getAmbient());
+		skillFlowerFont = new BitmapFont();
+		skillFlowerGlyph = new GlyphLayout();
 	}
 
 	@Override
@@ -127,6 +134,21 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
 		renderModels(camera, renderBatches.getModelBatch(), true, true);
 		renderDecals(deltaTime, camera);
+		renderSkillFlowersText();
+	}
+
+	private void renderSkillFlowersText() {
+		if (renderSystemRelatedEntities.getEnemyEntities().size() > 0) {
+			SpriteBatch spriteBatch = renderBatches.getSpriteBatch();
+			spriteBatch.begin();
+			for (Entity enemy : renderSystemRelatedEntities.getEnemyEntities()) {
+				Vector2 nodePosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
+				if (!isInFow(services.getMap().getNode((int) nodePosition.x, (int) nodePosition.y))) {
+					renderSkillFlowerText(enemy, renderBatches.getSpriteBatch());
+				}
+			}
+			spriteBatch.end();
+		}
 	}
 
 	private void renderModelsShadows(final Camera camera, final Vector3 lastRotationPoint) {
@@ -158,13 +180,32 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		if (simpleDecal.isVisible()) {
 			Decal decal = simpleDecal.getDecal();
 			MapGraphNode node = services.getMap().getNode((int) decal.getPosition().x, (int) decal.getPosition().z);
-			if (!simpleDecal.isAffectedByFow() || services.getMap().getFowMap()[node.getRow()][node.getCol()] > 0) {
-				if (simpleDecal.isBillboard()) {
-					decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
-				}
+			if (!simpleDecal.isAffectedByFow() || !isInFow(node)) {
+				faceDecalToCamera(simpleDecal, decal);
 				decalBatch.add(decal);
 			}
 		}
+	}
+
+	private boolean isInFow(final MapGraphNode node) {
+		return services.getMap().getFowMap()[node.getRow()][node.getCol()] == 0;
+	}
+
+	private void faceDecalToCamera(final SimpleDecalComponent simpleDecal, final Decal decal) {
+		if (simpleDecal.isBillboard()) {
+			decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
+		}
+	}
+
+	private void renderSkillFlowerText(final Entity entity, final SpriteBatch spriteBatch) {
+		SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
+		Vector3 screenPos = camera.project(auxVector3_1.set(simpleDecalComponent.getDecal().getPosition()));
+		stringBuilder.setLength(0);
+		String text = stringBuilder.append(ComponentsMapper.enemy.get(entity).getSkill()).toString();
+		skillFlowerGlyph.setText(skillFlowerFont, text);
+		float x = screenPos.x - skillFlowerGlyph.width / 2F;
+		float y = screenPos.y + skillFlowerGlyph.height / 2F;
+		skillFlowerFont.draw(spriteBatch, text, x, y);
 	}
 
 	private void renderLiveCharacters(final float deltaTime, final Camera camera) {
