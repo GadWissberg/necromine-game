@@ -3,12 +3,16 @@ package com.gadarts.isometric.components.decal;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.GameComponent;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
-public class SimpleDecalComponent implements GameComponent {
+public class HudDecalComponent implements GameComponent {
 	private Decal decal;
 	private boolean billboard;
 
@@ -17,6 +21,9 @@ public class SimpleDecalComponent implements GameComponent {
 
 	@Setter
 	private boolean visible;
+
+	@Getter
+	private final List<Decal> relatedDecals = new ArrayList<>();
 
 	@Override
 	public void reset() {
@@ -40,5 +47,15 @@ public class SimpleDecalComponent implements GameComponent {
 		decal = Decal.newDecal(textureRegion, true);
 		this.visible = visible;
 		this.billboard = billboard;
+		if (relatedDecals.size() > 0) {
+			for (Decal decal : relatedDecals) {
+				Pools.get(Decal.class).free(decal);
+			}
+			relatedDecals.clear();
+		}
+	}
+
+	public void addRelatedDecal(final Decal decal) {
+		relatedDecals.add(decal);
 	}
 }

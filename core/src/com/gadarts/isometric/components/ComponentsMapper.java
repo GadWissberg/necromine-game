@@ -3,7 +3,7 @@ package com.gadarts.isometric.components;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
-import com.gadarts.isometric.components.decal.SimpleDecalComponent;
+import com.gadarts.isometric.components.decal.HudDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.PlayerComponent;
 
@@ -17,7 +17,7 @@ public class ComponentsMapper {
 	public static final ComponentMapper<PlayerComponent> player = ComponentMapper.getFor(PlayerComponent.class);
 	public static final ComponentMapper<FloorComponent> floor = ComponentMapper.getFor(FloorComponent.class);
 	public static final ComponentMapper<CharacterDecalComponent> characterDecal = ComponentMapper.getFor(CharacterDecalComponent.class);
-	public static final ComponentMapper<SimpleDecalComponent> simpleDecal = ComponentMapper.getFor(SimpleDecalComponent.class);
+	public static final ComponentMapper<HudDecalComponent> simpleDecal = ComponentMapper.getFor(HudDecalComponent.class);
 	public static final ComponentMapper<AnimationComponent> animation = ComponentMapper.getFor(AnimationComponent.class);
 	public static final ComponentMapper<CharacterComponent> character = ComponentMapper.getFor(CharacterComponent.class);
 	public static final ComponentMapper<BulletComponent> bullet = ComponentMapper.getFor(BulletComponent.class);

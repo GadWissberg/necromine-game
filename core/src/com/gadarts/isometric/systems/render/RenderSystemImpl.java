@@ -25,7 +25,7 @@ import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
-import com.gadarts.isometric.components.decal.SimpleDecalComponent;
+import com.gadarts.isometric.components.decal.HudDecalComponent;
 import com.gadarts.isometric.components.model.AdditionalRenderData;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.services.GameServices;
@@ -49,6 +49,8 @@ import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.model.characters.CharacterUtils;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
+
+import java.util.List;
 
 import static java.lang.Math.max;
 
@@ -143,7 +145,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			spriteBatch.begin();
 			for (Entity enemy : renderSystemRelatedEntities.getEnemyEntities()) {
 				Vector2 nodePosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
-				if (!isInFow(services.getMap().getNode((int) nodePosition.x, (int) nodePosition.y))) {
+				if (isOutsideFow(services.getMap().getNode((int) nodePosition.x, (int) nodePosition.y))) {
 					renderSkillFlowerText(enemy, renderBatches.getSpriteBatch());
 				}
 			}
@@ -170,36 +172,47 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private void renderSimpleDecals() {
 		DecalBatch decalBatch = renderBatches.getDecalBatch();
 		for (Entity entity : renderSystemRelatedEntities.getSimpleDecalsEntities()) {
-			renderSimpleDecal(decalBatch, entity);
+			renderHudDecal(decalBatch, entity);
 		}
 		decalBatch.flush();
 	}
 
-	private void renderSimpleDecal(final DecalBatch decalBatch, final Entity entity) {
-		SimpleDecalComponent simpleDecal = ComponentsMapper.simpleDecal.get(entity);
-		if (simpleDecal.isVisible()) {
-			Decal decal = simpleDecal.getDecal();
+	private void renderHudDecal(final DecalBatch decalBatch, final Entity entity) {
+		HudDecalComponent hudDecal = ComponentsMapper.simpleDecal.get(entity);
+		if (hudDecal.isVisible()) {
+			Decal decal = hudDecal.getDecal();
 			MapGraphNode node = services.getMap().getNode((int) decal.getPosition().x, (int) decal.getPosition().z);
-			if (!simpleDecal.isAffectedByFow() || !isInFow(node)) {
-				faceDecalToCamera(simpleDecal, decal);
+			if (!hudDecal.isAffectedByFow() || isOutsideFow(node)) {
+				faceDecalToCamera(hudDecal, decal);
 				decalBatch.add(decal);
+				renderRelatedDecals(decalBatch, hudDecal);
 			}
 		}
 	}
 
-	private boolean isInFow(final MapGraphNode node) {
-		return services.getMap().getFowMap()[node.getRow()][node.getCol()] == 0;
+	private void renderRelatedDecals(final DecalBatch decalBatch, final HudDecalComponent hudDecal) {
+		List<Decal> relatedDecals = hudDecal.getRelatedDecals();
+		if (!relatedDecals.isEmpty()) {
+			for (Decal relatedDecal : relatedDecals) {
+				faceDecalToCamera(hudDecal, relatedDecal);
+				decalBatch.add(relatedDecal);
+			}
+		}
 	}
 
-	private void faceDecalToCamera(final SimpleDecalComponent simpleDecal, final Decal decal) {
+	private boolean isOutsideFow(final MapGraphNode node) {
+		return services.getMap().getFowMap()[node.getRow()][node.getCol()] != 0;
+	}
+
+	private void faceDecalToCamera(final HudDecalComponent simpleDecal, final Decal decal) {
 		if (simpleDecal.isBillboard()) {
 			decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
 		}
 	}
 
 	private void renderSkillFlowerText(final Entity entity, final SpriteBatch spriteBatch) {
-		SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
-		Vector3 screenPos = camera.project(auxVector3_1.set(simpleDecalComponent.getDecal().getPosition()));
+		HudDecalComponent hudDecalComponent = ComponentsMapper.simpleDecal.get(entity);
+		Vector3 screenPos = camera.project(auxVector3_1.set(hudDecalComponent.getDecal().getPosition()));
 		stringBuilder.setLength(0);
 		String text = stringBuilder.append(ComponentsMapper.enemy.get(entity).getSkill()).toString();
 		skillFlowerGlyph.setText(skillFlowerFont, text);

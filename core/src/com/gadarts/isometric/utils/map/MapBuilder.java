@@ -9,9 +9,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Matrix4;
@@ -25,7 +27,7 @@ import com.gadarts.isometric.components.FloorComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterSoundData;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
-import com.gadarts.isometric.components.decal.SimpleDecalComponent;
+import com.gadarts.isometric.components.decal.HudDecalComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
@@ -617,8 +619,25 @@ public final class MapBuilder implements Disposable {
 		position.y = EnemySystemImpl.SKILL_FLOWER_HEIGHT;
 		entityBuilder.addSimpleDecalComponent(position, skillFlowerTexture, true, true);
 		Entity entity = entityBuilder.finishAndAddToEngine();
-		SimpleDecalComponent simpleDecalComponent = entity.getComponent(SimpleDecalComponent.class);
-		simpleDecalComponent.setAffectedByFow(true);
+		HudDecalComponent hudDecalComponent = entity.getComponent(HudDecalComponent.class);
+		hudDecalComponent.setAffectedByFow(true);
+		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_1, position);
+		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_2, position);
+		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_3, position);
+		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_4, position);
+		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_5, position);
+		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_6, position);
+		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_7, position);
+		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_8, position);
+	}
+
+	private void addSkillFlowerDecal(final HudDecalComponent hudDecalComponent,
+									 final Assets.UiTextures skillFlower,
+									 final Vector3 position) {
+		Decal skillFlowerDecal = Decal.newDecal(new TextureRegion(assetManager.getTexture(skillFlower)), true);
+		skillFlowerDecal.setScale(BILLBOARD_SCALE);
+		skillFlowerDecal.setPosition(position);
+		hudDecalComponent.addRelatedDecal(skillFlowerDecal);
 	}
 
 	private void inflatePlayer(final JsonObject characterJsonObject, final MapGraph mapGraph) {

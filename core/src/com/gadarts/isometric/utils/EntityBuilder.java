@@ -15,7 +15,7 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterSoundData;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
-import com.gadarts.isometric.components.decal.SimpleDecalComponent;
+import com.gadarts.isometric.components.decal.HudDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.Item;
@@ -144,12 +144,12 @@ public final class EntityBuilder {
 												 final boolean visible,
 												 final boolean billboard) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
-		SimpleDecalComponent simpleDecalComponent = engine.createComponent(SimpleDecalComponent.class);
-		simpleDecalComponent.init(texture, visible, billboard);
-		Decal decal = simpleDecalComponent.getDecal();
+		HudDecalComponent hudDecalComponent = engine.createComponent(HudDecalComponent.class);
+		hudDecalComponent.init(texture, visible, billboard);
+		Decal decal = hudDecalComponent.getDecal();
 		decal.setPosition(position);
 		decal.setScale(BILLBOARD_SCALE);
-		currentEntity.add(simpleDecalComponent);
+		currentEntity.add(hudDecalComponent);
 		return instance;
 	}
 
@@ -157,11 +157,11 @@ public final class EntityBuilder {
 												 final TextureRegion textureRegion,
 												 final Vector3 rotationAroundAxis) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
-		SimpleDecalComponent simpleDecalComponent = engine.createComponent(SimpleDecalComponent.class);
-		simpleDecalComponent.init(textureRegion, true);
-		Decal decal = simpleDecalComponent.getDecal();
+		HudDecalComponent hudDecalComponent = engine.createComponent(HudDecalComponent.class);
+		hudDecalComponent.init(textureRegion, true);
+		Decal decal = hudDecalComponent.getDecal();
 		initializeSimpleDecal(position, rotationAroundAxis, decal);
-		currentEntity.add(simpleDecalComponent);
+		currentEntity.add(hudDecalComponent);
 		return instance;
 	}
 
