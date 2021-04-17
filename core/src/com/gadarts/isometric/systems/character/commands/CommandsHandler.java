@@ -1,6 +1,7 @@
 package com.gadarts.isometric.systems.character.commands;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
@@ -8,6 +9,7 @@ import com.gadarts.isometric.systems.character.CharacterSystemGraphData;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
+import com.gadarts.necromine.model.characters.Agility;
 import com.gadarts.necromine.model.characters.SpriteType;
 import lombok.Getter;
 
@@ -54,13 +56,23 @@ public class CommandsHandler {
 		currentCommand.setStarted(true);
 		graphData.getCurrentPath().clear();
 		if (command.getType().isRequiresMovement()) {
-			graphData.getCurrentPath().nodes.addAll(command.getPath().nodes);
+			applyMovementOfCommandWithAgility(command, character);
 		}
 		if (graphData.getCurrentPath().nodes.size > 1) {
 			commandSet(command, character);
 		} else {
 			destinationReached(character);
 		}
+	}
+
+	private void applyMovementOfCommandWithAgility(final CharacterCommand command, final Entity character) {
+		Agility agility = ComponentsMapper.character.get(character).getSkills().getAgility();
+		Array<MapGraphNode> nodes = command.getPath().nodes;
+		int agilityValue = agility.getValue();
+		if (nodes.size > agilityValue) {
+			nodes.removeRange(agilityValue, nodes.size - 1);
+		}
+		graphData.getCurrentPath().nodes.addAll(nodes);
 	}
 
 	private void executeActionsAfterDestinationReached(final Entity character) {

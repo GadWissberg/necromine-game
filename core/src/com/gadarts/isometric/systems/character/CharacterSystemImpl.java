@@ -34,6 +34,7 @@ import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
+import static com.gadarts.isometric.components.character.CharacterMotivation.END_MY_TURN;
 import static com.gadarts.isometric.components.character.CharacterMotivation.TO_PICK_UP;
 import static com.gadarts.necromine.model.characters.SpriteType.PAIN;
 
@@ -136,19 +137,20 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	private void handleCurrentCommand(final CharacterCommand currentCommand) {
-		Entity character = currentCommand.getCharacter();
-		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
+		CharacterComponent characterComponent = ComponentsMapper.character.get(currentCommand.getCharacter());
 		SpriteType spriteType = characterComponent.getCharacterSpriteData().getSpriteType();
 		if (spriteType == SpriteType.ATTACK || spriteType == SpriteType.PICKUP) {
-			handleModeWithNonLoopingAnimation(character);
+			handleModeWithNonLoopingAnimation(currentCommand.getCharacter());
+		} else if (characterComponent.getMotivationData().getMotivation() == END_MY_TURN) {
+			commandsHandler.commandDone(currentCommand.getCharacter());
 		} else {
-			handleRotation(character, characterComponent);
+			handleRotation(currentCommand.getCharacter(), characterComponent);
 		}
 	}
 
 	private void handlePain(final Entity character) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		long lastDamage = characterComponent.getHealthData().getLastDamage();
+		long lastDamage = characterComponent.getSkills().getHealthData().getLastDamage();
 		CharacterSpriteData spriteData = characterComponent.getCharacterSpriteData();
 		if (spriteData.getSpriteType() == PAIN && TimeUtils.timeSinceMillis(lastDamage) > CHARACTER_PAIN_DURATION) {
 			characterComponent.setMotivation(null);
@@ -255,7 +257,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 
 	private void handleDeath(final Entity character) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		CharacterHealthData healthData = characterComponent.getHealthData();
+		CharacterHealthData healthData = characterComponent.getSkills().getHealthData();
 		CharacterSoundData soundData = characterComponent.getSoundData();
 		SoundPlayer soundPlayer = services.getSoundPlayer();
 		if (healthData.getHp() <= 0) {

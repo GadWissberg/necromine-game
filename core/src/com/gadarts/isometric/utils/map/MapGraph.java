@@ -114,7 +114,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		Entity result = null;
 		for (Entity enemy : enemiesEntities) {
 			MapGraphNode enemyNode = getNode(ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition());
-			if (ComponentsMapper.character.get(enemy).getHealthData().getHp() > 0 && enemyNode.equals(node)) {
+			if (ComponentsMapper.character.get(enemy).getSkills().getHealthData().getHp() > 0 && enemyNode.equals(node)) {
 				result = enemy;
 				break;
 			}
@@ -213,7 +213,8 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private boolean checkIfNodeIsAvailable(final Connection<MapGraphNode> connection) {
 		for (Entity character : characterEntities) {
 			MapGraphNode node = getNode(ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2));
-			if (currentDestination == node || ComponentsMapper.character.get(character).getHealthData().getHp() <= 0) {
+			int hp = ComponentsMapper.character.get(character).getSkills().getHealthData().getHp();
+			if (currentDestination == node || hp <= 0) {
 				continue;
 			}
 			if (node.equals(connection.getToNode())) {

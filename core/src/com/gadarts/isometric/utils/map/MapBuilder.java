@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.FloorComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
+import com.gadarts.isometric.components.character.CharacterSkillsParameters;
 import com.gadarts.isometric.components.character.CharacterSoundData;
 import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.decal.HudDecalComponent;
@@ -47,10 +48,7 @@ import com.gadarts.necromine.model.EnvironmentDefinitions;
 import com.gadarts.necromine.model.MapNodeData;
 import com.gadarts.necromine.model.MapNodesTypes;
 import com.gadarts.necromine.model.Wall;
-import com.gadarts.necromine.model.characters.CharacterTypes;
-import com.gadarts.necromine.model.characters.Direction;
-import com.gadarts.necromine.model.characters.Enemies;
-import com.gadarts.necromine.model.characters.SpriteType;
+import com.gadarts.necromine.model.characters.*;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -111,13 +109,15 @@ public final class MapBuilder implements Disposable {
 									   final Entity target,
 									   final Sounds painSound,
 									   final Sounds deathSound,
-									   final Direction direction, final int health) {
-		SpriteType spriteType = SpriteType.IDLE;
+									   final Direction direction,
+									   final int health,
+									   final Agility agility) {
 		CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
-		characterSpriteData.init(direction, spriteType, 1);
+		characterSpriteData.init(direction, SpriteType.IDLE, 1);
 		auxCharacterSoundData.set(painSound, deathSound);
-		entityBuilder.addCharacterComponent(characterSpriteData, target, auxCharacterSoundData, health)
-				.addCharacterDecalComponent(assetManager.get(atlas.name()), spriteType, direction, position)
+		CharacterSkillsParameters skills = new CharacterSkillsParameters(health, agility);
+		entityBuilder.addCharacterComponent(characterSpriteData, target, auxCharacterSoundData, skills)
+				.addCharacterDecalComponent(assetManager.get(atlas.name()), SpriteType.IDLE, direction, position)
 				.addCollisionComponent()
 				.addAnimationComponent();
 	}
@@ -603,7 +603,8 @@ public final class MapBuilder implements Disposable {
 	private void inflateEnemy(final JsonObject characterJsonObject, final MapGraph mapGraph) {
 		int index = characterJsonObject.get(TYPE).getAsInt();
 		Enemies type = Enemies.values()[index];
-		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(type);
+		int skill = 1;
+		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(type, skill);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		Vector3 position = inflateCharacterPosition(characterJsonObject, mapGraph);
 		addCharBaseComponents(
@@ -614,7 +615,8 @@ public final class MapBuilder implements Disposable {
 				Sounds.ENEMY_PAIN,
 				Sounds.ENEMY_DEATH,
 				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
-				2);
+				2,
+				type.getAgility()[skill - 1]);
 		Texture skillFlowerTexture = assetManager.getTexture(Assets.UiTextures.SKILL_FLOWER_CENTER);
 		position.y = EnemySystemImpl.SKILL_FLOWER_HEIGHT;
 		entityBuilder.addSimpleDecalComponent(position, skillFlowerTexture, true, true);
@@ -653,7 +655,8 @@ public final class MapBuilder implements Disposable {
 				Sounds.PLAYER_PAIN,
 				Sounds.PLAYER_DEATH,
 				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
-				PLAYER_HEALTH);
+				PLAYER_HEALTH,
+				Agility.HIGH);
 		builder.finishAndAddToEngine();
 	}
 

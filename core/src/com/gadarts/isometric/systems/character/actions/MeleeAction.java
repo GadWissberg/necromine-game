@@ -28,12 +28,17 @@ public class MeleeAction implements ToDoAfterDestinationReached {
 			MapGraphNode targetNode = map.getNode(targetPosition);
 			MapGraphNode myNode = map.getNode(ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2));
 			List<MapGraphNode> nearbyNodes = map.getNodesAround(myNode, auxNodesList);
+			characterComponent.getRotationData().setRotating(true);
+			boolean nearTarget = false;
 			for (MapGraphNode nearbyNode : nearbyNodes) {
-				if (nearbyNode.equals(targetNode)) {
-					characterComponent.getRotationData().setRotating(true);
+				nearTarget = nearbyNode.equals(targetNode);
+				if (nearTarget) {
 					characterComponent.setMotivation(CharacterMotivation.TO_ATTACK);
 					break;
 				}
+			}
+			if (!nearTarget) {
+				characterComponent.setMotivation(CharacterMotivation.END_MY_TURN);
 			}
 		}
 	}

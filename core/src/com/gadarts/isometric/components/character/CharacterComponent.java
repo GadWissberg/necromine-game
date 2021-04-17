@@ -22,8 +22,8 @@ public class CharacterComponent implements GameComponent {
 	private Entity target;
 	private CharacterRotationData rotationData = new CharacterRotationData();
 	private CharacterSpriteData characterSpriteData;
-	private CharacterHealthData healthData = new CharacterHealthData();
 	private CharacterSoundData soundData = new CharacterSoundData();
+	private CharacterSkills skills = new CharacterSkills();
 
 	public MapGraphNode getDestinationNode() {
 		return destinationNode;
@@ -45,7 +45,6 @@ public class CharacterComponent implements GameComponent {
 	@Override
 	public void reset() {
 		destinationNode = null;
-		healthData.reset();
 		motivationData.reset();
 		target = null;
 		rotationData.reset();
@@ -53,14 +52,14 @@ public class CharacterComponent implements GameComponent {
 
 	public void init(final CharacterSpriteData characterSpriteData,
 					 final CharacterSoundData soundData,
-					 final int initialHp) {
+					 final CharacterSkillsParameters skills) {
 		this.characterSpriteData = characterSpriteData;
-		this.healthData.init(initialHp);
+		this.skills.applyParameters(skills);
 		this.soundData.set(soundData);
 	}
 
 	public void dealDamage(final int damagePoints) {
-		healthData.dealDamage(damagePoints);
+		skills.getHealthData().dealDamage(damagePoints);
 	}
 
 }

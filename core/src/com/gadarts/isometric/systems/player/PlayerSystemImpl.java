@@ -106,7 +106,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		MapGraphNode playerNode = services.getMap().getNode(cellPosition);
 		CharacterSystem characterSystem = getSystem(CharacterSystem.class);
 		MapGraphPath plannedPath = pathPlanHandler.getPath();
-		return ((enemyAtNode != null && ComponentsMapper.character.get(enemyAtNode).getHealthData().getHp() > 0 && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
+		return ((enemyAtNode != null && ComponentsMapper.character.get(enemyAtNode).getSkills().getHealthData().getHp() > 0 && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
 				|| getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath)
 				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath));
 	}

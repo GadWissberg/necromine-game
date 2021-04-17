@@ -250,7 +250,8 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 		if (getSystem(CameraSystem.class).isCameraRotating()) return;
 		Entity player = getSystem(PlayerSystem.class).getPlayer();
 		Turns currentTurn = getSystem(TurnsSystem.class).getCurrentTurn();
-		if (currentTurn == Turns.PLAYER && ComponentsMapper.character.get(player).getHealthData().getHp() > 0) {
+		int hp = ComponentsMapper.character.get(player).getSkills().getHealthData().getHp();
+		if (currentTurn == Turns.PLAYER && hp > 0) {
 			if (button == Input.Buttons.LEFT && !getSystem(CharacterSystem.class).isProcessingCommand()) {
 				userSelectedNodeToApplyTurn();
 			}

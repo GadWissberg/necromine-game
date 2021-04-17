@@ -18,10 +18,10 @@ public class EnemyComponent implements GameComponent {
 	private long lastTurn = -1;
 	private int skill = 1;
 
-	public void init(final Enemies enemyDefinition) {
+	public void init(final Enemies enemyDefinition, int skill) {
 		this.enemyDefinition = enemyDefinition;
 		calculateNextRoamSound();
-		skill = 1;
+		this.skill = skill;
 	}
 
 	@Override

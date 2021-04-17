@@ -92,7 +92,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	private boolean invokeTurnForUnplayedEnemy(final long currentTurnId) {
 		for (Entity enemy : enemies) {
-			int hp = ComponentsMapper.character.get(enemy).getHealthData().getHp();
+			int hp = ComponentsMapper.character.get(enemy).getSkills().getHealthData().getHp();
 			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
 			if (enemyComponent.getLastTurn() < currentTurnId) {
 				if (hp > 0 && enemyComponent.isAwaken()) {
@@ -161,7 +161,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	private void refreshSkillFlower(final Entity entity) {
 		List<RelatedDecal> relatedDecals = ComponentsMapper.simpleDecal.get(entity).getRelatedDecals();
-		CharacterHealthData healthData = ComponentsMapper.character.get(entity).getHealthData();
+		CharacterHealthData healthData = ComponentsMapper.character.get(entity).getSkills().getHealthData();
 		float div = (((float) healthData.getHp()) / ((float) healthData.getInitialHp()));
 		int numberOfVisibleLeaf = (int) (div * NUMBER_OF_SKILL_FLOWER_LEAF);
 		for (int i = 0; i < relatedDecals.size(); i++) {
@@ -214,7 +214,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	private void checkLineOfSightForEnemies(final Entity entity) {
 		for (Entity enemy : enemies) {
-			int hp = ComponentsMapper.character.get(enemy).getHealthData().getHp();
+			int hp = ComponentsMapper.character.get(enemy).getSkills().getHealthData().getHp();
 			if (hp > 0 && !ComponentsMapper.enemy.get(enemy).isAwaken()) {
 				Decal enemyDecal = ComponentsMapper.characterDecal.get(enemy).getDecal();
 				Vector3 enemyPosition = auxVector3_1.set(enemyDecal.getPosition());

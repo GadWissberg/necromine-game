@@ -10,10 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.*;
-import com.gadarts.isometric.components.character.CharacterAnimations;
-import com.gadarts.isometric.components.character.CharacterComponent;
-import com.gadarts.isometric.components.character.CharacterSoundData;
-import com.gadarts.isometric.components.character.CharacterSpriteData;
+import com.gadarts.isometric.components.character.*;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.decal.HudDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
@@ -33,6 +30,7 @@ import lombok.Setter;
 
 import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_SCALE;
 
+@SuppressWarnings("UnusedReturnValue")
 public final class EntityBuilder {
 	public static final String MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST = "Call beginBuildingEntity() first!";
 	private static final EntityBuilder instance = new EntityBuilder();
@@ -115,10 +113,10 @@ public final class EntityBuilder {
 	public EntityBuilder addCharacterComponent(final CharacterSpriteData characterSpriteData,
 											   final Entity target,
 											   final CharacterSoundData characterSoundData,
-											   final int health) {
+											   final CharacterSkillsParameters skills) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		CharacterComponent charComponent = engine.createComponent(CharacterComponent.class);
-		charComponent.init(characterSpriteData, characterSoundData, health);
+		charComponent.init(characterSpriteData, characterSoundData, skills);
 		charComponent.setTarget(target);
 		currentEntity.add(charComponent);
 		return instance;
@@ -177,10 +175,10 @@ public final class EntityBuilder {
 		}
 	}
 
-	public EntityBuilder addEnemyComponent(final Enemies enemyDefinition) {
+	public EntityBuilder addEnemyComponent(final Enemies enemyDefinition, final int skill) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		EnemyComponent component = engine.createComponent(EnemyComponent.class);
-		component.init(enemyDefinition);
+		component.init(enemyDefinition, skill);
 		currentEntity.add(component);
 		return instance;
 	}
@@ -200,7 +198,8 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addObstacleWallComponent(final Vector2 topLeft,
-												  final Vector2 bottomRight, EnvironmentDefinitions type) {
+												  final Vector2 bottomRight,
+												  final EnvironmentDefinitions type) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		ObstacleComponent obstacleComponent = engine.createComponent(ObstacleComponent.class);
 		obstacleComponent.init(topLeft, bottomRight, type);
@@ -229,6 +228,7 @@ public final class EntityBuilder {
 		return pickup;
 	}
 
+	@SuppressWarnings("unused")
 	public EntityBuilder addPickUpComponent(final ItemDefinition definition,
 											final Texture displayImage) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
