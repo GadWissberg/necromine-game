@@ -23,7 +23,7 @@ public class HudDecalComponent implements GameComponent {
 	private boolean visible;
 
 	@Getter
-	private final List<Decal> relatedDecals = new ArrayList<>();
+	private final List<RelatedDecal> relatedDecals = new ArrayList<>();
 
 	@Override
 	public void reset() {
@@ -55,7 +55,7 @@ public class HudDecalComponent implements GameComponent {
 		}
 	}
 
-	public void addRelatedDecal(final Decal decal) {
+	public void addRelatedDecal(final RelatedDecal decal) {
 		relatedDecals.add(decal);
 	}
 }

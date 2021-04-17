@@ -14,6 +14,9 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.CharacterHealthData;
+import com.gadarts.isometric.components.decal.HudDecalComponent;
+import com.gadarts.isometric.components.decal.RelatedDecal;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterSystem;
@@ -28,6 +31,8 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.model.characters.SpriteType;
+
+import java.util.List;
 
 /**
  * Handles enemy AI.
@@ -46,6 +51,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private static final float MAX_SIGHT = 7;
 	private static final Rectangle auxRect = new Rectangle();
 	private static final float ENEMY_HALF_FOV_ANGLE = 75F;
+	private static final int NUMBER_OF_SKILL_FLOWER_LEAF = 8;
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
 	private TurnsSystem turnsSystem;
@@ -149,6 +155,17 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	public void onCharacterGotDamage(final Entity entity) {
 		if (ComponentsMapper.enemy.has(entity)) {
 			awakeEnemy(entity);
+			refreshSkillFlower(entity);
+		}
+	}
+
+	private void refreshSkillFlower(final Entity entity) {
+		List<RelatedDecal> relatedDecals = ComponentsMapper.simpleDecal.get(entity).getRelatedDecals();
+		CharacterHealthData healthData = ComponentsMapper.character.get(entity).getHealthData();
+		float div = (((float) healthData.getHp()) / ((float) healthData.getInitialHp()));
+		int numberOfVisibleLeaf = (int) (div * NUMBER_OF_SKILL_FLOWER_LEAF);
+		for (int i = 0; i < relatedDecals.size(); i++) {
+			relatedDecals.get(i).setVisible(i < numberOfVisibleLeaf);
 		}
 	}
 
@@ -157,6 +174,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	public void onCharacterDies(final Entity character) {
 		if (ComponentsMapper.enemy.has(character)) {
 			ComponentsMapper.enemy.get(character).setAwaken(false);
+			refreshSkillFlower(character);
 		}
 	}
 
@@ -177,7 +195,14 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	private void onFrameChangedOfRun(final Entity entity) {
 		Vector3 position = ComponentsMapper.characterDecal.get(entity).getDecal().getPosition();
-		ComponentsMapper.simpleDecal.get(entity).getDecal().setPosition(position.x, SKILL_FLOWER_HEIGHT, position.z);
+		HudDecalComponent hudDecalComponent = ComponentsMapper.simpleDecal.get(entity);
+		hudDecalComponent.getDecal().setPosition(position.x, SKILL_FLOWER_HEIGHT, position.z);
+		List<RelatedDecal> relatedDecals = hudDecalComponent.getRelatedDecals();
+		for (RelatedDecal decal : relatedDecals) {
+			if (decal.isVisible()) {
+				decal.setPosition(position.x, SKILL_FLOWER_HEIGHT, position.z);
+			}
+		}
 	}
 
 	private void onFrameChangedOfAttack(final Entity entity, final TextureAtlas.AtlasRegion newFrame) {

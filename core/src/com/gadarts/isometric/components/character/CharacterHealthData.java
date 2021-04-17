@@ -2,12 +2,11 @@ package com.gadarts.isometric.components.character;
 
 import com.badlogic.gdx.utils.TimeUtils;
 import lombok.Getter;
-import lombok.Setter;
 
-@Setter
 @Getter
 public class CharacterHealthData {
 	private int hp;
+	private int initialHp;
 	private long lastDamage;
 
 	public void dealDamage(final int damagePoints) {
@@ -18,5 +17,10 @@ public class CharacterHealthData {
 	public void reset() {
 		hp = 0;
 		lastDamage = 0;
+	}
+
+	public void init(final int initialHp) {
+		this.initialHp = initialHp;
+		this.hp = initialHp;
 	}
 }

@@ -55,7 +55,7 @@ public class CharacterComponent implements GameComponent {
 					 final CharacterSoundData soundData,
 					 final int initialHp) {
 		this.characterSpriteData = characterSpriteData;
-		this.healthData.setHp(initialHp);
+		this.healthData.init(initialHp);
 		this.soundData.set(soundData);
 	}
 

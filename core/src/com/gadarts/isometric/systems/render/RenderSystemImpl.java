@@ -26,6 +26,7 @@ import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.decal.HudDecalComponent;
+import com.gadarts.isometric.components.decal.RelatedDecal;
 import com.gadarts.isometric.components.model.AdditionalRenderData;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.services.GameServices;
@@ -191,11 +192,13 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	private void renderRelatedDecals(final DecalBatch decalBatch, final HudDecalComponent hudDecal) {
-		List<Decal> relatedDecals = hudDecal.getRelatedDecals();
+		List<RelatedDecal> relatedDecals = hudDecal.getRelatedDecals();
 		if (!relatedDecals.isEmpty()) {
-			for (Decal relatedDecal : relatedDecals) {
-				faceDecalToCamera(hudDecal, relatedDecal);
-				decalBatch.add(relatedDecal);
+			for (RelatedDecal relatedDecal : relatedDecals) {
+				if (relatedDecal.isVisible()) {
+					faceDecalToCamera(hudDecal, relatedDecal);
+					decalBatch.add(relatedDecal);
+				}
 			}
 		}
 	}
