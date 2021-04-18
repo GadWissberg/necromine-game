@@ -48,7 +48,12 @@ import com.gadarts.necromine.model.EnvironmentDefinitions;
 import com.gadarts.necromine.model.MapNodeData;
 import com.gadarts.necromine.model.MapNodesTypes;
 import com.gadarts.necromine.model.Wall;
-import com.gadarts.necromine.model.characters.*;
+import com.gadarts.necromine.model.characters.Agility;
+import com.gadarts.necromine.model.characters.CharacterTypes;
+import com.gadarts.necromine.model.characters.Direction;
+import com.gadarts.necromine.model.characters.Enemies;
+import com.gadarts.necromine.model.characters.SpriteType;
+import com.gadarts.necromine.model.characters.Strength;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -62,9 +67,31 @@ import java.util.Base64;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static com.gadarts.isometric.components.FloorComponent.*;
-import static com.gadarts.necromine.assets.MapJsonKeys.*;
-import static com.gadarts.necromine.model.characters.CharacterTypes.*;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_EAST;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_NORTH;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_NORTH_EAST;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_NORTH_WEST;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_SOUTH;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_SOUTH_EAST;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_SOUTH_WEST;
+import static com.gadarts.isometric.components.FloorComponent.AO_MASK_WEST;
+import static com.gadarts.necromine.assets.MapJsonKeys.CHARACTERS;
+import static com.gadarts.necromine.assets.MapJsonKeys.COL;
+import static com.gadarts.necromine.assets.MapJsonKeys.DEPTH;
+import static com.gadarts.necromine.assets.MapJsonKeys.DIRECTION;
+import static com.gadarts.necromine.assets.MapJsonKeys.EAST;
+import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHT;
+import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHTS;
+import static com.gadarts.necromine.assets.MapJsonKeys.MATRIX;
+import static com.gadarts.necromine.assets.MapJsonKeys.ROW;
+import static com.gadarts.necromine.assets.MapJsonKeys.TILES;
+import static com.gadarts.necromine.assets.MapJsonKeys.TYPE;
+import static com.gadarts.necromine.assets.MapJsonKeys.WEST;
+import static com.gadarts.necromine.assets.MapJsonKeys.WIDTH;
+import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_SCALE;
+import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_Y;
+import static com.gadarts.necromine.model.characters.CharacterTypes.ENEMY;
+import static com.gadarts.necromine.model.characters.CharacterTypes.PLAYER;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
 import static com.gadarts.necromine.model.characters.Direction.SOUTH;
 
@@ -111,11 +138,12 @@ public final class MapBuilder implements Disposable {
 									   final Sounds deathSound,
 									   final Direction direction,
 									   final int health,
-									   final Agility agility) {
+									   final Agility agility,
+									   final Strength strength) {
 		CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
 		characterSpriteData.init(direction, SpriteType.IDLE, 1);
 		auxCharacterSoundData.set(painSound, deathSound);
-		CharacterSkillsParameters skills = new CharacterSkillsParameters(health, agility);
+		CharacterSkillsParameters skills = new CharacterSkillsParameters(health, agility, strength);
 		entityBuilder.addCharacterComponent(characterSpriteData, target, auxCharacterSoundData, skills)
 				.addCharacterDecalComponent(assetManager.get(atlas.name()), SpriteType.IDLE, direction, position)
 				.addCollisionComponent()
@@ -616,7 +644,8 @@ public final class MapBuilder implements Disposable {
 				Sounds.ENEMY_DEATH,
 				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
 				2,
-				type.getAgility()[skill - 1]);
+				type.getAgility().get(skill - 1),
+				type.getStrength().get(skill - 1));
 		Texture skillFlowerTexture = assetManager.getTexture(Assets.UiTextures.SKILL_FLOWER_CENTER);
 		position.y = EnemySystemImpl.SKILL_FLOWER_HEIGHT;
 		entityBuilder.addSimpleDecalComponent(position, skillFlowerTexture, true, true);
@@ -656,7 +685,8 @@ public final class MapBuilder implements Disposable {
 				Sounds.PLAYER_DEATH,
 				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
 				PLAYER_HEALTH,
-				Agility.HIGH);
+				Agility.HIGH,
+				new Strength(1, 3));
 		builder.finishAndAddToEngine();
 	}
 

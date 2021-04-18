@@ -8,12 +8,19 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.AnimationComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.character.*;
+import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.CharacterHealthData;
+import com.gadarts.isometric.components.character.CharacterMotivation;
+import com.gadarts.isometric.components.character.CharacterMotivationData;
+import com.gadarts.isometric.components.character.CharacterRotationData;
+import com.gadarts.isometric.components.character.CharacterSoundData;
+import com.gadarts.isometric.components.character.CharacterSpriteData;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -32,6 +39,7 @@ import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.model.characters.CharacterTypes;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
+import com.gadarts.necromine.model.characters.Strength;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
 import static com.gadarts.isometric.components.character.CharacterMotivation.END_MY_TURN;
@@ -249,10 +257,11 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		}
 	}
 
-	private void applyDamageToCharacter(final Entity character) {
-		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
-		characterComponent.dealDamage(1);
-		handleDeath(character);
+	private void applyDamageToCharacter(Entity attacker, final Entity attacked) {
+		CharacterComponent characterComponent = ComponentsMapper.character.get(attacked);
+		Strength strength = ComponentsMapper.character.get(attacker).getSkills().getStrength();
+		characterComponent.dealDamage(MathUtils.random(strength.getMinDamage(), strength.getMaxDamage()));
+		handleDeath(attacked);
 	}
 
 	private void handleDeath(final Entity character) {
@@ -316,7 +325,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 					Weapon weapon = ComponentsMapper.player.get(character).getStorage().getSelectedWeapon();
 					WeaponsDefinitions definition = (WeaponsDefinitions) weapon.getDefinition();
 					if (definition.isMelee()) {
-						applyDamageToCharacter(target);
+						applyDamageToCharacter(character, target);
 					} else {
 						CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(character);
 						Decal decal = characterDecalComponent.getDecal();
@@ -330,7 +339,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 								.finishAndAddToEngine();
 					}
 				} else {
-					applyDamageToCharacter(target);
+					applyDamageToCharacter(character, target);
 				}
 			}
 		} else if (characterSpriteData.getSpriteType() == SpriteType.PICKUP) {
@@ -413,7 +422,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@Override
 	public void onBulletCollision(final Entity bullet, final Entity collidable) {
 		if (ComponentsMapper.character.has(collidable)) {
-			applyDamageToCharacter(collidable);
+			applyDamageToCharacter(ComponentsMapper.bullet.get(bullet).getOwner(), collidable);
 		}
 	}
 }
