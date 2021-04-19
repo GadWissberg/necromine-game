@@ -1,4 +1,4 @@
-package com.gadarts.isometric.components.character;
+package com.gadarts.isometric.components.character.data;
 
 import com.gadarts.necromine.assets.Assets;
 import lombok.Getter;

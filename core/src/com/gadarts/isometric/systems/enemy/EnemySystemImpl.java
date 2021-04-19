@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
-import com.gadarts.isometric.components.character.CharacterHealthData;
+import com.gadarts.isometric.components.character.data.CharacterHealthData;
 import com.gadarts.isometric.components.decal.HudDecalComponent;
 import com.gadarts.isometric.components.decal.RelatedDecal;
 import com.gadarts.isometric.components.enemy.EnemyComponent;

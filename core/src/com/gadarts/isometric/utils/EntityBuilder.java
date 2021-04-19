@@ -9,8 +9,21 @@ import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
-import com.gadarts.isometric.components.*;
-import com.gadarts.isometric.components.character.*;
+import com.gadarts.isometric.components.AnimationComponent;
+import com.gadarts.isometric.components.BulletComponent;
+import com.gadarts.isometric.components.CollisionComponent;
+import com.gadarts.isometric.components.CursorComponent;
+import com.gadarts.isometric.components.FloorComponent;
+import com.gadarts.isometric.components.LightComponent;
+import com.gadarts.isometric.components.ModelInstanceComponent;
+import com.gadarts.isometric.components.ObstacleComponent;
+import com.gadarts.isometric.components.PickUpComponent;
+import com.gadarts.isometric.components.WallComponent;
+import com.gadarts.isometric.components.character.CharacterAnimations;
+import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.CharacterSkillsParameters;
+import com.gadarts.isometric.components.character.data.CharacterSoundData;
+import com.gadarts.isometric.components.character.data.CharacterSpriteData;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.decal.HudDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
@@ -111,13 +124,11 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addCharacterComponent(final CharacterSpriteData characterSpriteData,
-											   final Entity target,
 											   final CharacterSoundData characterSoundData,
 											   final CharacterSkillsParameters skills) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		CharacterComponent charComponent = engine.createComponent(CharacterComponent.class);
 		charComponent.init(characterSpriteData, characterSoundData, skills);
-		charComponent.setTarget(target);
 		currentEntity.add(charComponent);
 		return instance;
 	}

@@ -25,8 +25,9 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.FloorComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterSkillsParameters;
-import com.gadarts.isometric.components.character.CharacterSoundData;
-import com.gadarts.isometric.components.character.CharacterSpriteData;
+import com.gadarts.isometric.components.character.data.CharacterData;
+import com.gadarts.isometric.components.character.data.CharacterSoundData;
+import com.gadarts.isometric.components.character.data.CharacterSpriteData;
 import com.gadarts.isometric.components.decal.HudDecalComponent;
 import com.gadarts.isometric.components.decal.RelatedDecal;
 import com.gadarts.isometric.components.model.GameModelInstance;
@@ -132,19 +133,12 @@ public final class MapBuilder implements Disposable {
 
 	private void addCharBaseComponents(final EntityBuilder entityBuilder,
 									   final Atlases atlas,
-									   final Vector3 position,
-									   final Entity target,
-									   final Sounds painSound,
-									   final Sounds deathSound,
-									   final Direction direction,
-									   final int health,
-									   final Agility agility,
-									   final Strength strength) {
+									   final CharacterData characterData) {
 		CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
+		Direction direction = characterData.getDirection();
 		characterSpriteData.init(direction, SpriteType.IDLE, 1);
-		auxCharacterSoundData.set(painSound, deathSound);
-		CharacterSkillsParameters skills = new CharacterSkillsParameters(health, agility, strength);
-		entityBuilder.addCharacterComponent(characterSpriteData, target, auxCharacterSoundData, skills)
+		Vector3 position = characterData.getPosition();
+		entityBuilder.addCharacterComponent(characterSpriteData, characterData.getSoundData(), characterData.getSkills())
 				.addCharacterDecalComponent(assetManager.get(atlas.name()), SpriteType.IDLE, direction, position)
 				.addCollisionComponent()
 				.addAnimationComponent();
@@ -635,21 +629,21 @@ public final class MapBuilder implements Disposable {
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(type, skill);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		Vector3 position = inflateCharacterPosition(characterJsonObject, mapGraph);
+		auxCharacterSoundData.set(Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH);
+		CharacterSkillsParameters skills = new CharacterSkillsParameters(
+				type.getHealth().get(skill - 1),
+				type.getAgility().get(skill - 1),
+				type.getStrength().get(skill - 1));
+		CharacterData data = new CharacterData(position, Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()], skills, auxCharacterSoundData);
 		addCharBaseComponents(
 				entityBuilder,
 				type.getAtlasDefinition(),
-				position,
-				player,
-				Sounds.ENEMY_PAIN,
-				Sounds.ENEMY_DEATH,
-				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
-				2,
-				type.getAgility().get(skill - 1),
-				type.getStrength().get(skill - 1));
+				data);
 		Texture skillFlowerTexture = assetManager.getTexture(Assets.UiTextures.SKILL_FLOWER_CENTER);
 		position.y = EnemySystemImpl.SKILL_FLOWER_HEIGHT;
 		entityBuilder.addSimpleDecalComponent(position, skillFlowerTexture, true, true);
 		Entity entity = entityBuilder.finishAndAddToEngine();
+		ComponentsMapper.character.get(entity).setTarget(player);
 		HudDecalComponent hudDecalComponent = entity.getComponent(HudDecalComponent.class);
 		hudDecalComponent.setAffectedByFow(true);
 		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_1, position);
@@ -676,17 +670,20 @@ public final class MapBuilder implements Disposable {
 		CharacterAnimations general = assetManager.get(Atlases.PLAYER_GENERIC.name());
 		EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
 		Vector3 position = inflateCharacterPosition(characterJsonObject, mapGraph);
-		addCharBaseComponents(
-				builder,
-				Atlases.PLAYER_AXE_PICK,
-				position,
-				null,
-				Sounds.PLAYER_PAIN,
-				Sounds.PLAYER_DEATH,
-				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
+		auxCharacterSoundData.set(Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH);
+		CharacterSkillsParameters skills = new CharacterSkillsParameters(
 				PLAYER_HEALTH,
 				Agility.HIGH,
 				new Strength(1, 3));
+		CharacterData data = new CharacterData(
+				position,
+				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
+				skills,
+				auxCharacterSoundData);
+		addCharBaseComponents(
+				builder,
+				Atlases.PLAYER_AXE_PICK,
+				data);
 		builder.finishAndAddToEngine();
 	}
 

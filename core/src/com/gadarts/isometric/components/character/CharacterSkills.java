@@ -1,5 +1,6 @@
 package com.gadarts.isometric.components.character;
 
+import com.gadarts.isometric.components.character.data.CharacterHealthData;
 import com.gadarts.necromine.model.characters.Agility;
 import com.gadarts.necromine.model.characters.Strength;
 import lombok.Getter;

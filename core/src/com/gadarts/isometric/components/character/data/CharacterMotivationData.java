@@ -1,5 +1,6 @@
-package com.gadarts.isometric.components.character;
+package com.gadarts.isometric.components.character.data;
 
+import com.gadarts.isometric.components.character.CharacterMotivation;
 import lombok.Getter;
 import lombok.Setter;
 

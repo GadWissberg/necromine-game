@@ -1,4 +1,4 @@
-package com.gadarts.isometric.components.character;
+package com.gadarts.isometric.components.character.data;
 
 import com.badlogic.gdx.utils.Pool;
 import com.gadarts.necromine.model.characters.Direction;
