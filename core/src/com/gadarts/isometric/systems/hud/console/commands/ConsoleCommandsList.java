@@ -11,14 +11,15 @@ import java.util.Optional;
 
 public enum ConsoleCommandsList implements ConsoleCommands {
 	PROFILER(new ProfilerCommand(), "Toggles profiler and GL operations stats."),
-	SFX("sound", new SfxCommand(), "Toggles sound effects."),
-	MELODY("music", new MusicCommand(), "Toggles background melody."),
-	BORDERS("borders", new BordersCommand(), "Toggles UI elements borders visibility."),
-	SKIP_RENDER("skip-render", new SkipRenderCommand(), "Toggles drawing skipping mode for given categories.",
+	SFX("snd", new SfxCommand(), "Toggles sound effects."),
+	MELODY("msc", new MusicCommand(), "Toggles background melody."),
+	BORDERS("brd", new BordersCommand(), "Toggles UI elements borders visibility."),
+	SKIP_RENDER("skp", new SkipRenderCommand(), "Toggles drawing skipping mode for given categories.",
 			new SkipRenderCommand.GroundParameter(),
 			new SkipRenderCommand.EnemyParameter(),
 			new SkipRenderCommand.EnvironmentObjectParameter(),
 			new SkipRenderCommand.FowParameter()),
+	FRUSTUM_CULLING("fc", new FrustumCullingCommand(), "Toggles frustum culling."),
 	HELP("?", new HelpCommand(), "Displays commands list.");
 
 	public static final String DESCRIPTION_PARAMETERS = " Parameters:%s";

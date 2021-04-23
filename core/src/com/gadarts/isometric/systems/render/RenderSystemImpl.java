@@ -74,6 +74,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Vector3 auxVector3_3 = new Vector3();
 	private static final Quaternion auxQuat = new Quaternion();
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
+	private static final String MSG_FC = "Frustum culling has been %s.";
 	private final DrawFlags drawFlags = new DrawFlags();
 	private final StringBuilder stringBuilder = new StringBuilder();
 	private WorldEnvironment environment;
@@ -84,6 +85,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private Camera camera;
 	private BitmapFont skillFlowerFont;
 	private GlyphLayout skillFlowerGlyph;
+	private boolean frustumCull = !DefaultGameSettings.DISABLE_FRUSTUM_CULLING;
 
 	@Override
 	public void init(final GameServices services) {
@@ -327,7 +329,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	private boolean isVisible(final Camera camera, final Entity entity) {
-		if (DefaultGameSettings.DISABLE_FRUSTUM_CULLING) return true;
+		if (!frustumCull) return true;
 		ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 		Vector3 position = modelInstanceComponent.getModelInstance().transform.getTranslation(auxVector3_1);
 		AdditionalRenderData additionalRenderData = modelInstanceComponent.getModelInstance().getAdditionalRenderData();
@@ -442,7 +444,14 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	@Override
 	public boolean onCommandRun(final ConsoleCommands command, final ConsoleCommandResult consoleCommandResult) {
-		return false;
+		boolean result = false;
+		if (command == ConsoleCommandsList.FRUSTUM_CULLING) {
+			frustumCull = !frustumCull;
+			String msg = frustumCull ? String.format(MSG_FC, "activated") : String.format(MSG_FC, "disabled");
+			consoleCommandResult.setMessage(msg);
+			result = true;
+		}
+		return result;
 	}
 
 	@Override
