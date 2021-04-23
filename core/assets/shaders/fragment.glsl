@@ -128,6 +128,7 @@ uniform float u_fow_map[16];
 uniform int u_model_x;
 uniform float u_model_y;
 uniform int u_model_z;
+uniform int u_complete_black;
 
 uniform vec3 u_ambient_light;
 uniform vec4 u_color_when_outside;
@@ -180,144 +181,147 @@ void main() {
     #elif (!defined(specularFlag))
     #if defined(ambientFlag) && defined(separateAmbientFlag)
     #ifdef shadowMapFlag
+    if (u_complete_black == 0){
+        int numberOfRows = int(max(v_frag_pos.z, 0.0) - float(max(u_model_z, 0)))*u_model_width;
+        int horizontalOffset = int(max(v_frag_pos.x, 0.0)-float(max(u_model_x, 0)));
+        bool one_unit_size = u_model_width == 1 && u_model_depth == 1;
+        int nodeIndex = one_unit_size ? 0 : numberOfRows + horizontalOffset;
+        float bias = 0.1;
+        bool frag_outside;
+        if (one_unit_size){
+            frag_outside = v_frag_pos.x < float(u_model_x) - bias
+            || v_frag_pos.x - float(u_model_x) - bias >= float(u_model_width) + 2.0*bias
+            || v_frag_pos.z < float(u_model_z) - bias
+            || v_frag_pos.z - float(u_model_z) - bias >= float(u_model_depth) + 2.0*bias;
+        } else {
+            frag_outside = v_frag_pos.z - float(u_model_y) >= float(u_model_depth)
+            || v_frag_pos.x - float(u_model_x) >= float(u_model_width);
+        }
 
-    int numberOfRows = int(max(v_frag_pos.z, 0.0) - float(max(u_model_z, 0)))*u_model_width;
-    int horizontalOffset = int(max(v_frag_pos.x, 0.0)-float(max(u_model_x, 0)));
-    bool one_unit_size = u_model_width == 1 && u_model_depth == 1;
-    int nodeIndex = one_unit_size ? 0 : numberOfRows + horizontalOffset;
-    float bias = 0.1;
-    bool frag_outside;
-    if (one_unit_size){
-        frag_outside = v_frag_pos.x < float(u_model_x) - bias
-        || v_frag_pos.x - float(u_model_x) - bias >= float(u_model_width) + 2.0*bias
-        || v_frag_pos.z < float(u_model_z) - bias
-        || v_frag_pos.z - float(u_model_z) - bias >= float(u_model_depth) + 2.0*bias;
-    } else {
-        frag_outside = v_frag_pos.z - float(u_model_y) >= float(u_model_depth)
-        || v_frag_pos.x - float(u_model_x) >= float(u_model_width);
-    }
+        int frag_fow_value = (frag_outside) ? 1 : int(u_fow_map[nodeIndex]);
+        gl_FragColor.rgb = vec3(0.0);
+        if (u_model_width == 0 || (frag_fow_value > 0)){
+            bool skip_color_disabled = u_skip_color.r == 0.0 && u_skip_color.g == 0.0 && u_skip_color.b == 0.0;
 
-    int frag_fow_value = (frag_outside) ? 1 : int(u_fow_map[nodeIndex]);
-    gl_FragColor.rgb = vec3(0.0);
-    if (u_model_width == 0 || (frag_fow_value > 0)){
-        bool skip_color_disabled = u_skip_color.r == 0.0 && u_skip_color.g == 0.0 && u_skip_color.b == 0.0;
+            bool diff_than_skip_color =  modified_skip_color.r != diffuse.r
+            || modified_skip_color.g != diffuse.g
+            || modified_skip_color.b != diffuse.b;
 
-        bool diff_than_skip_color =  modified_skip_color.r != diffuse.r
-        || modified_skip_color.g != diffuse.g
-        || modified_skip_color.b != diffuse.b;
-
-        if (skip_color_disabled || diff_than_skip_color){
-            if (u_number_of_lights > -1){
-                for (int i = 0; i< u_number_of_lights; i++){
-                    vec3 light =u_lights_positions[i];
-                    vec3 sub = light.xyz - v_frag_pos.xyz;
-                    vec3 lightDir = normalize(sub);
-                    float distance = length(sub);
-                    vec2 extra = u_lights_extra_data[i];
-                    if (distance <= extra.y){
-                        float attenuation = 4.0 * extra.x / (1.0 + (0.01*distance) + (0.9*distance*distance));
-                        float dot_value = dot(v_normal, lightDir);
-                        float intensity = max(dot_value, 0.0);
-                        gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
+            if (skip_color_disabled || diff_than_skip_color){
+                if (u_number_of_lights > -1){
+                    for (int i = 0; i< u_number_of_lights; i++){
+                        vec3 light =u_lights_positions[i];
+                        vec3 sub = light.xyz - v_frag_pos.xyz;
+                        vec3 lightDir = normalize(sub);
+                        float distance = length(sub);
+                        vec2 extra = u_lights_extra_data[i];
+                        if (distance <= extra.y){
+                            float attenuation = 4.0 * extra.x / (1.0 + (0.01*distance) + (0.9*distance*distance));
+                            float dot_value = dot(v_normal, lightDir);
+                            float intensity = max(dot_value, 0.0);
+                            gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
+                        }
                     }
+                    gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;
                 }
-                gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;
+                gl_FragColor.rgb += diffuse.rgb * (u_ambient_light.rgb + v_lightDiffuse);
+            } else {
+                gl_FragColor.rgb = diffuse.rgb;
             }
-            gl_FragColor.rgb += diffuse.rgb * (u_ambient_light.rgb + v_lightDiffuse);
+
+            float flooredX = one_unit_size ? float(u_model_x) : floor(v_frag_pos.x);
+            float flooredZ = one_unit_size ? float(u_model_z) : floor(v_frag_pos.z);
+            if (u_apply_wall_ambient_occlusion == 1){
+                gl_FragColor.rgb *= min(1.0, v_frag_pos.y - u_model_y);
+            } else if (u_apply_floor_ambient_occlusion > 0) {
+
+                float strength = 8.0;
+                float diag = 1.2;
+                // East
+                if ((u_apply_floor_ambient_occlusion & 1) == 1){
+                    gl_FragColor.rgb *= min(strength*(flooredX + 1.0 - v_frag_pos.x), 1.0);
+                }
+
+                // South-East
+                if ((u_apply_floor_ambient_occlusion & 2) == 2){
+                    gl_FragColor.rgb *= min(strength*diag*length(vec3(flooredX+1.0, 0.0, flooredZ+1.0) - vec3(v_frag_pos.xyz)), 1.0);
+                }
+
+                // South
+                if ((u_apply_floor_ambient_occlusion & 4) == 4){
+                    gl_FragColor.rgb *= min(strength*(flooredZ + 1.0 - v_frag_pos.z), 1.0);
+                }
+
+                // South-West
+                if ((u_apply_floor_ambient_occlusion & 8) == 8){
+                    gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ+1.0)), 1.0);
+                }
+
+                // West
+                if ((u_apply_floor_ambient_occlusion & 16) == 16){
+                    gl_FragColor.rgb *= min(strength*(v_frag_pos.x - flooredX), 1.0);
+                }
+
+                // North-West
+                if ((u_apply_floor_ambient_occlusion & 32) == 32){
+                    gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ)), 1.0);
+                }
+
+                // North
+                if ((u_apply_floor_ambient_occlusion & 64) == 64){
+                    gl_FragColor.rgb *= min(strength*(v_frag_pos.z - flooredZ), 1.0);
+                }
+
+                // North-East
+                if ((u_apply_floor_ambient_occlusion & 128) == 128){
+                    gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)-vec3(flooredX+1.0, 0.0, flooredZ)), 1.0);
+                }
+            }
+            if (!frag_outside){
+                // Bottom-Right
+                if ((frag_fow_value & 2) == 0){
+                    gl_FragColor.rgb *= min(2.0*length(vec3(flooredX+1.0, 0.0, flooredZ+1.0) - vec3(v_frag_pos.xyz)), 1.0);
+                }
+                // Bottom
+                if ((frag_fow_value & 4) == 0){
+                    gl_FragColor.rgb *= vec3(min(2.0*(flooredZ + 1.0 - v_frag_pos.z), 1.0));
+                }
+                // Bottom-Left
+                if ((frag_fow_value & 8) == 0){
+                    gl_FragColor.rgb *= min(2.0*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ+1.0)), 1.0);
+                }
+                // Right
+                if ((frag_fow_value & 16) == 0){
+                    gl_FragColor.rgb *= vec3(min(2.0*(flooredX + 1.0 - v_frag_pos.x), 1.0));
+                }
+                // Left
+                if ((frag_fow_value & 32) == 0){
+                    gl_FragColor.rgb *= vec3(min(2.0*(v_frag_pos.x - flooredX), 1.0));
+                }
+                // Top-Right
+                if ((frag_fow_value & 64) == 0){
+                    gl_FragColor.rgb *= min(2.0*length(vec3(v_frag_pos.xyz)-vec3(flooredX+1.0, 0.0, flooredZ)), 1.0);
+                }
+                // Top
+                if ((frag_fow_value & 128) == 0){
+                    gl_FragColor.rgb *= vec3(min(2.0*(v_frag_pos.z - flooredZ), 1.0));
+                }
+                // Top-Left
+                if ((frag_fow_value & 256) == 0){
+                    gl_FragColor.rgb *= min(2.0*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ)), 1.0);
+                }
+
+            } else {
+                gl_FragColor.rgb *= u_color_when_outside.rgb;
+            }
         } else {
-            gl_FragColor.rgb = diffuse.rgb;
+            gl_FragColor.rgb = vec3(0.0);
         }
-
-        float flooredX = one_unit_size ? float(u_model_x) : floor(v_frag_pos.x);
-        float flooredZ = one_unit_size ? float(u_model_z) : floor(v_frag_pos.z);
-        if (u_apply_wall_ambient_occlusion == 1){
-            gl_FragColor.rgb *= min(1.0, v_frag_pos.y - u_model_y);
-        } else if (u_apply_floor_ambient_occlusion > 0) {
-
-            float strength = 8.0;
-            float diag = 1.2;
-            // East
-            if ((u_apply_floor_ambient_occlusion & 1) == 1){
-                gl_FragColor.rgb *= min(strength*(flooredX + 1.0 - v_frag_pos.x), 1.0);
-            }
-
-            // South-East
-            if ((u_apply_floor_ambient_occlusion & 2) == 2){
-                gl_FragColor.rgb *= min(strength*diag*length(vec3(flooredX+1.0, 0.0, flooredZ+1.0) - vec3(v_frag_pos.xyz)), 1.0);
-            }
-
-            // South
-            if ((u_apply_floor_ambient_occlusion & 4) == 4){
-                gl_FragColor.rgb *= min(strength*(flooredZ + 1.0 - v_frag_pos.z), 1.0);
-            }
-
-            // South-West
-            if ((u_apply_floor_ambient_occlusion & 8) == 8){
-                gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ+1.0)), 1.0);
-            }
-
-            // West
-            if ((u_apply_floor_ambient_occlusion & 16) == 16){
-                gl_FragColor.rgb *= min(strength*(v_frag_pos.x - flooredX), 1.0);
-            }
-
-            // North-West
-            if ((u_apply_floor_ambient_occlusion & 32) == 32){
-                gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ)), 1.0);
-            }
-
-            // North
-            if ((u_apply_floor_ambient_occlusion & 64) == 64){
-                gl_FragColor.rgb *= min(strength*(v_frag_pos.z - flooredZ), 1.0);
-            }
-
-            // North-East
-            if ((u_apply_floor_ambient_occlusion & 128) == 128){
-                gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)-vec3(flooredX+1.0, 0.0, flooredZ)), 1.0);
-            }
-        }
-        if (!frag_outside){
-            // Bottom-Right
-            if ((frag_fow_value & 2) == 0){
-                gl_FragColor.rgb *= min(2.0*length(vec3(flooredX+1.0, 0.0, flooredZ+1.0) - vec3(v_frag_pos.xyz)), 1.0);
-            }
-            // Bottom
-            if ((frag_fow_value & 4) == 0){
-                gl_FragColor.rgb *= vec3(min(2.0*(flooredZ + 1.0 - v_frag_pos.z), 1.0));
-            }
-            // Bottom-Left
-            if ((frag_fow_value & 8) == 0){
-                gl_FragColor.rgb *= min(2.0*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ+1.0)), 1.0);
-            }
-            // Right
-            if ((frag_fow_value & 16) == 0){
-                gl_FragColor.rgb *= vec3(min(2.0*(flooredX + 1.0 - v_frag_pos.x), 1.0));
-            }
-            // Left
-            if ((frag_fow_value & 32) == 0){
-                gl_FragColor.rgb *= vec3(min(2.0*(v_frag_pos.x - flooredX), 1.0));
-            }
-            // Top-Right
-            if ((frag_fow_value & 64) == 0){
-                gl_FragColor.rgb *= min(2.0*length(vec3(v_frag_pos.xyz)-vec3(flooredX+1.0, 0.0, flooredZ)), 1.0);
-            }
-            // Top
-            if ((frag_fow_value & 128) == 0){
-                gl_FragColor.rgb *= vec3(min(2.0*(v_frag_pos.z - flooredZ), 1.0));
-            }
-            // Top-Left
-            if ((frag_fow_value & 256) == 0){
-                gl_FragColor.rgb *= min(2.0*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ)), 1.0);
-            }
-
-        } else {
-            gl_FragColor.rgb *= u_color_when_outside.rgb;
+        if (u_number_of_lights == -1) {
+            gl_FragColor.rgb = diffuse.rgb + emissive.rgb;
         }
     } else {
         gl_FragColor.rgb = vec3(0.0);
-    }
-    if (u_number_of_lights == -1) {
-        gl_FragColor.rgb = diffuse.rgb + emissive.rgb;
     }
         #else
     gl_FragColor.rgb = (diffuse.rgb * (v_ambientLight + v_lightDiffuse)) + emissive.rgb;

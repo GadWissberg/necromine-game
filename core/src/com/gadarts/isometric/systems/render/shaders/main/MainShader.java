@@ -35,6 +35,7 @@ public class MainShader extends DefaultShader {
 	public static final String UNIFORM_APPLY_WALL_AMBIENT_OCCLUSION = "u_apply_wall_ambient_occlusion";
 	public static final String UNIFORM_APPLY_FLOOR_AMBIENT_OCCLUSION = "u_apply_floor_ambient_occlusion";
 	public static final String UNIFORM_SKIP_COLOR = "u_skip_color";
+	public static final String UNIFORM_COMPLETE_BLACK = "u_complete_black";
 	public static final int MAX_LIGHTS = 8;
 	public static final int LIGHT_EXTRA_DATA_SIZE = 2;
 	private static final Vector3 auxVector = new Vector3();
@@ -67,6 +68,7 @@ public class MainShader extends DefaultShader {
 	private int modelXLocation;
 	private int modelYLocation;
 	private int modelZLocation;
+	private int completeBlackLocation;
 
 	public MainShader(final Renderable renderable,
 					  final Config shaderConfig,
@@ -101,6 +103,7 @@ public class MainShader extends DefaultShader {
 		applyWallAmbientOcclusionLocation = program.getUniformLocation(UNIFORM_APPLY_WALL_AMBIENT_OCCLUSION);
 		applyFloorAmbientOcclusionLocation = program.getUniformLocation(UNIFORM_APPLY_FLOOR_AMBIENT_OCCLUSION);
 		skipColorLocation = program.getUniformLocation(UNIFORM_SKIP_COLOR);
+		completeBlackLocation = program.getUniformLocation(UNIFORM_COMPLETE_BLACK);
 	}
 
 	@Override
@@ -204,8 +207,19 @@ public class MainShader extends DefaultShader {
 					isWholeHidden &= !(fowMapValue == 1);
 				}
 				if (isWholeHidden) {
-					return true;
+					Entity entity = (Entity) renderable.userData;
+					boolean isFloor = ComponentsMapper.floor.has(entity);
+					ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
+					float height = modelInstanceComponent.getModelInstance().transform.getTranslation(auxVector).y;
+					if (!ComponentsMapper.wall.has(entity) && !(isFloor && height > 0)) {
+						return true;
+					} else {
+						program.setUniformi(completeBlackLocation, 1);
+					}
 				}
+			}
+			if (!isWholeHidden) {
+				program.setUniformi(completeBlackLocation, 0);
 			}
 			program.setUniformi(modelWidthLocation, width);
 			program.setUniformi(modelDepthLocation, depth);
