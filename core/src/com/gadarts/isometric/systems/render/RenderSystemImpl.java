@@ -98,12 +98,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void onPlayerSystemReady(final PlayerSystem playerSystem, final Entity player) {
 		addSystem(PlayerSystem.class, playerSystem);
-		drawFlags.setDrawFow(!ComponentsMapper.player.get(player).isDisabled());
 	}
 
 	@Override
 	public void onPlayerStatusChanged(final boolean disabled) {
-		drawFlags.setDrawFow(!disabled);
+
 	}
 
 	private void resetDisplay(@SuppressWarnings("SameParameterValue") final Color color) {
@@ -319,7 +318,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		if (drawFlags.isDrawEnemy() || !isEnemy) {
 			MapGraph map = services.getMap();
 			MapGraphNode characterNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_1));
-			if (!drawFlags.isDrawFow() || map.getFowMap()[characterNode.getRow()][characterNode.getCol()] == 1) {
+			if (map.getFowMap()[characterNode.getRow()][characterNode.getCol()] == 1) {
 				environment.getLightsRenderer().setDecalColorAccordingToLights(entity, environment);
 				decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
 				decalBatch.add(decal);
@@ -387,7 +386,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		addSystem(CameraSystem.class, cameraSystem);
 		camera = cameraSystem.getCamera();
 		GameAssetsManager assetManager = services.getAssetManager();
-		this.renderBatches = new RenderBatches(camera, assetManager, services.getMap(), drawFlags);
+		this.renderBatches = new RenderBatches(camera, assetManager, services.getMap());
 		environment.initialize(getEngine().getEntitiesFor(Family.all(LightComponent.class).get()));
 		systemReady();
 	}

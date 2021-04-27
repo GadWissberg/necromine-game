@@ -13,7 +13,6 @@ import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.model.AdditionalRenderData;
 import com.gadarts.isometric.components.model.GameModelInstance;
-import com.gadarts.isometric.systems.render.DrawFlags;
 import com.gadarts.isometric.systems.render.WorldEnvironment;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.necromine.assets.Assets;
@@ -53,7 +52,6 @@ public class MainShader extends DefaultShader {
 	private final float[] lightsExtraData = new float[MAX_LIGHTS * LIGHT_EXTRA_DATA_SIZE];
 	private final float[] fowMapArray = new float[MODEL_MAX_SIZE];
 	private final MapGraph map;
-	private final DrawFlags drawFlags;
 	private int lightsPositionsLocation;
 	private int lightsExtraDataLocation;
 	private int numberOfLightsLocation;
@@ -72,11 +70,9 @@ public class MainShader extends DefaultShader {
 
 	public MainShader(final Renderable renderable,
 					  final Config shaderConfig,
-					  final MapGraph map,
-					  final DrawFlags drawFlags) {
+					  final MapGraph map) {
 		super(renderable, shaderConfig);
 		this.map = map;
-		this.drawFlags = drawFlags;
 	}
 
 	@Override
@@ -181,52 +177,48 @@ public class MainShader extends DefaultShader {
 	}
 
 	private boolean applyFow(final Renderable renderable, final AdditionalRenderData additionalRenderData) {
-		if (!drawFlags.isDrawFow()) {
-			program.setUniformi(modelWidthLocation, 0);
-		} else {
-			Vector3 position = renderable.worldTransform.getTranslation(auxVector);
-			position.set(Math.max(position.x, 0), 0, Math.max(position.z, 0));
-			BoundingBox boundingBox = additionalRenderData.getBoundingBox(auxBoundingBox);
-			int width = MathUtils.ceil(boundingBox.getWidth());
-			int depth = MathUtils.ceil(boundingBox.getDepth());
-			int x = (int) (position.x - width / 2f);
-			int z = (int) (position.z - depth / 2f);
-			boolean isWholeHidden = true;
-			for (int row = 0; row < depth; row++) {
-				for (int col = 0; col < width; col++) {
-					int mapRow = Math.max(z + row, 0);
-					int mapCol = Math.max(x + col, 0);
-					boolean isValidCoordinate = mapRow < map.getDepth() && mapCol < map.getWidth();
-					int fowMapValue = isValidCoordinate ? map.getFowMap()[mapRow][mapCol] : 0;
-					int currentIndex = row * width + col;
-					if (fowMapValue == 1) {
-						fowMapArray[currentIndex] = calculateFowValueBasedOnNeighbours(mapRow, mapCol);
-					} else {
-						fowMapArray[currentIndex] = 0;
-					}
-					isWholeHidden &= !(fowMapValue == 1);
+		Vector3 position = renderable.worldTransform.getTranslation(auxVector);
+		position.set(Math.max(position.x, 0), 0, Math.max(position.z, 0));
+		BoundingBox boundingBox = additionalRenderData.getBoundingBox(auxBoundingBox);
+		int width = MathUtils.ceil(boundingBox.getWidth());
+		int depth = MathUtils.ceil(boundingBox.getDepth());
+		int x = (int) (position.x - width / 2f);
+		int z = (int) (position.z - depth / 2f);
+		boolean isWholeHidden = true;
+		for (int row = 0; row < depth; row++) {
+			for (int col = 0; col < width; col++) {
+				int mapRow = Math.max(z + row, 0);
+				int mapCol = Math.max(x + col, 0);
+				boolean isValidCoordinate = mapRow < map.getDepth() && mapCol < map.getWidth();
+				int fowMapValue = isValidCoordinate ? map.getFowMap()[mapRow][mapCol] : 0;
+				int currentIndex = row * width + col;
+				if (fowMapValue == 1) {
+					fowMapArray[currentIndex] = calculateFowValueBasedOnNeighbours(mapRow, mapCol);
+				} else {
+					fowMapArray[currentIndex] = 0;
 				}
-				if (isWholeHidden) {
-					Entity entity = (Entity) renderable.userData;
-					boolean isFloor = ComponentsMapper.floor.has(entity);
-					ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
-					float height = modelInstanceComponent.getModelInstance().transform.getTranslation(auxVector).y;
-					if (!ComponentsMapper.wall.has(entity) && !(isFloor && height > 0)) {
-						return true;
-					} else {
-						program.setUniformi(completeBlackLocation, 1);
-					}
+				isWholeHidden &= !(fowMapValue == 1);
+			}
+			if (isWholeHidden) {
+				Entity entity = (Entity) renderable.userData;
+				boolean isFloor = ComponentsMapper.floor.has(entity);
+				ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
+				float height = modelInstanceComponent.getModelInstance().transform.getTranslation(auxVector).y;
+				if (!ComponentsMapper.wall.has(entity) && !(isFloor && height > 0)) {
+					return true;
+				} else {
+					program.setUniformi(completeBlackLocation, 1);
 				}
 			}
-			if (!isWholeHidden) {
-				program.setUniformi(completeBlackLocation, 0);
-			}
-			program.setUniformi(modelWidthLocation, width);
-			program.setUniformi(modelDepthLocation, depth);
-			program.setUniformi(modelXLocation, x);
-			program.setUniformi(modelZLocation, z);
-			program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * depth);
 		}
+		if (!isWholeHidden) {
+			program.setUniformi(completeBlackLocation, 0);
+		}
+		program.setUniformi(modelWidthLocation, width);
+		program.setUniformi(modelDepthLocation, depth);
+		program.setUniformi(modelXLocation, x);
+		program.setUniformi(modelZLocation, z);
+		program.setUniform1fv(fowMapLocation, fowMapArray, 0, width * depth);
 		return false;
 	}
 

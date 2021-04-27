@@ -90,7 +90,6 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	private GameStage stage;
 	private ToolTipHandler toolTipHandler;
 	private boolean showBorders = DefaultGameSettings.DISPLAY_HUD_OUTLINES;
-	private DrawFlags drawFlags;
 	private Table menuTable;
 	private Entity cursor;
 	private float cursorFlickerChange = CURSOR_FLICKER_STEP;
@@ -152,7 +151,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	@Override
 	public void onRenderSystemReady(final RenderSystem renderSystem) {
-		drawFlags = renderSystem.getDrawFlags();
+		DrawFlags drawFlags = renderSystem.getDrawFlags();
 		toolTipHandler = new ToolTipHandler(stage, drawFlags);
 		toolTipHandler.addToolTipTable();
 	}
@@ -221,7 +220,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void colorizeCursor(final MapGraphNode newNode) {
-		if (!drawFlags.isDrawFow() || services.getMap().getFowMap()[newNode.getRow()][newNode.getCol()] == 1) {
+		if (services.getMap().getFowMap()[newNode.getRow()][newNode.getCol()] == 1) {
 			if (services.getMap().getAliveEnemyFromNode(enemiesEntities, newNode) != null) {
 				setCursorColor(CURSOR_ATTACK);
 			} else {
@@ -260,7 +259,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void userSelectedNodeToApplyTurn() {
 		MapGraphNode cursorNode = getCursorNode();
-		if (!drawFlags.isDrawFow() || services.getMap().getFowMap()[cursorNode.getRow()][cursorNode.getCol()] == 1) {
+		if (services.getMap().getFowMap()[cursorNode.getRow()][cursorNode.getCol()] == 1) {
 			for (HudSystemEventsSubscriber sub : subscribers) {
 				sub.onUserSelectedNodeToApplyTurn(cursorNode, attackNodesHandler);
 			}
