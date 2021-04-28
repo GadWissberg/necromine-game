@@ -6,10 +6,13 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.math.Bresenham2;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.ObstacleComponent;
@@ -27,6 +30,7 @@ import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.SoundPlayer;
+import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.assets.Assets;
@@ -52,6 +56,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private static final Rectangle auxRect = new Rectangle();
 	private static final float ENEMY_HALF_FOV_ANGLE = 75F;
 	private static final int NUMBER_OF_SKILL_FLOWER_LEAF = 8;
+	private static final Bresenham2 bresenham = new Bresenham2();
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
 	private TurnsSystem turnsSystem;
@@ -228,6 +233,9 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	private void checkLineOfSightForEnemy(final Entity enemy) {
 		if (!isTargetInFov(enemy)) return;
+		if (checkIfFloorNodesBlockSight(enemy)) {
+			return;
+		}
 		for (Entity wall : walls) {
 			if (checkIfWallBlocksLineOfSightToTarget(enemy, wall)) {
 				return;
@@ -235,6 +243,20 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 		awakeEnemy(enemy);
 		services.getSoundPlayer().playSound(Assets.Sounds.ENEMY_AWAKE);
+	}
+
+	private boolean checkIfFloorNodesBlockSight(Entity enemy) {
+		Vector2 pos = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
+		Entity target = ComponentsMapper.character.get(enemy).getTarget();
+		Vector2 targetPos = ComponentsMapper.characterDecal.get(target).getNodePosition(auxVector2_2);
+		Array<GridPoint2> nodes = bresenham.line((int) pos.x, (int) pos.y, (int) targetPos.x, (int) targetPos.y);
+		MapGraph map = services.getMap();
+		for (GridPoint2 n : nodes) {
+			if (map.getNode(n.x, n.y).getHeight() > map.getNode((int) pos.x, (int) pos.y).getHeight() + 1) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void awakeEnemy(final Entity enemy) {
