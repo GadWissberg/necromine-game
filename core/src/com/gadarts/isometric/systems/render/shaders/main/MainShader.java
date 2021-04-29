@@ -24,6 +24,7 @@ public class MainShader extends DefaultShader {
 	public static final String UNIFORM_LIGHTS_EXTRA_DATA = "u_lights_extra_data[0]";
 	public static final String UNIFORM_NUMBER_OF_LIGHTS = "u_number_of_lights";
 	public static final String UNIFORM_MODEL_WIDTH = "u_model_width";
+	public static final String UNIFORM_MODEL_HEIGHT = "u_model_height";
 	public static final String UNIFORM_MODEL_DEPTH = "u_model_depth";
 	public static final String UNIFORM_MODEL_X = "u_model_x";
 	public static final String UNIFORM_MODEL_Y = "u_model_y";
@@ -56,6 +57,7 @@ public class MainShader extends DefaultShader {
 	private int lightsExtraDataLocation;
 	private int numberOfLightsLocation;
 	private int modelWidthLocation;
+	private int modelHeightLocation;
 	private int modelDepthLocation;
 	private int fowMapLocation;
 	private int ambientLightLocation;
@@ -89,6 +91,7 @@ public class MainShader extends DefaultShader {
 		lightsExtraDataLocation = program.getUniformLocation(UNIFORM_LIGHTS_EXTRA_DATA);
 		numberOfLightsLocation = program.getUniformLocation(UNIFORM_NUMBER_OF_LIGHTS);
 		modelWidthLocation = program.getUniformLocation(UNIFORM_MODEL_WIDTH);
+		modelHeightLocation = program.getUniformLocation(UNIFORM_MODEL_HEIGHT);
 		modelDepthLocation = program.getUniformLocation(UNIFORM_MODEL_DEPTH);
 		modelXLocation = program.getUniformLocation(UNIFORM_MODEL_X);
 		modelYLocation = program.getUniformLocation(UNIFORM_MODEL_Y);
@@ -181,6 +184,7 @@ public class MainShader extends DefaultShader {
 		position.set(Math.max(position.x, 0), 0, Math.max(position.z, 0));
 		BoundingBox boundingBox = additionalRenderData.getBoundingBox(auxBoundingBox);
 		int width = MathUtils.ceil(boundingBox.getWidth());
+		int height = MathUtils.ceil(boundingBox.getHeight());
 		int depth = MathUtils.ceil(boundingBox.getDepth());
 		int x = (int) (position.x - width / 2f);
 		int z = (int) (position.z - depth / 2f);
@@ -203,8 +207,8 @@ public class MainShader extends DefaultShader {
 				Entity entity = (Entity) renderable.userData;
 				boolean isFloor = ComponentsMapper.floor.has(entity);
 				ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
-				float height = modelInstanceComponent.getModelInstance().transform.getTranslation(auxVector).y;
-				if (!ComponentsMapper.wall.has(entity) && !(isFloor && height > 0)) {
+				float y = modelInstanceComponent.getModelInstance().transform.getTranslation(auxVector).y;
+				if (!ComponentsMapper.wall.has(entity) && !(isFloor && y > 0)) {
 					return true;
 				} else {
 					program.setUniformi(completeBlackLocation, 1);
@@ -215,6 +219,7 @@ public class MainShader extends DefaultShader {
 			program.setUniformi(completeBlackLocation, 0);
 		}
 		program.setUniformi(modelWidthLocation, width);
+		program.setUniformi(modelHeightLocation, height);
 		program.setUniformi(modelDepthLocation, depth);
 		program.setUniformi(modelXLocation, x);
 		program.setUniformi(modelZLocation, z);

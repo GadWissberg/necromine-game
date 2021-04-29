@@ -123,6 +123,7 @@ uniform vec3 u_lights_positions[8];
 uniform vec2 u_lights_extra_data[8];
 uniform int u_number_of_lights;
 uniform int u_model_width;
+uniform int u_model_height;
 uniform int u_model_depth;
 uniform float u_fow_map[16];
 uniform int u_model_x;
@@ -232,7 +233,7 @@ void main() {
             float flooredX = one_unit_size ? float(u_model_x) : floor(v_frag_pos.x);
             float flooredZ = one_unit_size ? float(u_model_z) : floor(v_frag_pos.z);
             if (u_apply_wall_ambient_occlusion == 1){
-                gl_FragColor.rgb *= min(1.0, v_frag_pos.y - u_model_y);
+                gl_FragColor.rgb *= min(1.0, map(float(v_frag_pos.y - u_model_y), 0.0, float(u_model_height)/10.0, 0.0, 1.0));
             } else if (u_apply_floor_ambient_occlusion > 0) {
 
                 float strength = 8.0;
