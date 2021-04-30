@@ -1,6 +1,5 @@
 package com.gadarts.isometric.components.player;
 
-import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.components.GameComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import lombok.Getter;
@@ -22,9 +21,5 @@ public class PlayerComponent implements GameComponent {
 	public void init(final Weapon selectedWeapon, final CharacterAnimations general) {
 		this.generalAnimations = general;
 		storage.setSelectedWeapon(selectedWeapon);
-	}
-
-	public void onCollisionWithBullet(final Entity bullet) {
-
 	}
 }

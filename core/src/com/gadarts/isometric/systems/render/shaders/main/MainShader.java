@@ -19,25 +19,29 @@ import com.gadarts.necromine.assets.Assets;
 
 import java.util.List;
 
+/**
+ * Handles all main shader's uniforms.
+ */
 public class MainShader extends DefaultShader {
-	public static final String UNIFORM_LIGHTS_POSITIONS = "u_lights_positions[0]";
-	public static final String UNIFORM_LIGHTS_EXTRA_DATA = "u_lights_extra_data[0]";
-	public static final String UNIFORM_NUMBER_OF_LIGHTS = "u_number_of_lights";
-	public static final String UNIFORM_MODEL_WIDTH = "u_model_width";
-	public static final String UNIFORM_MODEL_HEIGHT = "u_model_height";
-	public static final String UNIFORM_MODEL_DEPTH = "u_model_depth";
-	public static final String UNIFORM_MODEL_X = "u_model_x";
-	public static final String UNIFORM_MODEL_Y = "u_model_y";
-	public static final String UNIFORM_MODEL_Z = "u_model_z";
-	public static final String UNIFORM_FOW_MAP = "u_fow_map[0]";
-	public static final String UNIFORM_AMBIENT_LIGHT = "u_ambient_light";
-	public static final String UNIFORM_COLOR_WHEN_OUTSIDE = "u_color_when_outside";
-	public static final String UNIFORM_APPLY_WALL_AMBIENT_OCCLUSION = "u_apply_wall_ambient_occlusion";
-	public static final String UNIFORM_APPLY_FLOOR_AMBIENT_OCCLUSION = "u_apply_floor_ambient_occlusion";
-	public static final String UNIFORM_SKIP_COLOR = "u_skip_color";
-	public static final String UNIFORM_COMPLETE_BLACK = "u_complete_black";
-	public static final int MAX_LIGHTS = 8;
-	public static final int LIGHT_EXTRA_DATA_SIZE = 2;
+
+	private static final String UNIFORM_LIGHTS_POSITIONS = "u_lights_positions[0]";
+	private static final String UNIFORM_LIGHTS_EXTRA_DATA = "u_lights_extra_data[0]";
+	private static final String UNIFORM_NUMBER_OF_LIGHTS = "u_number_of_lights";
+	private static final String UNIFORM_MODEL_WIDTH = "u_model_width";
+	private static final String UNIFORM_MODEL_HEIGHT = "u_model_height";
+	private static final String UNIFORM_MODEL_DEPTH = "u_model_depth";
+	private static final String UNIFORM_MODEL_X = "u_model_x";
+	private static final String UNIFORM_MODEL_Y = "u_model_y";
+	private static final String UNIFORM_MODEL_Z = "u_model_z";
+	private static final String UNIFORM_FOW_MAP = "u_fow_map[0]";
+	private static final String UNIFORM_AMBIENT_LIGHT = "u_ambient_light";
+	private static final String UNIFORM_COLOR_WHEN_OUTSIDE = "u_color_when_outside";
+	private static final String UNIFORM_APPLY_WALL_AMBIENT_OCCLUSION = "u_apply_wall_ambient_occlusion";
+	private static final String UNIFORM_APPLY_FLOOR_AMBIENT_OCCLUSION = "u_apply_floor_ambient_occlusion";
+	private static final String UNIFORM_SKIP_COLOR = "u_skip_color";
+	private static final String UNIFORM_COMPLETE_BLACK = "u_complete_black";
+	private static final int MAX_LIGHTS = 8;
+	private static final int LIGHT_EXTRA_DATA_SIZE = 2;
 	private static final Vector3 auxVector = new Vector3();
 	private static final int MODEL_MAX_SIZE = 4 * 4;
 	private static final int MASK_BOTTOM_RIGHT = 0B0000000010;
@@ -87,22 +91,42 @@ public class MainShader extends DefaultShader {
 	}
 
 	private void fetchUniformsLocations() {
+		fetchLightsRelatedUniformsLocations();
+		fetchModelSizeUniformsLocations();
+		fetchModelPositionUniformsLocations();
+		fowMapLocation = program.getUniformLocation(UNIFORM_FOW_MAP);
+		ambientLightLocation = program.getUniformLocation(UNIFORM_AMBIENT_LIGHT);
+		fetchColorRelatedUniformsLocations();
+		fetchAmbientOcclusionUniformsLocations();
+	}
+
+	private void fetchColorRelatedUniformsLocations() {
+		colorWhenOutsideLocation = program.getUniformLocation(UNIFORM_COLOR_WHEN_OUTSIDE);
+		skipColorLocation = program.getUniformLocation(UNIFORM_SKIP_COLOR);
+		completeBlackLocation = program.getUniformLocation(UNIFORM_COMPLETE_BLACK);
+	}
+
+	private void fetchLightsRelatedUniformsLocations() {
 		lightsPositionsLocation = program.getUniformLocation(UNIFORM_LIGHTS_POSITIONS);
 		lightsExtraDataLocation = program.getUniformLocation(UNIFORM_LIGHTS_EXTRA_DATA);
 		numberOfLightsLocation = program.getUniformLocation(UNIFORM_NUMBER_OF_LIGHTS);
-		modelWidthLocation = program.getUniformLocation(UNIFORM_MODEL_WIDTH);
-		modelHeightLocation = program.getUniformLocation(UNIFORM_MODEL_HEIGHT);
-		modelDepthLocation = program.getUniformLocation(UNIFORM_MODEL_DEPTH);
+	}
+
+	private void fetchAmbientOcclusionUniformsLocations() {
+		applyWallAmbientOcclusionLocation = program.getUniformLocation(UNIFORM_APPLY_WALL_AMBIENT_OCCLUSION);
+		applyFloorAmbientOcclusionLocation = program.getUniformLocation(UNIFORM_APPLY_FLOOR_AMBIENT_OCCLUSION);
+	}
+
+	private void fetchModelPositionUniformsLocations() {
 		modelXLocation = program.getUniformLocation(UNIFORM_MODEL_X);
 		modelYLocation = program.getUniformLocation(UNIFORM_MODEL_Y);
 		modelZLocation = program.getUniformLocation(UNIFORM_MODEL_Z);
-		fowMapLocation = program.getUniformLocation(UNIFORM_FOW_MAP);
-		ambientLightLocation = program.getUniformLocation(UNIFORM_AMBIENT_LIGHT);
-		colorWhenOutsideLocation = program.getUniformLocation(UNIFORM_COLOR_WHEN_OUTSIDE);
-		applyWallAmbientOcclusionLocation = program.getUniformLocation(UNIFORM_APPLY_WALL_AMBIENT_OCCLUSION);
-		applyFloorAmbientOcclusionLocation = program.getUniformLocation(UNIFORM_APPLY_FLOOR_AMBIENT_OCCLUSION);
-		skipColorLocation = program.getUniformLocation(UNIFORM_SKIP_COLOR);
-		completeBlackLocation = program.getUniformLocation(UNIFORM_COMPLETE_BLACK);
+	}
+
+	private void fetchModelSizeUniformsLocations() {
+		modelWidthLocation = program.getUniformLocation(UNIFORM_MODEL_WIDTH);
+		modelHeightLocation = program.getUniformLocation(UNIFORM_MODEL_HEIGHT);
+		modelDepthLocation = program.getUniformLocation(UNIFORM_MODEL_DEPTH);
 	}
 
 	@Override

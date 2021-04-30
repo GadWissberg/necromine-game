@@ -14,11 +14,6 @@ public class CharacterHealthData {
 		lastDamage = TimeUtils.millis();
 	}
 
-	public void reset() {
-		hp = 0;
-		lastDamage = 0;
-	}
-
 	public void init(final int initialHp) {
 		this.initialHp = initialHp;
 		this.hp = initialHp;
