@@ -145,12 +145,11 @@ uniform PointLight u_pointLights[numPointLights];
 #ifdef shadowMapFlag
 uniform mat4 u_shadowMapProjViewTrans;
 varying vec3 v_shadowMapUv;
-#define separateAmbientFlag
 #endif//shadowMapFlag
 
-#if defined(ambientFlag) && defined(separateAmbientFlag)
+#if defined(ambientFlag)
 varying vec3 v_ambientLight;
-#endif//separateAmbientFlag
+#endif
 
 #endif// lightingFlag
 
@@ -213,12 +212,7 @@ void main() {
     #endif// sphericalHarmonicsFlag
 
     #ifdef ambientFlag
-    #ifdef separateAmbientFlag
-    v_ambientLight = ambientLight;
-    v_lightDiffuse = vec3(0.0);
-    #else
     v_lightDiffuse = ambientLight;
-    #endif//separateAmbientFlag
     #else
     v_lightDiffuse = vec3(0.0);
     #endif//ambientFlag
