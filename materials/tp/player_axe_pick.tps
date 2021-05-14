@@ -181,86 +181,206 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../sprites/player/axe-pick/attack_east_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_east_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_east_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_north_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_north_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_north_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_north_east_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_north_east_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_north_east_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_north_west_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_north_west_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_north_west_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_south_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_south_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_south_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_south_east_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_south_east_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_south_east_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_south_west_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_south_west_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_south_west_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_west_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_west_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/attack_west_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_east_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_east_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_north_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_north_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_north_east_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_north_east_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_north_west_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_north_west_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_south_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_south_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_south_east_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_south_east_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_south_west_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_south_west_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_west_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/idle_west_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/pain_east.png</key>
-            <key type="filename">../sprites/player/axe-pick/pain_north.png</key>
-            <key type="filename">../sprites/player/axe-pick/pain_north_east.png</key>
-            <key type="filename">../sprites/player/axe-pick/pain_north_west.png</key>
-            <key type="filename">../sprites/player/axe-pick/pain_south.png</key>
-            <key type="filename">../sprites/player/axe-pick/pain_south_east.png</key>
-            <key type="filename">../sprites/player/axe-pick/pain_south_west.png</key>
-            <key type="filename">../sprites/player/axe-pick/pain_west.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_east_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_east_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_east_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_east_3.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_north_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_north_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_north_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_north_3.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_north_east_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_north_east_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_north_east_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_north_east_3.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_north_west_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_north_west_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_north_west_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_north_west_3.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_south_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_south_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_south_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_south_3.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_south_east_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_south_east_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_south_east_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_south_east_3.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_south_west_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_south_west_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_south_west_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_south_west_3.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_west_0.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_west_1.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_west_2.png</key>
-            <key type="filename">../sprites/player/axe-pick/run_west_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_east_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_east_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_east_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_east_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_east_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_east_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_east_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_east_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_west_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_west_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_west_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_north_west_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_east_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_east_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_east_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_east_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_west_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_west_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_west_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_south_west_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_west_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_west_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_west_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/attack/attack_west_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_east_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_east_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_north_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_north_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_north_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_north_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_north_east_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_north_east_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_north_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_north_west_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_north_west_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_south_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_south_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_south_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_south_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_south_east_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_south_east_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_south_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_south_west_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_south_west_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_west_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/idle/idle_west_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/pain/pain_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/pain/pain_north_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/pain/pain_north_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/pain/pain_north_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/pain/pain_south_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/pain/pain_south_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/pain/pain_south_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/pain/pain_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_east_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_east_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_east_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_east_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_east_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_east_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_east_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_east_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_east_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_east_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_east_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_east_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_east_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_east_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_west_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_west_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_west_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_west_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_west_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_west_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_north_west_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_east_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_east_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_east_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_east_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_east_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_east_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_east_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_west_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_west_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_west_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_west_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_west_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_west_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_south_west_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_west_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_west_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_west_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_west_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_west_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_west_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/run/run_west_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_east_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_east_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_east_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_east_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_east_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_east_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_east_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_east_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_east_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_east_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_east_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_east_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_east_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_east_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_west_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_west_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_west_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_west_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_west_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_west_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_north_west_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_east_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_east_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_east_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_east_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_east_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_east_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_east_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_east_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_west_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_west_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_west_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_west_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_west_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_west_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_south_west_7.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_west_0.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_west_1.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_west_2.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_west_3.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_west_4.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_west_5.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_west_6.png</key>
+            <key type="filename">../models/player_new_new/sprites/axe/walk/walk_west_7.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -278,86 +398,206 @@
         </map>
         <key>fileList</key>
         <array>
-            <filename>../sprites/player/axe-pick/attack_east_0.png</filename>
-            <filename>../sprites/player/axe-pick/attack_east_1.png</filename>
-            <filename>../sprites/player/axe-pick/attack_east_2.png</filename>
-            <filename>../sprites/player/axe-pick/attack_north_0.png</filename>
-            <filename>../sprites/player/axe-pick/attack_north_1.png</filename>
-            <filename>../sprites/player/axe-pick/attack_north_2.png</filename>
-            <filename>../sprites/player/axe-pick/attack_north_east_0.png</filename>
-            <filename>../sprites/player/axe-pick/attack_north_east_1.png</filename>
-            <filename>../sprites/player/axe-pick/attack_north_east_2.png</filename>
-            <filename>../sprites/player/axe-pick/attack_north_west_0.png</filename>
-            <filename>../sprites/player/axe-pick/attack_north_west_1.png</filename>
-            <filename>../sprites/player/axe-pick/attack_north_west_2.png</filename>
-            <filename>../sprites/player/axe-pick/attack_south_0.png</filename>
-            <filename>../sprites/player/axe-pick/attack_south_1.png</filename>
-            <filename>../sprites/player/axe-pick/attack_south_2.png</filename>
-            <filename>../sprites/player/axe-pick/attack_south_east_0.png</filename>
-            <filename>../sprites/player/axe-pick/attack_south_east_1.png</filename>
-            <filename>../sprites/player/axe-pick/attack_south_east_2.png</filename>
-            <filename>../sprites/player/axe-pick/attack_south_west_0.png</filename>
-            <filename>../sprites/player/axe-pick/attack_south_west_1.png</filename>
-            <filename>../sprites/player/axe-pick/attack_south_west_2.png</filename>
-            <filename>../sprites/player/axe-pick/attack_west_0.png</filename>
-            <filename>../sprites/player/axe-pick/attack_west_1.png</filename>
-            <filename>../sprites/player/axe-pick/attack_west_2.png</filename>
-            <filename>../sprites/player/axe-pick/idle_east_0.png</filename>
-            <filename>../sprites/player/axe-pick/idle_east_1.png</filename>
-            <filename>../sprites/player/axe-pick/idle_north_0.png</filename>
-            <filename>../sprites/player/axe-pick/idle_north_1.png</filename>
-            <filename>../sprites/player/axe-pick/idle_north_east_0.png</filename>
-            <filename>../sprites/player/axe-pick/idle_north_east_1.png</filename>
-            <filename>../sprites/player/axe-pick/idle_north_west_0.png</filename>
-            <filename>../sprites/player/axe-pick/idle_north_west_1.png</filename>
-            <filename>../sprites/player/axe-pick/idle_south_0.png</filename>
-            <filename>../sprites/player/axe-pick/idle_south_1.png</filename>
-            <filename>../sprites/player/axe-pick/idle_south_east_0.png</filename>
-            <filename>../sprites/player/axe-pick/idle_south_east_1.png</filename>
-            <filename>../sprites/player/axe-pick/idle_south_west_0.png</filename>
-            <filename>../sprites/player/axe-pick/idle_south_west_1.png</filename>
-            <filename>../sprites/player/axe-pick/idle_west_0.png</filename>
-            <filename>../sprites/player/axe-pick/idle_west_1.png</filename>
-            <filename>../sprites/player/axe-pick/pain_east.png</filename>
-            <filename>../sprites/player/axe-pick/pain_north.png</filename>
-            <filename>../sprites/player/axe-pick/pain_north_east.png</filename>
-            <filename>../sprites/player/axe-pick/pain_north_west.png</filename>
-            <filename>../sprites/player/axe-pick/pain_south.png</filename>
-            <filename>../sprites/player/axe-pick/pain_south_east.png</filename>
-            <filename>../sprites/player/axe-pick/pain_south_west.png</filename>
-            <filename>../sprites/player/axe-pick/pain_west.png</filename>
-            <filename>../sprites/player/axe-pick/run_east_0.png</filename>
-            <filename>../sprites/player/axe-pick/run_east_1.png</filename>
-            <filename>../sprites/player/axe-pick/run_east_2.png</filename>
-            <filename>../sprites/player/axe-pick/run_east_3.png</filename>
-            <filename>../sprites/player/axe-pick/run_north_0.png</filename>
-            <filename>../sprites/player/axe-pick/run_north_1.png</filename>
-            <filename>../sprites/player/axe-pick/run_north_2.png</filename>
-            <filename>../sprites/player/axe-pick/run_north_3.png</filename>
-            <filename>../sprites/player/axe-pick/run_north_east_0.png</filename>
-            <filename>../sprites/player/axe-pick/run_north_east_1.png</filename>
-            <filename>../sprites/player/axe-pick/run_north_east_2.png</filename>
-            <filename>../sprites/player/axe-pick/run_north_east_3.png</filename>
-            <filename>../sprites/player/axe-pick/run_north_west_0.png</filename>
-            <filename>../sprites/player/axe-pick/run_north_west_1.png</filename>
-            <filename>../sprites/player/axe-pick/run_north_west_2.png</filename>
-            <filename>../sprites/player/axe-pick/run_north_west_3.png</filename>
-            <filename>../sprites/player/axe-pick/run_south_0.png</filename>
-            <filename>../sprites/player/axe-pick/run_south_1.png</filename>
-            <filename>../sprites/player/axe-pick/run_south_2.png</filename>
-            <filename>../sprites/player/axe-pick/run_south_3.png</filename>
-            <filename>../sprites/player/axe-pick/run_south_east_0.png</filename>
-            <filename>../sprites/player/axe-pick/run_south_east_1.png</filename>
-            <filename>../sprites/player/axe-pick/run_south_east_2.png</filename>
-            <filename>../sprites/player/axe-pick/run_south_east_3.png</filename>
-            <filename>../sprites/player/axe-pick/run_south_west_0.png</filename>
-            <filename>../sprites/player/axe-pick/run_south_west_1.png</filename>
-            <filename>../sprites/player/axe-pick/run_south_west_2.png</filename>
-            <filename>../sprites/player/axe-pick/run_south_west_3.png</filename>
-            <filename>../sprites/player/axe-pick/run_west_0.png</filename>
-            <filename>../sprites/player/axe-pick/run_west_1.png</filename>
-            <filename>../sprites/player/axe-pick/run_west_2.png</filename>
-            <filename>../sprites/player/axe-pick/run_west_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_east_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_east_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_east_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_east_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_east_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_east_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_east_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_east_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_west_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_west_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_west_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_north_west_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_east_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_east_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_east_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_east_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_west_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_west_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_west_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_south_west_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_west_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_west_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_west_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/attack/attack_west_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_east_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_east_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_north_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_north_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_north_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_north_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_north_east_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_north_east_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_north_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_north_west_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_north_west_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_south_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_south_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_south_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_south_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_south_east_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_south_east_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_south_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_south_west_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_south_west_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_west_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/idle/idle_west_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/pain/pain_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/pain/pain_north_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/pain/pain_north_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/pain/pain_north_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/pain/pain_south_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/pain/pain_south_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/pain/pain_south_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/pain/pain_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_east_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_east_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_east_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_east_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_east_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_east_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_east_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_east_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_east_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_east_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_east_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_east_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_east_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_east_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_west_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_west_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_west_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_west_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_west_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_west_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_north_west_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_east_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_east_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_east_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_east_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_east_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_east_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_east_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_west_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_west_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_west_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_west_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_west_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_west_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_south_west_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_west_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_west_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_west_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_west_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_west_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_west_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/run/run_west_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_east_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_east_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_east_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_east_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_east_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_east_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_east_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_east_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_east_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_east_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_east_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_east_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_east_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_east_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_west_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_west_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_west_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_west_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_west_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_west_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_north_west_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_east_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_east_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_east_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_east_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_east_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_east_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_east_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_east_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_west_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_west_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_west_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_west_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_west_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_west_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_south_west_7.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_west_0.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_west_1.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_west_2.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_west_3.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_west_4.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_west_5.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_west_6.png</filename>
+            <filename>../models/player_new_new/sprites/axe/walk/walk_west_7.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
