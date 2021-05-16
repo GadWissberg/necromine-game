@@ -12,7 +12,7 @@ public class BattleScreen implements Screen, GlobalGameService {
 	private final SystemsHandler systemsHandler;
 
 	public BattleScreen() {
-		services = new GameServices(this, false, "city");
+		services = new GameServices(this, false, "coalmine");
 		systemsHandler = new SystemsHandler(services);
 		services.init();
 	}
