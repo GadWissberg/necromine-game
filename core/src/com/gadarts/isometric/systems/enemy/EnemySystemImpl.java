@@ -6,20 +6,15 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
-import com.badlogic.gdx.math.Bresenham2;
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.data.CharacterHealthData;
-import com.gadarts.isometric.components.decal.HudDecalComponent;
 import com.gadarts.isometric.components.decal.RelatedDecal;
+import com.gadarts.isometric.components.decal.SimpleDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterSystem;
@@ -200,9 +195,9 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	private void onFrameChangedOfRun(final Entity entity) {
 		Vector3 position = ComponentsMapper.characterDecal.get(entity).getDecal().getPosition();
-		HudDecalComponent hudDecalComponent = ComponentsMapper.simpleDecal.get(entity);
-		hudDecalComponent.getDecal().setPosition(position.x, SKILL_FLOWER_HEIGHT, position.z);
-		List<RelatedDecal> relatedDecals = hudDecalComponent.getRelatedDecals();
+		SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
+		simpleDecalComponent.getDecal().setPosition(position.x, SKILL_FLOWER_HEIGHT, position.z);
+		List<RelatedDecal> relatedDecals = simpleDecalComponent.getRelatedDecals();
 		for (RelatedDecal decal : relatedDecals) {
 			if (decal.isVisible()) {
 				decal.setPosition(position.x, SKILL_FLOWER_HEIGHT, position.z);

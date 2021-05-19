@@ -6,7 +6,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
-import com.gadarts.isometric.components.decal.HudDecalComponent;
+import com.gadarts.isometric.components.decal.SimpleDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import lombok.Getter;
 
@@ -20,7 +20,7 @@ public class RenderSystemRelatedEntities {
 	public RenderSystemRelatedEntities(final Engine engine) {
 		modelInstanceEntities = engine.getEntitiesFor(Family.all(ModelInstanceComponent.class).get());
 		characterDecalsEntities = engine.getEntitiesFor(Family.all(CharacterDecalComponent.class).get());
-		simpleDecalsEntities = engine.getEntitiesFor(Family.all(HudDecalComponent.class).get());
+		simpleDecalsEntities = engine.getEntitiesFor(Family.all(SimpleDecalComponent.class).get());
 		enemyEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 	}
 }

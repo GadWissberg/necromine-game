@@ -25,8 +25,8 @@ import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
-import com.gadarts.isometric.components.decal.HudDecalComponent;
 import com.gadarts.isometric.components.decal.RelatedDecal;
+import com.gadarts.isometric.components.decal.SimpleDecalComponent;
 import com.gadarts.isometric.components.model.AdditionalRenderData;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.services.GameServices;
@@ -174,25 +174,33 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private void renderSimpleDecals() {
 		DecalBatch decalBatch = renderBatches.getDecalBatch();
 		for (Entity entity : renderSystemRelatedEntities.getSimpleDecalsEntities()) {
-			renderHudDecal(decalBatch, entity);
+			renderSimpleDecal(decalBatch, entity);
 		}
 		decalBatch.flush();
 	}
 
-	private void renderHudDecal(final DecalBatch decalBatch, final Entity entity) {
-		HudDecalComponent hudDecal = ComponentsMapper.simpleDecal.get(entity);
-		if (hudDecal.isVisible()) {
-			Decal decal = hudDecal.getDecal();
-			MapGraphNode node = services.getMap().getNode((int) decal.getPosition().x, (int) decal.getPosition().z);
-			if (!hudDecal.isAffectedByFow() || isOutsideFow(node)) {
-				faceDecalToCamera(hudDecal, decal);
-				decalBatch.add(decal);
-				renderRelatedDecals(decalBatch, hudDecal);
+	private void renderSimpleDecal(final DecalBatch decalBatch, final Entity entity) {
+		SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
+		if (simpleDecalComponent.isVisible()) {
+			Vector3 position = simpleDecalComponent.getDecal().getPosition();
+			MapGraphNode node = services.getMap().getNode((int) position.x, (int) position.z);
+			if (!simpleDecalComponent.isAffectedByFow() || isOutsideFow(node)) {
+				handleSimpleDecalAnimation(entity, simpleDecalComponent.getDecal());
+				faceDecalToCamera(simpleDecalComponent, simpleDecalComponent.getDecal());
+				decalBatch.add(simpleDecalComponent.getDecal());
+				renderRelatedDecals(decalBatch, simpleDecalComponent);
 			}
 		}
 	}
 
-	private void renderRelatedDecals(final DecalBatch decalBatch, final HudDecalComponent hudDecal) {
+	private void handleSimpleDecalAnimation(final Entity entity, final Decal decal) {
+		if (ComponentsMapper.animation.has(entity)) {
+			AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
+			decal.setTextureRegion(animationComponent.calculateFrame());
+		}
+	}
+
+	private void renderRelatedDecals(final DecalBatch decalBatch, final SimpleDecalComponent hudDecal) {
 		List<RelatedDecal> relatedDecals = hudDecal.getRelatedDecals();
 		if (!relatedDecals.isEmpty()) {
 			for (RelatedDecal relatedDecal : relatedDecals) {
@@ -208,15 +216,15 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		return services.getMap().getFowMap()[node.getRow()][node.getCol()] != 0;
 	}
 
-	private void faceDecalToCamera(final HudDecalComponent simpleDecal, final Decal decal) {
+	private void faceDecalToCamera(final SimpleDecalComponent simpleDecal, final Decal decal) {
 		if (simpleDecal.isBillboard()) {
 			decal.lookAt(auxVector3_1.set(decal.getPosition()).sub(camera.direction), camera.up);
 		}
 	}
 
 	private void renderSkillFlowerText(final Entity entity, final SpriteBatch spriteBatch) {
-		HudDecalComponent hudDecalComponent = ComponentsMapper.simpleDecal.get(entity);
-		Vector3 screenPos = camera.project(auxVector3_1.set(hudDecalComponent.getDecal().getPosition()));
+		SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
+		Vector3 screenPos = camera.project(auxVector3_1.set(simpleDecalComponent.getDecal().getPosition()));
 		stringBuilder.setLength(0);
 		String text = stringBuilder.append(ComponentsMapper.enemy.get(entity).getSkill()).toString();
 		skillFlowerGlyph.setText(skillFlowerFont, text);

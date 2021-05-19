@@ -13,7 +13,7 @@ public class AnimationComponent implements GameComponent {
 	@Getter
 	private boolean doingReverse;
 
-	private CharacterAnimation animation;
+	private Animation<TextureAtlas.AtlasRegion> animation;
 	private double stateTime;
 	private long lastFrameChange;
 
@@ -23,7 +23,7 @@ public class AnimationComponent implements GameComponent {
 		stateTime = 0;
 	}
 
-	public void init(final float frameDuration, final CharacterAnimation animation) {
+	public void init(final float frameDuration, final Animation<TextureAtlas.AtlasRegion> animation) {
 		this.animation = animation;
 		animation.setFrameDuration(frameDuration);
 	}

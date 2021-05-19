@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class HudDecalComponent implements GameComponent {
+public class SimpleDecalComponent implements GameComponent {
 	private Decal decal;
 	private boolean billboard;
 

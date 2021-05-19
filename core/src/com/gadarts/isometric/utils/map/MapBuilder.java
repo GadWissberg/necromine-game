@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -19,6 +21,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.gadarts.isometric.components.ComponentsMapper;
@@ -28,8 +31,8 @@ import com.gadarts.isometric.components.character.CharacterSkillsParameters;
 import com.gadarts.isometric.components.character.data.CharacterData;
 import com.gadarts.isometric.components.character.data.CharacterSoundData;
 import com.gadarts.isometric.components.character.data.CharacterSpriteData;
-import com.gadarts.isometric.components.decal.HudDecalComponent;
 import com.gadarts.isometric.components.decal.RelatedDecal;
+import com.gadarts.isometric.components.decal.SimpleDecalComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
@@ -45,10 +48,8 @@ import com.gadarts.necromine.assets.Assets.FloorsTextures;
 import com.gadarts.necromine.assets.Assets.Sounds;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.assets.MapJsonKeys;
-import com.gadarts.necromine.model.EnvironmentDefinitions;
-import com.gadarts.necromine.model.MapNodeData;
-import com.gadarts.necromine.model.MapNodesTypes;
-import com.gadarts.necromine.model.Wall;
+import com.gadarts.necromine.assets.definitions.AtlasDefinition;
+import com.gadarts.necromine.model.*;
 import com.gadarts.necromine.model.characters.*;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import com.google.gson.Gson;
@@ -303,7 +304,21 @@ public final class MapBuilder implements Disposable {
 			JsonObject envJsonObject = element.getAsJsonObject();
 			MapCoord coord = new MapCoord(envJsonObject.get(ROW).getAsInt(), envJsonObject.get(COL).getAsInt());
 			inflateEnvComponents(mapGraph, builder, envJsonObject, coord);
-			builder.finishAndAddToEngine();
+			Entity entity = builder.finishAndAddToEngine();
+			GameModelInstance modelInstance = ComponentsMapper.modelInstance.get(entity).getModelInstance();
+			Vector3 position = modelInstance.transform.getTranslation(auxVector3_1);
+			EnvironmentDefinitions type = EnvironmentDefinitions.values()[envJsonObject.get(TYPE).getAsInt()];
+			RelativeBillboard relativeBillboard = type.getRelativeBillboard();
+			Optional.ofNullable(relativeBillboard).ifPresent(r -> {
+				AtlasDefinition atlasDefinition = r.getBillboard();
+				TextureAtlas atlas = assetManager.getAtlas(atlasDefinition);
+				Array<TextureAtlas.AtlasRegion> f = atlas.findRegions(atlasDefinition.getName().toLowerCase());
+				Animation<TextureAtlas.AtlasRegion> a = new Animation<>(r.getFrameDuration(), f, PlayMode.LOOP);
+				EntityBuilder.beginBuildingEntity(engine)
+						.addSimpleDecalComponent(position.add(r.getRelativePosition(auxVector3_2)), f.get(0), true)
+						.addAnimationComponent(r.getFrameDuration(), a)
+						.finishAndAddToEngine();
+			});
 		});
 	}
 
@@ -641,25 +656,25 @@ public final class MapBuilder implements Disposable {
 		entityBuilder.addSimpleDecalComponent(position, skillFlowerTexture, true, true);
 		Entity entity = entityBuilder.finishAndAddToEngine();
 		ComponentsMapper.character.get(entity).setTarget(player);
-		HudDecalComponent hudDecalComponent = entity.getComponent(HudDecalComponent.class);
-		hudDecalComponent.setAffectedByFow(true);
-		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_1, position);
-		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_2, position);
-		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_3, position);
-		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_4, position);
-		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_5, position);
-		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_6, position);
-		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_7, position);
-		addSkillFlowerDecal(hudDecalComponent, Assets.UiTextures.SKILL_FLOWER_8, position);
+		SimpleDecalComponent simpleDecalComponent = entity.getComponent(SimpleDecalComponent.class);
+		simpleDecalComponent.setAffectedByFow(true);
+		addSkillFlowerDecal(simpleDecalComponent, Assets.UiTextures.SKILL_FLOWER_1, position);
+		addSkillFlowerDecal(simpleDecalComponent, Assets.UiTextures.SKILL_FLOWER_2, position);
+		addSkillFlowerDecal(simpleDecalComponent, Assets.UiTextures.SKILL_FLOWER_3, position);
+		addSkillFlowerDecal(simpleDecalComponent, Assets.UiTextures.SKILL_FLOWER_4, position);
+		addSkillFlowerDecal(simpleDecalComponent, Assets.UiTextures.SKILL_FLOWER_5, position);
+		addSkillFlowerDecal(simpleDecalComponent, Assets.UiTextures.SKILL_FLOWER_6, position);
+		addSkillFlowerDecal(simpleDecalComponent, Assets.UiTextures.SKILL_FLOWER_7, position);
+		addSkillFlowerDecal(simpleDecalComponent, Assets.UiTextures.SKILL_FLOWER_8, position);
 	}
 
-	private void addSkillFlowerDecal(final HudDecalComponent hudDecalComponent,
+	private void addSkillFlowerDecal(final SimpleDecalComponent simpleDecalComponent,
 									 final Assets.UiTextures skillFlower,
 									 final Vector3 position) {
 		RelatedDecal skillFlowerDecal = RelatedDecal.newDecal(new TextureRegion(assetManager.getTexture(skillFlower)), true);
 		skillFlowerDecal.setScale(BILLBOARD_SCALE);
 		skillFlowerDecal.setPosition(position);
-		hudDecalComponent.addRelatedDecal(skillFlowerDecal);
+		simpleDecalComponent.addRelatedDecal(skillFlowerDecal);
 	}
 
 	private void inflatePlayer(final JsonObject characterJsonObject, final MapGraph mapGraph) {

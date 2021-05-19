@@ -3,29 +3,21 @@ package com.gadarts.isometric.utils;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
-import com.gadarts.isometric.components.AnimationComponent;
-import com.gadarts.isometric.components.BulletComponent;
-import com.gadarts.isometric.components.CollisionComponent;
-import com.gadarts.isometric.components.CursorComponent;
-import com.gadarts.isometric.components.FloorComponent;
-import com.gadarts.isometric.components.LightComponent;
-import com.gadarts.isometric.components.ModelInstanceComponent;
-import com.gadarts.isometric.components.ObstacleComponent;
-import com.gadarts.isometric.components.PickUpComponent;
-import com.gadarts.isometric.components.WallComponent;
+import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterSkillsParameters;
 import com.gadarts.isometric.components.character.data.CharacterSoundData;
 import com.gadarts.isometric.components.character.data.CharacterSpriteData;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
-import com.gadarts.isometric.components.decal.HudDecalComponent;
+import com.gadarts.isometric.components.decal.SimpleDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.Item;
@@ -40,6 +32,8 @@ import com.gadarts.necromine.model.pickups.ItemDefinition;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import lombok.AccessLevel;
 import lombok.Setter;
+
+import java.util.Optional;
 
 import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_SCALE;
 
@@ -153,24 +147,38 @@ public final class EntityBuilder {
 												 final boolean visible,
 												 final boolean billboard) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
-		HudDecalComponent hudDecalComponent = engine.createComponent(HudDecalComponent.class);
-		hudDecalComponent.init(texture, visible, billboard);
-		Decal decal = hudDecalComponent.getDecal();
+		SimpleDecalComponent simpleDecalComponent = engine.createComponent(SimpleDecalComponent.class);
+		simpleDecalComponent.init(texture, visible, billboard);
+		Decal decal = simpleDecalComponent.getDecal();
 		decal.setPosition(position);
 		decal.setScale(BILLBOARD_SCALE);
-		currentEntity.add(hudDecalComponent);
+		currentEntity.add(simpleDecalComponent);
 		return instance;
+	}
+
+
+	public EntityBuilder addSimpleDecalComponent(final Vector3 position,
+												 final TextureRegion textureRegion,
+												 final boolean billboard) {
+		return addSimpleDecalComponent(position, textureRegion, Vector3.Zero, billboard);
 	}
 
 	public EntityBuilder addSimpleDecalComponent(final Vector3 position,
 												 final TextureRegion textureRegion,
 												 final Vector3 rotationAroundAxis) {
+		return addSimpleDecalComponent(position, textureRegion, rotationAroundAxis, false);
+	}
+
+	public EntityBuilder addSimpleDecalComponent(final Vector3 position,
+												 final TextureRegion textureRegion,
+												 final Vector3 rotationAroundAxis,
+												 final boolean billboard) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
-		HudDecalComponent hudDecalComponent = engine.createComponent(HudDecalComponent.class);
-		hudDecalComponent.init(textureRegion, true);
-		Decal decal = hudDecalComponent.getDecal();
+		SimpleDecalComponent simpleDecalComponent = engine.createComponent(SimpleDecalComponent.class);
+		simpleDecalComponent.init(textureRegion, true, billboard);
+		Decal decal = simpleDecalComponent.getDecal();
 		initializeSimpleDecal(position, rotationAroundAxis, decal);
-		currentEntity.add(hudDecalComponent);
+		currentEntity.add(simpleDecalComponent);
 		return instance;
 	}
 
@@ -198,6 +206,15 @@ public final class EntityBuilder {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		AnimationComponent animComponent = engine.createComponent(AnimationComponent.class);
 		currentEntity.add(animComponent);
+		return instance;
+	}
+
+	public EntityBuilder addAnimationComponent(final float frameDuration,
+											   final Animation<TextureAtlas.AtlasRegion> animation) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
+		AnimationComponent animComponent = engine.createComponent(AnimationComponent.class);
+		currentEntity.add(animComponent);
+		Optional.ofNullable(animation).ifPresent(a -> animComponent.init(frameDuration, animation));
 		return instance;
 	}
 
