@@ -231,9 +231,11 @@ public class MainShader extends DefaultShader {
 	private void insertToLightsArray(final List<Entity> nearbyLights, final int i) {
 		insertLightPositionToArray(nearbyLights, i);
 		LightComponent lightComponent = ComponentsMapper.light.get(nearbyLights.get(i));
-		int extraDataIndex = i * LIGHT_EXTRA_DATA_SIZE;
-		lightsExtraData[extraDataIndex] = lightComponent.getIntensity();
-		lightsExtraData[extraDataIndex + 1] = lightComponent.getRadius();
+		int extraDataInd = i * LIGHT_EXTRA_DATA_SIZE;
+		float intensity = lightComponent.getIntensity();
+		float radius = lightComponent.getRadius();
+		lightsExtraData[extraDataInd] = intensity;
+		lightsExtraData[extraDataInd + 1] = radius;
 	}
 
 	private void insertLightPositionToArray(final List<Entity> nearbyLights, final int i) {

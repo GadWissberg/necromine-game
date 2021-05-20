@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.LightComponent;
 import com.gadarts.isometric.components.ModelInstanceComponent;
@@ -24,10 +25,14 @@ import static java.lang.Math.min;
  * Responsible to gather nearby lights to entity and apply them on it.
  */
 public class LightsRenderer {
+	public static final float FLICKER_RANDOM_MIN = 0.95F;
+	public static final float FLICKER_RANDOM_MAX = 1.05F;
+
 	private static final float DECAL_DARKEST_COLOR = 0.2f;
 	private static final float DECAL_LIGHT_OFFSET = 1.5f;
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
+	private static final int FLICKER_MAX_INTERVAL = 150;
 
 	private final ImmutableArray<Entity> lightsEntities;
 
@@ -127,6 +132,18 @@ public class LightsRenderer {
 		float distance = lightPosition.dst(modelPosition);
 		if (distance <= LightComponent.LIGHT_MAX_RADIUS) {
 			nearbyLights.add(light);
+		}
+	}
+
+	public void updateLights() {
+		for (Entity light : lightsEntities) {
+			LightComponent lc = ComponentsMapper.light.get(light);
+			long now = TimeUtils.millis();
+			if (lc.isFlicker() && now >= lc.getNextFlicker()) {
+				lc.setIntensity(MathUtils.random(FLICKER_RANDOM_MIN, FLICKER_RANDOM_MAX) * lc.getOriginalIntensity());
+				lc.setRadius(MathUtils.random(FLICKER_RANDOM_MIN, FLICKER_RANDOM_MAX) * lc.getOriginalRadius());
+				lc.setNextFlicker(now + MathUtils.random(FLICKER_MAX_INTERVAL));
+			}
 		}
 	}
 }

@@ -129,7 +129,8 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	public MapGraphNode getNode(final int col, final int row) {
-		return nodes.get(Math.min(col, mapSize.width - 1) * mapSize.width + Math.min(row, mapSize.height - 1));
+		int index = Math.max(Math.min(col, mapSize.width - 1) * mapSize.width + Math.min(row, mapSize.height - 1), 0);
+		return nodes.get(index);
 	}
 
 	private void addConnection(final MapGraphNode source, final int xOffset, final int yOffset) {

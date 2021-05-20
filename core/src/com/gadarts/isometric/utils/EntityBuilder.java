@@ -280,9 +280,16 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addLightComponent(final Vector3 position, final float intensity, final float radius) {
+		return addLightComponent(position, intensity, radius, false);
+	}
+
+	public EntityBuilder addLightComponent(final Vector3 position,
+										   final float intensity,
+										   final float radius,
+										   final boolean flicker) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		LightComponent lightComponent = engine.createComponent(LightComponent.class);
-		lightComponent.init(position, intensity, radius);
+		lightComponent.init(position, intensity, radius, flicker);
 		currentEntity.add(lightComponent);
 		return instance;
 	}

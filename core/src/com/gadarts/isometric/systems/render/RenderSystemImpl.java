@@ -136,6 +136,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			renderModelsShadows(camera, lastRotationPoint);
 		}
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
+		environment.getLightsRenderer().updateLights();
 		renderModels(camera, renderBatches.getModelBatch(), true, true);
 		renderDecals(deltaTime, camera);
 		renderSkillFlowersText();

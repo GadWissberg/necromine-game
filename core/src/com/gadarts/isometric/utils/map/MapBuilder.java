@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -48,7 +47,6 @@ import com.gadarts.necromine.assets.Assets.FloorsTextures;
 import com.gadarts.necromine.assets.Assets.Sounds;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.assets.MapJsonKeys;
-import com.gadarts.necromine.assets.definitions.AtlasDefinition;
 import com.gadarts.necromine.model.*;
 import com.gadarts.necromine.model.characters.*;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
@@ -64,6 +62,7 @@ import java.util.Base64;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import static com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP;
 import static com.gadarts.isometric.components.FloorComponent.*;
 import static com.gadarts.necromine.assets.Assets.FloorsTextures.MISSING;
 import static com.gadarts.necromine.assets.MapJsonKeys.*;
@@ -310,16 +309,25 @@ public final class MapBuilder implements Disposable {
 			EnvironmentDefinitions type = EnvironmentDefinitions.values()[envJsonObject.get(TYPE).getAsInt()];
 			RelativeBillboard relativeBillboard = type.getRelativeBillboard();
 			Optional.ofNullable(relativeBillboard).ifPresent(r -> {
-				AtlasDefinition atlasDefinition = r.getBillboard();
-				TextureAtlas atlas = assetManager.getAtlas(atlasDefinition);
-				Array<TextureAtlas.AtlasRegion> f = atlas.findRegions(atlasDefinition.getName().toLowerCase());
-				Animation<TextureAtlas.AtlasRegion> a = new Animation<>(r.getFrameDuration(), f, PlayMode.LOOP);
-				EntityBuilder.beginBuildingEntity(engine)
-						.addSimpleDecalComponent(position.add(r.getRelativePosition(auxVector3_2)), f.get(0), true)
-						.addAnimationComponent(r.getFrameDuration(), a)
-						.finishAndAddToEngine();
+				TextureAtlas atlas = assetManager.getAtlas(r.getBillboard());
+				Array<TextureAtlas.AtlasRegion> f = atlas.findRegions(r.getBillboard().getName().toLowerCase());
+				Direction dir = Direction.values()[envJsonObject.get(DIRECTION).getAsInt()];
+				float degrees = dir.getDirection(auxVector2_1).angleDeg() + ((dir == NORTH || dir == SOUTH) ? 180 : 0);
+				Vector3 relativePosition = r.getRelativePosition(auxVector3_2).rotate(Vector3.Y, degrees);
+				addRelativeBillboardEntity(position, r, f, relativePosition);
 			});
 		});
+	}
+
+	private void addRelativeBillboardEntity(final Vector3 position,
+											final RelativeBillboard r,
+											final Array<TextureAtlas.AtlasRegion> f,
+											final Vector3 relativePosition) {
+		Entity entity = EntityBuilder.beginBuildingEntity(engine)
+				.addSimpleDecalComponent(position.add(relativePosition), f.get(0), true)
+				.addAnimationComponent(r.getFrameDuration(), new Animation<>(r.getFrameDuration(), f, LOOP))
+				.finishAndAddToEngine();
+		ComponentsMapper.simpleDecal.get(entity).setAffectedByFow(true);
 	}
 
 	private void inflateEnvComponents(final MapGraph mapGraph,
@@ -343,7 +351,7 @@ public final class MapBuilder implements Disposable {
 			float degrees = Direction.values()[dirIndex].getDirection(auxVector2_1).angleDeg();
 			Vector3 relativePosition = l.getRelativePosition(auxVector3_2).rotate(Vector3.Y, degrees);
 			Vector3 position = mi.transform.getTranslation(auxVector3_1).add(relativePosition);
-			builder.addLightComponent(position, l.getIntensity(), l.getRadius());
+			builder.addLightComponent(position, l.getIntensity(), l.getRadius(), l.isFlicker());
 		});
 	}
 
