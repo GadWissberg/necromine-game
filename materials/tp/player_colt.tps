@@ -26,7 +26,7 @@
             </struct>
         </array>
         <key>allowRotation</key>
-        <true/>
+        <false/>
         <key>shapeDebug</key>
         <false/>
         <key>dpi</key>
@@ -102,7 +102,7 @@
         <key>algorithmSettings</key>
         <struct type="AlgorithmSettings">
             <key>algorithm</key>
-            <enum type="AlgorithmSettings::AlgorithmId">Grid</enum>
+            <enum type="AlgorithmSettings::AlgorithmId">MaxRects</enum>
             <key>freeSizeMode</key>
             <enum type="AlgorithmSettings::AlgorithmFreeSizeMode">Best</enum>
             <key>sizeConstraints</key>
@@ -163,7 +163,7 @@
             <key>scaleMode</key>
             <enum type="ScaleMode">Smooth</enum>
             <key>extrude</key>
-            <uint>0</uint>
+            <uint>1</uint>
             <key>trimThreshold</key>
             <uint>1</uint>
             <key>trimMargin</key>
@@ -181,94 +181,182 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../sprites/player/colt/attack_east_0.png</key>
-            <key type="filename">../sprites/player/colt/attack_east_1.png</key>
-            <key type="filename">../sprites/player/colt/attack_east_2.png</key>
-            <key type="filename">../sprites/player/colt/attack_east_3.png</key>
-            <key type="filename">../sprites/player/colt/attack_north_0.png</key>
-            <key type="filename">../sprites/player/colt/attack_north_1.png</key>
-            <key type="filename">../sprites/player/colt/attack_north_2.png</key>
-            <key type="filename">../sprites/player/colt/attack_north_3.png</key>
-            <key type="filename">../sprites/player/colt/attack_north_east_0.png</key>
-            <key type="filename">../sprites/player/colt/attack_north_east_1.png</key>
-            <key type="filename">../sprites/player/colt/attack_north_east_2.png</key>
-            <key type="filename">../sprites/player/colt/attack_north_east_3.png</key>
-            <key type="filename">../sprites/player/colt/attack_north_west_0.png</key>
-            <key type="filename">../sprites/player/colt/attack_north_west_1.png</key>
-            <key type="filename">../sprites/player/colt/attack_north_west_2.png</key>
-            <key type="filename">../sprites/player/colt/attack_north_west_3.png</key>
-            <key type="filename">../sprites/player/colt/attack_south_0.png</key>
-            <key type="filename">../sprites/player/colt/attack_south_1.png</key>
-            <key type="filename">../sprites/player/colt/attack_south_2.png</key>
-            <key type="filename">../sprites/player/colt/attack_south_3.png</key>
-            <key type="filename">../sprites/player/colt/attack_south_east_0.png</key>
-            <key type="filename">../sprites/player/colt/attack_south_east_1.png</key>
-            <key type="filename">../sprites/player/colt/attack_south_east_2.png</key>
-            <key type="filename">../sprites/player/colt/attack_south_east_3.png</key>
-            <key type="filename">../sprites/player/colt/attack_south_west_0.png</key>
-            <key type="filename">../sprites/player/colt/attack_south_west_1.png</key>
-            <key type="filename">../sprites/player/colt/attack_south_west_2.png</key>
-            <key type="filename">../sprites/player/colt/attack_south_west_3.png</key>
-            <key type="filename">../sprites/player/colt/attack_west_0.png</key>
-            <key type="filename">../sprites/player/colt/attack_west_1.png</key>
-            <key type="filename">../sprites/player/colt/attack_west_2.png</key>
-            <key type="filename">../sprites/player/colt/attack_west_3.png</key>
-            <key type="filename">../sprites/player/colt/idle_east_0.png</key>
-            <key type="filename">../sprites/player/colt/idle_east_1.png</key>
-            <key type="filename">../sprites/player/colt/idle_north_0.png</key>
-            <key type="filename">../sprites/player/colt/idle_north_1.png</key>
-            <key type="filename">../sprites/player/colt/idle_north_east_0.png</key>
-            <key type="filename">../sprites/player/colt/idle_north_east_1.png</key>
-            <key type="filename">../sprites/player/colt/idle_north_west_0.png</key>
-            <key type="filename">../sprites/player/colt/idle_north_west_1.png</key>
-            <key type="filename">../sprites/player/colt/idle_south_0.png</key>
-            <key type="filename">../sprites/player/colt/idle_south_1.png</key>
-            <key type="filename">../sprites/player/colt/idle_south_east_0.png</key>
-            <key type="filename">../sprites/player/colt/idle_south_east_1.png</key>
-            <key type="filename">../sprites/player/colt/idle_south_west_0.png</key>
-            <key type="filename">../sprites/player/colt/idle_south_west_1.png</key>
-            <key type="filename">../sprites/player/colt/idle_west_0.png</key>
-            <key type="filename">../sprites/player/colt/idle_west_1.png</key>
-            <key type="filename">../sprites/player/colt/pain_east_0.png</key>
-            <key type="filename">../sprites/player/colt/pain_north_0.png</key>
-            <key type="filename">../sprites/player/colt/pain_north_east_0.png</key>
-            <key type="filename">../sprites/player/colt/pain_north_west_0.png</key>
-            <key type="filename">../sprites/player/colt/pain_south_0.png</key>
-            <key type="filename">../sprites/player/colt/pain_south_east_0.png</key>
-            <key type="filename">../sprites/player/colt/pain_south_west_0.png</key>
-            <key type="filename">../sprites/player/colt/pain_west_0.png</key>
-            <key type="filename">../sprites/player/colt/run_east_0.png</key>
-            <key type="filename">../sprites/player/colt/run_east_1.png</key>
-            <key type="filename">../sprites/player/colt/run_east_2.png</key>
-            <key type="filename">../sprites/player/colt/run_east_3.png</key>
-            <key type="filename">../sprites/player/colt/run_north_0.png</key>
-            <key type="filename">../sprites/player/colt/run_north_1.png</key>
-            <key type="filename">../sprites/player/colt/run_north_2.png</key>
-            <key type="filename">../sprites/player/colt/run_north_3.png</key>
-            <key type="filename">../sprites/player/colt/run_north_east_0.png</key>
-            <key type="filename">../sprites/player/colt/run_north_east_1.png</key>
-            <key type="filename">../sprites/player/colt/run_north_east_2.png</key>
-            <key type="filename">../sprites/player/colt/run_north_east_3.png</key>
-            <key type="filename">../sprites/player/colt/run_north_west_0.png</key>
-            <key type="filename">../sprites/player/colt/run_north_west_1.png</key>
-            <key type="filename">../sprites/player/colt/run_north_west_2.png</key>
-            <key type="filename">../sprites/player/colt/run_north_west_3.png</key>
-            <key type="filename">../sprites/player/colt/run_south_0.png</key>
-            <key type="filename">../sprites/player/colt/run_south_1.png</key>
-            <key type="filename">../sprites/player/colt/run_south_2.png</key>
-            <key type="filename">../sprites/player/colt/run_south_3.png</key>
-            <key type="filename">../sprites/player/colt/run_south_east_0.png</key>
-            <key type="filename">../sprites/player/colt/run_south_east_1.png</key>
-            <key type="filename">../sprites/player/colt/run_south_east_2.png</key>
-            <key type="filename">../sprites/player/colt/run_south_east_3.png</key>
-            <key type="filename">../sprites/player/colt/run_south_west_0.png</key>
-            <key type="filename">../sprites/player/colt/run_south_west_1.png</key>
-            <key type="filename">../sprites/player/colt/run_south_west_2.png</key>
-            <key type="filename">../sprites/player/colt/run_south_west_3.png</key>
-            <key type="filename">../sprites/player/colt/run_west_0.png</key>
-            <key type="filename">../sprites/player/colt/run_west_1.png</key>
-            <key type="filename">../sprites/player/colt/run_west_2.png</key>
-            <key type="filename">../sprites/player/colt/run_west_3.png</key>
+            <key type="filename">../sprites/player/pistol/attack_east_0.png</key>
+            <key type="filename">../sprites/player/pistol/attack_east_1.png</key>
+            <key type="filename">../sprites/player/pistol/attack_east_2.png</key>
+            <key type="filename">../sprites/player/pistol/attack_east_3.png</key>
+            <key type="filename">../sprites/player/pistol/attack_east_4.png</key>
+            <key type="filename">../sprites/player/pistol/attack_east_5.png</key>
+            <key type="filename">../sprites/player/pistol/attack_east_6.png</key>
+            <key type="filename">../sprites/player/pistol/attack_east_7.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_0.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_1.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_2.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_3.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_4.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_5.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_6.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_7.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_east_0.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_east_1.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_east_2.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_east_3.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_east_4.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_east_5.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_east_6.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_east_7.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_west_0.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_west_1.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_west_2.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_west_3.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_west_4.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_west_5.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_west_6.png</key>
+            <key type="filename">../sprites/player/pistol/attack_north_west_7.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_0.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_1.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_2.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_3.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_4.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_5.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_6.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_7.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_east_0.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_east_1.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_east_2.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_east_3.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_east_4.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_east_5.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_east_6.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_east_7.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_west_0.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_west_1.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_west_2.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_west_3.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_west_4.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_west_5.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_west_6.png</key>
+            <key type="filename">../sprites/player/pistol/attack_south_west_7.png</key>
+            <key type="filename">../sprites/player/pistol/attack_west_0.png</key>
+            <key type="filename">../sprites/player/pistol/attack_west_1.png</key>
+            <key type="filename">../sprites/player/pistol/attack_west_2.png</key>
+            <key type="filename">../sprites/player/pistol/attack_west_3.png</key>
+            <key type="filename">../sprites/player/pistol/attack_west_4.png</key>
+            <key type="filename">../sprites/player/pistol/attack_west_5.png</key>
+            <key type="filename">../sprites/player/pistol/attack_west_6.png</key>
+            <key type="filename">../sprites/player/pistol/attack_west_7.png</key>
+            <key type="filename">../sprites/player/pistol/idle_east_0.png</key>
+            <key type="filename">../sprites/player/pistol/idle_east_1.png</key>
+            <key type="filename">../sprites/player/pistol/idle_east_2.png</key>
+            <key type="filename">../sprites/player/pistol/idle_east_3.png</key>
+            <key type="filename">../sprites/player/pistol/idle_north_0.png</key>
+            <key type="filename">../sprites/player/pistol/idle_north_1.png</key>
+            <key type="filename">../sprites/player/pistol/idle_north_2.png</key>
+            <key type="filename">../sprites/player/pistol/idle_north_3.png</key>
+            <key type="filename">../sprites/player/pistol/idle_north_east_0.png</key>
+            <key type="filename">../sprites/player/pistol/idle_north_east_1.png</key>
+            <key type="filename">../sprites/player/pistol/idle_north_east_2.png</key>
+            <key type="filename">../sprites/player/pistol/idle_north_east_3.png</key>
+            <key type="filename">../sprites/player/pistol/idle_north_west_0.png</key>
+            <key type="filename">../sprites/player/pistol/idle_north_west_1.png</key>
+            <key type="filename">../sprites/player/pistol/idle_north_west_2.png</key>
+            <key type="filename">../sprites/player/pistol/idle_north_west_3.png</key>
+            <key type="filename">../sprites/player/pistol/idle_south_0.png</key>
+            <key type="filename">../sprites/player/pistol/idle_south_1.png</key>
+            <key type="filename">../sprites/player/pistol/idle_south_2.png</key>
+            <key type="filename">../sprites/player/pistol/idle_south_3.png</key>
+            <key type="filename">../sprites/player/pistol/idle_south_east_0.png</key>
+            <key type="filename">../sprites/player/pistol/idle_south_east_1.png</key>
+            <key type="filename">../sprites/player/pistol/idle_south_east_2.png</key>
+            <key type="filename">../sprites/player/pistol/idle_south_east_3.png</key>
+            <key type="filename">../sprites/player/pistol/idle_south_west_0.png</key>
+            <key type="filename">../sprites/player/pistol/idle_south_west_1.png</key>
+            <key type="filename">../sprites/player/pistol/idle_south_west_2.png</key>
+            <key type="filename">../sprites/player/pistol/idle_south_west_3.png</key>
+            <key type="filename">../sprites/player/pistol/idle_west_0.png</key>
+            <key type="filename">../sprites/player/pistol/idle_west_1.png</key>
+            <key type="filename">../sprites/player/pistol/idle_west_2.png</key>
+            <key type="filename">../sprites/player/pistol/idle_west_3.png</key>
+            <key type="filename">../sprites/player/pistol/pain_east_0.png</key>
+            <key type="filename">../sprites/player/pistol/pain_east_1.png</key>
+            <key type="filename">../sprites/player/pistol/pain_north_0.png</key>
+            <key type="filename">../sprites/player/pistol/pain_north_1.png</key>
+            <key type="filename">../sprites/player/pistol/pain_north_east_0.png</key>
+            <key type="filename">../sprites/player/pistol/pain_north_east_1.png</key>
+            <key type="filename">../sprites/player/pistol/pain_north_west_0.png</key>
+            <key type="filename">../sprites/player/pistol/pain_north_west_1.png</key>
+            <key type="filename">../sprites/player/pistol/pain_south_0.png</key>
+            <key type="filename">../sprites/player/pistol/pain_south_1.png</key>
+            <key type="filename">../sprites/player/pistol/pain_south_east_0.png</key>
+            <key type="filename">../sprites/player/pistol/pain_south_east_1.png</key>
+            <key type="filename">../sprites/player/pistol/pain_south_west_0.png</key>
+            <key type="filename">../sprites/player/pistol/pain_south_west_1.png</key>
+            <key type="filename">../sprites/player/pistol/pain_west_0.png</key>
+            <key type="filename">../sprites/player/pistol/pain_west_1.png</key>
+            <key type="filename">../sprites/player/pistol/run_east_0.png</key>
+            <key type="filename">../sprites/player/pistol/run_east_1.png</key>
+            <key type="filename">../sprites/player/pistol/run_east_2.png</key>
+            <key type="filename">../sprites/player/pistol/run_east_3.png</key>
+            <key type="filename">../sprites/player/pistol/run_east_4.png</key>
+            <key type="filename">../sprites/player/pistol/run_east_5.png</key>
+            <key type="filename">../sprites/player/pistol/run_east_6.png</key>
+            <key type="filename">../sprites/player/pistol/run_east_7.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_0.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_1.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_2.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_3.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_4.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_5.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_6.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_7.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_east_0.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_east_1.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_east_2.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_east_3.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_east_4.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_east_5.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_east_6.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_east_7.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_west_0.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_west_1.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_west_2.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_west_3.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_west_4.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_west_5.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_west_6.png</key>
+            <key type="filename">../sprites/player/pistol/run_north_west_7.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_0.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_1.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_2.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_3.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_4.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_5.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_6.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_7.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_east_0.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_east_1.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_east_2.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_east_3.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_east_4.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_east_5.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_east_6.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_east_7.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_west_0.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_west_1.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_west_2.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_west_3.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_west_4.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_west_5.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_west_6.png</key>
+            <key type="filename">../sprites/player/pistol/run_south_west_7.png</key>
+            <key type="filename">../sprites/player/pistol/run_west_0.png</key>
+            <key type="filename">../sprites/player/pistol/run_west_1.png</key>
+            <key type="filename">../sprites/player/pistol/run_west_2.png</key>
+            <key type="filename">../sprites/player/pistol/run_west_3.png</key>
+            <key type="filename">../sprites/player/pistol/run_west_4.png</key>
+            <key type="filename">../sprites/player/pistol/run_west_5.png</key>
+            <key type="filename">../sprites/player/pistol/run_west_6.png</key>
+            <key type="filename">../sprites/player/pistol/run_west_7.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -280,116 +368,188 @@
                 <rect>32,32,64,64</rect>
                 <key>scale9Paddings</key>
                 <rect>32,32,64,64</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">../sprites/player/colt/bullet.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>48,8,96,16</rect>
-                <key>scale9Paddings</key>
-                <rect>48,8,96,16</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
         </map>
         <key>fileList</key>
         <array>
-            <filename>../sprites/player/colt/attack_east_0.png</filename>
-            <filename>../sprites/player/colt/attack_east_1.png</filename>
-            <filename>../sprites/player/colt/attack_east_2.png</filename>
-            <filename>../sprites/player/colt/attack_east_3.png</filename>
-            <filename>../sprites/player/colt/attack_north_0.png</filename>
-            <filename>../sprites/player/colt/attack_north_1.png</filename>
-            <filename>../sprites/player/colt/attack_north_2.png</filename>
-            <filename>../sprites/player/colt/attack_north_3.png</filename>
-            <filename>../sprites/player/colt/attack_north_east_0.png</filename>
-            <filename>../sprites/player/colt/attack_north_east_1.png</filename>
-            <filename>../sprites/player/colt/attack_north_east_2.png</filename>
-            <filename>../sprites/player/colt/attack_north_east_3.png</filename>
-            <filename>../sprites/player/colt/attack_north_west_0.png</filename>
-            <filename>../sprites/player/colt/attack_north_west_1.png</filename>
-            <filename>../sprites/player/colt/attack_north_west_2.png</filename>
-            <filename>../sprites/player/colt/attack_north_west_3.png</filename>
-            <filename>../sprites/player/colt/attack_south_0.png</filename>
-            <filename>../sprites/player/colt/attack_south_1.png</filename>
-            <filename>../sprites/player/colt/attack_south_2.png</filename>
-            <filename>../sprites/player/colt/attack_south_3.png</filename>
-            <filename>../sprites/player/colt/attack_south_east_0.png</filename>
-            <filename>../sprites/player/colt/attack_south_east_1.png</filename>
-            <filename>../sprites/player/colt/attack_south_east_2.png</filename>
-            <filename>../sprites/player/colt/attack_south_east_3.png</filename>
-            <filename>../sprites/player/colt/attack_south_west_0.png</filename>
-            <filename>../sprites/player/colt/attack_south_west_1.png</filename>
-            <filename>../sprites/player/colt/attack_south_west_2.png</filename>
-            <filename>../sprites/player/colt/attack_south_west_3.png</filename>
-            <filename>../sprites/player/colt/attack_west_0.png</filename>
-            <filename>../sprites/player/colt/attack_west_1.png</filename>
-            <filename>../sprites/player/colt/attack_west_2.png</filename>
-            <filename>../sprites/player/colt/attack_west_3.png</filename>
-            <filename>../sprites/player/colt/idle_east_0.png</filename>
-            <filename>../sprites/player/colt/idle_east_1.png</filename>
-            <filename>../sprites/player/colt/idle_north_0.png</filename>
-            <filename>../sprites/player/colt/idle_north_1.png</filename>
-            <filename>../sprites/player/colt/idle_north_east_0.png</filename>
-            <filename>../sprites/player/colt/idle_north_east_1.png</filename>
-            <filename>../sprites/player/colt/idle_north_west_0.png</filename>
-            <filename>../sprites/player/colt/idle_north_west_1.png</filename>
-            <filename>../sprites/player/colt/idle_south_0.png</filename>
-            <filename>../sprites/player/colt/idle_south_1.png</filename>
-            <filename>../sprites/player/colt/idle_south_east_0.png</filename>
-            <filename>../sprites/player/colt/idle_south_east_1.png</filename>
-            <filename>../sprites/player/colt/idle_south_west_0.png</filename>
-            <filename>../sprites/player/colt/idle_south_west_1.png</filename>
-            <filename>../sprites/player/colt/idle_west_0.png</filename>
-            <filename>../sprites/player/colt/idle_west_1.png</filename>
-            <filename>../sprites/player/colt/pain_east_0.png</filename>
-            <filename>../sprites/player/colt/pain_north_0.png</filename>
-            <filename>../sprites/player/colt/pain_north_east_0.png</filename>
-            <filename>../sprites/player/colt/pain_north_west_0.png</filename>
-            <filename>../sprites/player/colt/pain_south_0.png</filename>
-            <filename>../sprites/player/colt/pain_south_east_0.png</filename>
-            <filename>../sprites/player/colt/pain_south_west_0.png</filename>
-            <filename>../sprites/player/colt/pain_west_0.png</filename>
-            <filename>../sprites/player/colt/run_east_0.png</filename>
-            <filename>../sprites/player/colt/run_east_1.png</filename>
-            <filename>../sprites/player/colt/run_east_2.png</filename>
-            <filename>../sprites/player/colt/run_east_3.png</filename>
-            <filename>../sprites/player/colt/run_north_0.png</filename>
-            <filename>../sprites/player/colt/run_north_1.png</filename>
-            <filename>../sprites/player/colt/run_north_2.png</filename>
-            <filename>../sprites/player/colt/run_north_3.png</filename>
-            <filename>../sprites/player/colt/run_north_east_0.png</filename>
-            <filename>../sprites/player/colt/run_north_east_1.png</filename>
-            <filename>../sprites/player/colt/run_north_east_2.png</filename>
-            <filename>../sprites/player/colt/run_north_east_3.png</filename>
-            <filename>../sprites/player/colt/run_north_west_0.png</filename>
-            <filename>../sprites/player/colt/run_north_west_1.png</filename>
-            <filename>../sprites/player/colt/run_north_west_2.png</filename>
-            <filename>../sprites/player/colt/run_north_west_3.png</filename>
-            <filename>../sprites/player/colt/run_south_0.png</filename>
-            <filename>../sprites/player/colt/run_south_1.png</filename>
-            <filename>../sprites/player/colt/run_south_2.png</filename>
-            <filename>../sprites/player/colt/run_south_3.png</filename>
-            <filename>../sprites/player/colt/run_south_east_0.png</filename>
-            <filename>../sprites/player/colt/run_south_east_1.png</filename>
-            <filename>../sprites/player/colt/run_south_east_2.png</filename>
-            <filename>../sprites/player/colt/run_south_east_3.png</filename>
-            <filename>../sprites/player/colt/run_south_west_0.png</filename>
-            <filename>../sprites/player/colt/run_south_west_1.png</filename>
-            <filename>../sprites/player/colt/run_south_west_2.png</filename>
-            <filename>../sprites/player/colt/run_south_west_3.png</filename>
-            <filename>../sprites/player/colt/run_west_0.png</filename>
-            <filename>../sprites/player/colt/run_west_1.png</filename>
-            <filename>../sprites/player/colt/run_west_2.png</filename>
-            <filename>../sprites/player/colt/run_west_3.png</filename>
-            <filename>../sprites/player/colt/bullet.png</filename>
+            <filename>../sprites/player/pistol/attack_east_0.png</filename>
+            <filename>../sprites/player/pistol/attack_east_1.png</filename>
+            <filename>../sprites/player/pistol/attack_east_2.png</filename>
+            <filename>../sprites/player/pistol/attack_east_3.png</filename>
+            <filename>../sprites/player/pistol/attack_east_4.png</filename>
+            <filename>../sprites/player/pistol/attack_east_5.png</filename>
+            <filename>../sprites/player/pistol/attack_east_6.png</filename>
+            <filename>../sprites/player/pistol/attack_east_7.png</filename>
+            <filename>../sprites/player/pistol/attack_north_0.png</filename>
+            <filename>../sprites/player/pistol/attack_north_1.png</filename>
+            <filename>../sprites/player/pistol/attack_north_2.png</filename>
+            <filename>../sprites/player/pistol/attack_north_3.png</filename>
+            <filename>../sprites/player/pistol/attack_north_4.png</filename>
+            <filename>../sprites/player/pistol/attack_north_5.png</filename>
+            <filename>../sprites/player/pistol/attack_north_6.png</filename>
+            <filename>../sprites/player/pistol/attack_north_7.png</filename>
+            <filename>../sprites/player/pistol/attack_north_east_0.png</filename>
+            <filename>../sprites/player/pistol/attack_north_east_1.png</filename>
+            <filename>../sprites/player/pistol/attack_north_east_2.png</filename>
+            <filename>../sprites/player/pistol/attack_north_east_3.png</filename>
+            <filename>../sprites/player/pistol/attack_north_east_4.png</filename>
+            <filename>../sprites/player/pistol/attack_north_east_5.png</filename>
+            <filename>../sprites/player/pistol/attack_north_east_6.png</filename>
+            <filename>../sprites/player/pistol/attack_north_east_7.png</filename>
+            <filename>../sprites/player/pistol/attack_north_west_0.png</filename>
+            <filename>../sprites/player/pistol/attack_north_west_1.png</filename>
+            <filename>../sprites/player/pistol/attack_north_west_2.png</filename>
+            <filename>../sprites/player/pistol/attack_north_west_3.png</filename>
+            <filename>../sprites/player/pistol/attack_north_west_4.png</filename>
+            <filename>../sprites/player/pistol/attack_north_west_5.png</filename>
+            <filename>../sprites/player/pistol/attack_north_west_6.png</filename>
+            <filename>../sprites/player/pistol/attack_north_west_7.png</filename>
+            <filename>../sprites/player/pistol/attack_south_0.png</filename>
+            <filename>../sprites/player/pistol/attack_south_1.png</filename>
+            <filename>../sprites/player/pistol/attack_south_2.png</filename>
+            <filename>../sprites/player/pistol/attack_south_3.png</filename>
+            <filename>../sprites/player/pistol/attack_south_4.png</filename>
+            <filename>../sprites/player/pistol/attack_south_5.png</filename>
+            <filename>../sprites/player/pistol/attack_south_6.png</filename>
+            <filename>../sprites/player/pistol/attack_south_7.png</filename>
+            <filename>../sprites/player/pistol/attack_south_east_0.png</filename>
+            <filename>../sprites/player/pistol/attack_south_east_1.png</filename>
+            <filename>../sprites/player/pistol/attack_south_east_2.png</filename>
+            <filename>../sprites/player/pistol/attack_south_east_3.png</filename>
+            <filename>../sprites/player/pistol/attack_south_east_4.png</filename>
+            <filename>../sprites/player/pistol/attack_south_east_5.png</filename>
+            <filename>../sprites/player/pistol/attack_south_east_6.png</filename>
+            <filename>../sprites/player/pistol/attack_south_east_7.png</filename>
+            <filename>../sprites/player/pistol/attack_south_west_0.png</filename>
+            <filename>../sprites/player/pistol/attack_south_west_1.png</filename>
+            <filename>../sprites/player/pistol/attack_south_west_2.png</filename>
+            <filename>../sprites/player/pistol/attack_south_west_3.png</filename>
+            <filename>../sprites/player/pistol/attack_south_west_4.png</filename>
+            <filename>../sprites/player/pistol/attack_south_west_5.png</filename>
+            <filename>../sprites/player/pistol/attack_south_west_6.png</filename>
+            <filename>../sprites/player/pistol/attack_south_west_7.png</filename>
+            <filename>../sprites/player/pistol/attack_west_0.png</filename>
+            <filename>../sprites/player/pistol/attack_west_1.png</filename>
+            <filename>../sprites/player/pistol/attack_west_2.png</filename>
+            <filename>../sprites/player/pistol/attack_west_3.png</filename>
+            <filename>../sprites/player/pistol/attack_west_4.png</filename>
+            <filename>../sprites/player/pistol/attack_west_5.png</filename>
+            <filename>../sprites/player/pistol/attack_west_6.png</filename>
+            <filename>../sprites/player/pistol/attack_west_7.png</filename>
+            <filename>../sprites/player/pistol/idle_east_0.png</filename>
+            <filename>../sprites/player/pistol/idle_east_1.png</filename>
+            <filename>../sprites/player/pistol/idle_east_2.png</filename>
+            <filename>../sprites/player/pistol/idle_east_3.png</filename>
+            <filename>../sprites/player/pistol/idle_north_0.png</filename>
+            <filename>../sprites/player/pistol/idle_north_1.png</filename>
+            <filename>../sprites/player/pistol/idle_north_2.png</filename>
+            <filename>../sprites/player/pistol/idle_north_3.png</filename>
+            <filename>../sprites/player/pistol/idle_north_east_0.png</filename>
+            <filename>../sprites/player/pistol/idle_north_east_1.png</filename>
+            <filename>../sprites/player/pistol/idle_north_east_2.png</filename>
+            <filename>../sprites/player/pistol/idle_north_east_3.png</filename>
+            <filename>../sprites/player/pistol/idle_north_west_0.png</filename>
+            <filename>../sprites/player/pistol/idle_north_west_1.png</filename>
+            <filename>../sprites/player/pistol/idle_north_west_2.png</filename>
+            <filename>../sprites/player/pistol/idle_north_west_3.png</filename>
+            <filename>../sprites/player/pistol/idle_south_0.png</filename>
+            <filename>../sprites/player/pistol/idle_south_1.png</filename>
+            <filename>../sprites/player/pistol/idle_south_2.png</filename>
+            <filename>../sprites/player/pistol/idle_south_3.png</filename>
+            <filename>../sprites/player/pistol/idle_south_east_0.png</filename>
+            <filename>../sprites/player/pistol/idle_south_east_1.png</filename>
+            <filename>../sprites/player/pistol/idle_south_east_2.png</filename>
+            <filename>../sprites/player/pistol/idle_south_east_3.png</filename>
+            <filename>../sprites/player/pistol/idle_south_west_0.png</filename>
+            <filename>../sprites/player/pistol/idle_south_west_1.png</filename>
+            <filename>../sprites/player/pistol/idle_south_west_2.png</filename>
+            <filename>../sprites/player/pistol/idle_south_west_3.png</filename>
+            <filename>../sprites/player/pistol/idle_west_0.png</filename>
+            <filename>../sprites/player/pistol/idle_west_1.png</filename>
+            <filename>../sprites/player/pistol/idle_west_2.png</filename>
+            <filename>../sprites/player/pistol/idle_west_3.png</filename>
+            <filename>../sprites/player/pistol/pain_east_0.png</filename>
+            <filename>../sprites/player/pistol/pain_east_1.png</filename>
+            <filename>../sprites/player/pistol/pain_north_0.png</filename>
+            <filename>../sprites/player/pistol/pain_north_1.png</filename>
+            <filename>../sprites/player/pistol/pain_north_east_0.png</filename>
+            <filename>../sprites/player/pistol/pain_north_east_1.png</filename>
+            <filename>../sprites/player/pistol/pain_north_west_0.png</filename>
+            <filename>../sprites/player/pistol/pain_north_west_1.png</filename>
+            <filename>../sprites/player/pistol/pain_south_0.png</filename>
+            <filename>../sprites/player/pistol/pain_south_1.png</filename>
+            <filename>../sprites/player/pistol/pain_south_east_0.png</filename>
+            <filename>../sprites/player/pistol/pain_south_east_1.png</filename>
+            <filename>../sprites/player/pistol/pain_south_west_0.png</filename>
+            <filename>../sprites/player/pistol/pain_south_west_1.png</filename>
+            <filename>../sprites/player/pistol/pain_west_0.png</filename>
+            <filename>../sprites/player/pistol/pain_west_1.png</filename>
+            <filename>../sprites/player/pistol/run_east_0.png</filename>
+            <filename>../sprites/player/pistol/run_east_1.png</filename>
+            <filename>../sprites/player/pistol/run_east_2.png</filename>
+            <filename>../sprites/player/pistol/run_east_3.png</filename>
+            <filename>../sprites/player/pistol/run_east_4.png</filename>
+            <filename>../sprites/player/pistol/run_east_5.png</filename>
+            <filename>../sprites/player/pistol/run_east_6.png</filename>
+            <filename>../sprites/player/pistol/run_east_7.png</filename>
+            <filename>../sprites/player/pistol/run_north_0.png</filename>
+            <filename>../sprites/player/pistol/run_north_1.png</filename>
+            <filename>../sprites/player/pistol/run_north_2.png</filename>
+            <filename>../sprites/player/pistol/run_north_3.png</filename>
+            <filename>../sprites/player/pistol/run_north_4.png</filename>
+            <filename>../sprites/player/pistol/run_north_5.png</filename>
+            <filename>../sprites/player/pistol/run_north_6.png</filename>
+            <filename>../sprites/player/pistol/run_north_7.png</filename>
+            <filename>../sprites/player/pistol/run_north_east_0.png</filename>
+            <filename>../sprites/player/pistol/run_north_east_1.png</filename>
+            <filename>../sprites/player/pistol/run_north_east_2.png</filename>
+            <filename>../sprites/player/pistol/run_north_east_3.png</filename>
+            <filename>../sprites/player/pistol/run_north_east_4.png</filename>
+            <filename>../sprites/player/pistol/run_north_east_5.png</filename>
+            <filename>../sprites/player/pistol/run_north_east_6.png</filename>
+            <filename>../sprites/player/pistol/run_north_east_7.png</filename>
+            <filename>../sprites/player/pistol/run_north_west_0.png</filename>
+            <filename>../sprites/player/pistol/run_north_west_1.png</filename>
+            <filename>../sprites/player/pistol/run_north_west_2.png</filename>
+            <filename>../sprites/player/pistol/run_north_west_3.png</filename>
+            <filename>../sprites/player/pistol/run_north_west_4.png</filename>
+            <filename>../sprites/player/pistol/run_north_west_5.png</filename>
+            <filename>../sprites/player/pistol/run_north_west_6.png</filename>
+            <filename>../sprites/player/pistol/run_north_west_7.png</filename>
+            <filename>../sprites/player/pistol/run_south_0.png</filename>
+            <filename>../sprites/player/pistol/run_south_1.png</filename>
+            <filename>../sprites/player/pistol/run_south_2.png</filename>
+            <filename>../sprites/player/pistol/run_south_3.png</filename>
+            <filename>../sprites/player/pistol/run_south_4.png</filename>
+            <filename>../sprites/player/pistol/run_south_5.png</filename>
+            <filename>../sprites/player/pistol/run_south_6.png</filename>
+            <filename>../sprites/player/pistol/run_south_7.png</filename>
+            <filename>../sprites/player/pistol/run_south_east_0.png</filename>
+            <filename>../sprites/player/pistol/run_south_east_1.png</filename>
+            <filename>../sprites/player/pistol/run_south_east_2.png</filename>
+            <filename>../sprites/player/pistol/run_south_east_3.png</filename>
+            <filename>../sprites/player/pistol/run_south_east_4.png</filename>
+            <filename>../sprites/player/pistol/run_south_east_5.png</filename>
+            <filename>../sprites/player/pistol/run_south_east_6.png</filename>
+            <filename>../sprites/player/pistol/run_south_east_7.png</filename>
+            <filename>../sprites/player/pistol/run_south_west_0.png</filename>
+            <filename>../sprites/player/pistol/run_south_west_1.png</filename>
+            <filename>../sprites/player/pistol/run_south_west_2.png</filename>
+            <filename>../sprites/player/pistol/run_south_west_3.png</filename>
+            <filename>../sprites/player/pistol/run_south_west_4.png</filename>
+            <filename>../sprites/player/pistol/run_south_west_5.png</filename>
+            <filename>../sprites/player/pistol/run_south_west_6.png</filename>
+            <filename>../sprites/player/pistol/run_south_west_7.png</filename>
+            <filename>../sprites/player/pistol/run_west_0.png</filename>
+            <filename>../sprites/player/pistol/run_west_1.png</filename>
+            <filename>../sprites/player/pistol/run_west_2.png</filename>
+            <filename>../sprites/player/pistol/run_west_3.png</filename>
+            <filename>../sprites/player/pistol/run_west_4.png</filename>
+            <filename>../sprites/player/pistol/run_west_5.png</filename>
+            <filename>../sprites/player/pistol/run_west_6.png</filename>
+            <filename>../sprites/player/pistol/run_west_7.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
