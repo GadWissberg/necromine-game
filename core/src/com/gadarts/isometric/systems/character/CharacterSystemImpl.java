@@ -16,11 +16,7 @@ import com.gadarts.isometric.components.AnimationComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterMotivation;
-import com.gadarts.isometric.components.character.data.CharacterHealthData;
-import com.gadarts.isometric.components.character.data.CharacterMotivationData;
-import com.gadarts.isometric.components.character.data.CharacterRotationData;
-import com.gadarts.isometric.components.character.data.CharacterSoundData;
-import com.gadarts.isometric.components.character.data.CharacterSpriteData;
+import com.gadarts.isometric.components.character.data.*;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -57,7 +53,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector2 auxVector2_3 = new Vector2();
-	private static final float CHARACTER_STEP_SIZE = 0.3f;
+	private static final float CHARACTER_STEP_SIZE = 0.22f;
 	private static final int ROT_INTERVAL = 125;
 	private static final long CHARACTER_PAIN_DURATION = 1000;
 
@@ -352,15 +348,19 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void applyRunning(final Entity character,
 							  final TextureAtlas.AtlasRegion newFrame,
 							  final CharacterComponent characterComponent) {
-		if (newFrame.index % 2 == 0) {
-			services.getSoundPlayer().playRandomSound(Assets.Sounds.STEP_1, Assets.Sounds.STEP_2, Assets.Sounds.STEP_3);
-		}
+		playStepSoundWhenNeeded(newFrame);
 		MapGraphNode oldDest = characterComponent.getDestinationNode();
 		Decal decal = ComponentsMapper.characterDecal.get(character).getDecal();
 		if (auxVector2_1.set(decal.getX(), decal.getZ()).dst2(oldDest.getCenterPosition(auxVector2_2)) < Utils.EPSILON) {
 			reachedNodeOfPath(character, oldDest);
 		} else {
 			takeStep(character);
+		}
+	}
+
+	private void playStepSoundWhenNeeded(final TextureAtlas.AtlasRegion newFrame) {
+		if (newFrame.index == 0 || newFrame.index == 5) {
+			services.getSoundPlayer().playRandomSound(Assets.Sounds.STEP_1, Assets.Sounds.STEP_2, Assets.Sounds.STEP_3);
 		}
 	}
 

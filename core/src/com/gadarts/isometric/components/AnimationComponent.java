@@ -1,6 +1,7 @@
 package com.gadarts.isometric.components;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.TimeUtils;
 import lombok.Getter;
@@ -30,7 +31,7 @@ public class AnimationComponent implements GameComponent {
 
 	public TextureAtlas.AtlasRegion calculateFrame() {
 		double frameDuration = animation.getFrameDuration();
-		boolean looping = animation.getPlayMode() == Animation.PlayMode.LOOP;
+		boolean looping = animation.getPlayMode() == PlayMode.LOOP || animation.getPlayMode() == PlayMode.LOOP_PINGPONG;
 		TextureAtlas.AtlasRegion result = animation.getKeyFrame((float) stateTime, looping);
 		long now = TimeUtils.millis();
 		if (now - lastFrameChange >= frameDuration * 1000.0) {

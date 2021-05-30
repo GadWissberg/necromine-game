@@ -263,7 +263,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(entity);
 		Direction direction = CharacterUtils.calculateDirectionSeenFromCamera(camera, characterComponent.getCharacterSpriteData().getFacingDirection());
 		SpriteType spriteType = characterComponent.getCharacterSpriteData().getSpriteType();
-		boolean sameSpriteType = characterComponent.getCharacterSpriteData().getSpriteType().equals(characterDecalComponent.getSpriteType());
+		boolean sameSpriteType = spriteType.equals(characterDecalComponent.getSpriteType());
 		boolean sameDirection = characterDecalComponent.getDirection().equals(direction);
 		Decal decal = characterDecalComponent.getDecal();
 		CharacterAnimations animations = characterDecalComponent.getAnimations();

@@ -110,7 +110,7 @@ public final class MapBuilder implements Disposable {
 									   final CharacterData characterData) {
 		CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
 		Direction direction = characterData.getDirection();
-		characterSpriteData.init(direction, SpriteType.IDLE, 1);
+		characterSpriteData.init(direction, SpriteType.IDLE, 4);
 		Vector3 position = characterData.getPosition();
 		entityBuilder.addCharacterComponent(characterSpriteData, characterData.getSoundData(), characterData.getSkills())
 				.addCharacterDecalComponent(assetManager.get(atlas.name()), SpriteType.IDLE, direction, position)
@@ -702,7 +702,7 @@ public final class MapBuilder implements Disposable {
 				auxCharacterSoundData);
 		addCharBaseComponents(
 				builder,
-				Atlases.PLAYER_AXE_PICK,
+				Atlases.PLAYER_KNIFE,
 				data);
 		builder.finishAndAddToEngine();
 	}
