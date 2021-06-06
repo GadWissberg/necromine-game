@@ -2,10 +2,10 @@ import os.path
 import bpy
 import glob
 
-PARENT = "C:\\Users\\gadw1\\StudioProjects\\isometric-game\\materials\\sprites\\player"
-types = ("Idle", "Run", "Attack", "Pain")
-general_types = ("Pickup", "@Light Death 1")
-subfolders = ("Melee", "Pistol")
+PARENT = "C:\\Users\\gadw1\\StudioProjects\\isometric-game\\materials\\sprites\\anubis"
+types = ("Idle", "Run", "Attack Melee", "Pain")
+general_types = ("Idle", "Run", "Attack Melee","Attack Primary", "Pain", "@Light Death 1", "@Light Death 2","@Light Death 3")
+subfolders = ()
 TYPE_IDLE = "idle"
 PADDING = "###"
 cameras = ("South", "North", "South West", "West", "North West", "North East", "East", "South East")
