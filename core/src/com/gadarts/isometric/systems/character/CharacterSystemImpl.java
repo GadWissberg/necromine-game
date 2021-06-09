@@ -253,7 +253,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		}
 	}
 
-	private void applyDamageToCharacter(Entity attacker, final Entity attacked) {
+	private void applyDamageToCharacter(final Entity attacker, final Entity attacked) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(attacked);
 		Strength strength = ComponentsMapper.character.get(attacker).getSkills().getStrength();
 		characterComponent.dealDamage(MathUtils.random(strength.getMinDamage(), strength.getMaxDamage()));
@@ -266,7 +266,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterSoundData soundData = characterComponent.getSoundData();
 		SoundPlayer soundPlayer = services.getSoundPlayer();
 		if (healthData.getHp() <= 0) {
-			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.DIE);
+			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.LIGHT_DEATH_1);
 			if (ComponentsMapper.animation.has(character)) {
 				ComponentsMapper.animation.get(character).resetStateTime();
 			}

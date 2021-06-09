@@ -276,7 +276,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				if (spriteType.isSingleAnimation()) {
 					if (!animationComponent.getAnimation().isAnimationFinished((float) animationComponent.getStateTime())) {
 						direction = Direction.SOUTH;
-					} else if (spriteType == SpriteType.DIE) {
+					} else if (spriteType == SpriteType.LIGHT_DEATH_1) {
 						spriteType = SpriteType.DEAD;
 					}
 				}
@@ -304,7 +304,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				}
 				if (characterDecalComponent.getSpriteType() == spriteType && currentFrame != newFrame) {
 					decal.setTextureRegion(newFrame);
-					CharacterAnimation southAnimation;
+					CharacterAnimation southAnimation = null;
 					Direction facingDirection = characterComponent.getCharacterSpriteData().getFacingDirection();
 					if (spriteType.isSingleAnimation()) {
 						facingDirection = Direction.SOUTH;
@@ -312,11 +312,15 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 					if (animations.contains(spriteType)) {
 						southAnimation = animations.get(spriteType, facingDirection);
 					} else {
-						CharacterAnimations generalAnim = ComponentsMapper.player.get(entity).getGeneralAnimations();
-						southAnimation = generalAnim.get(spriteType, facingDirection);
+						if (ComponentsMapper.player.has(entity)) {
+							CharacterAnimations generalAnim = ComponentsMapper.player.get(entity).getGeneralAnimations();
+							southAnimation = generalAnim.get(spriteType, facingDirection);
+						}
 					}
-					shadowDecal.setTextureRegion(southAnimation.getKeyFrames()[max(newFrame.index, 0)]);
-				} else if (characterComponent.getCharacterSpriteData().getSpriteType() == SpriteType.DIE) {
+					if (southAnimation != null) {
+						shadowDecal.setTextureRegion(southAnimation.getKeyFrames()[max(newFrame.index, 0)]);
+					}
+				} else if (characterComponent.getCharacterSpriteData().getSpriteType() == SpriteType.LIGHT_DEATH_1) {
 					if (animationComponent.getAnimation().isAnimationFinished((float) animationComponent.getStateTime())) {
 						characterComponent.getCharacterSpriteData().setFacingDirection(Direction.findDirection(auxVector2_1.set(camera.position.x, camera.position.z).sub(decalPosition.x, decalPosition.z).nor()));
 						characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.DEAD);

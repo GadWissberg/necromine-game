@@ -74,7 +74,7 @@ public class LightsRenderer {
 		);
 	}
 
-	void setDecalColorAccordingToLights(final Entity entity, WorldEnvironment environment) {
+	void setDecalColorAccordingToLights(final Entity entity, final WorldEnvironment environment) {
 		Decal decal = ComponentsMapper.characterDecal.get(entity).getDecal();
 		if (shouldApplyLightsOnDecal(entity, ComponentsMapper.character.get(entity).getCharacterSpriteData())) {
 			float minDistance = Float.MAX_VALUE;

@@ -240,7 +240,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		services.getSoundPlayer().playSound(Assets.Sounds.ENEMY_AWAKE);
 	}
 
-	private boolean checkIfFloorNodesBlockSight(Entity enemy) {
+	private boolean checkIfFloorNodesBlockSight(final Entity enemy) {
 		Vector2 pos = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 		Entity target = ComponentsMapper.character.get(enemy).getTarget();
 		Vector2 targetPos = ComponentsMapper.characterDecal.get(target).getNodePosition(auxVector2_2);

@@ -70,7 +70,7 @@
             </struct>
         </struct>
         <key>shapePadding</key>
-        <uint>1</uint>
+        <uint>0</uint>
         <key>jpgQuality</key>
         <uint>80</uint>
         <key>pngOptimizationLevel</key>
@@ -84,7 +84,7 @@
         <key>textureFormat</key>
         <enum type="SettingsBase::TextureFormat">png</enum>
         <key>borderPadding</key>
-        <uint>1</uint>
+        <uint>0</uint>
         <key>maxTextureSize</key>
         <QSize>
             <key>width</key>
@@ -102,7 +102,7 @@
         <key>algorithmSettings</key>
         <struct type="AlgorithmSettings">
             <key>algorithm</key>
-            <enum type="AlgorithmSettings::AlgorithmId">MaxRects</enum>
+            <enum type="AlgorithmSettings::AlgorithmId">Grid</enum>
             <key>freeSizeMode</key>
             <enum type="AlgorithmSettings::AlgorithmFreeSizeMode">Best</enum>
             <key>sizeConstraints</key>
@@ -163,13 +163,13 @@
             <key>scaleMode</key>
             <enum type="ScaleMode">Smooth</enum>
             <key>extrude</key>
-            <uint>1</uint>
+            <uint>0</uint>
             <key>trimThreshold</key>
             <uint>1</uint>
             <key>trimMargin</key>
             <uint>1</uint>
             <key>trimMode</key>
-            <enum type="SpriteSettings::TrimMode">Trim</enum>
+            <enum type="SpriteSettings::TrimMode">None</enum>
             <key>tracerTolerance</key>
             <int>200</int>
             <key>heuristicMask</key>
@@ -181,54 +181,30 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../sprites/anubis/attack_melee_east_0.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_east_1.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_east_2.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_east_3.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_east_4.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_east_5.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_0.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_1.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_2.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_3.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_4.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_5.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_east_0.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_east_1.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_east_2.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_east_3.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_east_4.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_east_5.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_west_0.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_west_1.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_west_2.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_west_3.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_west_4.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_north_west_5.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_0.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_1.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_2.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_3.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_4.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_5.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_east_0.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_east_1.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_east_2.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_east_3.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_east_4.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_east_5.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_west_0.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_west_1.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_west_2.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_west_3.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_west_4.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_south_west_5.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_west_0.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_west_1.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_west_2.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_west_3.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_west_4.png</key>
-            <key type="filename">../sprites/anubis/attack_melee_west_5.png</key>
+            <key type="filename">../sprites/anubis/attack_east_0.png</key>
+            <key type="filename">../sprites/anubis/attack_east_1.png</key>
+            <key type="filename">../sprites/anubis/attack_east_2.png</key>
+            <key type="filename">../sprites/anubis/attack_east_3.png</key>
+            <key type="filename">../sprites/anubis/attack_east_4.png</key>
+            <key type="filename">../sprites/anubis/attack_east_5.png</key>
+            <key type="filename">../sprites/anubis/attack_north_0.png</key>
+            <key type="filename">../sprites/anubis/attack_north_1.png</key>
+            <key type="filename">../sprites/anubis/attack_north_2.png</key>
+            <key type="filename">../sprites/anubis/attack_north_3.png</key>
+            <key type="filename">../sprites/anubis/attack_north_4.png</key>
+            <key type="filename">../sprites/anubis/attack_north_5.png</key>
+            <key type="filename">../sprites/anubis/attack_north_east_0.png</key>
+            <key type="filename">../sprites/anubis/attack_north_east_1.png</key>
+            <key type="filename">../sprites/anubis/attack_north_east_2.png</key>
+            <key type="filename">../sprites/anubis/attack_north_east_3.png</key>
+            <key type="filename">../sprites/anubis/attack_north_east_4.png</key>
+            <key type="filename">../sprites/anubis/attack_north_east_5.png</key>
+            <key type="filename">../sprites/anubis/attack_north_west_0.png</key>
+            <key type="filename">../sprites/anubis/attack_north_west_1.png</key>
+            <key type="filename">../sprites/anubis/attack_north_west_2.png</key>
+            <key type="filename">../sprites/anubis/attack_north_west_3.png</key>
+            <key type="filename">../sprites/anubis/attack_north_west_4.png</key>
+            <key type="filename">../sprites/anubis/attack_north_west_5.png</key>
             <key type="filename">../sprites/anubis/attack_primary_east_0.png</key>
             <key type="filename">../sprites/anubis/attack_primary_east_1.png</key>
             <key type="filename">../sprites/anubis/attack_primary_east_2.png</key>
@@ -293,6 +269,30 @@
             <key type="filename">../sprites/anubis/attack_primary_west_5.png</key>
             <key type="filename">../sprites/anubis/attack_primary_west_6.png</key>
             <key type="filename">../sprites/anubis/attack_primary_west_7.png</key>
+            <key type="filename">../sprites/anubis/attack_south_0.png</key>
+            <key type="filename">../sprites/anubis/attack_south_1.png</key>
+            <key type="filename">../sprites/anubis/attack_south_2.png</key>
+            <key type="filename">../sprites/anubis/attack_south_3.png</key>
+            <key type="filename">../sprites/anubis/attack_south_4.png</key>
+            <key type="filename">../sprites/anubis/attack_south_5.png</key>
+            <key type="filename">../sprites/anubis/attack_south_east_0.png</key>
+            <key type="filename">../sprites/anubis/attack_south_east_1.png</key>
+            <key type="filename">../sprites/anubis/attack_south_east_2.png</key>
+            <key type="filename">../sprites/anubis/attack_south_east_3.png</key>
+            <key type="filename">../sprites/anubis/attack_south_east_4.png</key>
+            <key type="filename">../sprites/anubis/attack_south_east_5.png</key>
+            <key type="filename">../sprites/anubis/attack_south_west_0.png</key>
+            <key type="filename">../sprites/anubis/attack_south_west_1.png</key>
+            <key type="filename">../sprites/anubis/attack_south_west_2.png</key>
+            <key type="filename">../sprites/anubis/attack_south_west_3.png</key>
+            <key type="filename">../sprites/anubis/attack_south_west_4.png</key>
+            <key type="filename">../sprites/anubis/attack_south_west_5.png</key>
+            <key type="filename">../sprites/anubis/attack_west_0.png</key>
+            <key type="filename">../sprites/anubis/attack_west_1.png</key>
+            <key type="filename">../sprites/anubis/attack_west_2.png</key>
+            <key type="filename">../sprites/anubis/attack_west_3.png</key>
+            <key type="filename">../sprites/anubis/attack_west_4.png</key>
+            <key type="filename">../sprites/anubis/attack_west_5.png</key>
             <key type="filename">../sprites/anubis/idle_east_0.png</key>
             <key type="filename">../sprites/anubis/idle_east_1.png</key>
             <key type="filename">../sprites/anubis/idle_east_2.png</key>
@@ -451,54 +451,30 @@
         </map>
         <key>fileList</key>
         <array>
-            <filename>../sprites/anubis/attack_melee_east_0.png</filename>
-            <filename>../sprites/anubis/attack_melee_east_1.png</filename>
-            <filename>../sprites/anubis/attack_melee_east_2.png</filename>
-            <filename>../sprites/anubis/attack_melee_east_3.png</filename>
-            <filename>../sprites/anubis/attack_melee_east_4.png</filename>
-            <filename>../sprites/anubis/attack_melee_east_5.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_0.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_1.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_2.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_3.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_4.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_5.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_east_0.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_east_1.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_east_2.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_east_3.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_east_4.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_east_5.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_west_0.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_west_1.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_west_2.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_west_3.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_west_4.png</filename>
-            <filename>../sprites/anubis/attack_melee_north_west_5.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_0.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_1.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_2.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_3.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_4.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_5.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_east_0.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_east_1.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_east_2.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_east_3.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_east_4.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_east_5.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_west_0.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_west_1.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_west_2.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_west_3.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_west_4.png</filename>
-            <filename>../sprites/anubis/attack_melee_south_west_5.png</filename>
-            <filename>../sprites/anubis/attack_melee_west_0.png</filename>
-            <filename>../sprites/anubis/attack_melee_west_1.png</filename>
-            <filename>../sprites/anubis/attack_melee_west_2.png</filename>
-            <filename>../sprites/anubis/attack_melee_west_3.png</filename>
-            <filename>../sprites/anubis/attack_melee_west_4.png</filename>
-            <filename>../sprites/anubis/attack_melee_west_5.png</filename>
+            <filename>../sprites/anubis/attack_east_0.png</filename>
+            <filename>../sprites/anubis/attack_east_1.png</filename>
+            <filename>../sprites/anubis/attack_east_2.png</filename>
+            <filename>../sprites/anubis/attack_east_3.png</filename>
+            <filename>../sprites/anubis/attack_east_4.png</filename>
+            <filename>../sprites/anubis/attack_east_5.png</filename>
+            <filename>../sprites/anubis/attack_north_0.png</filename>
+            <filename>../sprites/anubis/attack_north_1.png</filename>
+            <filename>../sprites/anubis/attack_north_2.png</filename>
+            <filename>../sprites/anubis/attack_north_3.png</filename>
+            <filename>../sprites/anubis/attack_north_4.png</filename>
+            <filename>../sprites/anubis/attack_north_5.png</filename>
+            <filename>../sprites/anubis/attack_north_east_0.png</filename>
+            <filename>../sprites/anubis/attack_north_east_1.png</filename>
+            <filename>../sprites/anubis/attack_north_east_2.png</filename>
+            <filename>../sprites/anubis/attack_north_east_3.png</filename>
+            <filename>../sprites/anubis/attack_north_east_4.png</filename>
+            <filename>../sprites/anubis/attack_north_east_5.png</filename>
+            <filename>../sprites/anubis/attack_north_west_0.png</filename>
+            <filename>../sprites/anubis/attack_north_west_1.png</filename>
+            <filename>../sprites/anubis/attack_north_west_2.png</filename>
+            <filename>../sprites/anubis/attack_north_west_3.png</filename>
+            <filename>../sprites/anubis/attack_north_west_4.png</filename>
+            <filename>../sprites/anubis/attack_north_west_5.png</filename>
             <filename>../sprites/anubis/attack_primary_east_0.png</filename>
             <filename>../sprites/anubis/attack_primary_east_1.png</filename>
             <filename>../sprites/anubis/attack_primary_east_2.png</filename>
@@ -563,6 +539,30 @@
             <filename>../sprites/anubis/attack_primary_west_5.png</filename>
             <filename>../sprites/anubis/attack_primary_west_6.png</filename>
             <filename>../sprites/anubis/attack_primary_west_7.png</filename>
+            <filename>../sprites/anubis/attack_south_0.png</filename>
+            <filename>../sprites/anubis/attack_south_1.png</filename>
+            <filename>../sprites/anubis/attack_south_2.png</filename>
+            <filename>../sprites/anubis/attack_south_3.png</filename>
+            <filename>../sprites/anubis/attack_south_4.png</filename>
+            <filename>../sprites/anubis/attack_south_5.png</filename>
+            <filename>../sprites/anubis/attack_south_east_0.png</filename>
+            <filename>../sprites/anubis/attack_south_east_1.png</filename>
+            <filename>../sprites/anubis/attack_south_east_2.png</filename>
+            <filename>../sprites/anubis/attack_south_east_3.png</filename>
+            <filename>../sprites/anubis/attack_south_east_4.png</filename>
+            <filename>../sprites/anubis/attack_south_east_5.png</filename>
+            <filename>../sprites/anubis/attack_south_west_0.png</filename>
+            <filename>../sprites/anubis/attack_south_west_1.png</filename>
+            <filename>../sprites/anubis/attack_south_west_2.png</filename>
+            <filename>../sprites/anubis/attack_south_west_3.png</filename>
+            <filename>../sprites/anubis/attack_south_west_4.png</filename>
+            <filename>../sprites/anubis/attack_south_west_5.png</filename>
+            <filename>../sprites/anubis/attack_west_0.png</filename>
+            <filename>../sprites/anubis/attack_west_1.png</filename>
+            <filename>../sprites/anubis/attack_west_2.png</filename>
+            <filename>../sprites/anubis/attack_west_3.png</filename>
+            <filename>../sprites/anubis/attack_west_4.png</filename>
+            <filename>../sprites/anubis/attack_west_5.png</filename>
             <filename>../sprites/anubis/idle_east_0.png</filename>
             <filename>../sprites/anubis/idle_east_1.png</filename>
             <filename>../sprites/anubis/idle_east_2.png</filename>
