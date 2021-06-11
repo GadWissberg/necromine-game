@@ -28,9 +28,9 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	public static final int VIEWPORT_WIDTH = NecromineGame.RESOLUTION_WIDTH / 75;
 	public static final int VIEWPORT_HEIGHT = NecromineGame.RESOLUTION_HEIGHT / 75;
-	public static final float SCROLL_SCALE = 0.12f;
 	public static final int CAMERA_HEIGHT = 15;
 	public static final float FAR = 100f;
+	public static final float CAMERA_ACCELERATION_SCALE = 0.24f;
 	private static final float NEAR = 0.01f;
 	private static final Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);
 	private static final Vector3 auxVector3_1 = new Vector3();
@@ -40,9 +40,14 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final float START_OFFSET = 7;
 	private static final float MENU_CAMERA_ROTATION = 0.1F;
+	private static final float CAMERA_MAX_SPEED = 32F;
+	private static final float CAMERA_MIN_SPEED = 0.01F;
+	private static final float CAMERA_DECELERATION_SCALE = 0.9F;
+	private static final Vector3 rotationPoint = new Vector3();
+	private static final float EXTRA_LEVEL_PADDING = 16;
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
-	private final Vector3 rotationPoint = new Vector3();
+	private final Vector3 cameraSpeed = new Vector3();
 	private boolean rotateCamera;
 	@Getter
 	private OrthographicCamera camera;
@@ -52,8 +57,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		super.update(deltaTime);
 		HudSystem hudSystem = getSystem(HudSystem.class);
 		if (!DefaultGameSettings.DEBUG_INPUT && !rotateCamera && !hudSystem.hasOpenWindows() && hudSystem.isMenuClosed()) {
-			handleHorizontalScroll();
-			handleVerticalScroll();
+			handleScrolling(deltaTime);
 		}
 		if (ComponentsMapper.player.get(getSystem(PlayerSystem.class).getPlayer()).isDisabled()) {
 			camera.rotateAround(rotationPoint, Vector3.Y, MENU_CAMERA_ROTATION);
@@ -61,66 +65,83 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		camera.update();
 	}
 
-	private void handleHorizontalScroll() {
-		if (lastMousePosition.x >= NecromineGame.RESOLUTION_WIDTH - SCROLL_OFFSET) {
-			float diff = NecromineGame.RESOLUTION_WIDTH - SCROLL_OFFSET - lastMousePosition.x;
-			horizontalTranslateCamera(SCROLL_SCALE, diff);
-		} else if (lastMousePosition.x <= SCROLL_OFFSET) {
-			float diff = SCROLL_OFFSET - lastMousePosition.x;
-			horizontalTranslateCamera(-SCROLL_SCALE, diff);
+	private void handleScrolling(final float deltaTime) {
+		boolean moved = handleHorizontalScroll();
+		moved |= handleVerticalScroll();
+		if (!moved) {
+			decelerateCamera();
+		}
+		if (!cameraSpeed.isZero()) {
+			handleCameraTranslation(deltaTime);
 		}
 	}
 
-	private void horizontalTranslateCamera(final float scrollScaleHorizontal, final float diff) {
-		float abs = Math.abs(diff);
-		float cameraHorizontalInterpolationAlpha = MathUtils.norm(0, SCROLL_OFFSET, abs);
+	private void handleCameraTranslation(final float deltaTime) {
+		Vector3 newPosition = auxVector3_3.set(camera.position).add(auxVector3_1.set(cameraSpeed).scl(deltaTime));
+		clampCameraPosition(newPosition);
+		auxVector3_2.set(camera.position);
+		camera.position.set(newPosition);
+		auxVector3_2.sub(newPosition);
+		cameraMoved();
+	}
+
+	private void clampCameraPosition(final Vector3 pos) {
+		pos.x = MathUtils.clamp(pos.x, -EXTRA_LEVEL_PADDING, services.getMap().getWidth() + EXTRA_LEVEL_PADDING);
+		pos.z = MathUtils.clamp(pos.z, -EXTRA_LEVEL_PADDING, services.getMap().getDepth() + EXTRA_LEVEL_PADDING);
+	}
+
+	private boolean handleHorizontalScroll() {
+		if (lastMousePosition.x >= NecromineGame.RESOLUTION_WIDTH - SCROLL_OFFSET) {
+			horizontalTranslateCamera(CAMERA_ACCELERATION_SCALE);
+			return true;
+		} else if (lastMousePosition.x <= SCROLL_OFFSET) {
+			horizontalTranslateCamera(-CAMERA_ACCELERATION_SCALE);
+			return true;
+		}
+		return false;
+	}
+
+	private void decelerateCamera() {
+		float speedSize = cameraSpeed.len2();
+		if (speedSize < CAMERA_MIN_SPEED) {
+			cameraSpeed.setZero();
+		} else {
+			cameraSpeed.scl(CAMERA_DECELERATION_SCALE);
+		}
+	}
+
+	private void horizontalTranslateCamera(final float scrollScaleHorizontal) {
 		Vector3 direction = auxVector3_1.set(camera.direction).crs(camera.up).nor().scl(scrollScaleHorizontal);
-		setCameraTranslationClamped(direction, cameraHorizontalInterpolationAlpha);
+		float speedSize = cameraSpeed.add(direction).len2();
+		if (speedSize > CAMERA_MAX_SPEED) {
+			cameraSpeed.setLength2(CAMERA_MAX_SPEED);
+		}
 	}
 
-	private void setCameraTranslationClamped(final Vector3 direction, final float alpha) {
-		Vector3 originalPosition = auxVector3_3.set(camera.position);
-		Vector3 newPosition = auxVector3_2.set(camera.position).add(direction.x, 0, direction.z);
-		auxVector3_1.x = clampTranslation(camera.position.x, newPosition.x, services.getMap().getWidth());
-		auxVector3_1.y = camera.position.y;
-		auxVector3_1.z = clampTranslation(camera.position.z, newPosition.z, services.getMap().getDepth());
-		camera.position.interpolate(auxVector3_1, alpha, Interpolation.smooth2);
-		cameraMoved(auxVector3_1.set(camera.position).sub(originalPosition));
+	private void verticalTranslateCamera(final float scrollScaleVertical) {
+		Vector3 direction = auxVector3_1.set(camera.direction.x, 0, camera.direction.z).nor().scl(scrollScaleVertical);
+		float speedSize = cameraSpeed.add(direction).len2();
+		if (speedSize > CAMERA_MAX_SPEED) {
+			cameraSpeed.setLength2(CAMERA_MAX_SPEED);
+		}
 	}
 
-	private void cameraMoved(final Vector3 delta) {
+	@SuppressWarnings("SameParameterValue")
+	private void cameraMoved() {
 		for (CameraSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCameraMove(camera);
 		}
-		rotationPoint.add(delta);
 	}
 
-	private float clampTranslation(final float cameraFrag, final float newPositionFrag, final int edge) {
-		boolean canMoveWhenCameraOnLeftEdge = cameraFrag < 0 && newPositionFrag >= cameraFrag;
-		boolean canMoveWhenCameraOnRightEdge = cameraFrag > edge && newPositionFrag <= cameraFrag;
-		boolean isInSideMap = cameraFrag >= 0 && cameraFrag <= edge;
-		if (canMoveWhenCameraOnLeftEdge || canMoveWhenCameraOnRightEdge || isInSideMap) {
-			return newPositionFrag;
-		} else {
-			return cameraFrag;
-		}
-	}
-
-	private void handleVerticalScroll() {
+	private boolean handleVerticalScroll() {
 		if (lastMousePosition.y >= NecromineGame.RESOLUTION_HEIGHT - SCROLL_OFFSET) {
-			float diff = NecromineGame.RESOLUTION_HEIGHT - SCROLL_OFFSET - lastMousePosition.y;
-			verticalTranslateCamera(-SCROLL_SCALE, diff);
+			verticalTranslateCamera(-CAMERA_ACCELERATION_SCALE);
+			return true;
 		} else if (lastMousePosition.y <= SCROLL_OFFSET) {
-			float diff = SCROLL_OFFSET - lastMousePosition.y;
-			verticalTranslateCamera(SCROLL_SCALE, diff);
+			verticalTranslateCamera(CAMERA_ACCELERATION_SCALE);
+			return true;
 		}
-	}
-
-	private void verticalTranslateCamera(final float v, final float diff) {
-		float abs = Math.abs(diff);
-		float cameraVerticalInterpolationAlpha = MathUtils.norm(0, SCROLL_OFFSET, abs);
-		Vector3 direction = auxVector3_1.set(camera.direction).nor().scl(v);
-		setCameraTranslationClamped(direction, cameraVerticalInterpolationAlpha);
+		return false;
 	}
 
 	private void createAndInitCamera() {
@@ -139,8 +160,6 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		camera.direction.rotate(Vector3.X, -45);
 		camera.direction.rotate(Vector3.Y, 45);
 		camera.update();
-		Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
-		Intersector.intersectRayPlane(ray, groundPlane, rotationPoint);
 	}
 
 	@Override
@@ -170,9 +189,17 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Override
 	public void touchDragged(final int screenX, final int screenY) {
 		if (rotateCamera && getSystem(HudSystem.class).isMenuClosed()) {
+			defineRotationPoint(rotationPoint);
 			camera.rotateAround(rotationPoint, Vector3.Y, (lastRightPressMousePosition.x - screenX) / 2f);
+			clampCameraPosition(camera.position);
 			lastRightPressMousePosition.set(screenX, screenY);
 		}
+	}
+
+	private Vector3 defineRotationPoint(final Vector3 positionVector) {
+		Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+		Intersector.intersectRayPlane(ray, groundPlane, positionVector);
+		return positionVector;
 	}
 
 
@@ -201,7 +228,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	@Override
-	public void onPlayerSystemReady(final PlayerSystem playerSystem, Entity player) {
+	public void onPlayerSystemReady(final PlayerSystem playerSystem, final Entity player) {
 		addSystem(PlayerSystem.class, playerSystem);
 	}
 }
