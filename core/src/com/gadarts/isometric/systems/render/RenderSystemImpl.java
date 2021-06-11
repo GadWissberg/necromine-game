@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.data.CharacterSpriteData;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.decal.RelatedDecal;
 import com.gadarts.isometric.components.decal.SimpleDecalComponent;
@@ -253,16 +254,17 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 									  final Entity entity,
 									  final boolean renderCorpse) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(entity);
-		boolean dead = characterComponent.getCharacterSpriteData().getSpriteType() == SpriteType.DEAD;
+		AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
+		CharacterSpriteData characterSpriteData = characterComponent.getCharacterSpriteData();
+		boolean dead = characterSpriteData.getSpriteType() == SpriteType.LIGHT_DEATH_1 && animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime());
 		boolean isPlayerDisabled = ComponentsMapper.player.has(entity) && ComponentsMapper.player.get(entity).isDisabled();
 		if ((renderCorpse && !dead) || (!renderCorpse && dead) || isPlayerDisabled) {
 			return;
 		}
 		DecalBatch decalBatch = renderBatches.getDecalBatch();
-		AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
 		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(entity);
-		Direction direction = CharacterUtils.calculateDirectionSeenFromCamera(camera, characterComponent.getCharacterSpriteData().getFacingDirection());
-		SpriteType spriteType = characterComponent.getCharacterSpriteData().getSpriteType();
+		Direction direction = CharacterUtils.calculateDirectionSeenFromCamera(camera, characterSpriteData.getFacingDirection());
+		SpriteType spriteType = characterSpriteData.getSpriteType();
 		boolean sameSpriteType = spriteType.equals(characterDecalComponent.getSpriteType());
 		boolean sameDirection = characterDecalComponent.getDirection().equals(direction);
 		Decal decal = characterDecalComponent.getDecal();
@@ -274,10 +276,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			characterDecalComponent.initializeSprite(spriteType, direction);
 			if (ComponentsMapper.animation.has(entity)) {
 				if (spriteType.isSingleAnimation()) {
-					if (!animationComponent.getAnimation().isAnimationFinished((float) animationComponent.getStateTime())) {
+					if (!animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime())) {
 						direction = Direction.SOUTH;
-					} else if (spriteType == SpriteType.LIGHT_DEATH_1) {
-						spriteType = SpriteType.DEAD;
 					}
 				}
 				CharacterAnimation animation = null;
@@ -305,7 +305,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				if (characterDecalComponent.getSpriteType() == spriteType && currentFrame != newFrame) {
 					decal.setTextureRegion(newFrame);
 					CharacterAnimation southAnimation = null;
-					Direction facingDirection = characterComponent.getCharacterSpriteData().getFacingDirection();
+					Direction facingDirection = characterSpriteData.getFacingDirection();
 					if (spriteType.isSingleAnimation()) {
 						facingDirection = Direction.SOUTH;
 					}
@@ -317,13 +317,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 							southAnimation = generalAnim.get(spriteType, facingDirection);
 						}
 					}
-					if (southAnimation != null) {
+					if (southAnimation != null && characterSpriteData.getSpriteType() != SpriteType.LIGHT_DEATH_1) {
 						shadowDecal.setTextureRegion(southAnimation.getKeyFrames()[max(newFrame.index, 0)]);
-					}
-				} else if (characterComponent.getCharacterSpriteData().getSpriteType() == SpriteType.LIGHT_DEATH_1) {
-					if (animationComponent.getAnimation().isAnimationFinished((float) animationComponent.getStateTime())) {
-						characterComponent.getCharacterSpriteData().setFacingDirection(Direction.findDirection(auxVector2_1.set(camera.position.x, camera.position.z).sub(decalPosition.x, decalPosition.z).nor()));
-						characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.DEAD);
 					}
 				}
 			}
@@ -335,7 +330,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				environment.getLightsRenderer().setDecalColorAccordingToLights(entity, environment);
 				decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
 				decalBatch.add(decal);
-				decalBatch.add(shadowDecal);
+				if (characterSpriteData.getSpriteType() != SpriteType.LIGHT_DEATH_1) {
+					decalBatch.add(shadowDecal);
+				}
 			}
 		}
 	}
