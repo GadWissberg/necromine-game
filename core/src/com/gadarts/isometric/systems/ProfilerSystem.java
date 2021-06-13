@@ -36,7 +36,8 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	public static final String WARNING_COLOR = "[RED]";
 	private static final char SEPARATOR = '/';
 	private static final String LABEL_FPS = "FPS: ";
-	private static final String LABEL_MEMORY_USAGE = "Memory usage: ";
+	public static final int LABELS_ORIGIN_OFFSET_FROM_TOP = 100;
+	private static final String LABEL_JAVA_HEAP_USAGE = "Java heap usage: ";
 	private static final String LABEL_GL_CALL = "Total openGL calls: ";
 	private static final String LABEL_GL_DRAW_CALL = "Draw calls: ";
 	private static final String LABEL_GL_SHADER_SWITCHES = "Shader switches: ";
@@ -46,6 +47,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	private static final String LABEL_VERSION = "Version: ";
 	private static final int VERTEX_COUNT_WARNING_LIMIT = 35000;
 	private static final String SUFFIX_MB = "MB";
+	private static final String LABEL_NATIVE_HEAP_USAGE = "Native heap usage: ";
 	private GLProfiler glProfiler;
 	private StringBuilder stringBuilder;
 	private Stage stage;
@@ -77,11 +79,17 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	private void displayLabels() {
 		stringBuilder.setLength(0);
 		displayLine(LABEL_FPS, Gdx.graphics.getFramesPerSecond());
-		displayLine(LABEL_MEMORY_USAGE, Gdx.app.getJavaHeap() / (1024L * 1024L), false);
-		stringBuilder.append(' ').append(SUFFIX_MB).append('\n');
+		displayMemoryLabels();
 		displayGlProfiling();
 		stringBuilder.append("\n").append(LABEL_VERSION).append(NecromineGame.getVersionName());
 		label.setText(stringBuilder);
+	}
+
+	private void displayMemoryLabels() {
+		displayLine(LABEL_JAVA_HEAP_USAGE, Gdx.app.getJavaHeap() / (1024L * 1024L), false);
+		stringBuilder.append(' ').append(SUFFIX_MB).append('\n');
+		displayLine(LABEL_NATIVE_HEAP_USAGE, Gdx.app.getNativeHeap() / (1024L * 1024L), false);
+		stringBuilder.append(' ').append(SUFFIX_MB).append('\n');
 	}
 
 	private void displayGlProfiling() {
@@ -181,7 +189,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		BitmapFont font = new BitmapFont();
 		font.getData().markupEnabled = true;
 		label = new Label(stringBuilder, new Label.LabelStyle(font, Color.WHITE));
-		label.setPosition(0, Gdx.graphics.getHeight() - 90);
+		label.setPosition(0, Gdx.graphics.getHeight() - LABELS_ORIGIN_OFFSET_FROM_TOP);
 		stage.addActor(label);
 		label.setZIndex(0);
 		setGlProfiler();

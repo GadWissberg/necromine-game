@@ -278,7 +278,7 @@ void main() {
                     gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)-vec3(flooredX+1.0, 0.0, flooredZ)), 1.0);
                 }
             }
-            if (!frag_outside){
+            if (!frag_outside && u_apply_wall_ambient_occlusion != 1){
                 // Bottom-Right
                 if ((frag_fow_value & 2) == 0){
                     gl_FragColor.rgb *= min(2.0*length(vec3(flooredX+1.0, 0.0, flooredZ+1.0) - vec3(v_frag_pos.xyz)), 1.0);
