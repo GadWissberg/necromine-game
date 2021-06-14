@@ -91,7 +91,7 @@ public final class MapBuilder implements Disposable {
 	private static final Matrix4 auxMatrix = new Matrix4();
 	public static final int PLAYER_HEALTH = 32;
 	private final GameAssetsManager assetManager;
-	private final PooledEngine engine;
+	private PooledEngine engine;
 	private final ModelBuilder modelBuilder;
 	private final Model floorModel;
 	private final Gson gson = new Gson();
@@ -726,5 +726,9 @@ public final class MapBuilder implements Disposable {
 	public void dispose() {
 		floorModel.dispose();
 		wallCreator.dispose();
+	}
+
+	public void reset(PooledEngine engine) {
+		this.engine = engine;
 	}
 }

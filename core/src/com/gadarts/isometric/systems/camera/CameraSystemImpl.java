@@ -45,6 +45,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private static final float CAMERA_DECELERATION_SCALE = 0.9F;
 	private static final Vector3 rotationPoint = new Vector3();
 	private static final float EXTRA_LEVEL_PADDING = 16;
+	private static final float[] MENU_CAMERA_POSITION = {14, CAMERA_HEIGHT, 20};
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
 	private final Vector3 cameraSpeed = new Vector3();
@@ -64,6 +65,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		}
 		camera.update();
 	}
+
 
 	private void handleScrolling(final float deltaTime) {
 		boolean moved = handleHorizontalScroll();
@@ -230,5 +232,8 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Override
 	public void onPlayerSystemReady(final PlayerSystem playerSystem, final Entity player) {
 		addSystem(PlayerSystem.class, playerSystem);
+		if (ComponentsMapper.player.get(getSystem(PlayerSystem.class).getPlayer()).isDisabled()) {
+			camera.position.set(MENU_CAMERA_POSITION);
+		}
 	}
 }

@@ -38,6 +38,7 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	private PooledEngine engine;
 	private MapGraph map;
 	private GameAssetsManager assetManager;
+	private MapBuilder mapBuilder;
 
 	public GameServices(final GlobalGameService globalGameService, final boolean inGame, final String map) {
 		this.globalGameService = globalGameService;
@@ -62,7 +63,11 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 	}
 
 	public void createAndSetMap(final String map) {
-		MapBuilder mapBuilder = new MapBuilder(assetManager, engine);
+		if (mapBuilder == null) {
+			mapBuilder = new MapBuilder(assetManager, engine);
+		} else {
+			mapBuilder.reset(engine);
+		}
 		this.map = mapBuilder.inflateTestMap(map);
 	}
 

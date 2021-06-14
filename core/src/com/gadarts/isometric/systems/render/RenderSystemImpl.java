@@ -53,6 +53,7 @@ import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static java.lang.Math.max;
 
@@ -99,6 +100,12 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void onPlayerSystemReady(final PlayerSystem playerSystem, final Entity player) {
 		addSystem(PlayerSystem.class, playerSystem);
+		if (ComponentsMapper.player.get(getSystem(PlayerSystem.class).getPlayer()).isDisabled()) {
+			int[][] fowMap = services.getMap().getFowMap();
+			IntStream.range(0, fowMap.length)
+					.forEach(row -> IntStream.range(0, fowMap[0].length)
+							.forEach(col -> fowMap[row][col] = 1));
+		}
 	}
 
 	@Override
