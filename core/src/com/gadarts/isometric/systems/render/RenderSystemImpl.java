@@ -55,6 +55,7 @@ import com.gadarts.necromine.model.characters.SpriteType;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static com.gadarts.isometric.NecromineGame.*;
 import static java.lang.Math.max;
 
 /**
@@ -77,6 +78,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Quaternion auxQuat = new Quaternion();
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
 	private static final String MSG_FC = "Frustum culling has been %s.";
+	public static final String MSG_ACTIVATED = "activated";
+	public static final String MSG_DISABLED = "disabled";
+	private static final String MSG_FS = "Full-screen has been %s.";
 	private final DrawFlags drawFlags = new DrawFlags();
 	private final StringBuilder stringBuilder = new StringBuilder();
 	private WorldEnvironment environment;
@@ -92,7 +96,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void init(final GameServices services) {
 		super.init(services);
-		environment = new WorldEnvironment(services.getMap().getAmbient());
 		skillFlowerFont = new BitmapFont();
 		skillFlowerGlyph = new GlyphLayout();
 	}
@@ -402,6 +405,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		addSystem(CameraSystem.class, cameraSystem);
 		camera = cameraSystem.getCamera();
+		environment = new WorldEnvironment(services.getMap().getAmbient(), camera);
 		GameAssetsManager assetManager = services.getAssetManager();
 		this.renderBatches = new RenderBatches(camera, assetManager, services.getMap());
 		environment.initialize(getEngine().getEntitiesFor(Family.all(LightComponent.class).get()));
@@ -460,14 +464,36 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	@Override
 	public boolean onCommandRun(final ConsoleCommands command, final ConsoleCommandResult consoleCommandResult) {
-		boolean result = false;
 		if (command == ConsoleCommandsList.FRUSTUM_CULLING) {
-			frustumCull = !frustumCull;
-			String msg = frustumCull ? String.format(MSG_FC, "activated") : String.format(MSG_FC, "disabled");
-			consoleCommandResult.setMessage(msg);
-			result = true;
+			handleFrustumCullingCommand(consoleCommandResult);
+			return true;
+		} else if (command == ConsoleCommandsList.FULL_SCREEN) {
+			handleFullScreenCommand(consoleCommandResult);
+			return true;
 		}
-		return result;
+		return false;
+	}
+
+	private void handleFrustumCullingCommand(final ConsoleCommandResult consoleCommandResult) {
+		frustumCull = !frustumCull;
+		String msg = frustumCull ? String.format(MSG_FC, MSG_ACTIVATED) : String.format(MSG_FC, MSG_DISABLED);
+		consoleCommandResult.setMessage(msg);
+	}
+
+	private void handleFullScreenCommand(final ConsoleCommandResult result) {
+		boolean fullScreen = Gdx.graphics.isFullscreen();
+		if (!fullScreen) {
+			enableFullScreen();
+		} else {
+			Gdx.graphics.setWindowedMode(WINDOWED_RESOLUTION_WIDTH, WINDOWED_RESOLUTION_HEIGHT);
+		}
+		result.setMessage(fullScreen ? String.format(MSG_FS, MSG_ACTIVATED) : String.format(MSG_FS, MSG_DISABLED));
+		subscribers.forEach(sub -> sub.onFullScreenToggle(Gdx.graphics.isFullscreen()));
+	}
+
+	private void enableFullScreen() {
+		Gdx.graphics.setWindowedMode(FULL_SCREEN_RESOLUTION_WIDTH, FULL_SCREEN_RESOLUTION_HEIGHT);
+		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 	}
 
 	@Override

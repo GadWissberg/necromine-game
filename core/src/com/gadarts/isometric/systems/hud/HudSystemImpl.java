@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gadarts.isometric.GlobalGameService;
 import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.components.ComponentsMapper;
@@ -61,6 +62,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.badlogic.gdx.Application.LOG_DEBUG;
+import static com.gadarts.isometric.NecromineGame.*;
+import static com.gadarts.isometric.utils.DefaultGameSettings.FULL_SCREEN;
 
 public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> implements HudSystem,
 		InputSystemEventsSubscriber,
@@ -105,11 +108,17 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	public void init(final GameServices services) {
 		super.init(services);
 		Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		FitViewport fitViewport = new FitViewport(NecromineGame.RESOLUTION_WIDTH, NecromineGame.RESOLUTION_HEIGHT);
-		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), services.getSoundPlayer());
+		createStage(services, player);
 		addHudTable();
 		cursor = getEngine().getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 		stage.addActor(services.getConsoleImpl());
+	}
+
+	private void createStage(final GameServices services, final Entity player) {
+		int width = FULL_SCREEN ? FULL_SCREEN_RESOLUTION_WIDTH : WINDOWED_RESOLUTION_WIDTH;
+		int height = FULL_SCREEN ? FULL_SCREEN_RESOLUTION_HEIGHT : WINDOWED_RESOLUTION_HEIGHT;
+		FitViewport fitViewport = new FitViewport(width, height);
+		stage = new GameStage(fitViewport, ComponentsMapper.player.get(player), services.getSoundPlayer());
 	}
 
 	@Override
@@ -417,5 +426,12 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	@Override
 	public void onConsoleDeactivated() {
 
+	}
+
+	@Override
+	public void onFullScreenToggle(final boolean fullScreen) {
+		Viewport viewport = stage.getViewport();
+		viewport.setScreenWidth((fullScreen ? FULL_SCREEN_RESOLUTION_WIDTH : WINDOWED_RESOLUTION_WIDTH));
+		viewport.setScreenHeight((fullScreen ? FULL_SCREEN_RESOLUTION_HEIGHT : WINDOWED_RESOLUTION_HEIGHT));
 	}
 }

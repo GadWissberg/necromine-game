@@ -7,7 +7,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
-import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -16,18 +15,21 @@ import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
-import com.gadarts.isometric.utils.DefaultGameSettings;
+import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import lombok.Getter;
+
+import static com.gadarts.isometric.NecromineGame.*;
+import static com.gadarts.isometric.utils.DefaultGameSettings.DEBUG_INPUT;
+import static com.gadarts.isometric.utils.DefaultGameSettings.FULL_SCREEN;
 
 
 public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscriber>
 		implements CameraSystem,
 		PlayerSystemEventsSubscriber,
 		InputSystemEventsSubscriber,
-		HudSystemEventsSubscriber {
+		HudSystemEventsSubscriber,
+		RenderSystemEventsSubscriber {
 
-	public static final int VIEWPORT_WIDTH = NecromineGame.RESOLUTION_WIDTH / 75;
-	public static final int VIEWPORT_HEIGHT = NecromineGame.RESOLUTION_HEIGHT / 75;
 	public static final int CAMERA_HEIGHT = 15;
 	public static final float FAR = 100f;
 	public static final float CAMERA_ACCELERATION_SCALE = 0.24f;
@@ -53,11 +55,14 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Getter
 	private OrthographicCamera camera;
 
+	public CameraSystemImpl() {
+	}
+
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
 		HudSystem hudSystem = getSystem(HudSystem.class);
-		if (!DefaultGameSettings.DEBUG_INPUT && !rotateCamera && !hudSystem.hasOpenWindows() && hudSystem.isMenuClosed()) {
+		if (!DEBUG_INPUT && !rotateCamera && !hudSystem.hasOpenWindows() && hudSystem.isMenuClosed()) {
 			handleScrolling(deltaTime);
 		}
 		if (ComponentsMapper.player.get(getSystem(PlayerSystem.class).getPlayer()).isDisabled()) {
@@ -93,7 +98,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	private boolean handleHorizontalScroll() {
-		if (lastMousePosition.x >= NecromineGame.RESOLUTION_WIDTH - SCROLL_OFFSET) {
+		if (lastMousePosition.x >= Gdx.graphics.getWidth() - SCROLL_OFFSET) {
 			horizontalTranslateCamera(CAMERA_ACCELERATION_SCALE);
 			return true;
 		} else if (lastMousePosition.x <= SCROLL_OFFSET) {
@@ -136,7 +141,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	private boolean handleVerticalScroll() {
-		if (lastMousePosition.y >= NecromineGame.RESOLUTION_HEIGHT - SCROLL_OFFSET) {
+		if (lastMousePosition.y >= Gdx.graphics.getHeight() - SCROLL_OFFSET) {
 			verticalTranslateCamera(-CAMERA_ACCELERATION_SCALE);
 			return true;
 		} else if (lastMousePosition.y <= SCROLL_OFFSET) {
@@ -147,7 +152,9 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	private void createAndInitCamera() {
-		OrthographicCamera cam = new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
+		int viewportWidth = (FULL_SCREEN ? FULL_SCREEN_RESOLUTION_WIDTH : WINDOWED_RESOLUTION_WIDTH) / 75;
+		int viewportHeight = (FULL_SCREEN ? FULL_SCREEN_RESOLUTION_HEIGHT : WINDOWED_RESOLUTION_HEIGHT) / 75;
+		OrthographicCamera cam = new OrthographicCamera(viewportWidth, viewportHeight);
 		cam.near = NEAR;
 		cam.far = FAR;
 		cam.update();
@@ -198,10 +205,9 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		}
 	}
 
-	private Vector3 defineRotationPoint(final Vector3 positionVector) {
+	private void defineRotationPoint(final Vector3 positionVector) {
 		Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
 		Intersector.intersectRayPlane(ray, groundPlane, positionVector);
-		return positionVector;
 	}
 
 
@@ -235,5 +241,11 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		if (ComponentsMapper.player.get(getSystem(PlayerSystem.class).getPlayer()).isDisabled()) {
 			camera.position.set(MENU_CAMERA_POSITION);
 		}
+	}
+
+	@Override
+	public void onFullScreenToggle(final boolean fullScreen) {
+		camera.viewportWidth = (fullScreen ? FULL_SCREEN_RESOLUTION_WIDTH : WINDOWED_RESOLUTION_WIDTH) / 75;
+		camera.viewportHeight = (fullScreen ? FULL_SCREEN_RESOLUTION_HEIGHT : WINDOWED_RESOLUTION_HEIGHT) / 75;
 	}
 }

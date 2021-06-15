@@ -20,6 +20,7 @@ public enum ConsoleCommandsList implements ConsoleCommands {
 			new SkipRenderCommand.EnvironmentObjectParameter(),
 			new SkipRenderCommand.FowParameter()),
 	FRUSTUM_CULLING("fc", new FrustumCullingCommand(), "Toggles frustum culling."),
+	FULL_SCREEN("fs", new FullScreenCommand(), "Toggles full-screen mode."),
 	HELP("?", new HelpCommand(), "Displays commands list.");
 
 	public static final String DESCRIPTION_PARAMETERS = " Parameters:%s";

@@ -24,7 +24,7 @@ import lombok.Setter;
 import java.util.Arrays;
 
 @Getter
-public class GameServices implements ConsoleEventsSubscriber, Disposable {
+public class GameServices implements ConsoleEventsSubscriber, Disposable, ServicesManager {
 	public static final String BOUNDING_BOX_PREFIX = "box_";
 	private static final String MSG_ENABLED = "%s enabled.";
 	private static final String MSG_DISABLED = "%s disabled.";
@@ -160,15 +160,14 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable {
 
 	@Override
 	public boolean onCommandRun(final ConsoleCommands command, final ConsoleCommandResult consoleCommandResult) {
-		boolean result = false;
 		if (command == ConsoleCommandsList.SFX) {
 			applySfxCommand(consoleCommandResult);
-			result = true;
+			return true;
 		} else if (command == ConsoleCommandsList.MELODY) {
 			applyMusicCommand(consoleCommandResult);
-			result = true;
+			return true;
 		}
-		return result;
+		return false;
 	}
 
 	private void applyMusicCommand(final ConsoleCommandResult consoleCommandResult) {

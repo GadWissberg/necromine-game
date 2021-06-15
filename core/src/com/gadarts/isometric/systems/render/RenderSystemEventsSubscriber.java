@@ -12,4 +12,8 @@ public interface RenderSystemEventsSubscriber extends SystemEventsSubscriber {
 	default void onRenderSystemReady(final RenderSystem renderSystem) {
 
 	}
+
+	default void onFullScreenToggle(final boolean fullScreen) {
+
+	}
 }

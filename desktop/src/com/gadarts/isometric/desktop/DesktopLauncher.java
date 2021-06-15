@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.gadarts.isometric.NecromineGame.*;
+
 public class DesktopLauncher {
 
 
@@ -38,8 +40,8 @@ public class DesktopLauncher {
 
 	private static LwjglApplicationConfiguration createGameConfig() {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width = NecromineGame.RESOLUTION_WIDTH;
-		config.height = NecromineGame.RESOLUTION_HEIGHT;
+		config.width = DefaultGameSettings.FULL_SCREEN ? FULL_SCREEN_RESOLUTION_WIDTH : WINDOWED_RESOLUTION_WIDTH;
+		config.height = DefaultGameSettings.FULL_SCREEN ? FULL_SCREEN_RESOLUTION_HEIGHT : WINDOWED_RESOLUTION_HEIGHT;
 		config.resizable = false;
 		config.samples = 3;
 		config.fullscreen = DefaultGameSettings.FULL_SCREEN;
