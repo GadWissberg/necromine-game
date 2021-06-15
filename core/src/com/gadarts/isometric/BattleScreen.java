@@ -56,6 +56,7 @@ public class BattleScreen implements Screen, GlobalGameService {
 
 	@Override
 	public void startNewGame(final String map) {
+		System.gc();
 		services.createAndSetEngine();
 		services.createAndSetMap(map);
 		services.setInGame(true);
