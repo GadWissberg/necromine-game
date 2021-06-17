@@ -111,8 +111,7 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable, Servic
 				spriteType.getAnimationDuration(),
 				atlas.findRegions(name),
 				spriteType.getPlayMode(),
-				dir
-		);
+				dir);
 	}
 
 	private void afterFilesAreLoaded() {

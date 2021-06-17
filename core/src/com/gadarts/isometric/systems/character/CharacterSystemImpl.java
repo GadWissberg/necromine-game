@@ -234,7 +234,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void handleModeWithNonLoopingAnimation(final Entity character) {
 		AnimationComponent animationComponent = ComponentsMapper.animation.get(character);
 		Animation<TextureAtlas.AtlasRegion> animation = animationComponent.getAnimation();
-		if (animation.isAnimationFinished((float) animationComponent.getStateTime())) {
+		if (animation.isAnimationFinished(animationComponent.getStateTime())) {
 			SpriteType spriteType = ComponentsMapper.character.get(character).getCharacterSpriteData().getSpriteType();
 			if (spriteType.isAddReverse()) {
 				if (animationComponent.isDoingReverse()) {
@@ -266,7 +266,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterSoundData soundData = characterComponent.getSoundData();
 		SoundPlayer soundPlayer = services.getSoundPlayer();
 		if (healthData.getHp() <= 0) {
-			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.LIGHT_DEATH_1);
+			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.randomLightDeath());
 			if (ComponentsMapper.animation.has(character)) {
 				ComponentsMapper.animation.get(character).resetStateTime();
 			}

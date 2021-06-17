@@ -350,6 +350,7 @@
             <key type="filename">../sprites/anubis/light_death_2_9.png</key>
             <key type="filename">../sprites/anubis/light_death_3_0.png</key>
             <key type="filename">../sprites/anubis/light_death_3_1.png</key>
+            <key type="filename">../sprites/anubis/light_death_3_10.png</key>
             <key type="filename">../sprites/anubis/light_death_3_2.png</key>
             <key type="filename">../sprites/anubis/light_death_3_3.png</key>
             <key type="filename">../sprites/anubis/light_death_3_4.png</key>
@@ -357,6 +358,7 @@
             <key type="filename">../sprites/anubis/light_death_3_6.png</key>
             <key type="filename">../sprites/anubis/light_death_3_7.png</key>
             <key type="filename">../sprites/anubis/light_death_3_8.png</key>
+            <key type="filename">../sprites/anubis/light_death_3_9.png</key>
             <key type="filename">../sprites/anubis/pain_east_0.png</key>
             <key type="filename">../sprites/anubis/pain_east_1.png</key>
             <key type="filename">../sprites/anubis/pain_north_0.png</key>
@@ -710,6 +712,8 @@
             <filename>../sprites/anubis/light_death_2_0.psd</filename>
             <filename>../sprites/anubis/light_death_2_8.png</filename>
             <filename>../sprites/anubis/light_death_2_9.png</filename>
+            <filename>../sprites/anubis/light_death_3_10.png</filename>
+            <filename>../sprites/anubis/light_death_3_9.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

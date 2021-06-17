@@ -266,7 +266,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		CharacterComponent characterComponent = ComponentsMapper.character.get(entity);
 		AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
 		CharacterSpriteData characterSpriteData = characterComponent.getCharacterSpriteData();
-		boolean dead = characterSpriteData.getSpriteType() == SpriteType.LIGHT_DEATH_1 && animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime());
+		boolean dead = characterSpriteData.getSpriteType().isDeath() && animationComponent.getAnimation().isAnimationFinished(animationComponent.getStateTime());
 		boolean isPlayerDisabled = ComponentsMapper.player.has(entity) && ComponentsMapper.player.get(entity).isDisabled();
 		if ((renderCorpse && !dead) || (!renderCorpse && dead) || isPlayerDisabled) {
 			return;
@@ -327,7 +327,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 							southAnimation = generalAnim.get(spriteType, facingDirection);
 						}
 					}
-					if (southAnimation != null && characterSpriteData.getSpriteType() != SpriteType.LIGHT_DEATH_1) {
+					if (southAnimation != null && !characterSpriteData.getSpriteType().isDeath()) {
 						shadowDecal.setTextureRegion(southAnimation.getKeyFrames()[max(newFrame.index, 0)]);
 					}
 				}
@@ -340,7 +340,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				environment.getLightsRenderer().setDecalColorAccordingToLights(entity, environment);
 				decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
 				decalBatch.add(decal);
-				if (characterSpriteData.getSpriteType() != SpriteType.LIGHT_DEATH_1) {
+				if (!characterSpriteData.getSpriteType().isDeath()) {
 					decalBatch.add(shadowDecal);
 				}
 			}

@@ -1188,173 +1188,173 @@ light_death_3
   index: 1
 light_death_3
   rotate: false
-  xy: 1280, 768
+  xy: 1408, 768
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
 light_death_3
   rotate: false
-  xy: 1408, 768
+  xy: 1536, 768
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 3
 light_death_3
   rotate: false
-  xy: 1536, 768
+  xy: 1664, 768
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 4
 light_death_3
   rotate: false
-  xy: 1664, 768
+  xy: 1792, 768
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 5
 light_death_3
   rotate: false
-  xy: 1792, 768
+  xy: 1920, 768
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 6
 light_death_3
   rotate: false
-  xy: 1920, 768
+  xy: 896, 896
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 7
 light_death_3
   rotate: false
-  xy: 896, 896
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 8
-pain_east
-  rotate: false
   xy: 896, 1024
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 0
-pain_east
+  index: 8
+light_death_3
   rotate: false
   xy: 896, 1152
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 1
-pain_north
+  index: 9
+light_death_3
+  rotate: false
+  xy: 1280, 768
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 10
+pain_east
   rotate: false
   xy: 896, 1280
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-pain_north
+pain_east
   rotate: false
   xy: 896, 1408
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-pain_north_east
+pain_north
   rotate: false
   xy: 896, 1536
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-pain_north_east
+pain_north
   rotate: false
   xy: 896, 1664
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-pain_north_west
+pain_north_east
   rotate: false
   xy: 896, 1792
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-pain_north_west
+pain_north_east
   rotate: false
   xy: 896, 1920
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-pain_south
+pain_north_west
   rotate: false
   xy: 1024, 896
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-pain_south
+pain_north_west
   rotate: false
   xy: 1152, 896
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-pain_south_east
+pain_south
   rotate: false
   xy: 1280, 896
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-pain_south_east
+pain_south
   rotate: false
   xy: 1408, 896
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-pain_south_west
+pain_south_east
   rotate: false
   xy: 1536, 896
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-pain_south_west
+pain_south_east
   rotate: false
   xy: 1664, 896
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-pain_west
+pain_south_west
   rotate: false
   xy: 1792, 896
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-pain_west
+pain_south_west
   rotate: false
   xy: 1920, 896
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-run_east
+pain_west
   rotate: false
   xy: 1024, 1024
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-run_east
+pain_west
   rotate: false
   xy: 1024, 1152
   size: 128, 128
@@ -1367,430 +1367,450 @@ run_east
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 2
+  index: 0
 run_east
   rotate: false
   xy: 1024, 1408
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 3
+  index: 1
 run_east
   rotate: false
   xy: 1024, 1536
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 4
+  index: 2
 run_east
   rotate: false
   xy: 1024, 1664
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 5
+  index: 3
 run_east
   rotate: false
   xy: 1024, 1792
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 6
+  index: 4
 run_east
   rotate: false
   xy: 1024, 1920
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 7
-run_north
+  index: 5
+run_east
   rotate: false
   xy: 1152, 1024
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 0
-run_north
+  index: 6
+run_east
   rotate: false
   xy: 1280, 1024
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 1
+  index: 7
 run_north
   rotate: false
   xy: 1408, 1024
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 2
+  index: 0
 run_north
   rotate: false
   xy: 1536, 1024
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 3
+  index: 1
 run_north
   rotate: false
   xy: 1664, 1024
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 4
+  index: 2
 run_north
   rotate: false
   xy: 1792, 1024
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 5
+  index: 3
 run_north
   rotate: false
   xy: 1920, 1024
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 6
+  index: 4
 run_north
   rotate: false
   xy: 1152, 1152
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 7
-run_north_east
+  index: 5
+run_north
   rotate: false
   xy: 1152, 1280
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 0
-run_north_east
+  index: 6
+run_north
   rotate: false
   xy: 1152, 1408
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 1
+  index: 7
 run_north_east
   rotate: false
   xy: 1152, 1536
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 2
+  index: 0
 run_north_east
   rotate: false
   xy: 1152, 1664
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 3
+  index: 1
 run_north_east
   rotate: false
   xy: 1152, 1792
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 4
+  index: 2
 run_north_east
   rotate: false
   xy: 1152, 1920
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 5
+  index: 3
 run_north_east
   rotate: false
   xy: 1280, 1152
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 6
+  index: 4
 run_north_east
   rotate: false
   xy: 1408, 1152
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 7
-run_north_west
+  index: 5
+run_north_east
   rotate: false
   xy: 1536, 1152
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 0
-run_north_west
+  index: 6
+run_north_east
   rotate: false
   xy: 1664, 1152
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 1
+  index: 7
 run_north_west
   rotate: false
   xy: 1792, 1152
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 2
+  index: 0
 run_north_west
   rotate: false
   xy: 1920, 1152
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 3
+  index: 1
 run_north_west
   rotate: false
   xy: 1280, 1280
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 4
+  index: 2
 run_north_west
   rotate: false
   xy: 1280, 1408
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 5
+  index: 3
 run_north_west
   rotate: false
   xy: 1280, 1536
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 6
+  index: 4
 run_north_west
   rotate: false
   xy: 1280, 1664
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 7
-run_south
+  index: 5
+run_north_west
   rotate: false
   xy: 1280, 1792
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 0
-run_south
+  index: 6
+run_north_west
   rotate: false
   xy: 1280, 1920
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 1
+  index: 7
 run_south
   rotate: false
   xy: 1408, 1280
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 2
+  index: 0
 run_south
   rotate: false
   xy: 1536, 1280
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 3
+  index: 1
 run_south
   rotate: false
   xy: 1664, 1280
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 4
+  index: 2
 run_south
   rotate: false
   xy: 1792, 1280
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 5
+  index: 3
 run_south
   rotate: false
   xy: 1920, 1280
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 6
+  index: 4
 run_south
   rotate: false
   xy: 1408, 1408
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 7
-run_south_east
+  index: 5
+run_south
   rotate: false
   xy: 1408, 1536
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 0
-run_south_east
+  index: 6
+run_south
   rotate: false
   xy: 1408, 1664
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 1
+  index: 7
 run_south_east
   rotate: false
   xy: 1408, 1792
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 2
+  index: 0
 run_south_east
   rotate: false
   xy: 1408, 1920
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 3
+  index: 1
 run_south_east
   rotate: false
   xy: 1536, 1408
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 4
+  index: 2
 run_south_east
   rotate: false
   xy: 1664, 1408
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 5
+  index: 3
 run_south_east
   rotate: false
   xy: 1792, 1408
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 6
+  index: 4
 run_south_east
   rotate: false
   xy: 1920, 1408
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 7
-run_south_west
+  index: 5
+run_south_east
   rotate: false
   xy: 1536, 1536
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 0
-run_south_west
+  index: 6
+run_south_east
   rotate: false
   xy: 1536, 1664
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 1
+  index: 7
 run_south_west
   rotate: false
   xy: 1536, 1792
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 2
+  index: 0
 run_south_west
   rotate: false
   xy: 1536, 1920
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 3
+  index: 1
 run_south_west
   rotate: false
   xy: 1664, 1536
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 4
+  index: 2
 run_south_west
   rotate: false
   xy: 1792, 1536
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 5
+  index: 3
 run_south_west
   rotate: false
   xy: 1920, 1536
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 6
+  index: 4
 run_south_west
   rotate: false
   xy: 1664, 1664
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 7
-run_west
+  index: 5
+run_south_west
   rotate: false
   xy: 1664, 1792
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 0
-run_west
+  index: 6
+run_south_west
   rotate: false
   xy: 1664, 1920
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 1
+  index: 7
 run_west
   rotate: false
   xy: 1792, 1664
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 2
+  index: 0
 run_west
   rotate: false
   xy: 1920, 1664
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 3
+  index: 1
 run_west
   rotate: false
   xy: 1792, 1792
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 4
+  index: 2
 run_west
   rotate: false
   xy: 1792, 1920
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 5
+  index: 3
 run_west
   rotate: false
   xy: 1920, 1792
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
-  index: 6
+  index: 4
 run_west
   rotate: false
   xy: 1920, 1920
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 5
+
+anubis-1.png
+size: 256, 256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+run_west
+  rotate: false
+  xy: 0, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 6
+run_west
+  rotate: false
+  xy: 0, 128
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
