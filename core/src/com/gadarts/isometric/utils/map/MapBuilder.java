@@ -43,7 +43,6 @@ import com.gadarts.isometric.utils.Utils;
 import com.gadarts.necromine.WallCreator;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.Assets.Atlases;
-import com.gadarts.necromine.assets.Assets.FloorsTextures;
 import com.gadarts.necromine.assets.Assets.Sounds;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.assets.MapJsonKeys;
@@ -64,7 +63,7 @@ import java.util.stream.IntStream;
 
 import static com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP;
 import static com.gadarts.isometric.components.FloorComponent.*;
-import static com.gadarts.necromine.assets.Assets.FloorsTextures.MISSING;
+import static com.gadarts.necromine.assets.Assets.SurfaceTextures.MISSING;
 import static com.gadarts.necromine.assets.MapJsonKeys.*;
 import static com.gadarts.necromine.model.characters.CharacterTypes.*;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
@@ -502,7 +501,7 @@ public final class MapBuilder implements Disposable {
 		JsonElement east = tileJsonObject.get(EAST);
 		if (height != mapGraph.getNode(eastCol, node.getRow()).getHeight() && east != null) {
 			JsonObject asJsonObject = east.getAsJsonObject();
-			FloorsTextures definition = FloorsTextures.valueOf(asJsonObject.get(MapJsonKeys.TEXTURE).getAsString());
+			Assets.SurfaceTextures definition = Assets.SurfaceTextures.valueOf(asJsonObject.get(MapJsonKeys.TEXTURE).getAsString());
 			if (definition != MISSING) {
 				MapNodeData nodeData = new MapNodeData(row, col, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 				nodeData.setEastWall(WallCreator.createEastWall(nodeData, wallCreator.getWallModel(), assetManager, definition));
@@ -530,7 +529,7 @@ public final class MapBuilder implements Disposable {
 		JsonElement south = tileJsonObject.get(MapJsonKeys.SOUTH);
 		if (height != mapGraph.getNode(col, southNodeRow).getHeight() && south != null) {
 			JsonObject asJsonObject = south.getAsJsonObject();
-			FloorsTextures definition = FloorsTextures.valueOf(asJsonObject.get(MapJsonKeys.TEXTURE).getAsString());
+			Assets.SurfaceTextures definition = Assets.SurfaceTextures.valueOf(asJsonObject.get(MapJsonKeys.TEXTURE).getAsString());
 			if (definition != MISSING) {
 				MapNodeData nodeData = new MapNodeData(row, col, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 				nodeData.setSouthWall(WallCreator.createSouthWall(nodeData, wallCreator.getWallModel(), assetManager, definition));
@@ -558,7 +557,7 @@ public final class MapBuilder implements Disposable {
 		JsonElement west = tileJsonObject.get(WEST);
 		if (westNodeCol >= 0 && height != mapGraph.getNode(westNodeCol, row).getHeight() && west != null) {
 			JsonObject asJsonObject = west.getAsJsonObject();
-			FloorsTextures definition = FloorsTextures.valueOf(asJsonObject.get(MapJsonKeys.TEXTURE).getAsString());
+			Assets.SurfaceTextures definition = Assets.SurfaceTextures.valueOf(asJsonObject.get(MapJsonKeys.TEXTURE).getAsString());
 			if (definition != MISSING) {
 				MapNodeData nodeData = new MapNodeData(row, col, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 				nodeData.setWestWall(WallCreator.createWestWall(nodeData, wallCreator.getWallModel(), assetManager, definition));
@@ -585,7 +584,7 @@ public final class MapBuilder implements Disposable {
 		JsonElement north = tileJsonObject.get(MapJsonKeys.NORTH);
 		if (height != mapGraph.getNode(col, northNodeRow).getHeight() && north != null) {
 			JsonObject asJsonObject = north.getAsJsonObject();
-			FloorsTextures definition = FloorsTextures.valueOf(asJsonObject.get(MapJsonKeys.TEXTURE).getAsString());
+			Assets.SurfaceTextures definition = Assets.SurfaceTextures.valueOf(asJsonObject.get(MapJsonKeys.TEXTURE).getAsString());
 			if (definition != MISSING) {
 				MapNodeData n = new MapNodeData(row, col, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 				n.setNorthWall(WallCreator.createNorthWall(n, wallCreator.getWallModel(), assetManager, definition));
@@ -627,7 +626,7 @@ public final class MapBuilder implements Disposable {
 	}
 
 	private void inflateNode(final int row, final int col, final byte chr) {
-		FloorsTextures definition = FloorsTextures.values()[chr - 1];
+		Assets.SurfaceTextures definition = Assets.SurfaceTextures.values()[chr - 1];
 		if (definition != MISSING) {
 			GameModelInstance mi = new GameModelInstance(floorModel);
 			defineNode(row, col, definition, mi);
@@ -637,7 +636,7 @@ public final class MapBuilder implements Disposable {
 		}
 	}
 
-	private void defineNode(final int row, final int col, final FloorsTextures definition, final GameModelInstance mi) {
+	private void defineNode(final int row, final int col, final Assets.SurfaceTextures definition, final GameModelInstance mi) {
 		mi.materials.get(0).set(TextureAttribute.createDiffuse(assetManager.getTexture(definition)));
 		mi.transform.setTranslation(auxVector3_1.set(col + 0.5f, 0, row + 0.5f));
 		mi.getAdditionalRenderData().setBoundingBox(mi.calculateBoundingBox(auxBoundingBox));
@@ -730,7 +729,7 @@ public final class MapBuilder implements Disposable {
 		wallCreator.dispose();
 	}
 
-	public void reset(PooledEngine engine) {
+	public void reset(final PooledEngine engine) {
 		this.engine = engine;
 	}
 }

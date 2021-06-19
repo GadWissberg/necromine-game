@@ -220,7 +220,9 @@ void main() {
                             float attenuation = 4.0 * extra.x / (1.0 + (0.01*distance) + (0.9*distance*distance));
                             float dot_value = dot(v_normal, lightDir);
                             float intensity = max(dot_value, 0.0);
-                            gl_FragColor.rgb += (diffuse.rgb * (attenuation * intensity));
+                            vec3 value_to_add = (diffuse.rgb * (attenuation * intensity));
+                            value_to_add *= distance > (extra.y*5.0/6.0) ? 0.5 : 1.0;
+                            gl_FragColor.rgb += value_to_add;
                         }
                     }
                     gl_FragColor.rgb = (getShadow() == 0.0 ? gl_FragColor.rgb * 0.5 : gl_FragColor.rgb) + emissive.rgb;
