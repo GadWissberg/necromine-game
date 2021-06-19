@@ -65,9 +65,9 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		this.characterEntities = engine.getEntitiesFor(Family.all(CharacterComponent.class).get());
 		this.nodes = new Array<>(mapSize.width * mapSize.height);
 		this.fowMap = new int[mapSize.height][mapSize.width];
-		for (int x = 0; x < mapSize.width; x++) {
-			for (int y = 0; y < mapSize.height; y++) {
-				nodes.add(new MapGraphNode(x, y, MapNodesTypes.values()[MapNodesTypes.PASSABLE_NODE.ordinal()], 8));
+		for (int row = 0; row < mapSize.height; row++) {
+			for (int col = 0; col < mapSize.width; col++) {
+				nodes.add(new MapGraphNode(col, row, MapNodesTypes.values()[MapNodesTypes.PASSABLE_NODE.ordinal()], 8));
 			}
 		}
 		ImmutableArray<Entity> floorEntities = engine.getEntitiesFor(Family.all(FloorComponent.class).get());
@@ -79,18 +79,18 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	void applyConnections() {
-		for (int x = 0; x < mapSize.width; x++) {
-			int idx = x * mapSize.width;
-			for (int y = 0; y < mapSize.height; y++) {
-				MapGraphNode n = nodes.get(idx + y);
-				if (x > 0) addConnection(n, -1, 0);
-				if (x > 0 && y < mapSize.height - 1) addConnection(n, -1, 1);
-				if (x > 0 && y > 0) addConnection(n, -1, -1);
-				if (y > 0) addConnection(n, 0, -1);
-				if (y > 0 && x < mapSize.width - 1) addConnection(n, 1, -1);
-				if (x < mapSize.width - 1) addConnection(n, 1, 0);
-				if (x < mapSize.width - 1 && y < mapSize.height - 1) addConnection(n, 1, 1);
-				if (y < mapSize.height - 1) addConnection(n, 0, 1);
+		for (int row = 0; row < mapSize.height; row++) {
+			int rows = row * mapSize.width;
+			for (int col = 0; col < mapSize.width; col++) {
+				MapGraphNode n = nodes.get(rows + col);
+				if (col > 0) addConnection(n, -1, 0);
+				if (col > 0 && row < mapSize.height - 1) addConnection(n, -1, 1);
+				if (col > 0 && row > 0) addConnection(n, -1, -1);
+				if (row > 0) addConnection(n, 0, -1);
+				if (row > 0 && col < mapSize.width - 1) addConnection(n, 1, -1);
+				if (col < mapSize.width - 1) addConnection(n, 1, 0);
+				if (col < mapSize.width - 1 && row < mapSize.height - 1) addConnection(n, 1, 1);
+				if (row < mapSize.height - 1) addConnection(n, 0, 1);
 			}
 		}
 	}
@@ -129,7 +129,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	public MapGraphNode getNode(final int col, final int row) {
-		int index = Math.max(Math.min(col, mapSize.width - 1) * mapSize.width + Math.min(row, mapSize.height - 1), 0);
+		int index = Math.max(Math.min(row, mapSize.height) * mapSize.width + Math.min(col, mapSize.width), 0);
 		return nodes.get(index);
 	}
 

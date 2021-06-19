@@ -59,7 +59,7 @@ public class MapGraphNode {
 	}
 
 	public int getIndex(final Dimension mapSize) {
-		return col * mapSize.width + row;
+		return row * mapSize.width + col;
 	}
 
 	public MapGraphNode set(final MapGraphNode newValue) {
