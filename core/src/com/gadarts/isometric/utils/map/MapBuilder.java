@@ -90,6 +90,8 @@ public final class MapBuilder implements Disposable {
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
 	private static final Matrix4 auxMatrix = new Matrix4();
 	public static final int PLAYER_HEALTH = 32;
+	public static final float INDEPENDENT_LIGHT_RADIUS = 2f;
+	public static final float INDEPENDENT_LIGHT_INTENSITY = 1f;
 	private final GameAssetsManager assetManager;
 	private PooledEngine engine;
 	private final ModelBuilder modelBuilder;
@@ -291,7 +293,7 @@ public final class MapBuilder implements Disposable {
 			Vector3 position = auxVector3_1.set(col + 0.5f, 2f, row + 0.5f);
 			position.add(0, mapGraph.getNode(col, row).getHeight(), 0);
 			EntityBuilder.beginBuildingEntity(engine)
-					.addLightComponent(position, 1f, 4f)
+					.addLightComponent(position, INDEPENDENT_LIGHT_INTENSITY, INDEPENDENT_LIGHT_RADIUS)
 					.finishAndAddToEngine();
 		});
 	}
