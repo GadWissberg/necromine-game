@@ -325,7 +325,7 @@ public final class MapBuilder implements Disposable {
 											final Array<TextureAtlas.AtlasRegion> f,
 											final Vector3 relativePosition) {
 		Entity entity = EntityBuilder.beginBuildingEntity(engine)
-				.addSimpleDecalComponent(position.add(relativePosition), f.get(0), true)
+				.addSimpleDecalComponent(position.add(relativePosition), f.get(0), true, true)
 				.addAnimationComponent(r.getFrameDuration(), new Animation<>(r.getFrameDuration(), f, LOOP))
 				.finishAndAddToEngine();
 		ComponentsMapper.simpleDecal.get(entity).setAffectedByFow(true);

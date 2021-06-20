@@ -15,6 +15,7 @@ import java.util.List;
 public class SimpleDecalComponent implements GameComponent {
 	private Decal decal;
 	private boolean billboard;
+	private boolean animatedByAnimationComponent;
 
 	@Setter
 	private boolean affectedByFow;
@@ -36,14 +37,18 @@ public class SimpleDecalComponent implements GameComponent {
 	}
 
 	public void init(final Texture texture, final boolean visible, final boolean billboard) {
-		init(new TextureRegion(texture), visible, billboard);
+		init(new TextureRegion(texture), visible, billboard, animatedByAnimationComponent);
 	}
 
 	public void init(final TextureRegion textureRegion, final boolean visible) {
-		init(textureRegion, visible, false);
+		init(textureRegion, visible, false, animatedByAnimationComponent);
 	}
 
-	public void init(final TextureRegion textureRegion, final boolean visible, final boolean billboard) {
+	public void init(final TextureRegion textureRegion,
+					 final boolean visible,
+					 final boolean billboard,
+					 final boolean animatedByAnimationComponent) {
+		this.animatedByAnimationComponent = animatedByAnimationComponent;
 		decal = Decal.newDecal(textureRegion, true);
 		this.visible = visible;
 		this.billboard = billboard;

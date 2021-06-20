@@ -197,7 +197,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			Vector3 position = simpleDecalComponent.getDecal().getPosition();
 			MapGraphNode node = services.getMap().getNode((int) position.x, (int) position.z);
 			if (!simpleDecalComponent.isAffectedByFow() || isOutsideFow(node)) {
-				handleSimpleDecalAnimation(entity, simpleDecalComponent.getDecal());
+				handleSimpleDecalAnimation(entity, simpleDecalComponent);
 				faceDecalToCamera(simpleDecalComponent, simpleDecalComponent.getDecal());
 				decalBatch.add(simpleDecalComponent.getDecal());
 				renderRelatedDecals(decalBatch, simpleDecalComponent);
@@ -205,10 +205,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		}
 	}
 
-	private void handleSimpleDecalAnimation(final Entity entity, final Decal decal) {
-		if (ComponentsMapper.animation.has(entity)) {
+	private void handleSimpleDecalAnimation(final Entity entity, final SimpleDecalComponent simpleDecalComponent) {
+		if (ComponentsMapper.animation.has(entity) && simpleDecalComponent.isAnimatedByAnimationComponent()) {
 			AnimationComponent animationComponent = ComponentsMapper.animation.get(entity);
-			decal.setTextureRegion(animationComponent.calculateFrame());
+			simpleDecalComponent.getDecal().setTextureRegion(animationComponent.calculateFrame());
 		}
 	}
 

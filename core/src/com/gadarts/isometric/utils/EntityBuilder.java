@@ -159,23 +159,30 @@ public final class EntityBuilder {
 
 	public EntityBuilder addSimpleDecalComponent(final Vector3 position,
 												 final TextureRegion textureRegion,
-												 final boolean billboard) {
-		return addSimpleDecalComponent(position, textureRegion, Vector3.Zero, billboard);
+												 final boolean billboard,
+												 final boolean animatedByAnimationComponent) {
+		return addSimpleDecalComponent(position, textureRegion, Vector3.Zero, billboard, animatedByAnimationComponent);
 	}
 
 	public EntityBuilder addSimpleDecalComponent(final Vector3 position,
 												 final TextureRegion textureRegion,
 												 final Vector3 rotationAroundAxis) {
-		return addSimpleDecalComponent(position, textureRegion, rotationAroundAxis, false);
+		return addSimpleDecalComponent(
+				position,
+				textureRegion,
+				rotationAroundAxis,
+				false,
+				true);
 	}
 
 	public EntityBuilder addSimpleDecalComponent(final Vector3 position,
 												 final TextureRegion textureRegion,
 												 final Vector3 rotationAroundAxis,
-												 final boolean billboard) {
+												 final boolean billboard,
+												 final boolean animatedByAnimationComponent) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		SimpleDecalComponent simpleDecalComponent = engine.createComponent(SimpleDecalComponent.class);
-		simpleDecalComponent.init(textureRegion, true, billboard);
+		simpleDecalComponent.init(textureRegion, true, billboard, animatedByAnimationComponent);
 		Decal decal = simpleDecalComponent.getDecal();
 		initializeSimpleDecal(position, rotationAroundAxis, decal);
 		currentEntity.add(simpleDecalComponent);
