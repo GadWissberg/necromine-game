@@ -55,7 +55,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.awt.*;
-import java.io.Reader;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
@@ -68,6 +67,7 @@ import static com.gadarts.necromine.assets.MapJsonKeys.*;
 import static com.gadarts.necromine.model.characters.CharacterTypes.*;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
 import static com.gadarts.necromine.model.characters.Direction.SOUTH;
+import static java.lang.String.format;
 
 /**
  * Creates the map.
@@ -119,7 +119,7 @@ public final class MapBuilder implements Disposable {
 				.addAnimationComponent();
 	}
 
-	private void createAndAdd3dCursor() {
+	private void createAndAdd3dCursor( ) {
 		Model model = assetManager.getModel(Assets.Models.CURSOR);
 		model.calculateBoundingBox(auxBoundingBox);
 		EntityBuilder.beginBuildingEntity(engine)
@@ -128,7 +128,7 @@ public final class MapBuilder implements Disposable {
 				.finishAndAddToEngine();
 	}
 
-	private Model createFloorModel() {
+	private Model createFloorModel( ) {
 		modelBuilder.begin();
 		MeshPartBuilder meshPartBuilder = modelBuilder.part("floor",
 				GL20.GL_TRIANGLES,
@@ -149,27 +149,33 @@ public final class MapBuilder implements Disposable {
 				auxVector3_5.set(0, 1, 0));
 	}
 
-	private Material createFloorMaterial() {
+	private Material createFloorMaterial( ) {
 		Material material = new Material();
 		material.id = "floor_test";
 		return material;
 	}
 
+	/**
+	 * Creates the test map.
+	 *
+	 * @return The Inflated map.
+	 */
 	public MapGraph inflateTestMap(final String map) {
 		createAndAdd3dCursor();
-		Reader reader = Gdx.files.internal(String.format(MAP_PATH_TEMP, map)).reader();
-		JsonObject mapJsonObject = gson.fromJson(reader, JsonObject.class);
-		JsonObject nodesJsonObject = mapJsonObject.get(TILES).getAsJsonObject();
-		Dimension mapSize = inflateNodes(nodesJsonObject);
-		MapGraph mapGraph = new MapGraph(
-				Utils.getFloatFromJsonOrDefault(mapJsonObject, MapJsonKeys.AMBIENT, 0),
-				mapSize,
-				engine);
-		inflateHeights(mapJsonObject, mapGraph);
-		inflateAllElements(mapJsonObject, mapGraph);
+		JsonObject mapJsonObj = gson.fromJson(Gdx.files.internal(format(MAP_PATH_TEMP, map)).reader(), JsonObject.class);
+		MapGraph mapGraph = createMapGraph(mapJsonObj);
+		inflateHeights(mapJsonObj, mapGraph);
+		inflateAllElements(mapJsonObj, mapGraph);
 		mapGraph.init();
 		generateFloorAmbientOcclusions(mapGraph);
 		return mapGraph;
+	}
+
+	private MapGraph createMapGraph(final JsonObject mapJsonObj) {
+		return new MapGraph(
+				Utils.getFloatFromJsonOrDefault(mapJsonObj, MapJsonKeys.AMBIENT, 0),
+				inflateNodes(mapJsonObj.get(TILES).getAsJsonObject()),
+				engine);
 	}
 
 	private void generateFloorAmbientOcclusions(final MapGraph mapGraph) {
@@ -716,7 +722,7 @@ public final class MapBuilder implements Disposable {
 		return position.add(0, mapGraph.getNode(col, row).getHeight(), 0);
 	}
 
-	private Weapon initializeStartingWeapon() {
+	private Weapon initializeStartingWeapon( ) {
 		Weapon weapon = Pools.obtain(Weapon.class);
 		Texture image = assetManager.getTexture(WeaponsDefinitions.AXE_PICK.getImage());
 		weapon.init(WeaponsDefinitions.AXE_PICK, 0, 0, image);
@@ -724,7 +730,7 @@ public final class MapBuilder implements Disposable {
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 		floorModel.dispose();
 		wallCreator.dispose();
 	}

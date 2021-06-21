@@ -57,7 +57,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	MapGraphNode currentDestination;
 	private ImmutableArray<Entity> obstaclesEntities;
 
-	public MapGraph(final float ambient, Dimension mapSize, final PooledEngine engine) {
+	public MapGraph(final float ambient, final Dimension mapSize, final PooledEngine engine) {
 		this.mapSize = mapSize;
 		this.engine = engine;
 		this.ambient = ambient;

@@ -18,14 +18,14 @@ public class EnemyComponent implements GameComponent {
 	private long lastTurn = -1;
 	private int skill = 1;
 
-	public void init(final Enemies enemyDefinition, int skill) {
+	public void init(final Enemies enemyDefinition, final int skill) {
 		this.enemyDefinition = enemyDefinition;
 		calculateNextRoamSound();
 		this.skill = skill;
 	}
 
 	@Override
-	public void reset() {
+	public void reset( ) {
 		lastTurn = -1;
 	}
 

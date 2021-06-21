@@ -19,7 +19,7 @@ public interface PlayerSystemEventsSubscriber extends SystemEventsSubscriber {
 
 	}
 
-	default void onPlayerSystemReady(final PlayerSystem playerSystem, Entity player) {
+	default void onPlayerSystemReady(final PlayerSystem playerSystem, final Entity player) {
 
 	}
 
@@ -27,11 +27,11 @@ public interface PlayerSystemEventsSubscriber extends SystemEventsSubscriber {
 
 	}
 
-	default void onAttackModeDeactivated() {
+	default void onAttackModeDeactivated( ) {
 
 	}
 
-	default void onPlayerStatusChanged(boolean disabled) {
+	default void onPlayerStatusChanged(final boolean disabled) {
 
 	}
 }
