@@ -54,6 +54,7 @@ import com.gadarts.isometric.systems.turns.Turns;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
+import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
@@ -212,8 +213,9 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	@Override
 	public void mouseMoved(final int screenX, final int screenY) {
 		if (menuTable.isVisible()) return;
-		MapGraphNode newNode = services.getMap().getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
-		MapGraphNode oldNode = services.getMap().getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
+		MapGraph map = services.getMapService().getMap();
+		MapGraphNode newNode = map.getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
+		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
 		if (!newNode.equals(oldNode)) {
 			mouseEnteredNewNode(newNode);
 		}
@@ -229,8 +231,9 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	}
 
 	private void colorizeCursor(final MapGraphNode newNode) {
-		if (services.getMap().getFowMap()[newNode.getRow()][newNode.getCol()] == 1) {
-			if (services.getMap().getAliveEnemyFromNode(enemiesEntities, newNode) != null) {
+		MapGraph map = services.getMapService().getMap();
+		if (map.getFowMap()[newNode.getRow()][newNode.getCol()] == 1) {
+			if (map.getAliveEnemyFromNode(enemiesEntities, newNode) != null) {
 				setCursorColor(CURSOR_ATTACK);
 			} else {
 				setCursorOpacity(1F);
@@ -250,7 +253,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private MapGraphNode getCursorNode() {
 		Vector3 dest = getCursorModelInstance().transform.getTranslation(auxVector3_1);
-		return services.getMap().getNode((int) dest.x, (int) dest.z);
+		return services.getMapService().getMap().getNode((int) dest.x, (int) dest.z);
 	}
 
 	@Override
@@ -268,7 +271,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 
 	private void userSelectedNodeToApplyTurn() {
 		MapGraphNode cursorNode = getCursorNode();
-		if (services.getMap().getFowMap()[cursorNode.getRow()][cursorNode.getCol()] == 1) {
+		if (services.getMapService().getMap().getFowMap()[cursorNode.getRow()][cursorNode.getCol()] == 1) {
 			for (HudSystemEventsSubscriber sub : subscribers) {
 				sub.onUserSelectedNodeToApplyTurn(cursorNode, attackNodesHandler);
 			}
@@ -279,7 +282,7 @@ public class HudSystemImpl extends GameEntitySystem<HudSystemEventsSubscriber> i
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
 		stage.act();
-		toolTipHandler.handleToolTip(services.getMap(), getCursorNode(), enemiesEntities);
+		toolTipHandler.handleToolTip(services.getMapService().getMap(), getCursorNode(), enemiesEntities);
 		handleCursorFlicker(deltaTime);
 	}
 

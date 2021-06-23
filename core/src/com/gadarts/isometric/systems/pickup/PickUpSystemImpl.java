@@ -118,7 +118,7 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 		Vector3 cen = mic.transform.getTranslation(auxVector3_1);
 		ColorAttribute attr = (ColorAttribute) mic.materials.get(0).get(ColorAttribute.Emissive);
 		boolean rayCheck = Intersector.intersectRayBoundsFast(ray, cen, auxVector3_2.set(0.5f, 0.5f, 0.5f));
-		if (rayCheck && services.getMap().getAliveEnemyFromNode(enemiesEntities, currentNode) == null) {
+		if (rayCheck && services.getMapService().getMap().getAliveEnemyFromNode(enemiesEntities, currentNode) == null) {
 			attr.color.set(1, 1, 1, 1);
 			return true;
 		} else {
@@ -142,7 +142,7 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 
 	@Override
 	public void mouseMoved(final int screenX, final int screenY) {
-		MapGraphNode newNode = services.getMap().getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
+		MapGraphNode newNode = services.getMapService().getMap().getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
 		boolean foundPickup = highlightPickupUnderMouse(screenX, screenY, newNode);
 		currentHighLightedPickup = foundPickup ? currentHighLightedPickup : null;
 	}

@@ -104,7 +104,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	public void onPlayerSystemReady(final PlayerSystem playerSystem, final Entity player) {
 		addSystem(PlayerSystem.class, playerSystem);
 		if (ComponentsMapper.player.get(getSystem(PlayerSystem.class).getPlayer()).isDisabled()) {
-			int[][] fowMap = services.getMap().getFowMap();
+			int[][] fowMap = services.getMapService().getMap().getFowMap();
 			IntStream.range(0, fowMap.length)
 					.forEach(row -> IntStream.range(0, fowMap[0].length)
 							.forEach(col -> fowMap[row][col] = 1));
@@ -159,7 +159,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			spriteBatch.begin();
 			for (Entity enemy : renderSystemRelatedEntities.getEnemyEntities()) {
 				Vector2 nodePosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
-				if (isOutsideFow(services.getMap().getNode((int) nodePosition.x, (int) nodePosition.y))) {
+				if (isOutsideFow(services.getMapService().getMap().getNode((int) nodePosition.x, (int) nodePosition.y))) {
 					renderSkillFlowerText(enemy, renderBatches.getSpriteBatch());
 				}
 			}
@@ -195,7 +195,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
 		if (simpleDecalComponent.isVisible()) {
 			Vector3 position = simpleDecalComponent.getDecal().getPosition();
-			MapGraphNode node = services.getMap().getNode((int) position.x, (int) position.z);
+			MapGraphNode node = services.getMapService().getMap().getNode((int) position.x, (int) position.z);
 			if (!simpleDecalComponent.isAffectedByFow() || isOutsideFow(node)) {
 				handleSimpleDecalAnimation(entity, simpleDecalComponent);
 				faceDecalToCamera(simpleDecalComponent, simpleDecalComponent.getDecal());
@@ -225,7 +225,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	private boolean isOutsideFow(final MapGraphNode node) {
-		return services.getMap().getFowMap()[node.getRow()][node.getCol()] != 0;
+		return services.getMapService().getMap().getFowMap()[node.getRow()][node.getCol()] != 0;
 	}
 
 	private void faceDecalToCamera(final SimpleDecalComponent simpleDecal, final Decal decal) {
@@ -334,7 +334,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			}
 		}
 		if (drawFlags.isDrawEnemy() || !isEnemy) {
-			MapGraph map = services.getMap();
+			MapGraph map = services.getMapService().getMap();
 			MapGraphNode characterNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_1));
 			if (map.getFowMap()[characterNode.getRow()][characterNode.getCol()] == 1) {
 				environment.getLightsRenderer().setDecalColorAccordingToLights(entity, environment);
@@ -405,9 +405,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		addSystem(CameraSystem.class, cameraSystem);
 		camera = cameraSystem.getCamera();
-		environment = new WorldEnvironment(services.getMap().getAmbient(), camera);
+		environment = new WorldEnvironment(services.getMapService().getMap().getAmbient(), camera);
 		GameAssetsManager assetManager = services.getAssetManager();
-		this.renderBatches = new RenderBatches(camera, assetManager, services.getMap());
+		this.renderBatches = new RenderBatches(camera, assetManager, services.getMapService().getMap());
 		environment.initialize(getEngine().getEntitiesFor(Family.all(LightComponent.class).get()));
 		systemReady();
 	}

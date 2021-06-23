@@ -93,8 +93,8 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	private void clampCameraPosition(final Vector3 pos) {
-		pos.x = MathUtils.clamp(pos.x, -EXTRA_LEVEL_PADDING, services.getMap().getWidth() + EXTRA_LEVEL_PADDING);
-		pos.z = MathUtils.clamp(pos.z, -EXTRA_LEVEL_PADDING, services.getMap().getDepth() + EXTRA_LEVEL_PADDING);
+		pos.x = MathUtils.clamp(pos.x, -EXTRA_LEVEL_PADDING, services.getMapService().getMap().getWidth() + EXTRA_LEVEL_PADDING);
+		pos.z = MathUtils.clamp(pos.z, -EXTRA_LEVEL_PADDING, services.getMapService().getMap().getDepth() + EXTRA_LEVEL_PADDING);
 	}
 
 	private boolean handleHorizontalScroll() {

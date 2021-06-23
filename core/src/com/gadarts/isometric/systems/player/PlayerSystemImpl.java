@@ -19,6 +19,7 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.*;
+import com.gadarts.isometric.services.MapService;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.CharacterSystem;
@@ -80,10 +81,11 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	private void planPath(final MapGraphNode cursorNode, final AttackNodesHandler attackNodesHandler) {
-		Entity enemyAtNode = services.getMap().getAliveEnemyFromNode(enemies, cursorNode);
+		MapService mapService = services.getMapService();
+		Entity enemyAtNode = mapService.getMap().getAliveEnemyFromNode(enemies, cursorNode);
 		if (calculatePathAccordingToSelection(cursorNode, enemyAtNode)) {
 			MapGraphNode selectedAttackNode = attackNodesHandler.getSelectedAttackNode();
-			if (getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null || (selectedAttackNode != null && !isNodeInAvailableNodes(cursorNode, services.getMap().getAvailableNodesAroundNode(enemies, selectedAttackNode)))) {
+			if (getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null || (selectedAttackNode != null && !isNodeInAvailableNodes(cursorNode, mapService.getMap().getAvailableNodesAroundNode(enemies, selectedAttackNode)))) {
 				attackNodesHandler.reset();
 			}
 			pathHasCreated(cursorNode, enemyAtNode, attackNodesHandler);
@@ -103,7 +105,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private boolean calculatePathAccordingToSelection(final MapGraphNode cursorNode, final Entity enemyAtNode) {
 		CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(player);
 		Vector2 cellPosition = characterDecalComponent.getNodePosition(auxVector2_1);
-		MapGraphNode playerNode = services.getMap().getNode(cellPosition);
+		MapGraphNode playerNode = services.getMapService().getMap().getNode(cellPosition);
 		CharacterSystem characterSystem = getSystem(CharacterSystem.class);
 		MapGraphPath plannedPath = pathPlanHandler.getPath();
 		return ((enemyAtNode != null && ComponentsMapper.character.get(enemyAtNode).getSkills().getHealthData().getHp() > 0 && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath))
@@ -116,7 +118,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		pathPlanHandler.hideAllArrows();
 		CharacterDecalComponent charDecalComp = ComponentsMapper.characterDecal.get(player);
 		Vector2 cellPosition = charDecalComp.getNodePosition(auxVector2_1);
-		MapGraphNode playerNode = services.getMap().getNode(cellPosition);
+		MapGraphNode playerNode = services.getMapService().getMap().getNode(cellPosition);
 		if (attackNodesHandler.getSelectedAttackNode() == null) {
 			applyCommandWhenNoAttackNodeSelected(playerNode);
 		} else {
@@ -127,10 +129,10 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private void applyPlayerAttackCommand(final MapGraphNode targetNode, final MapGraphNode playerNode, final AttackNodesHandler attackNodesHandler) {
 		MapGraphNode attackNode = attackNodesHandler.getSelectedAttackNode();
 		boolean result = targetNode.equals(attackNode);
-		result |= isNodeInAvailableNodes(targetNode, services.getMap().getAvailableNodesAroundNode(enemies, attackNode));
+		result |= isNodeInAvailableNodes(targetNode, services.getMapService().getMap().getAvailableNodesAroundNode(enemies, attackNode));
 		result |= targetNode.equals(attackNode) && playerNode.isConnectedNeighbour(attackNode);
 		if (result) {
-			if (services.getMap().getAliveEnemyFromNode(enemies, targetNode) != null) {
+			if (services.getMapService().getMap().getAliveEnemyFromNode(enemies, targetNode) != null) {
 				Array<MapGraphNode> nodes = pathPlanHandler.getPath().nodes;
 				nodes.removeIndex(nodes.size - 1);
 			}
@@ -154,7 +156,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private void applyCommandWhenNoAttackNodeSelected(final MapGraphNode playerNode) {
 		PickUpSystem pickUpSystem = getSystem(PickUpSystem.class);
 		Entity p = pickUpSystem.getCurrentHighLightedPickup();
-		if (pickUpSystem.getItemToPickup() != null || (p != null && services.getMap()
+		if (pickUpSystem.getItemToPickup() != null || (p != null && services.getMapService().getMap()
 				.getNode(ComponentsMapper.modelInstance.get(p)
 						.getModelInstance().transform.getTranslation(auxVector3)).equals(playerNode))) {
 			applyGoToPickupCommand(pathPlanHandler.getPath(), pickUpSystem.getItemToPickup());
@@ -167,7 +169,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		PlayerStorage storage = ComponentsMapper.player.get(player).getStorage();
 		Weapon selectedWeapon = storage.getSelectedWeapon();
 		if (selectedWeapon.isMelee()) {
-			List<MapGraphNode> availableNodes = services.getMap().getAvailableNodesAroundNode(enemies, node);
+			List<MapGraphNode> availableNodes = services.getMapService().getMap().getAvailableNodesAroundNode(enemies, node);
 			attackNodesHandler.setSelectedAttackNode(node);
 			activateAttackMode(enemyAtNode, availableNodes);
 		} else {
@@ -181,7 +183,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		Weapon selectedWeapon = ComponentsMapper.player.get(player).getStorage().getSelectedWeapon();
 		WeaponsDefinitions definition = (WeaponsDefinitions) selectedWeapon.getDefinition();
 		characterComponent.getCharacterSpriteData().setHitFrameIndex(definition.getHitFrameIndex());
-		characterComponent.setTarget(services.getMap().getAliveEnemyFromNode(enemies, node));
+		characterComponent.setTarget(services.getMapService().getMap().getAliveEnemyFromNode(enemies, node));
 		applyShootCommand(node);
 		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onEnemySelectedWithRangeWeapon(node);
@@ -316,7 +318,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	@Override
 	public void applyGoToCommand(final MapGraphPath path) {
-		MapGraphNode playerNode = services.getMap().getNode(ComponentsMapper.characterDecal.get(player).getDecal().getPosition());
+		MapGraphNode playerNode = services.getMapService().getMap().getNode(ComponentsMapper.characterDecal.get(player).getDecal().getPosition());
 		if (path.getCount() > 0 && !playerNode.equals(path.get(path.getCount() - 1))) {
 			getSystem(CharacterSystem.class).applyCommand(auxCommand.init(CharacterCommands.GO_TO, path, player), player);
 		}
@@ -348,7 +350,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		pathPlanHandler = new PathPlanHandler(services.getAssetManager());
 		pathPlanHandler.init((PooledEngine) getEngine());
 		revealRadius(PLAYER_VISION_RAD, ComponentsMapper.characterDecal.get(player).getNodePosition(auxVector2_1));
-		if (!services.isInGame()) {
+		if (!services.getGlobalGameService().isInGame()) {
 			disablePlayer();
 		}
 		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
@@ -376,9 +378,9 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	private void tryToRevealNode(final Vector2 srcNodePosition, final int row, final int col, final int radius) {
-		int[][] fow = services.getMap().getFowMap();
+		int[][] fow = services.getMapService().getMap().getFowMap();
 		int currentCellRow = Math.min(Math.max(row, 0), fow.length - 1);
-		int currentCellCol = Math.min(Math.max(col, 0), services.getMap().getFowMap()[0].length - 1);
+		int currentCellCol = Math.min(Math.max(col, 0), services.getMapService().getMap().getFowMap()[0].length - 1);
 		Vector2 nodeToReveal = auxVector2_2.set(currentCellCol + 0.5f, currentCellRow + 0.5f);
 		if (srcNodePosition.dst(nodeToReveal) <= radius) {
 			if (!isAnyWallBlocksReveal(srcNodePosition, nodeToReveal)) {

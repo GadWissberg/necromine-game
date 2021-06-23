@@ -16,6 +16,7 @@ import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.systems.render.WorldEnvironment;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.necromine.assets.Assets;
+import com.gadarts.necromine.model.Coords;
 
 import java.util.List;
 
@@ -122,8 +123,9 @@ public class MainShader extends DefaultShader {
 
 	private void applyWallAmbientOcclusion(final Entity entity) {
 		WallComponent wallComponent = ComponentsMapper.wall.get(entity);
-		int row = wallComponent.getParentNode().getRow();
-		int col = wallComponent.getParentNode().getCol();
+		Coords coords = wallComponent.getParentNode().getCoords();
+		int row = coords.getRow();
+		int col = coords.getCol();
 		program.setUniformf(uniformsLocationsHandler.getLocation(UNIFORM_MODEL_Y), map.getNode(col, row).getHeight());
 		program.setUniformi(uniformsLocationsHandler.getLocation(UNIFORM_APPLY_WALL_AMBIENT_OCCLUSION), 1);
 		program.setUniformi(uniformsLocationsHandler.getLocation(UNIFORM_APPLY_FLOOR_AMBIENT_OCCLUSION), 0);

@@ -12,14 +12,11 @@ import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.systems.hud.console.*;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
 import com.gadarts.isometric.utils.SoundPlayer;
-import com.gadarts.isometric.utils.map.MapBuilder;
-import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Arrays;
 
@@ -32,25 +29,20 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable, Servic
 	private final GlobalGameService globalGameService;
 	private final ConsoleImpl consoleImpl;
 	private final SoundPlayer soundPlayer;
-
-	@Setter
-	private boolean inGame;
+	private final MapService mapService = new MapService();
 	private PooledEngine engine;
-	private MapGraph map;
 	private GameAssetsManager assetManager;
-	private MapBuilder mapBuilder;
 
-	public GameServices(final GlobalGameService globalGameService, final boolean inGame, final String map) {
+	public GameServices(final GlobalGameService globalGameService, final String map) {
 		this.globalGameService = globalGameService;
 		createAndSetEngine();
 		createAssetsManagerAndLoadAssets();
-		createAndSetMap(map);
+		mapService.createAndSetMap(map, assetManager, engine);
 		consoleImpl = createConsole();
 		soundPlayer = new SoundPlayer(assetManager);
-		this.inGame = inGame;
 	}
 
-	private ConsoleImpl createConsole() {
+	private ConsoleImpl createConsole( ) {
 		final ConsoleImpl consoleImpl;
 		consoleImpl = new ConsoleImpl();
 		consoleImpl.subscribeForEvents(this);
@@ -58,20 +50,12 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable, Servic
 		return consoleImpl;
 	}
 
-	public void createAndSetEngine() {
+	public void createAndSetEngine( ) {
 		this.engine = new PooledEngine();
 	}
 
-	public void createAndSetMap(final String map) {
-		if (mapBuilder == null) {
-			mapBuilder = new MapBuilder(assetManager, engine);
-		} else {
-			mapBuilder.reset(engine);
-		}
-		this.map = mapBuilder.inflateTestMap(map);
-	}
 
-	private void createAssetsManagerAndLoadAssets() {
+	private void createAssetsManagerAndLoadAssets( ) {
 		assetManager = new GameAssetsManager();
 		assetManager.loadGameFiles();
 		afterFilesAreLoaded();
@@ -114,14 +98,14 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable, Servic
 				dir);
 	}
 
-	private void afterFilesAreLoaded() {
+	private void afterFilesAreLoaded( ) {
 		generateCharactersAnimations();
 		generateModelsBoundingBoxes();
 		applyAlphaOnModels();
 		assetManager.applyRepeatWrapOnAllTextures();
 	}
 
-	private void generateModelsBoundingBoxes() {
+	private void generateModelsBoundingBoxes( ) {
 		Arrays.stream(Assets.Models.values())
 				.forEach(def -> assetManager.addAsset(
 						BOUNDING_BOX_PREFIX + def.getFilePath(),
@@ -129,7 +113,7 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable, Servic
 						(ModelBoundingBox) assetManager.get(def.getFilePath(), Model.class).calculateBoundingBox(new ModelBoundingBox(def))));
 	}
 
-	private void applyAlphaOnModels() {
+	private void applyAlphaOnModels( ) {
 		Arrays.stream(Assets.Models.values()).filter(def -> def.getAlpha() < 1.0f)
 				.forEach(def -> {
 					Material material = assetManager.getModel(def).materials.get(0);
@@ -139,7 +123,7 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable, Servic
 				});
 	}
 
-	private void generateCharactersAnimations() {
+	private void generateCharactersAnimations( ) {
 		Arrays.stream(Assets.Atlases.values())
 				.forEach(atlas -> assetManager.addAsset(
 						atlas.name(),
@@ -147,13 +131,13 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable, Servic
 						createCharacterAnimations(atlas)));
 	}
 
-	public void init() {
+	public void init( ) {
 		soundPlayer.playMusic(Assets.Melody.TEST);
 		soundPlayer.playSound(Assets.Sounds.AMB_WIND);
 	}
 
 	@Override
-	public void onConsoleActivated() {
+	public void onConsoleActivated( ) {
 
 	}
 
@@ -194,12 +178,13 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable, Servic
 	}
 
 	@Override
-	public void onConsoleDeactivated() {
+	public void onConsoleDeactivated( ) {
 
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 		assetManager.dispose();
+		mapService.dispose();
 	}
 }

@@ -107,7 +107,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private void invokeEnemyTurn(final Entity enemy) {
 		Vector2 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 		Entity target = ComponentsMapper.character.get(enemy).getTarget();
-		MapGraphNode enemyNode = services.getMap().getNode(enemyPosition);
+		MapGraphNode enemyNode = services.getMapService().getMap().getNode(enemyPosition);
 		applyGoToMelee(enemy, enemyNode, target);
 	}
 
@@ -245,7 +245,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		Entity target = ComponentsMapper.character.get(enemy).getTarget();
 		Vector2 targetPos = ComponentsMapper.characterDecal.get(target).getNodePosition(auxVector2_2);
 		Array<GridPoint2> nodes = bresenham.line((int) pos.x, (int) pos.y, (int) targetPos.x, (int) targetPos.y);
-		MapGraph map = services.getMap();
+		MapGraph map = services.getMapService().getMap();
 		for (GridPoint2 n : nodes) {
 			if (map.getNode(n.x, n.y).getHeight() > map.getNode((int) pos.x, (int) pos.y).getHeight() + 1) {
 				return true;
