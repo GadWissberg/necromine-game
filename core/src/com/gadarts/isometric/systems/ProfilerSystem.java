@@ -13,8 +13,8 @@ import com.badlogic.gdx.utils.StringBuilder;
 import com.gadarts.isometric.NecromineGame;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
-import com.gadarts.isometric.systems.hud.HudSystem;
-import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.InterfaceSystem;
+import com.gadarts.isometric.systems.hud.InterfaceSystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandParameter;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
@@ -31,7 +31,7 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
  */
 public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		implements RenderSystemEventsSubscriber,
-		HudSystemEventsSubscriber,
+		InterfaceSystemEventsSubscriber,
 		ConsoleEventsSubscriber {
 	public static final String WARNING_COLOR = "[RED]";
 	private static final char SEPARATOR = '/';
@@ -183,9 +183,9 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	}
 
 	@Override
-	public void onHudSystemReady(final HudSystem hudSystem) {
-		this.stage = hudSystem.getStage();
-		addSystem(HudSystem.class, hudSystem);
+	public void onHudSystemReady(final InterfaceSystem interfaceSystem) {
+		this.stage = interfaceSystem.getStage();
+		addSystem(InterfaceSystem.class, interfaceSystem);
 		BitmapFont font = new BitmapFont();
 		font.getData().markupEnabled = true;
 		label = new Label(stringBuilder, new Label.LabelStyle(font, Color.WHITE));

@@ -10,14 +10,14 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum MainMenuOptions implements MenuOptionDefinition {
 	CONTINUE("Continue",
-			(GlobalGameService globalGameService, HudSystem hudSystem) -> hudSystem.toggleMenu(false),
+			(GlobalGameService globalGameService, InterfaceSystem interfaceSystem) -> interfaceSystem.toggleMenu(false),
 			player -> !ComponentsMapper.player.get(player).isDisabled()),
 	NEW("New Game", NewGameMenuOptions.values()),
 	LOAD("Load Game"),
 	SAVE("Save Game"),
 	OPTIONS("Options"),
 	INFO("Info"),
-	QUIT("Quit", (GlobalGameService globalGameService, HudSystem hudSystem) -> Gdx.app.exit());
+	QUIT("Quit", (GlobalGameService globalGameService, InterfaceSystem interfaceSystem) -> Gdx.app.exit());
 
 	private final String label;
 	private final MenuOptionAction action;

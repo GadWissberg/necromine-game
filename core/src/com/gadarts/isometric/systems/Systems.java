@@ -8,8 +8,8 @@ import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.CharacterSystemImpl;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
 import com.gadarts.isometric.systems.enemy.EnemySystemImpl;
-import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
-import com.gadarts.isometric.systems.hud.HudSystemImpl;
+import com.gadarts.isometric.systems.hud.InterfaceSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.InterfaceSystemImpl;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemImpl;
 import com.gadarts.isometric.systems.pickup.PickUpSystemImpl;
@@ -27,7 +27,7 @@ public enum Systems {
 	CAMERA(new CameraSystemImpl(), CameraSystemEventsSubscriber.class),
 	CHARACTER(new CharacterSystemImpl(), CharacterSystemEventsSubscriber.class),
 	ENEMY(new EnemySystemImpl(), EnemySystemEventsSubscriber.class),
-	HUD(new HudSystemImpl(), HudSystemEventsSubscriber.class),
+	HUD(new InterfaceSystemImpl(), InterfaceSystemEventsSubscriber.class),
 	INPUT(new InputSystemImpl(), InputSystemEventsSubscriber.class),
 	PICKUP(new PickUpSystemImpl(), PickupSystemEventsSubscriber.class),
 	PLAYER(new PlayerSystemImpl(), PlayerSystemEventsSubscriber.class),

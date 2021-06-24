@@ -28,8 +28,8 @@ import com.gadarts.isometric.systems.character.commands.CharacterCommand;
 import com.gadarts.isometric.systems.character.commands.CharacterCommands;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
-import com.gadarts.isometric.systems.hud.HudSystem;
-import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.InterfaceSystem;
+import com.gadarts.isometric.systems.hud.InterfaceSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
@@ -51,7 +51,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		PickupSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
 		TurnsSystemEventsSubscriber,
-		HudSystemEventsSubscriber,
+		InterfaceSystemEventsSubscriber,
 		InputSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber,
 		RenderSystemEventsSubscriber,
@@ -279,7 +279,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	@Override
-	public void onHudSystemReady(final HudSystem hudSystem) {
+	public void onHudSystemReady(final InterfaceSystem interfaceSystem) {
 
 	}
 

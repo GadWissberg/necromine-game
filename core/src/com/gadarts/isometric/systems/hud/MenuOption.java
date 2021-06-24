@@ -14,7 +14,7 @@ public class MenuOption extends Label {
 	public MenuOption(final MenuOptionDefinition option,
 					  final LabelStyle optionStyle,
 					  final GlobalGameService globalGameService,
-					  final HudSystem hudSystem) {
+					  final InterfaceSystem interfaceSystem) {
 		super(option.getLabel(), new LabelStyle(optionStyle));
 		addListener(new ClickListener() {
 			@Override
@@ -32,11 +32,11 @@ public class MenuOption extends Label {
 				super.clicked(event, x, y);
 				MenuOptionAction action = option.getAction();
 				if (action != null) {
-					action.run(globalGameService, hudSystem);
+					action.run(globalGameService, interfaceSystem);
 				} else {
 					MenuOptionDefinition[] subOptions = option.getSubOptions();
 					if (subOptions != null) {
-						hudSystem.applyMenuOptions(subOptions);
+						interfaceSystem.applyMenuOptions(subOptions);
 					}
 				}
 			}

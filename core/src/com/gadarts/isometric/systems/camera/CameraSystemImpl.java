@@ -10,8 +10,8 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
-import com.gadarts.isometric.systems.hud.HudSystem;
-import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.InterfaceSystem;
+import com.gadarts.isometric.systems.hud.InterfaceSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
@@ -27,7 +27,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		implements CameraSystem,
 		PlayerSystemEventsSubscriber,
 		InputSystemEventsSubscriber,
-		HudSystemEventsSubscriber,
+		InterfaceSystemEventsSubscriber,
 		RenderSystemEventsSubscriber {
 
 	public static final int CAMERA_HEIGHT = 15;
@@ -61,8 +61,8 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
-		HudSystem hudSystem = getSystem(HudSystem.class);
-		if (!DEBUG_INPUT && !rotateCamera && !hudSystem.hasOpenWindows() && hudSystem.isMenuClosed()) {
+		InterfaceSystem interfaceSystem = getSystem(InterfaceSystem.class);
+		if (!DEBUG_INPUT && !rotateCamera && !interfaceSystem.hasOpenWindows() && interfaceSystem.isMenuClosed()) {
 			handleScrolling(deltaTime);
 		}
 		if (ComponentsMapper.player.get(getSystem(PlayerSystem.class).getPlayer()).isDisabled()) {
@@ -197,7 +197,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	@Override
 	public void touchDragged(final int screenX, final int screenY) {
-		if (rotateCamera && getSystem(HudSystem.class).isMenuClosed()) {
+		if (rotateCamera && getSystem(InterfaceSystem.class).isMenuClosed()) {
 			defineRotationPoint(rotationPoint);
 			camera.rotateAround(rotationPoint, Vector3.Y, (lastRightPressMousePosition.x - screenX) / 2f);
 			clampCameraPosition(camera.position);
@@ -231,8 +231,8 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	@Override
-	public void onHudSystemReady(final HudSystem hudSystem) {
-		addSystem(HudSystem.class, hudSystem);
+	public void onHudSystemReady(final InterfaceSystem interfaceSystem) {
+		addSystem(InterfaceSystem.class, interfaceSystem);
 	}
 
 	@Override

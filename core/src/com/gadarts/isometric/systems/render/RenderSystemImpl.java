@@ -35,8 +35,8 @@ import com.gadarts.isometric.systems.EventsNotifier;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
-import com.gadarts.isometric.systems.hud.HudSystem;
-import com.gadarts.isometric.systems.hud.HudSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.InterfaceSystem;
+import com.gadarts.isometric.systems.hud.InterfaceSystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandParameter;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
@@ -64,7 +64,7 @@ import static java.lang.Math.max;
 public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscriber> implements
 		RenderSystem,
 		EntityListener,
-		HudSystemEventsSubscriber,
+		InterfaceSystemEventsSubscriber,
 		PlayerSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
 		EventsNotifier<RenderSystemEventsSubscriber>,
@@ -138,7 +138,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
 			CameraSystem system = getSystem(CameraSystem.class);
 			renderWorld(deltaTime, system.getCamera(), system.getRotationPoint(auxVector3_1));
-			getSystem(HudSystem.class).getStage().draw();
+			getSystem(InterfaceSystem.class).getStage().draw();
 		}
 	}
 
@@ -421,8 +421,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	@Override
-	public void onHudSystemReady(final HudSystem hudSystem) {
-		addSystem(HudSystem.class, hudSystem);
+	public void onHudSystemReady(final InterfaceSystem interfaceSystem) {
+		addSystem(InterfaceSystem.class, interfaceSystem);
 		systemReady();
 	}
 

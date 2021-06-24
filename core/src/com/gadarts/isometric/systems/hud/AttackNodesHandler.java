@@ -81,7 +81,7 @@ public class AttackNodesHandler implements Disposable {
 	private Model createAttackNodeModelTest() {
 		ModelBuilder builder = new ModelBuilder();
 		builder.begin();
-		Material material = new Material(ColorAttribute.createDiffuse(HudSystemImpl.CURSOR_ATTACK));
+		Material material = new Material(ColorAttribute.createDiffuse(CursorHandler.CURSOR_ATTACK));
 		MeshPartBuilder meshPartBuilder = builder.part(
 				"attack_node_1",
 				GL20.GL_LINES,
