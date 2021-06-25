@@ -108,7 +108,7 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 		MapGraphNode newNode = map.getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
 		ModelInstance cursorModelInstance = interfaceSystemHandlers.getCursorHandler().getCursorModelInstance();
 		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
-		if (!newNode.equals(oldNode)) {
+		if (newNode != null && !newNode.equals(oldNode)) {
 			interfaceSystemHandlers.onMouseEnteredNewNode(newNode, services, enemiesEntities);
 		}
 	}

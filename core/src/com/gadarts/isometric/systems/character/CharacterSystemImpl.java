@@ -41,6 +41,7 @@ import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
 import static com.gadarts.isometric.components.character.CharacterMotivation.END_MY_TURN;
 import static com.gadarts.isometric.components.character.CharacterMotivation.TO_PICK_UP;
+import static com.gadarts.necromine.model.characters.SpriteType.LIGHT_DEATH_1;
 import static com.gadarts.necromine.model.characters.SpriteType.PAIN;
 
 public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsSubscriber>
@@ -69,7 +70,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	@Override
-	public void activate() {
+	public void activate( ) {
 		this.graphData = new CharacterSystemGraphData(services.getMapService().getMap());
 		commandsHandler = new CommandsHandler(graphData, subscribers, services.getSoundPlayer(), services.getMapService().getMap());
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
@@ -267,7 +268,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterSoundData soundData = characterComponent.getSoundData();
 		SoundPlayer soundPlayer = services.getSoundPlayer();
 		if (healthData.getHp() <= 0) {
-			characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.randomLightDeath());
+			characterComponent.getCharacterSpriteData().setSpriteType(ComponentsMapper.player.has(character) ? LIGHT_DEATH_1 : SpriteType.randomLightDeath());
 			if (ComponentsMapper.animation.has(character)) {
 				ComponentsMapper.animation.get(character).resetStateTime();
 			}
@@ -294,13 +295,13 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 
 	}
 
 
 	@Override
-	public boolean isProcessingCommand() {
+	public boolean isProcessingCommand( ) {
 		return commandsHandler.getCurrentCommand() != null;
 	}
 

@@ -16,7 +16,7 @@ public class BattleScreen implements Screen, GlobalGameService {
 	private boolean inGame;
 
 	public BattleScreen( ) {
-		services = new GameServices(this, "coalmine");
+		services = new GameServices(this, "mastaba");
 		systemsHandler = new SystemsHandler(services);
 		services.init();
 	}

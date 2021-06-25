@@ -78,7 +78,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		});
 	}
 
-	void applyConnections() {
+	void applyConnections( ) {
 		for (int row = 0; row < mapSize.height; row++) {
 			int rows = row * mapSize.width;
 			for (int col = 0; col < mapSize.width; col++) {
@@ -130,7 +130,11 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
 	public MapGraphNode getNode(final int col, final int row) {
 		int index = Math.max(Math.min(row, mapSize.height) * mapSize.width + Math.min(col, mapSize.width), 0);
-		return nodes.get(index);
+		MapGraphNode result = null;
+		if (index < getWidth() * getDepth()) {
+			result = nodes.get(index);
+		}
+		return result;
 	}
 
 	private void addConnection(final MapGraphNode source, final int xOffset, final int yOffset) {
@@ -181,7 +185,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	@Override
-	public int getNodeCount() {
+	public int getNodeCount( ) {
 		return nodes.size;
 	}
 
@@ -346,7 +350,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		return getNode(coord.getCol(), coord.getRow());
 	}
 
-	public void init() {
+	public void init( ) {
 		obstaclesEntities = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
 		obstaclesEntities.forEach(wall -> {
 			ObstacleComponent obstacleWallComponent = ComponentsMapper.obstacle.get(wall);
@@ -366,11 +370,11 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		applyConnections();
 	}
 
-	public int getWidth() {
+	public int getWidth( ) {
 		return mapSize.width;
 	}
 
-	public int getDepth() {
+	public int getDepth( ) {
 		return mapSize.height;
 	}
 }
