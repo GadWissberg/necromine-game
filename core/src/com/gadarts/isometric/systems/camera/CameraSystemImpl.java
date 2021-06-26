@@ -38,7 +38,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final Vector3 auxVector3_3 = new Vector3();
-	private static final float SCROLL_OFFSET = 100;
+	private static final float SCROLL_OFFSET = 75;
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final float START_OFFSET = 7;
 	private static final float MENU_CAMERA_ROTATION = 0.1F;

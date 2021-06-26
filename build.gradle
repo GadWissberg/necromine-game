@@ -18,10 +18,10 @@ buildscript {
 
 allprojects {
 
-    version = '0.5'
+    version = '0.6'
     ext {
-        versionNumber = 6
-        appName = "necromine"
+        versionNumber = 7
+        appName = "necronemes"
         gdxVersion = '1.10.0'
         ashleyVersion = '1.7.0'
         aiVersion = '1.8.0'

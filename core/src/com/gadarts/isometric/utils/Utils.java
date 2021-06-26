@@ -3,6 +3,7 @@ package com.gadarts.isometric.utils;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
+import com.gadarts.necromine.assets.Assets;
 import com.google.gson.JsonObject;
 
 /**
@@ -19,8 +20,8 @@ public class Utils {
 	 * Calculates the node's position based on screen mouse position.
 	 *
 	 * @param camera  The rendering camera.
-	 * @param screenX
-	 * @param screenY
+	 * @param screenX MouseX
+	 * @param screenY MouseY
 	 * @param output  The result
 	 * @return output argument for chaining.
 	 */
@@ -36,7 +37,7 @@ public class Utils {
 	/**
 	 * Floors x and z.
 	 *
-	 * @param position
+	 * @param position Given position
 	 * @return position argument for chaining.
 	 */
 	public static Vector3 alignPositionToGrid(final Vector3 position) {
@@ -63,6 +64,7 @@ public class Utils {
 				&& ((ymin >= y && ymin <= y + height) && (ymax >= y && ymax <= y + height));
 	}
 
+	@SuppressWarnings("unused")
 	public static String getStringFromJsonOrDefault(final JsonObject jsonObject,
 													final String key,
 													final String defaultValue) {
@@ -81,5 +83,10 @@ public class Utils {
 			result = jsonObject.get(key).getAsFloat();
 		}
 		return result;
+	}
+
+	public static String getRandomRoadSound(final Assets.Sounds soundDefinition) {
+		int random = MathUtils.random(soundDefinition.getFiles().length - 1);
+		return soundDefinition.getFiles()[random];
 	}
 }

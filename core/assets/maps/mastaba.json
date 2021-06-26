@@ -1,5 +1,5 @@
 {
-  "ambient": 0.2,
+  "ambient": 0.3,
   "target": 5,
   "tiles": {
     "width": 40,
@@ -2372,13 +2372,6 @@
       },
       {
         "row": 16,
-        "col": 4,
-        "height": 0.0,
-        "direction": 3,
-        "type": 0
-      },
-      {
-        "row": 16,
         "col": 7,
         "height": 0.0,
         "direction": 5,
@@ -2415,6 +2408,13 @@
       {
         "row": 5,
         "col": 25,
+        "height": 0.0,
+        "direction": 4,
+        "type": 0
+      },
+      {
+        "row": 16,
+        "col": 5,
         "height": 0.0,
         "direction": 4,
         "type": 0
@@ -2585,6 +2585,13 @@
       "type": 3
     }
   ],
-  "pickups": [],
+  "pickups": [
+    {
+      "row": 14,
+      "col": 5,
+      "height": 0.0,
+      "type": 1
+    }
+  ],
   "lights": []
 }

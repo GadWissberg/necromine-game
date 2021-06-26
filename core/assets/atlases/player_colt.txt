@@ -451,6 +451,13 @@ attack_west
   orig: 128, 128
   offset: 0, 0
   index: 7
+bullet
+  rotate: false
+  xy: 1431, 1431
+  size: 64, 11
+  orig: 64, 11
+  offset: 0, 0
+  index: -1
 idle_east
   rotate: false
   xy: 521, 521

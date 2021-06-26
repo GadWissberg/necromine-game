@@ -28,10 +28,12 @@ import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
-import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.model.characters.SpriteType;
 
 import java.util.List;
+
+import static com.gadarts.necromine.assets.Assets.Sounds.ENEMY_AWAKE;
+import static com.gadarts.necromine.assets.Assets.Sounds.ENEMY_ROAM;
 
 /**
  * Handles enemy AI.
@@ -64,15 +66,19 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
 			if (enemyComponent.isAwaken()) {
 				if (TimeUtils.timeSinceMillis(enemyComponent.getNextRoamSound()) >= 0) {
+					if (enemyComponent.getNextRoamSound() != 0) {
+						SoundPlayer soundPlayer = services.getSoundPlayer();
+						soundPlayer.playSound(ENEMY_ROAM);
+					}
 					enemyComponent.calculateNextRoamSound();
-					services.getSoundPlayer().playSound(Assets.Sounds.ENEMY_ROAM);
 				}
 			}
 		}
 	}
 
+
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 
 	}
 
@@ -139,7 +145,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	private void enemyFinishedTurn() {
+	private void enemyFinishedTurn( ) {
 		for (EnemySystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onEnemyFinishedTurn();
 		}
@@ -237,7 +243,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			}
 		}
 		awakeEnemy(enemy);
-		services.getSoundPlayer().playSound(Assets.Sounds.ENEMY_AWAKE);
+		services.getSoundPlayer().playSound(ENEMY_AWAKE);
 	}
 
 	private boolean checkIfFloorNodesBlockSight(final Entity enemy) {
@@ -289,7 +295,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	@Override
-	public void activate() {
+	public void activate( ) {
 
 	}
 }

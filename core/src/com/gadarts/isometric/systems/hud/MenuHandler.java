@@ -31,7 +31,7 @@ public class MenuHandler {
 		GlobalGameService global = services.getGlobalGameService();
 		Arrays.stream(options).forEach(o -> {
 			if (o.getValidation().validate(player)) {
-				menuTable.add(new MenuOption(o, style, global, interfaceSystem)).row();
+				menuTable.add(new MenuOption(o, style, global, interfaceSystem, services.getSoundPlayer())).row();
 			}
 		});
 	}
