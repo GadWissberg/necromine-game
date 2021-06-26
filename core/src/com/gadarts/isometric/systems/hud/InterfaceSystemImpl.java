@@ -40,7 +40,7 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 
 import java.util.List;
 
-import static com.gadarts.isometric.NecromineGame.*;
+import static com.gadarts.isometric.NecronemesGame.*;
 
 public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsSubscriber> implements InterfaceSystem,
 		InputSystemEventsSubscriber,

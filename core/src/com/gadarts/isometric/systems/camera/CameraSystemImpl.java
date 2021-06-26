@@ -18,7 +18,7 @@ import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import lombok.Getter;
 
-import static com.gadarts.isometric.NecromineGame.*;
+import static com.gadarts.isometric.NecronemesGame.*;
 import static com.gadarts.isometric.utils.DefaultGameSettings.DEBUG_INPUT;
 import static com.gadarts.isometric.utils.DefaultGameSettings.FULL_SCREEN;
 

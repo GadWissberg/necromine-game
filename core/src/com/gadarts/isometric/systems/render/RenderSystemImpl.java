@@ -55,7 +55,7 @@ import com.gadarts.necromine.model.characters.SpriteType;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.gadarts.isometric.NecromineGame.*;
+import static com.gadarts.isometric.NecronemesGame.*;
 import static java.lang.Math.max;
 
 /**

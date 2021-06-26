@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.StringBuilder;
-import com.gadarts.isometric.NecromineGame;
+import com.gadarts.isometric.NecronemesGame;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
 import com.gadarts.isometric.systems.hud.InterfaceSystem;
@@ -81,7 +81,7 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 		displayLine(LABEL_FPS, Gdx.graphics.getFramesPerSecond());
 		displayMemoryLabels();
 		displayGlProfiling();
-		stringBuilder.append("\n").append(LABEL_VERSION).append(NecromineGame.getVersionName());
+		stringBuilder.append("\n").append(LABEL_VERSION).append(NecronemesGame.getVersionName());
 		label.setText(stringBuilder);
 	}
 

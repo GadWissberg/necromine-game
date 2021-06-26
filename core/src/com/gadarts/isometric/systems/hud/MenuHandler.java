@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.gadarts.isometric.GlobalGameService;
-import com.gadarts.isometric.NecromineGame;
+import com.gadarts.isometric.NecronemesGame;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 import lombok.Getter;
@@ -39,7 +39,7 @@ public class MenuHandler {
 	private Label createLogo(final GameServices services) {
 		BitmapFont largeFont = services.getAssetManager().get("chubgothic_72.ttf", BitmapFont.class);
 		Label.LabelStyle logoStyle = new Label.LabelStyle(largeFont, MenuOption.FONT_COLOR_REGULAR);
-		return new Label(NecromineGame.TITLE, logoStyle);
+		return new Label(NecronemesGame.TITLE, logoStyle);
 	}
 
 

@@ -20,7 +20,7 @@ import com.gadarts.necromine.assets.GameAssetsManager;
 import lombok.Getter;
 
 import static com.badlogic.gdx.Application.LOG_DEBUG;
-import static com.gadarts.isometric.NecromineGame.*;
+import static com.gadarts.isometric.NecronemesGame.*;
 import static com.gadarts.isometric.utils.DefaultGameSettings.FULL_SCREEN;
 
 

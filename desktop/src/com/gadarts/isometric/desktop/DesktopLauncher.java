@@ -2,7 +2,7 @@ package com.gadarts.isometric.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.gadarts.isometric.NecromineGame;
+import com.gadarts.isometric.NecronemesGame;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 
 import java.io.BufferedReader;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.gadarts.isometric.NecromineGame.*;
+import static com.gadarts.isometric.NecronemesGame.*;
 
 public class DesktopLauncher {
 
@@ -35,7 +35,7 @@ public class DesktopLauncher {
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
-		new LwjglApplication(new NecromineGame(versionName, versionNumber), config);
+		new LwjglApplication(new NecronemesGame(versionName, versionNumber), config);
 	}
 
 	private static LwjglApplicationConfiguration createGameConfig() {

@@ -1,7 +1,7 @@
 package com.gadarts.isometric.systems.hud.console.commands.types;
 
 import com.badlogic.gdx.utils.StringBuilder;
-import com.gadarts.isometric.NecromineGame;
+import com.gadarts.isometric.NecronemesGame;
 import com.gadarts.isometric.systems.hud.console.Console;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandImpl;
@@ -42,6 +42,6 @@ public class HelpCommand extends ConsoleCommandImpl {
 			}
 			builder.append(": ").append(command.getDescription()).append("\n");
 		});
-		output = String.format(INTRO, NecromineGame.getVersionName(), builder);
+		output = String.format(INTRO, NecronemesGame.getVersionName(), builder);
 	}
 }
