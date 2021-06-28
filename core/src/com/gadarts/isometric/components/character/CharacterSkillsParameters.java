@@ -1,7 +1,7 @@
 package com.gadarts.isometric.components.character;
 
-import com.gadarts.necromine.model.characters.Agility;
-import com.gadarts.necromine.model.characters.Strength;
+import com.gadarts.necromine.model.characters.attributes.Agility;
+import com.gadarts.necromine.model.characters.attributes.Strength;
 import lombok.Getter;
 
 @Getter

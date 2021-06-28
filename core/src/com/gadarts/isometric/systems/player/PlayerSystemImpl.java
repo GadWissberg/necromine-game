@@ -337,7 +337,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	public void applyShootCommand(final MapGraphNode target) {
-		getSystem(CharacterSystem.class).applyCommand(auxCommand.init(CharacterCommands.SHOOT, null, player, target), player);
+		getSystem(CharacterSystem.class).applyCommand(auxCommand.init(CharacterCommands.ATTACK_PRIMARY, null, player, target), player);
 	}
 
 	@Override

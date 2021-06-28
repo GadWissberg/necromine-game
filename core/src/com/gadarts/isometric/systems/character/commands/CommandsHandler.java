@@ -9,8 +9,8 @@ import com.gadarts.isometric.systems.character.CharacterSystemGraphData;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
-import com.gadarts.necromine.model.characters.Agility;
 import com.gadarts.necromine.model.characters.SpriteType;
+import com.gadarts.necromine.model.characters.attributes.Agility;
 import lombok.Getter;
 
 import java.util.List;

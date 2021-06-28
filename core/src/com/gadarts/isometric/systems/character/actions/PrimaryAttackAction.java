@@ -8,7 +8,7 @@ import com.gadarts.isometric.systems.character.commands.ToDoAfterDestinationReac
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 
-public class ShootAction implements ToDoAfterDestinationReached {
+public class PrimaryAttackAction implements ToDoAfterDestinationReached {
 
 	@Override
 	public void run(final Entity character,
@@ -19,7 +19,7 @@ public class ShootAction implements ToDoAfterDestinationReached {
 		Entity target = characterComponent.getTarget();
 		if (target != null) {
 			characterComponent.getRotationData().setRotating(true);
-			characterComponent.setMotivation(CharacterMotivation.TO_ATTACK);
+			characterComponent.setMotivation(CharacterMotivation.TO_ATTACK, CharacterMotivation.USE_PRIMARY);
 		}
 	}
 }

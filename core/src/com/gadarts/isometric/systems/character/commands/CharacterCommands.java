@@ -2,21 +2,21 @@ package com.gadarts.isometric.systems.character.commands;
 
 import com.gadarts.isometric.systems.character.actions.MeleeAction;
 import com.gadarts.isometric.systems.character.actions.PickUpAction;
-import com.gadarts.isometric.systems.character.actions.ShootAction;
+import com.gadarts.isometric.systems.character.actions.PrimaryAttackAction;
 import lombok.Getter;
 
 public enum CharacterCommands {
 	GO_TO,
 	GO_TO_MELEE(new MeleeAction()),
 	GO_TO_PICKUP(new PickUpAction()),
-	SHOOT(new ShootAction(), false);
+	ATTACK_PRIMARY(new PrimaryAttackAction(), false);
 
 	private final ToDoAfterDestinationReached toDoAfterDestinationReached;
 
 	@Getter
 	private final boolean requiresMovement;
 
-	CharacterCommands() {
+	CharacterCommands( ) {
 		this(null);
 	}
 

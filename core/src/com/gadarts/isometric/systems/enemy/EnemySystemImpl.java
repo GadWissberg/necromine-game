@@ -28,7 +28,10 @@ import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
+import com.gadarts.necromine.model.characters.Enemies;
 import com.gadarts.necromine.model.characters.SpriteType;
+import com.gadarts.necromine.model.characters.attributes.Accuracy;
+import com.gadarts.necromine.model.characters.attributes.Range;
 
 import java.util.List;
 
@@ -114,7 +117,43 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		Vector2 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 		Entity target = ComponentsMapper.character.get(enemy).getTarget();
 		MapGraphNode enemyNode = services.getMapService().getMap().getNode(enemyPosition);
-		applyGoToMelee(enemy, enemyNode, target);
+		if (checkLineOfSightForEnemy(enemy)) {
+			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
+			Enemies enemyDefinition = enemyComponent.getEnemyDefinition();
+			if (!considerPrimaryAttack(enemy, enemyComponent, enemyDefinition, enemyComponent.getSkill() - 1)) {
+				applyGoToMelee(enemy, enemyNode, target);
+			}
+		}
+	}
+
+	private boolean considerPrimaryAttack(final Entity enemy,
+										  final EnemyComponent enemyComponent,
+										  final Enemies enemyDefinition,
+										  final int skillIndex) {
+		if (enemyDefinition.getAccuracy().get(skillIndex) != Accuracy.NONE) {
+			if (enemyDefinition.getRange().get(skillIndex) != Range.NONE) {
+				if (enemyDefinition.getRange().get(skillIndex).getMaxDistance() <= calculateDistanceToTarget(enemy)) {
+					int numberOfTurns = enemyDefinition.getReloadTime().get(skillIndex).getNumberOfTurns();
+					if (turnsSystem.getCurrentTurnId() - enemyComponent.getLastPrimaryAttack() > numberOfTurns) {
+						applyCommand(enemy, CharacterCommands.ATTACK_PRIMARY);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private void applyCommand(final Entity enemy, final CharacterCommands attackPrimary) {
+		auxCommand.init(attackPrimary, auxPath, enemy);
+		characterSystem.applyCommand(auxCommand, enemy);
+	}
+
+	private float calculateDistanceToTarget(final Entity enemy) {
+		Entity target = ComponentsMapper.character.get(enemy).getTarget();
+		Vector3 targetPosition = ComponentsMapper.characterDecal.get(target).getDecal().getPosition();
+		Vector3 position = ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition();
+		return position.dst2(targetPosition);
 	}
 
 	private void applyGoToMelee(final Entity enemy,
@@ -122,8 +161,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 								final Entity target) {
 		if (characterSystem.calculatePathToCharacter(enemyNode, target, auxPath)) {
 			auxPath.nodes.removeIndex(auxPath.getCount() - 1);
-			auxCommand.init(CharacterCommands.GO_TO_MELEE, auxPath, enemy);
-			characterSystem.applyCommand(auxCommand, enemy);
+			applyCommand(enemy, CharacterCommands.GO_TO_MELEE);
 		} else {
 			onCharacterCommandDone(enemy);
 		}
@@ -226,24 +264,31 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 				Vector3 enemyPosition = auxVector3_1.set(enemyDecal.getPosition());
 				Vector3 playerPosition = ComponentsMapper.characterDecal.get(entity).getDecal().getPosition();
 				if (enemyPosition.dst2(playerPosition) <= Math.pow(MAX_SIGHT, 2)) {
-					checkLineOfSightForEnemy(enemy);
+					awakeEnemyIfSpotsTarget(enemy);
 				}
 			}
 		}
 	}
 
-	private void checkLineOfSightForEnemy(final Entity enemy) {
-		if (!isTargetInFov(enemy)) return;
+	private void awakeEnemyIfSpotsTarget(final Entity enemy) {
+		boolean spotted = checkLineOfSightForEnemy(enemy);
+		if (spotted) {
+			awakeEnemy(enemy);
+			services.getSoundPlayer().playSound(ENEMY_AWAKE);
+		}
+	}
+
+	private boolean checkLineOfSightForEnemy(final Entity enemy) {
+		if (!isTargetInFov(enemy)) return false;
 		if (checkIfFloorNodesBlockSight(enemy)) {
-			return;
+			return false;
 		}
 		for (Entity wall : walls) {
 			if (checkIfWallBlocksLineOfSightToTarget(enemy, wall)) {
-				return;
+				return false;
 			}
 		}
-		awakeEnemy(enemy);
-		services.getSoundPlayer().playSound(ENEMY_AWAKE);
+		return true;
 	}
 
 	private boolean checkIfFloorNodesBlockSight(final Entity enemy) {

@@ -36,11 +36,10 @@ import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.model.characters.CharacterTypes;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
-import com.gadarts.necromine.model.characters.Strength;
+import com.gadarts.necromine.model.characters.attributes.Strength;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
-import static com.gadarts.isometric.components.character.CharacterMotivation.END_MY_TURN;
-import static com.gadarts.isometric.components.character.CharacterMotivation.TO_PICK_UP;
+import static com.gadarts.isometric.components.character.CharacterMotivation.*;
 import static com.gadarts.necromine.model.characters.SpriteType.LIGHT_DEATH_1;
 import static com.gadarts.necromine.model.characters.SpriteType.PAIN;
 
@@ -190,7 +189,12 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				rotationData.setRotating(false);
 				SpriteType spriteType;
 				if (motivation == CharacterMotivation.TO_ATTACK) {
-					spriteType = SpriteType.ATTACK;
+					Integer motivationAdditionalData = (Integer) motivationData.getMotivationAdditionalData();
+					if (motivationAdditionalData != null && motivationAdditionalData == USE_PRIMARY) {
+						spriteType = SpriteType.ATTACK_PRIMARY;
+					} else {
+						spriteType = SpriteType.ATTACK;
+					}
 				} else if (motivation == CharacterMotivation.TO_PICK_UP) {
 					spriteType = SpriteType.PICKUP;
 				} else {
