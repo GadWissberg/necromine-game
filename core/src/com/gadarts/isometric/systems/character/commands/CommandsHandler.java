@@ -97,9 +97,10 @@ public class CommandsHandler {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		characterComponent.setMotivation(null);
 		characterComponent.getCharacterSpriteData().setSpriteType(SpriteType.IDLE);
+		CharacterCommand lastCommand = currentCommand;
 		currentCommand = null;
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onCharacterCommandDone(character);
+			subscriber.onCharacterCommandDone(character, lastCommand);
 		}
 	}
 

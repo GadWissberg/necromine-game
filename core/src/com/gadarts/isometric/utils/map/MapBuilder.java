@@ -664,7 +664,7 @@ public final class MapBuilder implements Disposable {
 	private void inflateEnemy(final JsonObject characterJsonObject, final MapGraph mapGraph) {
 		int index = characterJsonObject.get(TYPE).getAsInt();
 		Enemies type = Enemies.values()[index];
-		int skill = 1;
+		int skill = 5;
 		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(type, skill);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		Vector3 position = inflateCharacterPosition(characterJsonObject, mapGraph);

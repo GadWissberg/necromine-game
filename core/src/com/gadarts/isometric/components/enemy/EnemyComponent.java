@@ -17,7 +17,7 @@ public class EnemyComponent implements GameComponent {
 	private boolean awaken;
 	private long lastTurn = -1;
 	private int skill = 1;
-	private int lastPrimaryAttack = -1;
+	private long lastPrimaryAttack = -1;
 
 	public void init(final Enemies enemyDefinition, final int skill) {
 		this.enemyDefinition = enemyDefinition;

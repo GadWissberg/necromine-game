@@ -10,7 +10,7 @@ public interface CharacterSystemEventsSubscriber extends SystemEventsSubscriber 
 
 	}
 
-	default void onCharacterCommandDone(final Entity character) {
+	default void onCharacterCommandDone(final Entity character, CharacterCommand lastCommand) {
 
 	}
 

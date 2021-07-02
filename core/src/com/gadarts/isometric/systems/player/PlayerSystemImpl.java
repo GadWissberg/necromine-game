@@ -236,7 +236,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	@Override
-	public void onCharacterCommandDone(final Entity character) {
+	public void onCharacterCommandDone(final Entity character, final CharacterCommand executedCommand) {
 		if (ComponentsMapper.player.has(character)) {
 			for (PlayerSystemEventsSubscriber subscriber : subscribers) {
 				subscriber.onPlayerFinishedTurn();

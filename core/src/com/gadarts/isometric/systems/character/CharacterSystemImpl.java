@@ -40,8 +40,7 @@ import com.gadarts.necromine.model.characters.attributes.Strength;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
 import static com.gadarts.isometric.components.character.CharacterMotivation.*;
-import static com.gadarts.necromine.model.characters.SpriteType.LIGHT_DEATH_1;
-import static com.gadarts.necromine.model.characters.SpriteType.PAIN;
+import static com.gadarts.necromine.model.characters.SpriteType.*;
 
 public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsSubscriber>
 		implements RenderSystemEventsSubscriber,
@@ -144,7 +143,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void handleCurrentCommand(final CharacterCommand currentCommand) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(currentCommand.getCharacter());
 		SpriteType spriteType = characterComponent.getCharacterSpriteData().getSpriteType();
-		if (spriteType == SpriteType.ATTACK || spriteType == SpriteType.PICKUP) {
+		if (spriteType == ATTACK || spriteType == PICKUP || spriteType == ATTACK_PRIMARY) {
 			handleModeWithNonLoopingAnimation(currentCommand.getCharacter());
 		} else if (characterComponent.getMotivationData().getMotivation() == END_MY_TURN) {
 			commandsHandler.commandDone(currentCommand.getCharacter());
@@ -159,7 +158,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterSpriteData spriteData = characterComponent.getCharacterSpriteData();
 		if (spriteData.getSpriteType() == PAIN && TimeUtils.timeSinceMillis(lastDamage) > CHARACTER_PAIN_DURATION) {
 			characterComponent.setMotivation(null);
-			spriteData.setSpriteType(SpriteType.IDLE);
+			spriteData.setSpriteType(IDLE);
 			CharacterCommand currentCommand = commandsHandler.getCurrentCommand();
 			if (currentCommand != null && !currentCommand.isStarted()) {
 				applyCommand(currentCommand, character);
@@ -191,14 +190,14 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				if (motivation == CharacterMotivation.TO_ATTACK) {
 					Integer motivationAdditionalData = (Integer) motivationData.getMotivationAdditionalData();
 					if (motivationAdditionalData != null && motivationAdditionalData == USE_PRIMARY) {
-						spriteType = SpriteType.ATTACK_PRIMARY;
+						spriteType = ATTACK_PRIMARY;
 					} else {
-						spriteType = SpriteType.ATTACK;
+						spriteType = ATTACK;
 					}
 				} else if (motivation == CharacterMotivation.TO_PICK_UP) {
-					spriteType = SpriteType.PICKUP;
+					spriteType = PICKUP;
 				} else {
-					spriteType = SpriteType.RUN;
+					spriteType = RUN;
 				}
 				characterSpriteData.setSpriteType(spriteType);
 			}
@@ -272,7 +271,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterSoundData soundData = characterComponent.getSoundData();
 		SoundPlayer soundPlayer = services.getSoundPlayer();
 		if (healthData.getHp() <= 0) {
-			characterComponent.getCharacterSpriteData().setSpriteType(ComponentsMapper.player.has(character) ? LIGHT_DEATH_1 : SpriteType.randomLightDeath());
+			characterComponent.getCharacterSpriteData().setSpriteType(ComponentsMapper.player.has(character) ? LIGHT_DEATH_1 : randomLightDeath());
 			if (ComponentsMapper.animation.has(character)) {
 				ComponentsMapper.animation.get(character).resetStateTime();
 			}
@@ -318,9 +317,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	public void onFrameChanged(final Entity character, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		CharacterSpriteData characterSpriteData = characterComponent.getCharacterSpriteData();
-		if (characterSpriteData.getSpriteType() == SpriteType.RUN) {
+		if (characterSpriteData.getSpriteType() == RUN) {
 			applyRunning(character, newFrame, characterComponent);
-		} else if (characterSpriteData.getSpriteType() == SpriteType.ATTACK) {
+		} else if (characterSpriteData.getSpriteType() == ATTACK) {
 			if (newFrame.index == characterSpriteData.getHitFrameIndex()) {
 				Entity target = characterComponent.getTarget();
 				if (ComponentsMapper.player.has(character)) {
@@ -344,7 +343,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 					applyDamageToCharacter(character, target);
 				}
 			}
-		} else if (characterSpriteData.getSpriteType() == SpriteType.PICKUP) {
+		} else if (characterSpriteData.getSpriteType() == PICKUP) {
 			if (newFrame.index == 1 && ComponentsMapper.animation.get(character).isDoingReverse()) {
 				handlePickup(character);
 			}

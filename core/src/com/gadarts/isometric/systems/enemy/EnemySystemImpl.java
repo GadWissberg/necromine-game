@@ -6,11 +6,13 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
-import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.Bresenham2;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.data.CharacterHealthData;
 import com.gadarts.isometric.components.decal.RelatedDecal;
@@ -30,13 +32,13 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.model.characters.Enemies;
 import com.gadarts.necromine.model.characters.SpriteType;
-import com.gadarts.necromine.model.characters.attributes.Accuracy;
 import com.gadarts.necromine.model.characters.attributes.Range;
 
 import java.util.List;
 
 import static com.gadarts.necromine.assets.Assets.Sounds.ENEMY_AWAKE;
 import static com.gadarts.necromine.assets.Assets.Sounds.ENEMY_ROAM;
+import static com.gadarts.necromine.model.characters.attributes.Accuracy.NONE;
 
 /**
  * Handles enemy AI.
@@ -53,14 +55,13 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private static final MapGraphPath auxPath = new MapGraphPath();
 	private static final CharacterCommand auxCommand = new CharacterCommand();
 	private static final float MAX_SIGHT = 7;
-	private static final Rectangle auxRect = new Rectangle();
 	private static final float ENEMY_HALF_FOV_ANGLE = 75F;
 	private static final int NUMBER_OF_SKILL_FLOWER_LEAF = 8;
 	private static final Bresenham2 bresenham = new Bresenham2();
+	private static final float RANGE_ATTACK_MIN_RADIUS = 1.7F;
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
 	private TurnsSystem turnsSystem;
-	private ImmutableArray<Entity> walls;
 
 	@Override
 	public void update(final float deltaTime) {
@@ -89,7 +90,6 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
-		walls = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
 	}
 
 
@@ -117,31 +117,32 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		Vector2 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 		Entity target = ComponentsMapper.character.get(enemy).getTarget();
 		MapGraphNode enemyNode = services.getMapService().getMap().getNode(enemyPosition);
-		if (checkLineOfSightForEnemy(enemy)) {
-			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
-			Enemies enemyDefinition = enemyComponent.getEnemyDefinition();
-			if (!considerPrimaryAttack(enemy, enemyComponent, enemyDefinition, enemyComponent.getSkill() - 1)) {
-				applyGoToMelee(enemy, enemyNode, target);
-			}
+		EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
+		Enemies enemyDefinition = enemyComponent.getEnemyDefinition();
+		if (!considerPrimaryAttack(enemy, enemyComponent, enemyDefinition, enemyComponent.getSkill() - 1)) {
+			applyGoToMelee(enemy, enemyNode, target);
 		}
 	}
 
 	private boolean considerPrimaryAttack(final Entity enemy,
-										  final EnemyComponent enemyComponent,
-										  final Enemies enemyDefinition,
+										  final EnemyComponent enemyCom,
+										  final Enemies def,
 										  final int skillIndex) {
-		if (enemyDefinition.getAccuracy().get(skillIndex) != Accuracy.NONE) {
-			if (enemyDefinition.getRange().get(skillIndex) != Range.NONE) {
-				if (enemyDefinition.getRange().get(skillIndex).getMaxDistance() <= calculateDistanceToTarget(enemy)) {
-					int numberOfTurns = enemyDefinition.getReloadTime().get(skillIndex).getNumberOfTurns();
-					if (turnsSystem.getCurrentTurnId() - enemyComponent.getLastPrimaryAttack() > numberOfTurns) {
-						applyCommand(enemy, CharacterCommands.ATTACK_PRIMARY);
-						return true;
-					}
+		if (def.getAccuracy().get(skillIndex) != NONE && def.getRange().get(skillIndex) != Range.NONE) {
+			float disToTarget = calculateDistanceToTarget(enemy);
+			if (disToTarget <= def.getRange().get(skillIndex).getMaxDistance() && disToTarget > RANGE_ATTACK_MIN_RADIUS) {
+				int turnsDiff = def.getReloadTime().get(skillIndex).getNumberOfTurns();
+				if (checkIfPrimaryAttackIsReady(enemyCom, turnsDiff) && checkLineOfSightForEnemy(enemy, false)) {
+					applyCommand(enemy, CharacterCommands.ATTACK_PRIMARY);
+					return true;
 				}
 			}
 		}
 		return false;
+	}
+
+	private boolean checkIfPrimaryAttackIsReady(final EnemyComponent enemyComponent, final int turnsDiff) {
+		return turnsSystem.getCurrentTurnId() - enemyComponent.getLastPrimaryAttack() > turnsDiff;
 	}
 
 	private void applyCommand(final Entity enemy, final CharacterCommands attackPrimary) {
@@ -153,7 +154,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		Entity target = ComponentsMapper.character.get(enemy).getTarget();
 		Vector3 targetPosition = ComponentsMapper.characterDecal.get(target).getDecal().getPosition();
 		Vector3 position = ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition();
-		return position.dst2(targetPosition);
+		return position.dst(targetPosition);
 	}
 
 	private void applyGoToMelee(final Entity enemy,
@@ -163,7 +164,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			auxPath.nodes.removeIndex(auxPath.getCount() - 1);
 			applyCommand(enemy, CharacterCommands.GO_TO_MELEE);
 		} else {
-			onCharacterCommandDone(enemy);
+			onCharacterCommandDone(enemy, null);
 		}
 	}
 
@@ -175,10 +176,14 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 
 	@Override
-	public void onCharacterCommandDone(final Entity character) {
+	public void onCharacterCommandDone(final Entity character, final CharacterCommand executedCommand) {
 		if (ComponentsMapper.enemy.has(character)) {
 			long currentTurnId = turnsSystem.getCurrentTurnId();
-			ComponentsMapper.enemy.get(character).setLastTurn(currentTurnId);
+			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(character);
+			if (executedCommand != null && executedCommand.getType() == CharacterCommands.ATTACK_PRIMARY) {
+				enemyComponent.setLastPrimaryAttack(currentTurnId);
+			}
+			enemyComponent.setLastTurn(currentTurnId);
 			onEnemyTurn(currentTurnId);
 		}
 	}
@@ -271,24 +276,16 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	private void awakeEnemyIfSpotsTarget(final Entity enemy) {
-		boolean spotted = checkLineOfSightForEnemy(enemy);
+		boolean spotted = checkLineOfSightForEnemy(enemy, true);
 		if (spotted) {
 			awakeEnemy(enemy);
 			services.getSoundPlayer().playSound(ENEMY_AWAKE);
 		}
 	}
 
-	private boolean checkLineOfSightForEnemy(final Entity enemy) {
-		if (!isTargetInFov(enemy)) return false;
-		if (checkIfFloorNodesBlockSight(enemy)) {
-			return false;
-		}
-		for (Entity wall : walls) {
-			if (checkIfWallBlocksLineOfSightToTarget(enemy, wall)) {
-				return false;
-			}
-		}
-		return true;
+	private boolean checkLineOfSightForEnemy(final Entity enemy, final boolean checkFov) {
+		if (checkFov && !isTargetInFov(enemy)) return false;
+		return !checkIfFloorNodesBlockSight(enemy);
 	}
 
 	private boolean checkIfFloorNodesBlockSight(final Entity enemy) {
@@ -319,24 +316,6 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		Vector2 directionToTarget = auxVector2_2.set(targetPosition.x, targetPosition.z).sub(enemyPos.x, enemyPos.z).nor();
 		Vector2 enemyDirection = charComponent.getCharacterSpriteData().getFacingDirection().getDirection(auxVector2_1);
 		return !(Math.abs(directionToTarget.angleDeg() - enemyDirection.angleDeg()) > ENEMY_HALF_FOV_ANGLE);
-	}
-
-	private boolean checkIfWallBlocksLineOfSightToTarget(final Entity enemy, final Entity wall) {
-		Rectangle rect = initializeRectOfWall(wall);
-		Vector3 enemyPos = ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition();
-		Entity target = ComponentsMapper.character.get(enemy).getTarget();
-		Vector3 targetPos = ComponentsMapper.characterDecal.get(target).getDecal().getPosition();
-		return Intersector.intersectSegmentRectangle(
-				auxVector2_1.set(enemyPos.x, enemyPos.z),
-				auxVector2_2.set(targetPos.x, targetPos.z),
-				rect);
-	}
-
-	private Rectangle initializeRectOfWall(final Entity wall) {
-		ObstacleComponent wallComp = ComponentsMapper.obstacle.get(wall);
-		return auxRect.set(wallComp.getTopLeftX(), wallComp.getTopLeftY(),
-				Math.abs(wallComp.getTopLeftX() - (wallComp.getBottomRightX() + 1)),
-				Math.abs(wallComp.getTopLeftY() - (wallComp.getBottomRightY() + 1)));
 	}
 
 	@Override

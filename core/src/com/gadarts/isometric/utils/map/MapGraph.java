@@ -284,7 +284,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	@Override
-	public void onCharacterCommandDone(final Entity character) {
+	public void onCharacterCommandDone(final Entity character, final CharacterCommand executedCommand) {
 		currentDestination = null;
 	}
 
