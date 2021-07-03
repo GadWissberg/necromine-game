@@ -14,10 +14,11 @@ import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.character.data.CharacterSpriteData;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.utils.DefaultGameSettings;
-import com.gadarts.necromine.model.characters.SpriteType;
 
 import java.util.List;
 
+import static com.gadarts.necromine.model.characters.SpriteType.ATTACK;
+import static com.gadarts.necromine.model.characters.SpriteType.ATTACK_PRIMARY;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -100,10 +101,13 @@ public class LightsRenderer {
 											 final CharacterSpriteData spriteData) {
 		Decal decal = ComponentsMapper.characterDecal.get(entity).getDecal();
 		TextureAtlas.AtlasRegion textureRegion = (TextureAtlas.AtlasRegion) decal.getTextureRegion();
-		return ComponentsMapper.enemy.has(entity)
-				|| spriteData.getSpriteType() != SpriteType.ATTACK
-				|| textureRegion.index != spriteData.getHitFrameIndex()
-				|| ComponentsMapper.player.get(entity).getStorage().getSelectedWeapon().isMelee();
+		if (ComponentsMapper.enemy.has(entity)) {
+			return spriteData.getSpriteType() != ATTACK_PRIMARY;
+		} else {
+			return spriteData.getSpriteType() != ATTACK
+					|| textureRegion.index != spriteData.getHitFrameIndex()
+					|| ComponentsMapper.player.get(entity).getStorage().getSelectedWeapon().isMelee();
+		}
 	}
 
 	/**
@@ -135,7 +139,7 @@ public class LightsRenderer {
 		}
 	}
 
-	public void updateLights() {
+	public void updateLights( ) {
 		for (Entity light : lightsEntities) {
 			LightComponent lc = ComponentsMapper.light.get(light);
 			long now = TimeUtils.millis();
