@@ -181,28 +181,6 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../sprites/anubis/anubis_bullet_0.png</key>
-            <key type="filename">../sprites/anubis/anubis_bullet_1.png</key>
-            <key type="filename">../sprites/anubis/anubis_bullet_2.png</key>
-            <key type="filename">../sprites/anubis/anubis_bullet_3.png</key>
-            <key type="filename">../sprites/anubis/anubis_bullet_4.png</key>
-            <key type="filename">../sprites/anubis/anubis_bullet_5.png</key>
-            <key type="filename">../sprites/anubis/anubis_bullet_6.png</key>
-            <key type="filename">../sprites/anubis/anubis_bullet_7.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>8,8,16,16</rect>
-                <key>scale9Paddings</key>
-                <rect>8,8,16,16</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
             <key type="filename">../sprites/anubis/attack_east_0.png</key>
             <key type="filename">../sprites/anubis/attack_east_1.png</key>
             <key type="filename">../sprites/anubis/attack_east_2.png</key>
@@ -475,6 +453,28 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">../sprites/anubis/energy_ball_0.png</key>
+            <key type="filename">../sprites/anubis/energy_ball_1.png</key>
+            <key type="filename">../sprites/anubis/energy_ball_2.png</key>
+            <key type="filename">../sprites/anubis/energy_ball_3.png</key>
+            <key type="filename">../sprites/anubis/energy_ball_4.png</key>
+            <key type="filename">../sprites/anubis/energy_ball_5.png</key>
+            <key type="filename">../sprites/anubis/energy_ball_6.png</key>
+            <key type="filename">../sprites/anubis/energy_ball_7.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>8,8,16,16</rect>
+                <key>scale9Paddings</key>
+                <rect>8,8,16,16</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
         </map>
         <key>fileList</key>
         <array>
@@ -736,14 +736,14 @@
             <filename>../sprites/anubis/light_death_2_9.png</filename>
             <filename>../sprites/anubis/light_death_3_10.png</filename>
             <filename>../sprites/anubis/light_death_3_9.png</filename>
-            <filename>../sprites/anubis/anubis_bullet_0.png</filename>
-            <filename>../sprites/anubis/anubis_bullet_1.png</filename>
-            <filename>../sprites/anubis/anubis_bullet_2.png</filename>
-            <filename>../sprites/anubis/anubis_bullet_3.png</filename>
-            <filename>../sprites/anubis/anubis_bullet_4.png</filename>
-            <filename>../sprites/anubis/anubis_bullet_5.png</filename>
-            <filename>../sprites/anubis/anubis_bullet_6.png</filename>
-            <filename>../sprites/anubis/anubis_bullet_7.png</filename>
+            <filename>../sprites/anubis/energy_ball_0.png</filename>
+            <filename>../sprites/anubis/energy_ball_1.png</filename>
+            <filename>../sprites/anubis/energy_ball_2.png</filename>
+            <filename>../sprites/anubis/energy_ball_3.png</filename>
+            <filename>../sprites/anubis/energy_ball_4.png</filename>
+            <filename>../sprites/anubis/energy_ball_5.png</filename>
+            <filename>../sprites/anubis/energy_ball_6.png</filename>
+            <filename>../sprites/anubis/energy_ball_7.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

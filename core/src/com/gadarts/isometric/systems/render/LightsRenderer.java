@@ -105,7 +105,7 @@ public class LightsRenderer {
 			return spriteData.getSpriteType() != ATTACK_PRIMARY;
 		} else {
 			return spriteData.getSpriteType() != ATTACK
-					|| textureRegion.index != spriteData.getHitFrameIndex()
+					|| textureRegion.index != spriteData.getMeleeHitFrameIndex()
 					|| ComponentsMapper.player.get(entity).getStorage().getSelectedWeapon().isMelee();
 		}
 	}

@@ -60,18 +60,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP;
+import static com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import static com.gadarts.isometric.components.FloorComponent.*;
+import static com.gadarts.necromine.assets.Assets.Atlases.*;
 import static com.gadarts.necromine.assets.Assets.SurfaceTextures.MISSING;
 import static com.gadarts.necromine.assets.MapJsonKeys.*;
 import static com.gadarts.necromine.model.characters.CharacterTypes.*;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
 import static com.gadarts.necromine.model.characters.Direction.SOUTH;
+import static com.gadarts.necromine.model.characters.EnemyWeaponsDefinitions.ENERGY_BALL;
 import static java.lang.String.format;
 
 /**
@@ -79,6 +80,9 @@ import static java.lang.String.format;
  */
 public final class MapBuilder implements Disposable {
 	public static final String MAP_PATH_TEMP = "core/assets/maps/%s.json";
+	public static final int PLAYER_HEALTH = 32;
+	public static final float INDEPENDENT_LIGHT_RADIUS = 2f;
+	public static final float INDEPENDENT_LIGHT_INTENSITY = 1f;
 	private static final CharacterSoundData auxCharacterSoundData = new CharacterSoundData();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
@@ -93,15 +97,13 @@ public final class MapBuilder implements Disposable {
 	private static final String KEY_PICKUPS = "pickups";
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
 	private static final Matrix4 auxMatrix = new Matrix4();
-	public static final int PLAYER_HEALTH = 32;
-	public static final float INDEPENDENT_LIGHT_RADIUS = 2f;
-	public static final float INDEPENDENT_LIGHT_INTENSITY = 1f;
 	private final GameAssetsManager assetManager;
-	private PooledEngine engine;
 	private final ModelBuilder modelBuilder;
 	private final Model floorModel;
 	private final Gson gson = new Gson();
 	private final WallCreator wallCreator;
+	private final Map<Enemies, Animation<TextureAtlas.AtlasRegion>> enemyBulletsTextureRegions = new HashMap<>();
+	private PooledEngine engine;
 
 	public MapBuilder(final GameAssetsManager assetManager, final PooledEngine engine) {
 		this.assetManager = assetManager;
@@ -113,10 +115,12 @@ public final class MapBuilder implements Disposable {
 
 	private void addCharBaseComponents(final EntityBuilder entityBuilder,
 									   final Atlases atlas,
-									   final CharacterData characterData) {
+									   final CharacterData characterData,
+									   final int meleeHitFrameIndex,
+									   final int primaryAttackHitFrameIndex) {
 		CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
 		Direction direction = characterData.getDirection();
-		characterSpriteData.init(direction, SpriteType.IDLE, 4);
+		characterSpriteData.init(direction, SpriteType.IDLE, meleeHitFrameIndex, primaryAttackHitFrameIndex);
 		Vector3 position = characterData.getPosition();
 		entityBuilder.addCharacterComponent(characterSpriteData, characterData.getSoundData(), characterData.getSkills())
 				.addCharacterDecalComponent(assetManager.get(atlas.name()), SpriteType.IDLE, direction, position)
@@ -322,7 +326,7 @@ public final class MapBuilder implements Disposable {
 			RelativeBillboard relativeBillboard = type.getRelativeBillboard();
 			Optional.ofNullable(relativeBillboard).ifPresent(r -> {
 				TextureAtlas atlas = assetManager.getAtlas(r.getBillboard());
-				Array<TextureAtlas.AtlasRegion> f = atlas.findRegions(r.getBillboard().getName().toLowerCase());
+				Array<AtlasRegion> f = atlas.findRegions(r.getBillboard().getName().toLowerCase());
 				Direction dir = Direction.values()[envJsonObject.get(DIRECTION).getAsInt()];
 				float degrees = dir.getDirection(auxVector2_1).angleDeg() + ((dir == NORTH || dir == SOUTH) ? 180 : 0);
 				Vector3 relativePosition = r.getRelativePosition(auxVector3_2).rotate(Vector3.Y, degrees);
@@ -333,7 +337,7 @@ public final class MapBuilder implements Disposable {
 
 	private void addRelativeBillboardEntity(final Vector3 position,
 											final RelativeBillboard r,
-											final Array<TextureAtlas.AtlasRegion> f,
+											final Array<AtlasRegion> f,
 											final Vector3 relativePosition) {
 		Entity entity = EntityBuilder.beginBuildingEntity(engine)
 				.addSimpleDecalComponent(position.add(relativePosition), f.get(0), true, true)
@@ -372,9 +376,9 @@ public final class MapBuilder implements Disposable {
 		pickups.forEach(element -> {
 			JsonObject pickJsonObject = element.getAsJsonObject();
 			WeaponsDefinitions type = WeaponsDefinitions.values()[pickJsonObject.get(TYPE).getAsInt()];
-			TextureAtlas.AtlasRegion bulletRegion = null;
+			AtlasRegion bulletRegion = null;
 			if (!type.isMelee()) {
-				bulletRegion = assetManager.getAtlas(Atlases.findByRelatedWeapon(type)).findRegion(REGION_NAME_BULLET);
+				bulletRegion = assetManager.getAtlas(findByRelatedWeapon(type)).findRegion(REGION_NAME_BULLET);
 			}
 			inflatePickupEntity(pickJsonObject, type, bulletRegion, mapGraph);
 		});
@@ -382,7 +386,7 @@ public final class MapBuilder implements Disposable {
 
 	private void inflatePickupEntity(final JsonObject pickJsonObject,
 									 final WeaponsDefinitions type,
-									 final TextureAtlas.AtlasRegion bulletRegion,
+									 final AtlasRegion bulletRegion,
 									 final MapGraph mapGraph) {
 		EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
 		inflatePickupModel(builder, pickJsonObject, type, mapGraph);
@@ -665,7 +669,12 @@ public final class MapBuilder implements Disposable {
 		int index = characterJsonObject.get(TYPE).getAsInt();
 		Enemies type = Enemies.values()[index];
 		int skill = 5;
-		EntityBuilder entityBuilder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(type, skill);
+		Animation<AtlasRegion> bulletAnimation = enemyBulletsTextureRegions.get(type);
+		if (!enemyBulletsTextureRegions.containsKey(type)) {
+			bulletAnimation = new Animation<>(type.getPrimaryAttack().getFrameDuration(), assetManager.getAtlas(ANUBIS).findRegions(ENERGY_BALL.name().toLowerCase()));
+			enemyBulletsTextureRegions.put(type, bulletAnimation);
+		}
+		EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(type, skill, bulletAnimation);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		Vector3 position = inflateCharacterPosition(characterJsonObject, mapGraph);
 		auxCharacterSoundData.set(Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH);
@@ -675,13 +684,15 @@ public final class MapBuilder implements Disposable {
 				type.getStrength().get(skill - 1));
 		CharacterData data = new CharacterData(position, Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()], skills, auxCharacterSoundData);
 		addCharBaseComponents(
-				entityBuilder,
+				builder,
 				type.getAtlasDefinition(),
-				data);
+				data,
+				type.getMeleeHitFrameIndex(),
+				type.getPrimaryAttackHitFrameIndex());
 		Texture skillFlowerTexture = assetManager.getTexture(Assets.UiTextures.SKILL_FLOWER_CENTER);
 		position.y = EnemySystemImpl.SKILL_FLOWER_HEIGHT;
-		entityBuilder.addSimpleDecalComponent(position, skillFlowerTexture, true, true);
-		Entity entity = entityBuilder.finishAndAddToEngine();
+		builder.addSimpleDecalComponent(position, skillFlowerTexture, true, true);
+		Entity entity = builder.finishAndAddToEngine();
 		ComponentsMapper.character.get(entity).setTarget(player);
 		SimpleDecalComponent simpleDecalComponent = entity.getComponent(SimpleDecalComponent.class);
 		simpleDecalComponent.setAffectedByFow(true);
@@ -706,7 +717,7 @@ public final class MapBuilder implements Disposable {
 
 	private void inflatePlayer(final JsonObject characterJsonObject, final MapGraph mapGraph) {
 		Weapon weapon = initializeStartingWeapon();
-		CharacterAnimations general = assetManager.get(Atlases.PLAYER_GENERIC.name());
+		CharacterAnimations general = assetManager.get(PLAYER_GENERIC.name());
 		EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
 		Vector3 position = inflateCharacterPosition(characterJsonObject, mapGraph);
 		auxCharacterSoundData.set(Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH);
@@ -721,8 +732,10 @@ public final class MapBuilder implements Disposable {
 				auxCharacterSoundData);
 		addCharBaseComponents(
 				builder,
-				Atlases.PLAYER_KNIFE,
-				data);
+				PLAYER_KNIFE,
+				data,
+				4,
+				4);
 		builder.finishAndAddToEngine();
 	}
 
@@ -736,8 +749,8 @@ public final class MapBuilder implements Disposable {
 
 	private Weapon initializeStartingWeapon( ) {
 		Weapon weapon = Pools.obtain(Weapon.class);
-		Texture image = assetManager.getTexture(WeaponsDefinitions.AXE_PICK.getImage());
-		weapon.init(WeaponsDefinitions.AXE_PICK, 0, 0, image);
+		Texture image = assetManager.getTexture(WeaponsDefinitions.KNIFE.getImage());
+		weapon.init(WeaponsDefinitions.KNIFE, 0, 0, image);
 		return weapon;
 	}
 

@@ -12,16 +12,21 @@ public class CharacterSpriteData implements Pool.Poolable {
 	private Direction facingDirection;
 	private int frameIndexNotAffectedByLight;
 	private SpriteType spriteType;
-	private int hitFrameIndex;
+	private int meleeHitFrameIndex;
+	private int primaryAttackHitFrameIndex;
 
 	@Override
-	public void reset() {
+	public void reset( ) {
 		frameIndexNotAffectedByLight = -1;
 	}
 
-	public void init(final Direction direction, final SpriteType spriteType, final int hitFrameIndex) {
+	public void init(final Direction direction,
+					 final SpriteType spriteType,
+					 final int hitFrameIndex,
+					 final int primaryAttackHitFrameIndex) {
 		this.facingDirection = direction;
 		this.spriteType = spriteType;
-		this.hitFrameIndex = hitFrameIndex;
+		this.meleeHitFrameIndex = hitFrameIndex;
+		this.primaryAttackHitFrameIndex = primaryAttackHitFrameIndex;
 	}
 }

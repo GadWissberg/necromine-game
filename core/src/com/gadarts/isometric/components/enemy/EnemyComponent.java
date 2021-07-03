@@ -1,5 +1,7 @@
 package com.gadarts.isometric.components.enemy;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.GameComponent;
@@ -18,11 +20,13 @@ public class EnemyComponent implements GameComponent {
 	private long lastTurn = -1;
 	private int skill = 1;
 	private long lastPrimaryAttack = -1;
+	private Animation<TextureAtlas.AtlasRegion> bulletAnimation;
 
-	public void init(final Enemies enemyDefinition, final int skill) {
-		this.enemyDefinition = enemyDefinition;
+	public void init(final Enemies enemyDefinition, final int skill, final Animation<TextureAtlas.AtlasRegion> bulletAnimation) {
 		calculateNextRoamSound();
+		this.enemyDefinition = enemyDefinition;
 		this.skill = skill;
+		this.bulletAnimation = bulletAnimation;
 	}
 
 	@Override

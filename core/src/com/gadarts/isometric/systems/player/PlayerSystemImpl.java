@@ -182,7 +182,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		CharacterComponent characterComponent = ComponentsMapper.character.get(player);
 		Weapon selectedWeapon = ComponentsMapper.player.get(player).getStorage().getSelectedWeapon();
 		WeaponsDefinitions definition = (WeaponsDefinitions) selectedWeapon.getDefinition();
-		characterComponent.getCharacterSpriteData().setHitFrameIndex(definition.getHitFrameIndex());
+		characterComponent.getCharacterSpriteData().setMeleeHitFrameIndex(definition.getHitFrameIndex());
 		characterComponent.setTarget(services.getMapService().getMap().getAliveEnemyFromNode(enemies, node));
 		applyShootCommand(node);
 		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
@@ -441,7 +441,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	public void onFrameChanged(final Entity entity, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
 		if (ComponentsMapper.player.has(entity)) {
 			if (ComponentsMapper.character.get(entity).getCharacterSpriteData().getSpriteType() == SpriteType.ATTACK) {
-				if (newFrame.index == ComponentsMapper.character.get(entity).getCharacterSpriteData().getHitFrameIndex()) {
+				if (newFrame.index == ComponentsMapper.character.get(entity).getCharacterSpriteData().getMeleeHitFrameIndex()) {
 					PlayerStorage storage = ComponentsMapper.player.get(entity).getStorage();
 					WeaponsDefinitions definition = (WeaponsDefinitions) storage.getSelectedWeapon().getDefinition();
 					services.getSoundPlayer().playSound(definition.getAttackSound());
