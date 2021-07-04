@@ -1,6 +1,8 @@
 package com.gadarts.isometric.systems.character;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.systems.SystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.commands.CharacterCommand;
 import com.gadarts.isometric.utils.map.MapGraphNode;
@@ -10,7 +12,7 @@ public interface CharacterSystemEventsSubscriber extends SystemEventsSubscriber 
 
 	}
 
-	default void onCharacterCommandDone(final Entity character, CharacterCommand lastCommand) {
+	default void onCharacterCommandDone(final Entity character, final CharacterCommand lastCommand) {
 
 	}
 
@@ -35,6 +37,12 @@ public interface CharacterSystemEventsSubscriber extends SystemEventsSubscriber 
 	}
 
 	default void onCharacterNodeChanged(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
+
+	}
+
+	default void onCharacterEngagesPrimaryAttack(final Entity character,
+												 final Vector2 direction,
+												 final Vector3 characterPosition) {
 
 	}
 }

@@ -16,7 +16,7 @@ public class WorldEnvironment extends Environment implements Disposable {
 	private final Camera camera;
 
 	@Getter
-	private LightsRenderer lightsRenderer;
+	private LightsHandler lightsHandler;
 
 	@Getter
 	private DirectionalShadowLight shadowLight;
@@ -41,7 +41,7 @@ public class WorldEnvironment extends Environment implements Disposable {
 	}
 
 	public void initialize(final ImmutableArray<Entity> lightsEntities) {
-		lightsRenderer = new LightsRenderer(lightsEntities);
+		lightsHandler = new LightsHandler(lightsEntities);
 		DirectionalLight directionalLight = new DirectionalLight();
 		directionalLight.direction.set(-0.3f, -0.5f, -1);
 		float r = 0.3f;

@@ -2,6 +2,7 @@ package com.gadarts.isometric.utils;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -48,7 +49,7 @@ public final class EntityBuilder {
 	private PooledEngine engine;
 
 
-	private EntityBuilder() {
+	private EntityBuilder( ) {
 	}
 
 	public static EntityBuilder beginBuildingEntity(final PooledEngine engine) {
@@ -84,25 +85,25 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public Entity finishAndAddToEngine() {
+	public Entity finishAndAddToEngine( ) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		engine.addEntity(currentEntity);
 		return finish();
 	}
 
-	public Entity finish() {
+	public Entity finish( ) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		Entity result = currentEntity;
 		instance.reset();
 		return result;
 	}
 
-	private void reset() {
+	private void reset( ) {
 		engine = null;
 		currentEntity = null;
 	}
 
-	public EntityBuilder addCursorComponent() {
+	public EntityBuilder addCursorComponent( ) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		CursorComponent cursorComponent = engine.createComponent(CursorComponent.class);
 		currentEntity.add(cursorComponent);
@@ -227,7 +228,7 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addFloorComponent() {
+	public EntityBuilder addFloorComponent( ) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		FloorComponent floorComponent = engine.createComponent(FloorComponent.class);
 		currentEntity.add(floorComponent);
@@ -281,7 +282,7 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addCollisionComponent() {
+	public EntityBuilder addCollisionComponent( ) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		CollisionComponent collisionComponent = engine.createComponent(CollisionComponent.class);
 		currentEntity.add(collisionComponent);
@@ -295,10 +296,26 @@ public final class EntityBuilder {
 	public EntityBuilder addLightComponent(final Vector3 position,
 										   final float intensity,
 										   final float radius,
+										   final Color color) {
+		return addLightComponent(position, intensity, radius, false, color);
+	}
+
+	public EntityBuilder addLightComponent(final Vector3 position,
+										   final float intensity,
+										   final float radius,
 										   final boolean flicker) {
+		return addLightComponent(position, intensity, radius, flicker, Color.WHITE);
+	}
+
+	public EntityBuilder addLightComponent(final Vector3 position,
+										   final float intensity,
+										   final float radius,
+										   final boolean flicker,
+										   final Color color) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		LightComponent lightComponent = engine.createComponent(LightComponent.class);
-		lightComponent.init(position, intensity, radius, flicker);
+		lightComponent.init(position, intensity, radius, flicker, currentEntity);
+		lightComponent.setColor(color);
 		currentEntity.add(lightComponent);
 		return instance;
 	}

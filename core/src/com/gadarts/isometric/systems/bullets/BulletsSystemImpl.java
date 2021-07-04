@@ -3,7 +3,11 @@ package com.gadarts.isometric.systems.bullets;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector2;
@@ -11,12 +15,17 @@ import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.BulletComponent;
 import com.gadarts.isometric.components.CollisionComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
+import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
+import com.gadarts.isometric.utils.EntityBuilder;
+
+import static com.badlogic.gdx.math.Vector3.Zero;
 
 /**
  * Handles weapons bullets behaviour.
  */
-public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubscriber> implements BulletSystem {
+public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubscriber> implements BulletSystem, CharacterSystemEventsSubscriber {
 
 	private final static Vector2 auxVector2_1 = new Vector2();
 	private final static Vector3 auxVector3 = new Vector3();
@@ -24,6 +33,9 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	private final static float BULLET_MAX_DISTANCE = 10;
 	private final static float CHAR_RAD = 0.3f;
 	private final static float OBST_RAD = 0.5f;
+	private static final float PROJECTILE_LIGHT_INTENSITY = 0.4F;
+	private static final float PROJECTILE_LIGHT_RADIUS = 2F;
+	private static final Color PROJECTILE_LIGHT_COLOR = Color.valueOf("#8396FF");
 
 	private ImmutableArray<Entity> bullets;
 	private ImmutableArray<Entity> collidables;
@@ -32,6 +44,21 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	public void activate( ) {
 
 	}
+
+	@Override
+	public void onCharacterEngagesPrimaryAttack(final Entity character,
+												final Vector2 direction,
+												final Vector3 charPos) {
+		EnemyComponent enemyComp = ComponentsMapper.enemy.get(character);
+		Animation<TextureAtlas.AtlasRegion> bulletAnim = enemyComp.getBulletAnimation();
+		EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
+				.addBulletComponent(charPos, direction, character)
+				.addAnimationComponent(enemyComp.getEnemyDefinition().getPrimaryAttack().getFrameDuration(), bulletAnim)
+				.addSimpleDecalComponent(charPos, bulletAnim.getKeyFrames()[0], Zero.setZero(), true, true)
+				.addLightComponent(charPos, PROJECTILE_LIGHT_INTENSITY, PROJECTILE_LIGHT_RADIUS, PROJECTILE_LIGHT_COLOR)
+				.finishAndAddToEngine();
+	}
+
 
 	@Override
 	public void update(final float deltaTime) {
@@ -106,7 +133,7 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 
 	}
 }

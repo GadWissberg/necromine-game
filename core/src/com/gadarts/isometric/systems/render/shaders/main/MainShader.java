@@ -28,7 +28,7 @@ import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocation
 public class MainShader extends DefaultShader {
 
 	private static final int MAX_LIGHTS = 8;
-	private static final int LIGHT_EXTRA_DATA_SIZE = 2;
+	private static final int LIGHT_EXTRA_DATA_SIZE = 3;
 	private static final Vector3 auxVector = new Vector3();
 	private static final int MODEL_MAX_SIZE = 4 * 4;
 	private static final int MASK_BOTTOM_RIGHT = 0B0000000010;
@@ -42,6 +42,7 @@ public class MainShader extends DefaultShader {
 	private final static BoundingBox auxBoundingBox = new BoundingBox();
 	private final float[] lightsPositions = new float[MAX_LIGHTS * 3];
 	private final float[] lightsExtraData = new float[MAX_LIGHTS * LIGHT_EXTRA_DATA_SIZE];
+	private final float[] lightsColors = new float[MAX_LIGHTS * 3];
 	private final float[] fowMapArray = new float[MODEL_MAX_SIZE];
 	private final MapGraph map;
 	private final UniformsLocationsHandler uniformsLocationsHandler = new UniformsLocationsHandler();
@@ -54,7 +55,7 @@ public class MainShader extends DefaultShader {
 	}
 
 	@Override
-	public void init() {
+	public void init( ) {
 		super.init();
 		uniformsLocationsHandler.fetchUniformsLocations(program);
 		if (program.getLog().length() != 0) {
@@ -135,8 +136,9 @@ public class MainShader extends DefaultShader {
 		int location = uniformsLocationsHandler.getLocation(UNIFORM_NUMBER_OF_LIGHTS);
 		program.setUniformi(location, renderData.getNearbyLights().size());
 		if (renderData.getNearbyLights().size() > 0) {
+			int differentColorIndex = 0;
 			for (int i = 0; i < renderData.getNearbyLights().size(); i++) {
-				insertToLightsArray(renderData.getNearbyLights(), i);
+				differentColorIndex = insertToLightsArray(renderData.getNearbyLights(), i, differentColorIndex);
 			}
 			applyLightsDataUniforms(renderData);
 		}
@@ -145,9 +147,11 @@ public class MainShader extends DefaultShader {
 	private void applyLightsDataUniforms(final AdditionalRenderData renderData) {
 		int lightsPosLoc = uniformsLocationsHandler.getLocation(UNIFORM_LIGHTS_POSITIONS);
 		int lightsDataLoc = uniformsLocationsHandler.getLocation(UNIFORM_LIGHTS_EXTRA_DATA);
+		int lightsColors = uniformsLocationsHandler.getLocation(UNIFORM_LIGHTS_COLORS);
 		int size = renderData.getNearbyLights().size();
 		program.setUniform3fv(lightsPosLoc, lightsPositions, 0, size * 3);
-		program.setUniform2fv(lightsDataLoc, lightsExtraData, 0, size * LIGHT_EXTRA_DATA_SIZE);
+		program.setUniform3fv(lightsDataLoc, lightsExtraData, 0, size * LIGHT_EXTRA_DATA_SIZE);
+		program.setUniform3fv(lightsColors, this.lightsColors, 0, size * 3);
 	}
 
 	private boolean applyFow(final Renderable renderable, final AdditionalRenderData additionalRenderData) {
@@ -230,15 +234,27 @@ public class MainShader extends DefaultShader {
 		return result;
 	}
 
-	private void insertToLightsArray(final List<Entity> nearbyLights, final int i) {
+	private int insertToLightsArray(final List<Entity> nearbyLights, final int i, final int differentColorIndex) {
 		insertLightPositionToArray(nearbyLights, i);
+		boolean notWhite = insertExtraDataToArray(nearbyLights, i, differentColorIndex);
+		if (notWhite) {
+			insertColorToArray(nearbyLights.get(i), differentColorIndex);
+		}
+		return notWhite ? differentColorIndex + 1 : differentColorIndex;
+	}
+
+	private boolean insertExtraDataToArray(final List<Entity> nearbyLights, final int i, final int differentColorIndex) {
 		LightComponent lightComponent = ComponentsMapper.light.get(nearbyLights.get(i));
 		int extraDataInd = i * LIGHT_EXTRA_DATA_SIZE;
 		float intensity = lightComponent.getIntensity();
 		float radius = lightComponent.getRadius();
 		lightsExtraData[extraDataInd] = intensity;
 		lightsExtraData[extraDataInd + 1] = radius;
+		boolean notWhite = lightComponent.getColor() != Color.WHITE;
+		lightsExtraData[extraDataInd + 2] = notWhite ? differentColorIndex : -1F;
+		return notWhite;
 	}
+
 
 	private void insertLightPositionToArray(final List<Entity> nearbyLights, final int i) {
 		LightComponent lightComponent = ComponentsMapper.light.get(nearbyLights.get(i));
@@ -247,6 +263,15 @@ public class MainShader extends DefaultShader {
 		lightsPositions[positionIndex] = position.x;
 		lightsPositions[positionIndex + 1] = position.y;
 		lightsPositions[positionIndex + 2] = position.z;
+	}
+
+	private void insertColorToArray(final Entity light, final int i) {
+		LightComponent lightComponent = ComponentsMapper.light.get(light);
+		int colorIndex = i * 3;
+		Color color = lightComponent.getColor();
+		lightsColors[colorIndex] = color.r;
+		lightsColors[colorIndex + 1] = color.g;
+		lightsColors[colorIndex + 2] = color.b;
 	}
 
 }

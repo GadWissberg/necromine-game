@@ -25,7 +25,7 @@ import static java.lang.Math.min;
 /**
  * Responsible to gather nearby lights to entity and apply them on it.
  */
-public class LightsRenderer {
+public class LightsHandler {
 	public static final float FLICKER_RANDOM_MIN = 0.95F;
 	public static final float FLICKER_RANDOM_MAX = 1.05F;
 
@@ -37,7 +37,7 @@ public class LightsRenderer {
 
 	private final ImmutableArray<Entity> lightsEntities;
 
-	public LightsRenderer(final ImmutableArray<Entity> lightsEntities) {
+	public LightsHandler(final ImmutableArray<Entity> lightsEntities) {
 		this.lightsEntities = lightsEntities;
 	}
 
@@ -141,13 +141,20 @@ public class LightsRenderer {
 
 	public void updateLights( ) {
 		for (Entity light : lightsEntities) {
-			LightComponent lc = ComponentsMapper.light.get(light);
-			long now = TimeUtils.millis();
-			if (lc.isFlicker() && now >= lc.getNextFlicker()) {
-				lc.setIntensity(MathUtils.random(FLICKER_RANDOM_MIN, FLICKER_RANDOM_MAX) * lc.getOriginalIntensity());
-				lc.setRadius(MathUtils.random(FLICKER_RANDOM_MIN, FLICKER_RANDOM_MAX) * lc.getOriginalRadius());
-				lc.setNextFlicker(now + MathUtils.random(FLICKER_MAX_INTERVAL));
-			}
+			updateLight(light);
+		}
+	}
+
+	private void updateLight(final Entity light) {
+		LightComponent lc = ComponentsMapper.light.get(light);
+		long now = TimeUtils.millis();
+		if (lc.isFlicker() && now >= lc.getNextFlicker()) {
+			lc.setIntensity(MathUtils.random(FLICKER_RANDOM_MIN, FLICKER_RANDOM_MAX) * lc.getOriginalIntensity());
+			lc.setRadius(MathUtils.random(FLICKER_RANDOM_MIN, FLICKER_RANDOM_MAX) * lc.getOriginalRadius());
+			lc.setNextFlicker(now + MathUtils.random(FLICKER_MAX_INTERVAL));
+		}
+		if (ComponentsMapper.simpleDecal.has(light)) {
+			lc.setPosition(ComponentsMapper.simpleDecal.get(lc.getParent()).getDecal().getPosition());
 		}
 	}
 }

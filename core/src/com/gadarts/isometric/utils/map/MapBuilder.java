@@ -668,7 +668,7 @@ public final class MapBuilder implements Disposable {
 	private void inflateEnemy(final JsonObject characterJsonObject, final MapGraph mapGraph) {
 		int index = characterJsonObject.get(TYPE).getAsInt();
 		Enemies type = Enemies.values()[index];
-		int skill = 5;
+		int skill = 1;
 		Animation<AtlasRegion> bulletAnimation = enemyBulletsTextureRegions.get(type);
 		if (!enemyBulletsTextureRegions.containsKey(type)) {
 			bulletAnimation = new Animation<>(type.getPrimaryAttack().getFrameDuration(), assetManager.getAtlas(ANUBIS).findRegions(ENERGY_BALL.name().toLowerCase()));

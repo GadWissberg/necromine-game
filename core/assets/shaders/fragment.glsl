@@ -112,7 +112,8 @@ varying float v_fog;
 
 varying vec3 v_frag_pos;
 uniform vec3 u_lights_positions[8];
-uniform vec2 u_lights_extra_data[8];
+uniform vec3 u_lights_extra_data[8];
+uniform vec3 u_lights_colors[8];
 uniform int u_number_of_lights;
 uniform int u_model_width;
 uniform int u_model_height;
@@ -203,12 +204,19 @@ void main() {
                         vec3 sub = light.xyz - v_frag_pos.xyz;
                         vec3 lightDir = normalize(sub);
                         float distance = length(sub);
-                        vec2 extra = u_lights_extra_data[i];
+                        vec3 extra = u_lights_extra_data[i];
                         if (distance <= extra.y){
+                            int light_color_index = int(extra.z);
+                            vec3 light_color;
+                            if (light_color_index > -1){
+                                light_color = vec3(u_lights_colors[light_color_index]);
+                            } else {
+                                light_color = vec3(1.0);
+                            }
                             float attenuation = 4.0 * extra.x / (1.0 + (0.01*distance) + (0.9*distance*distance));
                             float dot_value = dot(v_normal, lightDir);
                             float intensity = max(dot_value, 0.0);
-                            vec3 value_to_add = (diffuse.rgb * (attenuation * intensity));
+                            vec3 value_to_add = (diffuse.rgb *light_color.rgb* (attenuation * intensity));
                             value_to_add *= distance > (extra.y*5.0/6.0) ? 0.5 : 1.0;
                             gl_FragColor.rgb += value_to_add;
                         }

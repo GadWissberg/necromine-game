@@ -147,7 +147,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			renderModelsShadows(camera, lastRotationPoint);
 		}
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
-		environment.getLightsRenderer().updateLights();
+		environment.getLightsHandler().updateLights();
 		renderModels(camera, renderBatches.getModelBatch(), true, true);
 		renderDecals(deltaTime, camera);
 		renderSkillFlowersText();
@@ -337,7 +337,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			MapGraph map = services.getMapService().getMap();
 			MapGraphNode characterNode = map.getNode(characterDecalComponent.getNodePosition(auxVector2_1));
 			if (map.getFowMap()[characterNode.getRow()][characterNode.getCol()] == 1) {
-				environment.getLightsRenderer().setDecalColorAccordingToLights(entity, environment);
+				environment.getLightsHandler().setDecalColorAccordingToLights(entity, environment);
 				decal.lookAt(auxVector3_1.set(decalPosition).sub(camera.direction), camera.up);
 				decalBatch.add(decal);
 				if (!characterSpriteData.getSpriteType().isDeath()) {
@@ -386,7 +386,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			}
 			if ((drawFlags.isDrawGround() || !ComponentsMapper.floor.has(entity))) {
 				if (renderLight) {
-					environment.getLightsRenderer().applyLightsOnModel(modelInstanceComponent);
+					environment.getLightsHandler().applyLightsOnModel(modelInstanceComponent);
 				}
 				numberOfVisible++;
 				modelBatch.render(modelInstance, environment);

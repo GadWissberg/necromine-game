@@ -23,6 +23,7 @@ public class UniformsLocationsHandler {
 	static final String UNIFORM_COMPLETE_BLACK = "u_complete_black";
 	static final String UNIFORM_LIGHTS_POSITIONS = "u_lights_positions[0]";
 	static final String UNIFORM_LIGHTS_EXTRA_DATA = "u_lights_extra_data[0]";
+	static final String UNIFORM_LIGHTS_COLORS = "u_lights_colors[0]";
 	static final String UNIFORM_NUMBER_OF_LIGHTS = "u_number_of_lights";
 	private final Map<String, Integer> locations = new HashMap<>();
 
@@ -39,6 +40,7 @@ public class UniformsLocationsHandler {
 	private void fetchLightsRelatedUniformsLocations(final ShaderProgram program) {
 		locations.put(UNIFORM_LIGHTS_POSITIONS, program.getUniformLocation(UNIFORM_LIGHTS_POSITIONS));
 		locations.put(UNIFORM_LIGHTS_EXTRA_DATA, program.getUniformLocation(UNIFORM_LIGHTS_EXTRA_DATA));
+		locations.put(UNIFORM_LIGHTS_COLORS, program.getUniformLocation(UNIFORM_LIGHTS_COLORS));
 		locations.put(UNIFORM_NUMBER_OF_LIGHTS, program.getUniformLocation(UNIFORM_NUMBER_OF_LIGHTS));
 	}
 

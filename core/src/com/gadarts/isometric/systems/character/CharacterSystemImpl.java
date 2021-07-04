@@ -18,7 +18,6 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterMotivation;
 import com.gadarts.isometric.components.character.data.*;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
-import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.bullets.BulletsSystemEventsSubscriber;
@@ -347,8 +346,6 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		} else if (characterSpriteData.getSpriteType() == ATTACK_PRIMARY) {
 			if (newFrame.index == characterSpriteData.getPrimaryAttackHitFrameIndex()) {
 				if (!ComponentsMapper.player.has(character)) {
-					EnemyComponent enemyComponent = ComponentsMapper.enemy.get(character);
-					Animation<TextureAtlas.AtlasRegion> bulletAnimation = enemyComponent.getBulletAnimation();
 					Entity target = characterComponent.getTarget();
 					CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(character);
 					Decal decal = characterDecalComponent.getDecal();
@@ -356,12 +353,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 					Vector3 targetPosition = targetDecalComponent.getDecal().getPosition();
 					Vector3 position = auxVector3_2.set(decal.getPosition());
 					Vector2 direction = auxVector2_1.set(targetPosition.x, targetPosition.z).sub(position.x, position.z);
-					TextureAtlas.AtlasRegion firstFrame = bulletAnimation.getKeyFrames()[0];
-					EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
-							.addBulletComponent(position, direction, character)
-							.addAnimationComponent(enemyComponent.getEnemyDefinition().getPrimaryAttack().getFrameDuration(), bulletAnimation)
-							.addSimpleDecalComponent(position, firstFrame, Vector3.Zero.setZero(), true, true)
-							.finishAndAddToEngine();
+					for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+						subscriber.onCharacterEngagesPrimaryAttack(character, direction, position);
+					}
 				}
 			}
 		} else if (characterSpriteData.getSpriteType() == PICKUP) {
