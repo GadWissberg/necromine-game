@@ -167,17 +167,6 @@ public final class EntityBuilder {
 
 	public EntityBuilder addSimpleDecalComponent(final Vector3 position,
 												 final TextureRegion textureRegion,
-												 final Vector3 rotationAroundAxis) {
-		return addSimpleDecalComponent(
-				position,
-				textureRegion,
-				rotationAroundAxis,
-				false,
-				true);
-	}
-
-	public EntityBuilder addSimpleDecalComponent(final Vector3 position,
-												 final TextureRegion textureRegion,
 												 final Vector3 rotationAroundAxis,
 												 final boolean billboard,
 												 final boolean animatedByAnimationComponent) {
@@ -274,10 +263,13 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addBulletComponent(final Vector3 initialPosition, final Vector2 direction, final Entity owner) {
+	public EntityBuilder addBulletComponent(final Vector3 initialPosition,
+											final Vector2 direction,
+											final Entity owner,
+											final Integer damagePoints) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
-		bulletComponent.init(auxVector.set(initialPosition.x, initialPosition.z), direction, owner);
+		bulletComponent.init(auxVector.set(initialPosition.x, initialPosition.z), direction, owner, damagePoints);
 		currentEntity.add(bulletComponent);
 		return instance;
 	}

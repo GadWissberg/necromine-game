@@ -51,8 +51,17 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 												final Vector3 charPos) {
 		EnemyComponent enemyComp = ComponentsMapper.enemy.get(character);
 		Animation<TextureAtlas.AtlasRegion> bulletAnim = enemyComp.getBulletAnimation();
+		createBullet(character, direction, charPos, enemyComp, bulletAnim);
+	}
+
+	private void createBullet(final Entity character,
+							  final Vector2 direction,
+							  final Vector3 charPos,
+							  final EnemyComponent enemyComp,
+							  final Animation<TextureAtlas.AtlasRegion> bulletAnim) {
+		Integer[] damagePoints = enemyComp.getEnemyDefinition().getPrimaryAttack().getDamagePoints();
 		EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
-				.addBulletComponent(charPos, direction, character)
+				.addBulletComponent(charPos, direction, character, damagePoints[enemyComp.getSkill() - 1])
 				.addAnimationComponent(enemyComp.getEnemyDefinition().getPrimaryAttack().getFrameDuration(), bulletAnim)
 				.addSimpleDecalComponent(charPos, bulletAnim.getKeyFrames()[0], Zero.setZero(), true, true)
 				.addLightComponent(charPos, PROJECTILE_LIGHT_INTENSITY, PROJECTILE_LIGHT_RADIUS, PROJECTILE_LIGHT_COLOR)
@@ -100,6 +109,7 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	}
 
 	private boolean checkCollisionWithObstacle(final Decal decal, final Entity collidable) {
+		if (!ComponentsMapper.obstacle.get(collidable).getType().isWall()) return false;
 		ModelInstance modelInstance = ComponentsMapper.modelInstance.get(collidable).getModelInstance();
 		Vector3 collPos = modelInstance.transform.getTranslation(auxVector3);
 		Vector3 position = decal.getPosition();
@@ -121,7 +131,7 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	}
 
 	private void handleBulletMovement(final Decal decal, final BulletComponent bulletComponent) {
-		Vector2 velocity = bulletComponent.getDirection().nor().scl(BULLET_SPEED);
+		Vector2 velocity = bulletComponent.getDirection(auxVector2_1).nor().scl(BULLET_SPEED);
 		decal.translate(velocity.x, 0, velocity.y);
 	}
 

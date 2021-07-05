@@ -3,7 +3,6 @@ package com.gadarts.isometric.systems.character;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -26,7 +25,6 @@ import com.gadarts.isometric.systems.character.commands.CommandsHandler;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
-import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.map.MapGraph;
@@ -258,10 +256,14 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		}
 	}
 
-	private void applyDamageToCharacter(final Entity attacker, final Entity attacked) {
-		CharacterComponent characterComponent = ComponentsMapper.character.get(attacked);
+	private void applyMeleeDamageToCharacter(final Entity attacker, final Entity attacked) {
 		Strength strength = ComponentsMapper.character.get(attacker).getSkills().getStrength();
-		characterComponent.dealDamage(MathUtils.random(strength.getMinDamage(), strength.getMaxDamage()));
+		applyDamageToCharacter(attacked, MathUtils.random(strength.getMinDamage(), strength.getMaxDamage()));
+	}
+
+	private void applyDamageToCharacter(final Entity attacked, final int damage) {
+		CharacterComponent characterComponent = ComponentsMapper.character.get(attacked);
+		characterComponent.dealDamage(damage);
 		handleDeath(attacked);
 	}
 
@@ -326,21 +328,10 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 					Weapon weapon = ComponentsMapper.player.get(character).getStorage().getSelectedWeapon();
 					WeaponsDefinitions definition = (WeaponsDefinitions) weapon.getDefinition();
 					if (definition.isMelee()) {
-						applyDamageToCharacter(character, target);
-					} else {
-						CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(character);
-						Decal decal = characterDecalComponent.getDecal();
-						Vector3 position = auxVector3_2.set(decal.getPosition());
-						CharacterDecalComponent targetDecalComponent = ComponentsMapper.characterDecal.get(target);
-						Vector3 targetPosition = targetDecalComponent.getDecal().getPosition();
-						Vector2 direction = auxVector2_1.set(targetPosition.x, targetPosition.z).sub(position.x, position.z);
-						EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
-								.addBulletComponent(position, direction, character)
-								.addSimpleDecalComponent(position, weapon.getBulletTextureRegion(), auxVector3_1.set(-90, 360f - direction.angleDeg(), 0))
-								.finishAndAddToEngine();
+						applyMeleeDamageToCharacter(character, target);
 					}
 				} else {
-					applyDamageToCharacter(character, target);
+					applyMeleeDamageToCharacter(character, target);
 				}
 			}
 		} else if (characterSpriteData.getSpriteType() == ATTACK_PRIMARY) {
@@ -443,7 +434,11 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@Override
 	public void onBulletCollision(final Entity bullet, final Entity collidable) {
 		if (ComponentsMapper.character.has(collidable)) {
-			applyDamageToCharacter(ComponentsMapper.bullet.get(bullet).getOwner(), collidable);
+			applyBulletDamageToCharacter(bullet, collidable);
 		}
+	}
+
+	private void applyBulletDamageToCharacter(final Entity bullet, final Entity collidable) {
+		applyDamageToCharacter(collidable, ComponentsMapper.bullet.get(bullet).getDamage());
 	}
 }
