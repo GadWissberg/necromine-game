@@ -128,7 +128,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 										  final EnemyComponent enemyCom,
 										  final Enemies def,
 										  final int skillIndex) {
-		if (def.getAccuracy().get(skillIndex) != NONE && def.getRange().get(skillIndex) != Range.NONE) {
+		if (def.getAccuracy()[skillIndex] != NONE && def.getRange().get(skillIndex) != Range.NONE) {
 			float disToTarget = calculateDistanceToTarget(enemy);
 			if (disToTarget <= def.getRange().get(skillIndex).getMaxDistance() && disToTarget > RANGE_ATTACK_MIN_RADIUS) {
 				int turnsDiff = def.getReloadTime().get(skillIndex).getNumberOfTurns();

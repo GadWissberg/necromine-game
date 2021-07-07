@@ -17,6 +17,7 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterMotivation;
 import com.gadarts.isometric.components.character.data.*;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
+import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.bullets.BulletsSystemEventsSubscriber;
@@ -34,6 +35,7 @@ import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.model.characters.CharacterTypes;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
+import com.gadarts.necromine.model.characters.attributes.Accuracy;
 import com.gadarts.necromine.model.characters.attributes.Strength;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
@@ -344,6 +346,10 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 					Vector3 targetPosition = targetDecalComponent.getDecal().getPosition();
 					Vector3 position = auxVector3_2.set(decal.getPosition());
 					Vector2 direction = auxVector2_1.set(targetPosition.x, targetPosition.z).sub(position.x, position.z);
+					EnemyComponent enemyComponent = ComponentsMapper.enemy.get(character);
+					Accuracy accuracy = enemyComponent.getEnemyDefinition().getAccuracy()[enemyComponent.getSkill() - 1];
+					int maxAngle = accuracy.getMaxAngle();
+					direction.setAngleDeg(direction.angleDeg() + MathUtils.random(-maxAngle, maxAngle));
 					for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 						subscriber.onCharacterEngagesPrimaryAttack(character, direction, position);
 					}
