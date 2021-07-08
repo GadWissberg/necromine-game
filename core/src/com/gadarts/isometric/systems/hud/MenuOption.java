@@ -35,13 +35,13 @@ public class MenuOption extends Label {
 				super.clicked(event, x, y);
 				if (option.getAction() != null) {
 					option.getAction().run(globalGameService, interfaceSystem);
-					soundPlayer.playSound(Assets.Sounds.UI_CLICK);
 				} else {
 					MenuOptionDefinition[] subOptions = option.getSubOptions();
 					if (subOptions != null) {
 						interfaceSystem.applyMenuOptions(subOptions);
 					}
 				}
+				soundPlayer.playSound(Assets.Sounds.UI_CLICK);
 			}
 
 			@Override

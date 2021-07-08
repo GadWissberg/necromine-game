@@ -16,6 +16,7 @@ import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
+import com.gadarts.necromine.model.GeneralUtils;
 import lombok.Getter;
 
 import static com.gadarts.isometric.NecronemesGame.*;
@@ -34,7 +35,6 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	public static final float FAR = 100f;
 	public static final float CAMERA_ACCELERATION_SCALE = 0.24f;
 	private static final float NEAR = 0.01f;
-	private static final Plane groundPlane = new Plane(new Vector3(0, 1, 0), 0);
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final Vector3 auxVector3_3 = new Vector3();
@@ -55,7 +55,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Getter
 	private OrthographicCamera camera;
 
-	public CameraSystemImpl() {
+	public CameraSystemImpl( ) {
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		pos.z = MathUtils.clamp(pos.z, -EXTRA_LEVEL_PADDING, services.getMapService().getMap().getDepth() + EXTRA_LEVEL_PADDING);
 	}
 
-	private boolean handleHorizontalScroll() {
+	private boolean handleHorizontalScroll( ) {
 		if (lastMousePosition.x >= Gdx.graphics.getWidth() - SCROLL_OFFSET) {
 			horizontalTranslateCamera(CAMERA_ACCELERATION_SCALE);
 			return true;
@@ -108,7 +108,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		return false;
 	}
 
-	private void decelerateCamera() {
+	private void decelerateCamera( ) {
 		float speedSize = cameraSpeed.len2();
 		if (speedSize < CAMERA_MIN_SPEED) {
 			cameraSpeed.setZero();
@@ -134,13 +134,13 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	@SuppressWarnings("SameParameterValue")
-	private void cameraMoved() {
+	private void cameraMoved( ) {
 		for (CameraSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCameraMove(camera);
 		}
 	}
 
-	private boolean handleVerticalScroll() {
+	private boolean handleVerticalScroll( ) {
 		if (lastMousePosition.y >= Gdx.graphics.getHeight() - SCROLL_OFFSET) {
 			verticalTranslateCamera(-CAMERA_ACCELERATION_SCALE);
 			return true;
@@ -151,7 +151,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		return false;
 	}
 
-	private void createAndInitCamera() {
+	private void createAndInitCamera( ) {
 		int viewportWidth = (FULL_SCREEN ? FULL_SCREEN_RESOLUTION_WIDTH : WINDOWED_RESOLUTION_WIDTH) / 75;
 		int viewportHeight = (FULL_SCREEN ? FULL_SCREEN_RESOLUTION_HEIGHT : WINDOWED_RESOLUTION_HEIGHT) / 75;
 		OrthographicCamera cam = new OrthographicCamera(viewportWidth, viewportHeight);
@@ -162,7 +162,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		initCamera();
 	}
 
-	private void initCamera() {
+	private void initCamera( ) {
 		Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).get(0);
 		Vector2 nodePosition = ComponentsMapper.characterDecal.get(player).getNodePosition(auxVector2_1);
 		camera.position.set(nodePosition.x + START_OFFSET, CAMERA_HEIGHT, nodePosition.y + START_OFFSET);
@@ -172,7 +172,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 	}
 
 	@Override
@@ -198,21 +198,16 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Override
 	public void touchDragged(final int screenX, final int screenY) {
 		if (rotateCamera && getSystem(InterfaceSystem.class).isMenuClosed()) {
-			defineRotationPoint(rotationPoint);
+			GeneralUtils.defineRotationPoint(rotationPoint, camera);
 			camera.rotateAround(rotationPoint, Vector3.Y, (lastRightPressMousePosition.x - screenX) / 2f);
 			clampCameraPosition(camera.position);
 			lastRightPressMousePosition.set(screenX, screenY);
 		}
 	}
 
-	private void defineRotationPoint(final Vector3 positionVector) {
-		Ray ray = camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
-		Intersector.intersectRayPlane(ray, groundPlane, positionVector);
-	}
-
 
 	@Override
-	public boolean isCameraRotating() {
+	public boolean isCameraRotating( ) {
 		return rotateCamera;
 	}
 
@@ -223,7 +218,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 
 	@Override
-	public void activate() {
+	public void activate( ) {
 		createAndInitCamera();
 		for (CameraSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCameraSystemReady(this);
