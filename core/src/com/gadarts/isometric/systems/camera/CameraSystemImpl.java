@@ -5,8 +5,8 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -33,7 +33,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	public static final int CAMERA_HEIGHT = 15;
 	public static final float FAR = 100f;
-	public static final float CAMERA_ACCELERATION_SCALE = 0.24f;
+	public static final float CAMERA_ACCELERATION_SCALE = 0.12f;
 	private static final float NEAR = 0.01f;
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
@@ -45,9 +45,9 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private static final float CAMERA_MAX_SPEED = 32F;
 	private static final float CAMERA_MIN_SPEED = 0.01F;
 	private static final float CAMERA_DECELERATION_SCALE = 0.9F;
-	private static final Vector3 rotationPoint = new Vector3();
 	private static final float EXTRA_LEVEL_PADDING = 16;
 	private static final float[] MENU_CAMERA_POSITION = {14, CAMERA_HEIGHT, 20};
+	private static final float CAMERA_SCROLL_OFFSET = 0.2F;
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
 	private final Vector3 cameraSpeed = new Vector3();
@@ -62,25 +62,56 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
 		InterfaceSystem interfaceSystem = getSystem(InterfaceSystem.class);
+		Entity player = getSystem(PlayerSystem.class).getPlayer();
 		if (!DEBUG_INPUT && !rotateCamera && !interfaceSystem.hasOpenWindows() && interfaceSystem.isMenuClosed()) {
-			handleScrolling(deltaTime);
+			handleCameraFollow(deltaTime, player);
 		}
-		if (ComponentsMapper.player.get(getSystem(PlayerSystem.class).getPlayer()).isDisabled()) {
-			camera.rotateAround(rotationPoint, Vector3.Y, MENU_CAMERA_ROTATION);
-		}
+		handleMenuRotation(player);
 		camera.update();
 	}
 
+	private void handleMenuRotation(Entity player) {
+		if (ComponentsMapper.player.get(player).isDisabled()) {
+			Decal decal = ComponentsMapper.characterDecal.get(player).getDecal();
+			camera.rotateAround(decal.getPosition(), Vector3.Y, MENU_CAMERA_ROTATION);
+		}
+	}
 
-	private void handleScrolling(final float deltaTime) {
-		boolean moved = handleHorizontalScroll();
-		moved |= handleVerticalScroll();
-		if (!moved) {
+	private void handleCameraFollow(float deltaTime, Entity player) {
+		Vector3 position = ComponentsMapper.characterDecal.get(player).getDecal().getPosition();
+		Vector3 rotationPoint = GeneralUtils.defineRotationPoint(auxVector3_1, camera);
+		Vector3 cameraPosTarget = auxVector3_3.set(camera.position).add(auxVector3_2.set(position).sub(rotationPoint));
+		boolean moved = handleCameraHorizontalFollow(cameraPosTarget);
+		moved = handleCameraVerticalFollow(cameraPosTarget);
+		if (moved) {
+			handleCameraTranslation(deltaTime);
+		} else {
 			decelerateCamera();
 		}
-		if (!cameraSpeed.isZero()) {
-			handleCameraTranslation(deltaTime);
+	}
+
+	private boolean handleCameraVerticalFollow(com.badlogic.gdx.math.Vector3 cameraPositionTarget) {
+		boolean moved = false;
+		if (cameraPositionTarget.z - CAMERA_SCROLL_OFFSET > camera.position.z) {
+			verticalTranslateCamera(CAMERA_ACCELERATION_SCALE);
+			moved = true;
+		} else if (cameraPositionTarget.z + CAMERA_SCROLL_OFFSET < camera.position.z) {
+			verticalTranslateCamera(-CAMERA_ACCELERATION_SCALE);
+			moved = true;
 		}
+		return moved;
+	}
+
+	private boolean handleCameraHorizontalFollow(com.badlogic.gdx.math.Vector3 cameraPositionTarget) {
+		boolean moved = false;
+		if (cameraPositionTarget.x - CAMERA_SCROLL_OFFSET > camera.position.x) {
+			horizontalTranslateCamera(CAMERA_ACCELERATION_SCALE);
+			moved = true;
+		} else if (cameraPositionTarget.x + CAMERA_SCROLL_OFFSET < camera.position.x) {
+			horizontalTranslateCamera(-CAMERA_ACCELERATION_SCALE);
+			moved = true;
+		}
+		return moved;
 	}
 
 	private void handleCameraTranslation(final float deltaTime) {
@@ -97,17 +128,6 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		pos.z = MathUtils.clamp(pos.z, -EXTRA_LEVEL_PADDING, services.getMapService().getMap().getDepth() + EXTRA_LEVEL_PADDING);
 	}
 
-	private boolean handleHorizontalScroll( ) {
-		if (lastMousePosition.x >= Gdx.graphics.getWidth() - SCROLL_OFFSET) {
-			horizontalTranslateCamera(CAMERA_ACCELERATION_SCALE);
-			return true;
-		} else if (lastMousePosition.x <= SCROLL_OFFSET) {
-			horizontalTranslateCamera(-CAMERA_ACCELERATION_SCALE);
-			return true;
-		}
-		return false;
-	}
-
 	private void decelerateCamera( ) {
 		float speedSize = cameraSpeed.len2();
 		if (speedSize < CAMERA_MIN_SPEED) {
@@ -118,7 +138,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	private void horizontalTranslateCamera(final float scrollScaleHorizontal) {
-		Vector3 direction = auxVector3_1.set(camera.direction).crs(camera.up).nor().scl(scrollScaleHorizontal);
+		Vector3 direction = auxVector3_1.set(1, 0, 0).scl(scrollScaleHorizontal);
 		float speedSize = cameraSpeed.add(direction).len2();
 		if (speedSize > CAMERA_MAX_SPEED) {
 			cameraSpeed.setLength2(CAMERA_MAX_SPEED);
@@ -126,7 +146,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	private void verticalTranslateCamera(final float scrollScaleVertical) {
-		Vector3 direction = auxVector3_1.set(camera.direction.x, 0, camera.direction.z).nor().scl(scrollScaleVertical);
+		Vector3 direction = auxVector3_1.set(0, 0, 1).nor().scl(scrollScaleVertical);
 		float speedSize = cameraSpeed.add(direction).len2();
 		if (speedSize > CAMERA_MAX_SPEED) {
 			cameraSpeed.setLength2(CAMERA_MAX_SPEED);
@@ -198,7 +218,8 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Override
 	public void touchDragged(final int screenX, final int screenY) {
 		if (rotateCamera && getSystem(InterfaceSystem.class).isMenuClosed()) {
-			GeneralUtils.defineRotationPoint(rotationPoint, camera);
+			Entity player = getSystem(PlayerSystem.class).getPlayer();
+			Vector3 rotationPoint = ComponentsMapper.characterDecal.get(player).getDecal().getPosition();
 			camera.rotateAround(rotationPoint, Vector3.Y, (lastRightPressMousePosition.x - screenX) / 2f);
 			clampCameraPosition(camera.position);
 			lastRightPressMousePosition.set(screenX, screenY);
@@ -213,7 +234,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	@Override
 	public Vector3 getRotationPoint(final Vector3 output) {
-		return output.set(rotationPoint);
+		return output.set(0, 0, 0);
 	}
 
 
