@@ -223,10 +223,9 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	public void onCharacterDies(final Entity character) {
 		if (ComponentsMapper.enemy.has(character)) {
 			ComponentsMapper.enemy.get(character).setAwaken(false);
-			refreshSkillFlower(character);
+			character.remove(SimpleDecalComponent.class);
 		}
 	}
-
 
 	@Override
 	public void onFrameChanged(final Entity entity, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {

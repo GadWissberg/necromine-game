@@ -153,17 +153,18 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		renderSkillFlowersText();
 	}
 
-	private void renderSkillFlowersText() {
+	private void renderSkillFlowersText( ) {
 		if (renderSystemRelatedEntities.getEnemyEntities().size() > 0) {
-			SpriteBatch spriteBatch = renderBatches.getSpriteBatch();
-			spriteBatch.begin();
+			renderBatches.getSpriteBatch().begin();
 			for (Entity enemy : renderSystemRelatedEntities.getEnemyEntities()) {
 				Vector2 nodePosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 				if (isOutsideFow(services.getMapService().getMap().getNode((int) nodePosition.x, (int) nodePosition.y))) {
-					renderSkillFlowerText(enemy, renderBatches.getSpriteBatch());
+					if (ComponentsMapper.simpleDecal.has(enemy)) {
+						renderSkillFlowerText(enemy, renderBatches.getSpriteBatch());
+					}
 				}
 			}
-			spriteBatch.end();
+			renderBatches.getSpriteBatch().end();
 		}
 	}
 
@@ -183,7 +184,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		Gdx.gl.glDepthMask(true);
 	}
 
-	private void renderSimpleDecals() {
+	private void renderSimpleDecals( ) {
 		DecalBatch decalBatch = renderBatches.getDecalBatch();
 		for (Entity entity : renderSystemRelatedEntities.getSimpleDecalsEntities()) {
 			renderSimpleDecal(decalBatch, entity);
@@ -193,7 +194,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	private void renderSimpleDecal(final DecalBatch decalBatch, final Entity entity) {
 		SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
-		if (simpleDecalComponent.isVisible()) {
+		if (simpleDecalComponent != null && simpleDecalComponent.isVisible()) {
 			Vector3 position = simpleDecalComponent.getDecal().getPosition();
 			MapGraphNode node = services.getMapService().getMap().getNode((int) position.x, (int) position.z);
 			if (!simpleDecalComponent.isAffectedByFow() || isOutsideFow(node)) {
@@ -396,7 +397,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 		renderBatches.dispose();
 		environment.dispose();
 	}
@@ -412,7 +413,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		systemReady();
 	}
 
-	private void systemReady() {
+	private void systemReady( ) {
 		if (getSystem(CameraSystem.class) == null) return;
 		ready = true;
 		for (RenderSystemEventsSubscriber subscriber : subscribers) {
@@ -428,7 +429,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 
 	@Override
-	public void activate() {
+	public void activate( ) {
 
 	}
 
@@ -443,22 +444,22 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	@Override
-	public int getNumberOfVisible() {
+	public int getNumberOfVisible( ) {
 		return numberOfVisible;
 	}
 
 	@Override
-	public int getNumberOfModelInstances() {
+	public int getNumberOfModelInstances( ) {
 		return renderSystemRelatedEntities.getModelInstanceEntities().size();
 	}
 
 	@Override
-	public DrawFlags getDrawFlags() {
+	public DrawFlags getDrawFlags( ) {
 		return drawFlags;
 	}
 
 	@Override
-	public void onConsoleActivated() {
+	public void onConsoleActivated( ) {
 
 	}
 
@@ -491,7 +492,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		subscribers.forEach(sub -> sub.onFullScreenToggle(Gdx.graphics.isFullscreen()));
 	}
 
-	private void enableFullScreen() {
+	private void enableFullScreen( ) {
 		Gdx.graphics.setWindowedMode(FULL_SCREEN_RESOLUTION_WIDTH, FULL_SCREEN_RESOLUTION_HEIGHT);
 		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 	}
@@ -510,7 +511,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 
 	@Override
-	public void onConsoleDeactivated() {
+	public void onConsoleDeactivated( ) {
 
 	}
 }
