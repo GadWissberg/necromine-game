@@ -19,6 +19,9 @@ import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.utils.EntityBuilder;
+import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.isometric.utils.map.MapGraphNode;
+import com.gadarts.necromine.model.MapNodesTypes;
 
 import static com.badlogic.gdx.math.Vector3.Zero;
 
@@ -82,20 +85,45 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	}
 
 	private void handleCollisions(final Decal decal, final Entity bullet) {
+		if (!handleCollisionsWithWalls(bullet)) {
+			handleCollisionsWithOtherEntities(decal, bullet);
+		}
+	}
+
+	private void handleCollisionsWithOtherEntities(final Decal decal, final Entity bullet) {
 		for (Entity collidable : collidables) {
 			if (ComponentsMapper.bullet.get(bullet).getOwner() != collidable) {
 				if (checkCollision(decal, collidable)) {
-					onCollision(bullet, collidable);
+					onCollisionWithAnotherEntity(bullet, collidable);
 					break;
 				}
 			}
 		}
 	}
 
-	private void onCollision(final Entity bullet, final Entity collidable) {
+	private boolean handleCollisionsWithWalls(final Entity bullet) {
+		MapGraph map = services.getMapService().getMap();
+		Vector3 position = ComponentsMapper.simpleDecal.get(bullet).getDecal().getPosition();
+		MapGraphNode node = map.getNode(position);
+		MapNodesTypes nodeType = node.getType();
+		if (nodeType != MapNodesTypes.PASSABLE_NODE || node.getHeight() >= position.y) {
+			onCollisionWithWall(bullet, node);
+			return true;
+		}
+		return false;
+	}
+
+	private void onCollisionWithAnotherEntity(final Entity bullet, final Entity collidable) {
 		getEngine().removeEntity(bullet);
 		for (BulletsSystemEventsSubscriber subscriber : subscribers) {
-			subscriber.onBulletCollision(bullet, collidable);
+			subscriber.onBulletCollisionWithAnotherEntity(bullet, collidable);
+		}
+	}
+
+	private void onCollisionWithWall(final Entity bullet, final MapGraphNode node) {
+		getEngine().removeEntity(bullet);
+		for (BulletsSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onBulletCollisionWithWall(bullet, node);
 		}
 	}
 

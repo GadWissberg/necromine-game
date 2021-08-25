@@ -438,7 +438,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	@Override
-	public void onBulletCollision(final Entity bullet, final Entity collidable) {
+	public void onBulletCollisionWithAnotherEntity(final Entity bullet, final Entity collidable) {
 		if (ComponentsMapper.character.has(collidable)) {
 			applyBulletDamageToCharacter(bullet, collidable);
 		}
