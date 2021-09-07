@@ -27,7 +27,7 @@ public class CharacterDecalComponent implements GameComponent {
 	private Direction direction;
 
 	@Override
-	public void reset() {
+	public void reset( ) {
 		animations.clear();
 	}
 
@@ -83,5 +83,11 @@ public class CharacterDecalComponent implements GameComponent {
 		Vector3 position = decal.getPosition();
 		Vector2 decalPosition = auxVector2.set(position.x, position.z);
 		return output.set(decalPosition.set(MathUtils.floor(auxVector2.x), MathUtils.floor(auxVector2.y)));
+	}
+
+	public Vector3 getNodePosition(final Vector3 output) {
+		Vector3 position = decal.getPosition();
+		Vector3 decalPosition = auxVector3.set(position.x, 0, position.z);
+		return output.set(decalPosition.set(MathUtils.floor(auxVector3.x), 0, MathUtils.floor(auxVector3.z)));
 	}
 }

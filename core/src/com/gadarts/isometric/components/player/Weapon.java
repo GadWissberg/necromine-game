@@ -11,12 +11,17 @@ public class Weapon extends Item {
 	private TextureRegion bulletTextureRegion;
 
 	@Override
-	public boolean isWeapon() {
+	public boolean isWeapon( ) {
 		return true;
 	}
 
-	public boolean isMelee() {
+	public boolean isMelee( ) {
 		WeaponsDefinitions definition = (WeaponsDefinitions) getDefinition();
 		return definition.isMelee();
+	}
+
+	public boolean isHitScan( ) {
+		WeaponsDefinitions definition = (WeaponsDefinitions) getDefinition();
+		return definition.isHitScan();
 	}
 }

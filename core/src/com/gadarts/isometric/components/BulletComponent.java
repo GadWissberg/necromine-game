@@ -2,6 +2,7 @@ package com.gadarts.isometric.components;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -12,12 +13,12 @@ public class BulletComponent implements GameComponent {
 	private final Vector2 initialPosition = new Vector2();
 
 	@Getter(AccessLevel.NONE)
-	private Vector2 direction;
+	private Vector3 direction;
 
 	private Entity owner;
 	private Integer damage;
 
-	public Vector2 getDirection(final Vector2 output) {
+	public Vector3 getDirection(final Vector3 output) {
 		return output.set(direction);
 	}
 
@@ -31,7 +32,7 @@ public class BulletComponent implements GameComponent {
 	}
 
 	public void init(final Vector2 initialPosition,
-					 final Vector2 direction,
+					 final Vector3 direction,
 					 final Entity owner,
 					 final Integer damagePoints) {
 		this.initialPosition.set(initialPosition);

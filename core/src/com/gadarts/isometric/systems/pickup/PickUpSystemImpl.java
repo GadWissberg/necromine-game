@@ -14,7 +14,6 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.PickUpComponent;
-import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
@@ -40,13 +39,11 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 	private ImmutableArray<Entity> pickupsEntities;
 	private Entity currentHighLightedPickup;
 	private Entity itemToPickup;
-	private ImmutableArray<Entity> enemiesEntities;
 
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 		pickupsEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
-		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 	}
 
 	@Override
@@ -118,7 +115,7 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 		Vector3 cen = mic.transform.getTranslation(auxVector3_1);
 		ColorAttribute attr = (ColorAttribute) mic.materials.get(0).get(ColorAttribute.Emissive);
 		boolean rayCheck = Intersector.intersectRayBoundsFast(ray, cen, auxVector3_2.set(0.5f, 0.5f, 0.5f));
-		if (rayCheck && services.getMapService().getMap().getAliveEnemyFromNode(enemiesEntities, currentNode) == null) {
+		if (rayCheck && services.getMapService().getMap().getAliveEnemyFromNode(currentNode) == null) {
 			attr.color.set(1, 1, 1, 1);
 			return true;
 		} else {

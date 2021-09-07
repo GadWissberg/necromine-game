@@ -109,7 +109,7 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 		ModelInstance cursorModelInstance = interfaceSystemHandlers.getCursorHandler().getCursorModelInstance();
 		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
 		if (newNode != null && !newNode.equals(oldNode)) {
-			interfaceSystemHandlers.onMouseEnteredNewNode(newNode, services, enemiesEntities);
+			interfaceSystemHandlers.onMouseEnteredNewNode(newNode, services);
 		}
 	}
 
@@ -131,7 +131,7 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
-		interfaceSystemHandlers.update(deltaTime, services, enemiesEntities);
+		interfaceSystemHandlers.update(deltaTime, services);
 	}
 
 

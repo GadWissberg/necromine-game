@@ -1,6 +1,7 @@
 package com.gadarts.isometric.utils;
 
 import com.badlogic.gdx.graphics.Color;
+import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
 import static com.badlogic.gdx.Application.LOG_DEBUG;
 
@@ -22,4 +23,5 @@ public class DefaultGameSettings {
 	public static final boolean DISABLE_FRUSTUM_CULLING = false;
 	public static final boolean MENU_ON_STARTUP = true;
 	public static final boolean FULL_SCREEN = false;
+	public static final WeaponsDefinitions STARTING_WEAPON = WeaponsDefinitions.COLT;
 }

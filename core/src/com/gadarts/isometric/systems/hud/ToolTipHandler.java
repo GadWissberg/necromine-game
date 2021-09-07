@@ -1,7 +1,6 @@
 package com.gadarts.isometric.systems.hud;
 
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -46,19 +45,18 @@ public class ToolTipHandler implements Disposable {
 		}
 	}
 
-	void handleToolTip(final MapGraph map, final MapGraphNode cursorNode, final ImmutableArray<Entity> enemiesEntities) {
+	void handleToolTip(final MapGraph map, final MapGraphNode cursorNode) {
 		if (lastHighlightNodeChange != -1 && TimeUtils.timeSinceMillis(lastHighlightNodeChange) >= TOOLTIP_DELAY) {
-			String text = calculateToolTipText(map, cursorNode, enemiesEntities);
+			String text = calculateToolTipText(map, cursorNode);
 			displayToolTip(text);
 			lastHighlightNodeChange = -1;
 		}
 	}
 
 	private String calculateToolTipText(final MapGraph map,
-										final MapGraphNode cursorNode,
-										final ImmutableArray<Entity> enemiesEntities) {
+										final MapGraphNode cursorNode) {
 		if (map.getFowMap()[cursorNode.getRow()][cursorNode.getCol()] == 0) return null;
-		Entity enemyAtNode = map.getAliveEnemyFromNode(enemiesEntities, cursorNode);
+		Entity enemyAtNode = map.getAliveEnemyFromNode(cursorNode);
 		String result;
 		if (enemyAtNode != null) {
 			result = ComponentsMapper.enemy.get(enemyAtNode).getEnemyDefinition().getDisplayName();

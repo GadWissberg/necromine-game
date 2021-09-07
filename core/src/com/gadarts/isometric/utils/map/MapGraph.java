@@ -16,6 +16,7 @@ import com.gadarts.isometric.components.FloorComponent;
 import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.PickUpComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
@@ -56,6 +57,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	@Getter(AccessLevel.PACKAGE)
 	MapGraphNode currentDestination;
 	private ImmutableArray<Entity> obstaclesEntities;
+	private ImmutableArray<Entity> enemiesEntities;
 
 	public MapGraph(final float ambient, final Dimension mapSize, final PooledEngine engine) {
 		this.mapSize = mapSize;
@@ -63,6 +65,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		this.ambient = ambient;
 		this.pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
 		this.characterEntities = engine.getEntitiesFor(Family.all(CharacterComponent.class).get());
+		this.enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		this.nodes = new Array<>(mapSize.width * mapSize.height);
 		this.fowMap = new int[mapSize.height][mapSize.width];
 		for (int row = 0; row < mapSize.height; row++) {
@@ -95,22 +98,21 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		}
 	}
 
-	public List<MapGraphNode> getAvailableNodesAroundNode(final ImmutableArray<Entity> enemiesEntities,
-														  final MapGraphNode node) {
+	public List<MapGraphNode> getAvailableNodesAroundNode(final MapGraphNode node) {
 		auxNodesList_1.clear();
 		auxNodesList_2.clear();
 		List<MapGraphNode> nodesAround = getNodesAround(node, auxNodesList_1);
 		List<MapGraphNode> availableNodes = auxNodesList_2;
 		for (MapGraphNode nearbyNode : nodesAround) {
 			boolean isRevealed = fowMap[nearbyNode.getRow()][nearbyNode.getCol()] != 0;
-			if (nearbyNode.getType() == MapNodesTypes.PASSABLE_NODE && getAliveEnemyFromNode(enemiesEntities, nearbyNode) == null && isRevealed) {
+			if (nearbyNode.getType() == MapNodesTypes.PASSABLE_NODE && getAliveEnemyFromNode(nearbyNode) == null && isRevealed) {
 				availableNodes.add(nearbyNode);
 			}
 		}
 		return availableNodes;
 	}
 
-	public Entity getAliveEnemyFromNode(final ImmutableArray<Entity> enemiesEntities, final MapGraphNode node) {
+	public Entity getAliveEnemyFromNode(final MapGraphNode node) {
 		Entity result = null;
 		for (Entity enemy : enemiesEntities) {
 			MapGraphNode enemyNode = getNode(ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition());

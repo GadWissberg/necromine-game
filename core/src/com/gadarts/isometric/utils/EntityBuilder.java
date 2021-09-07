@@ -264,7 +264,7 @@ public final class EntityBuilder {
 	}
 
 	public EntityBuilder addBulletComponent(final Vector3 initialPosition,
-											final Vector2 direction,
+											final Vector3 direction,
 											final Entity owner,
 											final Integer damagePoints) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);

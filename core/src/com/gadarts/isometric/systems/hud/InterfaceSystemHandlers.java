@@ -1,8 +1,6 @@
 package com.gadarts.isometric.systems.hud;
 
 import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.services.GameServices;
@@ -34,13 +32,13 @@ public class InterfaceSystemHandlers implements Disposable {
 		toolTipHandler.addToolTipTable();
 	}
 
-	void onMouseEnteredNewNode(final MapGraphNode newNode, final GameServices services, final ImmutableArray<Entity> enemiesEntities) {
+	void onMouseEnteredNewNode(final MapGraphNode newNode, final GameServices services) {
 		toolTipHandler.displayToolTip(null);
 		toolTipHandler.setLastHighlightNodeChange(TimeUtils.millis());
 		int col = newNode.getCol();
 		int row = newNode.getRow();
 		cursorHandler.getCursorModelInstance().transform.setTranslation(col + 0.5f, newNode.getHeight(), row + 0.5f);
-		cursorHandler.colorizeCursor(newNode, services, enemiesEntities);
+		cursorHandler.colorizeCursor(newNode, services);
 	}
 
 	void onUserSelectedNodeToApplyTurn(final GameServices services, final List<InterfaceSystemEventsSubscriber> subscribers) {
@@ -57,11 +55,10 @@ public class InterfaceSystemHandlers implements Disposable {
 	}
 
 	public void update(final float deltaTime,
-					   final GameServices services,
-					   final ImmutableArray<Entity> enemiesEntities) {
+					   final GameServices services) {
 		hudHandler.getStage().act();
 		MapGraph map = services.getMapService().getMap();
-		toolTipHandler.handleToolTip(map, cursorHandler.getCursorNode(services), enemiesEntities);
+		toolTipHandler.handleToolTip(map, cursorHandler.getCursorNode(services));
 		cursorHandler.handleCursorFlicker(deltaTime);
 	}
 }

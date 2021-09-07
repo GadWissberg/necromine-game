@@ -17,7 +17,6 @@ import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
-import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.*;
 import com.gadarts.isometric.services.MapService;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -67,7 +66,6 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private static final int ENEMY_AWAKEN_RADIUS = 2;
 
 	private Entity player;
-	private ImmutableArray<Entity> enemies;
 	private PathPlanHandler pathPlanHandler;
 	private ImmutableArray<Entity> walls;
 
@@ -82,10 +80,10 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 
 	private void planPath(final MapGraphNode cursorNode, final AttackNodesHandler attackNodesHandler) {
 		MapService mapService = services.getMapService();
-		Entity enemyAtNode = mapService.getMap().getAliveEnemyFromNode(enemies, cursorNode);
+		Entity enemyAtNode = mapService.getMap().getAliveEnemyFromNode(cursorNode);
 		if (calculatePathAccordingToSelection(cursorNode, enemyAtNode)) {
 			MapGraphNode selectedAttackNode = attackNodesHandler.getSelectedAttackNode();
-			if (getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null || (selectedAttackNode != null && !isNodeInAvailableNodes(cursorNode, mapService.getMap().getAvailableNodesAroundNode(enemies, selectedAttackNode)))) {
+			if (getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null || (selectedAttackNode != null && !isNodeInAvailableNodes(cursorNode, mapService.getMap().getAvailableNodesAroundNode(selectedAttackNode)))) {
 				attackNodesHandler.reset();
 			}
 			pathHasCreated(cursorNode, enemyAtNode, attackNodesHandler);
@@ -129,10 +127,10 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	private void applyPlayerAttackCommand(final MapGraphNode targetNode, final MapGraphNode playerNode, final AttackNodesHandler attackNodesHandler) {
 		MapGraphNode attackNode = attackNodesHandler.getSelectedAttackNode();
 		boolean result = targetNode.equals(attackNode);
-		result |= isNodeInAvailableNodes(targetNode, services.getMapService().getMap().getAvailableNodesAroundNode(enemies, attackNode));
+		result |= isNodeInAvailableNodes(targetNode, services.getMapService().getMap().getAvailableNodesAroundNode(attackNode));
 		result |= targetNode.equals(attackNode) && playerNode.isConnectedNeighbour(attackNode);
 		if (result) {
-			if (services.getMapService().getMap().getAliveEnemyFromNode(enemies, targetNode) != null) {
+			if (services.getMapService().getMap().getAliveEnemyFromNode(targetNode) != null) {
 				Array<MapGraphNode> nodes = pathPlanHandler.getPath().nodes;
 				nodes.removeIndex(nodes.size - 1);
 			}
@@ -169,7 +167,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		PlayerStorage storage = ComponentsMapper.player.get(player).getStorage();
 		Weapon selectedWeapon = storage.getSelectedWeapon();
 		if (selectedWeapon.isMelee()) {
-			List<MapGraphNode> availableNodes = services.getMapService().getMap().getAvailableNodesAroundNode(enemies, node);
+			List<MapGraphNode> availableNodes = services.getMapService().getMap().getAvailableNodesAroundNode(node);
 			attackNodesHandler.setSelectedAttackNode(node);
 			activateAttackMode(enemyAtNode, availableNodes);
 		} else {
@@ -183,7 +181,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		Weapon selectedWeapon = ComponentsMapper.player.get(player).getStorage().getSelectedWeapon();
 		WeaponsDefinitions definition = (WeaponsDefinitions) selectedWeapon.getDefinition();
 		characterComponent.getCharacterSpriteData().setMeleeHitFrameIndex(definition.getHitFrameIndex());
-		characterComponent.setTarget(services.getMapService().getMap().getAliveEnemyFromNode(enemies, node));
+		characterComponent.setTarget(services.getMapService().getMap().getAliveEnemyFromNode(node));
 		applyShootCommand(node);
 		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onEnemySelectedWithRangeWeapon(node);
@@ -191,7 +189,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 
 	}
 
@@ -201,7 +199,6 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		PlayerComponent playerComponent = ComponentsMapper.player.get(player);
 		playerComponent.getStorage().subscribeForEvents(this);
-		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		walls = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
 	}
 
@@ -304,7 +301,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	@Override
-	public Entity getPlayer() {
+	public Entity getPlayer( ) {
 		return player;
 	}
 
@@ -325,7 +322,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	@Override
-	public void deactivateAttackMode() {
+	public void deactivateAttackMode( ) {
 		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onAttackModeDeactivated();
 		}
@@ -346,7 +343,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	@Override
-	public void activate() {
+	public void activate( ) {
 		pathPlanHandler = new PathPlanHandler(services.getAssetManager());
 		pathPlanHandler.init((PooledEngine) getEngine());
 		revealRadius(PLAYER_VISION_RAD, ComponentsMapper.characterDecal.get(player).getNodePosition(auxVector2_1));
@@ -358,7 +355,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		}
 	}
 
-	private void disablePlayer() {
+	private void disablePlayer( ) {
 		changePlayerStatus(true);
 	}
 
@@ -461,7 +458,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		revealRadius(ENEMY_AWAKEN_RADIUS, ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1));
 	}
 
-	public void enablePlayer() {
+	public void enablePlayer( ) {
 		changePlayerStatus(false);
 	}
 }

@@ -3,7 +3,6 @@ package com.gadarts.isometric.systems.hud;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -53,11 +52,10 @@ public class CursorHandler {
 	}
 
 	void colorizeCursor(final MapGraphNode newNode,
-						final GameServices services,
-						final ImmutableArray<Entity> enemiesEntities) {
+						final GameServices services) {
 		MapGraph map = services.getMapService().getMap();
 		if (map.getFowMap()[newNode.getRow()][newNode.getCol()] == 1) {
-			if (map.getAliveEnemyFromNode(enemiesEntities, newNode) != null) {
+			if (map.getAliveEnemyFromNode(newNode) != null) {
 				setCursorColor(CURSOR_ATTACK);
 			} else {
 				setCursorOpacity(1F);

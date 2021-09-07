@@ -3,6 +3,7 @@ package com.gadarts.isometric.utils.map;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.necromine.model.MapNodesTypes;
 import lombok.Getter;
@@ -43,6 +44,10 @@ public class MapGraphNode {
 
 	public Vector2 getCenterPosition(final Vector2 output) {
 		return output.set(col + 0.5f, row + 0.5f);
+	}
+
+	public Vector3 getCenterPosition(final Vector3 output) {
+		return output.set(col + 0.5f, 0, row + 0.5f);
 	}
 
 	@Override

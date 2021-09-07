@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -17,7 +18,6 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterMotivation;
 import com.gadarts.isometric.components.character.data.*;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
-import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.bullets.BulletsSystemEventsSubscriber;
@@ -35,7 +35,6 @@ import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.model.characters.CharacterTypes;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
-import com.gadarts.necromine.model.characters.attributes.Accuracy;
 import com.gadarts.necromine.model.characters.attributes.Strength;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
@@ -338,21 +337,18 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			}
 		} else if (characterSpriteData.getSpriteType() == ATTACK_PRIMARY) {
 			if (newFrame.index == characterSpriteData.getPrimaryAttackHitFrameIndex()) {
-				if (!ComponentsMapper.player.has(character)) {
-					Entity target = characterComponent.getTarget();
-					CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(character);
-					Decal decal = characterDecalComponent.getDecal();
-					CharacterDecalComponent targetDecalComponent = ComponentsMapper.characterDecal.get(target);
-					Vector3 targetPosition = targetDecalComponent.getDecal().getPosition();
-					Vector3 position = auxVector3_2.set(decal.getPosition());
-					Vector2 direction = auxVector2_1.set(targetPosition.x, targetPosition.z).sub(position.x, position.z);
-					EnemyComponent enemyComponent = ComponentsMapper.enemy.get(character);
-					Accuracy accuracy = enemyComponent.getEnemyDefinition().getAccuracy()[enemyComponent.getSkill() - 1];
-					int maxAngle = accuracy.getMaxAngle();
-					direction.setAngleDeg(direction.angleDeg() + MathUtils.random(-maxAngle, maxAngle));
-					for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-						subscriber.onCharacterEngagesPrimaryAttack(character, direction, position);
-					}
+				Entity target = characterComponent.getTarget();
+				CharacterDecalComponent characterDecalComponent = ComponentsMapper.characterDecal.get(character);
+				Decal decal = characterDecalComponent.getDecal();
+				CharacterDecalComponent targetDecalComponent = ComponentsMapper.characterDecal.get(target);
+				MapGraph map = services.getMapService().getMap();
+				MapGraphNode targetNode = map.getNode(targetDecalComponent.getDecal().getPosition());
+				MapGraphNode positionNode = map.getNode(decal.getPosition());
+				Vector2 targetNodeCenterPosition = targetNode.getCenterPosition(auxVector2_1);
+				Vector2 positionNodeCenterPosition = positionNode.getCenterPosition(auxVector2_2);
+				Vector3 direction = auxVector3_1.set(targetNodeCenterPosition.x, 0, targetNodeCenterPosition.y).sub(positionNodeCenterPosition.x, 0, positionNodeCenterPosition.y);
+				for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+					subscriber.onCharacterEngagesPrimaryAttack(character, direction, auxVector3_2.set(positionNodeCenterPosition.x, 0, positionNodeCenterPosition.y));
 				}
 			}
 		} else if (characterSpriteData.getSpriteType() == PICKUP) {
@@ -387,6 +383,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		MapGraphNode newDest = graphData.getCurrentPath().getNextOf(oldDest);
 		if (newDest != null) {
+			Gdx.app.log("!", newDest.toString());
 			commandsHandler.initDestinationNode(characterComponent, newDest);
 			takeStep(character);
 		} else {
@@ -438,13 +435,17 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	@Override
-	public void onBulletCollisionWithAnotherEntity(final Entity bullet, final Entity collidable) {
+	public void onProjectileCollisionWithAnotherEntity(final Entity bullet, final Entity collidable) {
 		if (ComponentsMapper.character.has(collidable)) {
-			applyBulletDamageToCharacter(bullet, collidable);
+			applyDamageToCharacter(collidable, ComponentsMapper.bullet.get(bullet).getDamage());
 		}
 	}
 
-	private void applyBulletDamageToCharacter(final Entity bullet, final Entity collidable) {
-		applyDamageToCharacter(collidable, ComponentsMapper.bullet.get(bullet).getDamage());
+	@Override
+	public void onHitScanCollisionWithAnotherEntity(final WeaponsDefinitions definition, final Entity collidable) {
+		if (ComponentsMapper.character.has(collidable)) {
+			applyDamageToCharacter(collidable, definition.getDamage());
+		}
 	}
+
 }

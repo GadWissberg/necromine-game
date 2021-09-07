@@ -38,6 +38,7 @@ import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.services.ModelBoundingBox;
 import com.gadarts.isometric.systems.enemy.EnemySystemImpl;
+import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.Utils;
 import com.gadarts.necromine.WallCreator;
@@ -51,6 +52,7 @@ import com.gadarts.necromine.model.characters.CharacterTypes;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.Enemies;
 import com.gadarts.necromine.model.characters.SpriteType;
+import com.gadarts.necromine.model.characters.attributes.Accuracy;
 import com.gadarts.necromine.model.characters.attributes.Agility;
 import com.gadarts.necromine.model.characters.attributes.Strength;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
@@ -681,7 +683,8 @@ public final class MapBuilder implements Disposable {
 		CharacterSkillsParameters skills = new CharacterSkillsParameters(
 				type.getHealth().get(skill - 1),
 				type.getAgility().get(skill - 1),
-				type.getStrength().get(skill - 1));
+				type.getStrength().get(skill - 1),
+				type.getAccuracy()[skill - 1]);
 		CharacterData data = new CharacterData(position, Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()], skills, auxCharacterSoundData);
 		addCharBaseComponents(
 				builder,
@@ -724,7 +727,8 @@ public final class MapBuilder implements Disposable {
 		CharacterSkillsParameters skills = new CharacterSkillsParameters(
 				PLAYER_HEALTH,
 				Agility.HIGH,
-				new Strength(1, 3));
+				new Strength(1, 3),
+				Accuracy.LOW);
 		CharacterData data = new CharacterData(
 				position,
 				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
@@ -732,7 +736,7 @@ public final class MapBuilder implements Disposable {
 				auxCharacterSoundData);
 		addCharBaseComponents(
 				builder,
-				PLAYER_KNIFE,
+				Atlases.findByRelatedWeapon(DefaultGameSettings.STARTING_WEAPON),
 				data,
 				4,
 				4);
@@ -749,8 +753,8 @@ public final class MapBuilder implements Disposable {
 
 	private Weapon initializeStartingWeapon( ) {
 		Weapon weapon = Pools.obtain(Weapon.class);
-		Texture image = assetManager.getTexture(WeaponsDefinitions.KNIFE.getImage());
-		weapon.init(WeaponsDefinitions.KNIFE, 0, 0, image);
+		Texture image = assetManager.getTexture(DefaultGameSettings.STARTING_WEAPON.getImage());
+		weapon.init(DefaultGameSettings.STARTING_WEAPON, 0, 0, image);
 		return weapon;
 	}
 
