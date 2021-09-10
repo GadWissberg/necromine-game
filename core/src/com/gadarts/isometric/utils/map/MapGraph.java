@@ -30,6 +30,7 @@ import lombok.Setter;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEventsSubscriber {
 	private static final Array<Connection<MapGraphNode>> auxConnectionsList = new Array<>();
@@ -68,6 +69,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		this.enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		this.nodes = new Array<>(mapSize.width * mapSize.height);
 		this.fowMap = new int[mapSize.height][mapSize.width];
+		IntStream.range(0, mapSize.height).forEach(row -> IntStream.range(0, mapSize.width).forEach(col -> fowMap[row][col] = 1));
 		for (int row = 0; row < mapSize.height; row++) {
 			for (int col = 0; col < mapSize.width; col++) {
 				nodes.add(new MapGraphNode(col, row, MapNodesTypes.values()[MapNodesTypes.PASSABLE_NODE.ordinal()], 8));

@@ -243,7 +243,7 @@ void main() {
 
                 // South-East
                 if ((u_apply_floor_ambient_occlusion & 2) == 2){
-                    gl_FragColor.rgb *= min(strength*diag*length(vec3(flooredX+1.0, 0.0, flooredZ+1.0) - vec3(v_frag_pos.xyz)), 1.0);
+                    gl_FragColor.rgb *= min(strength*diag*length(vec3(flooredX+1.0, v_frag_pos.y, flooredZ+1.0) - vec3(v_frag_pos.xyz)), 1.0);
                 }
 
                 // South
@@ -253,7 +253,7 @@ void main() {
 
                 // South-West
                 if ((u_apply_floor_ambient_occlusion & 8) == 8){
-                    gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ+1.0)), 1.0);
+                    gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)- vec3(flooredX, v_frag_pos.y, flooredZ+1.0)), 1.0);
                 }
 
                 // West
@@ -263,7 +263,7 @@ void main() {
 
                 // North-West
                 if ((u_apply_floor_ambient_occlusion & 32) == 32){
-                    gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)- vec3(flooredX, 0.0, flooredZ)), 1.0);
+                    gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)- vec3(flooredX, v_frag_pos.y, flooredZ)), 1.0);
                 }
 
                 // North
@@ -273,7 +273,7 @@ void main() {
 
                 // North-East
                 if ((u_apply_floor_ambient_occlusion & 128) == 128){
-                    gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)-vec3(flooredX+1.0, 0.0, flooredZ)), 1.0);
+                    gl_FragColor.rgb *= min(strength*diag*length(vec3(v_frag_pos.xyz)-vec3(flooredX+1.0, v_frag_pos.y, flooredZ)), 1.0);
                 }
             }
             if (!frag_outside && u_apply_wall_ambient_occlusion != 1){

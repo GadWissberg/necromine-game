@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -383,7 +382,6 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		MapGraphNode newDest = graphData.getCurrentPath().getNextOf(oldDest);
 		if (newDest != null) {
-			Gdx.app.log("!", newDest.toString());
 			commandsHandler.initDestinationNode(characterComponent, newDest);
 			takeStep(character);
 		} else {
