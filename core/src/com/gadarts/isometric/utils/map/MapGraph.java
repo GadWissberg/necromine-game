@@ -51,14 +51,15 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
 	@Getter
 	private final float ambient;
+
 	private final PooledEngine engine;
 	private final Dimension mapSize;
+	private final ImmutableArray<Entity> enemiesEntities;
 
 	@Setter(AccessLevel.PACKAGE)
 	@Getter(AccessLevel.PACKAGE)
 	MapGraphNode currentDestination;
 	private ImmutableArray<Entity> obstaclesEntities;
-	private ImmutableArray<Entity> enemiesEntities;
 
 	public MapGraph(final float ambient, final Dimension mapSize, final PooledEngine engine) {
 		this.mapSize = mapSize;

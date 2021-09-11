@@ -3,7 +3,6 @@ package com.gadarts.isometric.systems.hud;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
@@ -11,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -55,7 +53,6 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 	private static final Vector3 auxVector3_2 = new Vector3();
 
 	private final InterfaceSystemHandlers interfaceSystemHandlers = new InterfaceSystemHandlers();
-	private ImmutableArray<Entity> enemiesEntities;
 
 	@Override
 	public void toggleMenu(final boolean active) {
@@ -96,7 +93,6 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
-		enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		interfaceSystemHandlers.initializeAttackNodesHandler(getEngine());
 	}
 

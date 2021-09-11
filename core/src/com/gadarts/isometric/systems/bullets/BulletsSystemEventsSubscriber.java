@@ -14,7 +14,7 @@ public interface BulletsSystemEventsSubscriber extends SystemEventsSubscriber {
 
 	}
 
-	default void onHitScanCollisionWithAnotherEntity(WeaponsDefinitions definition, Entity collidable) {
+	default void onHitScanCollisionWithAnotherEntity(final WeaponsDefinitions definition, final Entity collidable) {
 
 	}
 }

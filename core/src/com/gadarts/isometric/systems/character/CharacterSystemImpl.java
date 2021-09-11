@@ -40,6 +40,9 @@ import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import static com.gadarts.isometric.components.character.CharacterMotivation.*;
 import static com.gadarts.necromine.model.characters.SpriteType.*;
 
+/**
+ * Responsible for all character-related logic (whether player or enemy).
+ */
 public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsSubscriber>
 		implements RenderSystemEventsSubscriber,
 		CharacterSystem,
@@ -157,9 +160,8 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		if (spriteData.getSpriteType() == PAIN && TimeUtils.timeSinceMillis(lastDamage) > CHARACTER_PAIN_DURATION) {
 			characterComponent.setMotivation(null);
 			spriteData.setSpriteType(IDLE);
-			CharacterCommand currentCommand = commandsHandler.getCurrentCommand();
-			if (currentCommand != null && !currentCommand.isStarted()) {
-				applyCommand(currentCommand, character);
+			if (commandsHandler.getCurrentCommand() != null && !commandsHandler.getCurrentCommand().isStarted()) {
+				applyCommand(commandsHandler.getCurrentCommand(), character);
 			}
 		}
 	}
