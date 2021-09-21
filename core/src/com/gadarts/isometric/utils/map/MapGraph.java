@@ -14,11 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.FloorComponent;
 import com.gadarts.isometric.components.ObstacleComponent;
-import com.gadarts.isometric.components.PickUpComponent;
-import com.gadarts.isometric.components.character.CharacterComponent;
-import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.model.GameModelInstance;
-import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.commands.CharacterCommand;
 import com.gadarts.isometric.utils.Utils;
@@ -43,31 +39,23 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	@Getter
 	private final Array<MapGraphNode> nodes;
 
-	private final ImmutableArray<Entity> characterEntities;
-	private final ImmutableArray<Entity> pickupEntities;
-
 	@Getter
 	private final int[][] fowMap;
 
 	@Getter
 	private final float ambient;
 
-	private final PooledEngine engine;
-	private final Dimension mapSize;
-	private final ImmutableArray<Entity> enemiesEntities;
+	private final MapGraphRelatedEntities relatedEntities;
 
+	private final Dimension mapSize;
 	@Setter(AccessLevel.PACKAGE)
 	@Getter(AccessLevel.PACKAGE)
 	MapGraphNode currentDestination;
-	private ImmutableArray<Entity> obstaclesEntities;
 
 	public MapGraph(final float ambient, final Dimension mapSize, final PooledEngine engine) {
 		this.mapSize = mapSize;
-		this.engine = engine;
 		this.ambient = ambient;
-		this.pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
-		this.characterEntities = engine.getEntitiesFor(Family.all(CharacterComponent.class).get());
-		this.enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
+		this.relatedEntities = new MapGraphRelatedEntities(engine);
 		this.nodes = new Array<>(mapSize.width * mapSize.height);
 		this.fowMap = new int[mapSize.height][mapSize.width];
 		IntStream.range(0, mapSize.height).forEach(row -> IntStream.range(0, mapSize.width).forEach(col -> fowMap[row][col] = 1));
@@ -84,7 +72,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		});
 	}
 
-	void applyConnections( ) {
+	void applyConnections() {
 		for (int row = 0; row < mapSize.height; row++) {
 			int rows = row * mapSize.width;
 			for (int col = 0; col < mapSize.width; col++) {
@@ -117,7 +105,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
 	public Entity getAliveEnemyFromNode(final MapGraphNode node) {
 		Entity result = null;
-		for (Entity enemy : enemiesEntities) {
+		for (Entity enemy : relatedEntities.getEnemiesEntities()) {
 			MapGraphNode enemyNode = getNode(ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition());
 			if (ComponentsMapper.character.get(enemy).getSkills().getHealthData().getHp() > 0 && enemyNode.equals(node)) {
 				result = enemy;
@@ -190,7 +178,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	@Override
-	public int getNodeCount( ) {
+	public int getNodeCount() {
 		return nodes.size;
 	}
 
@@ -221,7 +209,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	private boolean checkIfNodeIsAvailable(final Connection<MapGraphNode> connection) {
-		for (Entity character : characterEntities) {
+		for (Entity character : relatedEntities.getCharacterEntities()) {
 			MapGraphNode node = getNode(ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2));
 			int hp = ComponentsMapper.character.get(character).getSkills().getHealthData().getHp();
 			if (currentDestination == node || hp <= 0) {
@@ -284,11 +272,6 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	@Override
-	public void onDestinationReached(final Entity character) {
-
-	}
-
-	@Override
 	public void onCharacterCommandDone(final Entity character, final CharacterCommand executedCommand) {
 		currentDestination = null;
 	}
@@ -299,34 +282,9 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		currentDestination = path.get(path.getCount() - 1);
 	}
 
-	@Override
-	public void onCharacterSystemReady(final CharacterSystem characterSystem) {
-
-	}
-
-	@Override
-	public void onCharacterGotDamage(final Entity target) {
-
-	}
-
-	@Override
-	public void onItemPickedUp(final Entity itemPickedUp) {
-
-	}
-
-	@Override
-	public void onCharacterDies(final Entity character) {
-
-	}
-
-	@Override
-	public void onCharacterNodeChanged(final Entity entity, final MapGraphNode oldNode, final MapGraphNode newNode) {
-
-	}
-
 	public Entity getPickupFromNode(final MapGraphNode node) {
 		Entity result = null;
-		for (Entity pickup : pickupEntities) {
+		for (Entity pickup : relatedEntities.getPickupEntities()) {
 			ModelInstance modelInstance = ComponentsMapper.modelInstance.get(pickup).getModelInstance();
 			MapGraphNode pickupNode = getNode(modelInstance.transform.getTranslation(auxVector3));
 			if (pickupNode.equals(node)) {
@@ -339,7 +297,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 
 	public Entity getObstacleFromNode(final MapGraphNode node) {
 		Entity result = null;
-		for (Entity obstacle : obstaclesEntities) {
+		for (Entity obstacle : relatedEntities.getObstaclesEntities()) {
 			ModelInstance modelInstance = ComponentsMapper.modelInstance.get(obstacle).getModelInstance();
 			MapGraphNode pickupNode = getNode(modelInstance.transform.getTranslation(auxVector3));
 			if (pickupNode.equals(node)) {
@@ -355,9 +313,8 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		return getNode(coord.getCol(), coord.getRow());
 	}
 
-	public void init( ) {
-		obstaclesEntities = engine.getEntitiesFor(Family.all(ObstacleComponent.class).get());
-		obstaclesEntities.forEach(wall -> {
+	public void init() {
+		relatedEntities.getObstaclesEntities().forEach(wall -> {
 			ObstacleComponent obstacleWallComponent = ComponentsMapper.obstacle.get(wall);
 			int topLeftX = obstacleWallComponent.getTopLeftX();
 			int topLeftY = obstacleWallComponent.getTopLeftY();
@@ -375,11 +332,11 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		applyConnections();
 	}
 
-	public int getWidth( ) {
+	public int getWidth() {
 		return mapSize.width;
 	}
 
-	public int getDepth( ) {
+	public int getDepth() {
 		return mapSize.height;
 	}
 }
