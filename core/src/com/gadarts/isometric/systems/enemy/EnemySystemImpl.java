@@ -32,6 +32,7 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.model.characters.Enemies;
 import com.gadarts.necromine.model.characters.SpriteType;
+import com.gadarts.necromine.model.characters.attributes.Accuracy;
 import com.gadarts.necromine.model.characters.attributes.Range;
 
 import java.util.List;
@@ -82,7 +83,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 
 	@Override
-	public void dispose( ) {
+	public void dispose() {
 
 	}
 
@@ -128,7 +129,8 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 										  final EnemyComponent enemyCom,
 										  final Enemies def,
 										  final int skillIndex) {
-		if (def.getAccuracy()[skillIndex] != NONE && def.getRange().get(skillIndex) != Range.NONE) {
+		Accuracy[] accuracy = def.getAccuracy();
+		if (accuracy != null && accuracy[skillIndex] != NONE && def.getRange().get(skillIndex) != Range.NONE) {
 			float disToTarget = calculateDistanceToTarget(enemy);
 			if (disToTarget <= def.getRange().get(skillIndex).getMaxDistance() && disToTarget > RANGE_ATTACK_MIN_RADIUS) {
 				int turnsDiff = def.getReloadTime().get(skillIndex).getNumberOfTurns();
@@ -188,7 +190,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	private void enemyFinishedTurn( ) {
+	private void enemyFinishedTurn() {
 		for (EnemySystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onEnemyFinishedTurn();
 		}
@@ -318,7 +320,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	@Override
-	public void activate( ) {
+	public void activate() {
 
 	}
 }

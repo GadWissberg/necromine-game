@@ -2359,65 +2359,65 @@
         "col": 5,
         "height": 0.0,
         "direction": 1,
-        "type": 0
+        "type": "player"
       }
     ],
     "enemy": [
-      {
-        "row": 6,
-        "col": 6,
-        "height": 0.0,
-        "direction": 0,
-        "type": 0
-      },
       {
         "row": 16,
         "col": 7,
         "height": 0.0,
         "direction": 5,
-        "type": 0
+        "type": "SCORPION"
       },
       {
         "row": 6,
         "col": 15,
         "height": 0.0,
         "direction": 4,
-        "type": 0
+        "type": "SCORPION"
       },
       {
         "row": 7,
         "col": 18,
         "height": 0.0,
         "direction": 6,
-        "type": 0
+        "type": "SCORPION"
       },
       {
         "row": 13,
         "col": 20,
         "height": 0.0,
         "direction": 6,
-        "type": 0
+        "type": "SCORPION"
       },
       {
         "row": 10,
         "col": 25,
         "height": 0.0,
         "direction": 0,
-        "type": 0
+        "type": "SCORPION"
       },
       {
         "row": 5,
         "col": 25,
         "height": 0.0,
         "direction": 4,
-        "type": 0
+        "type": "SCORPION"
       },
       {
         "row": 16,
         "col": 5,
         "height": 0.0,
         "direction": 4,
-        "type": 0
+        "type": "SCORPION"
+      },
+      {
+        "row": 6,
+        "col": 6,
+        "height": 0.0,
+        "direction": 0,
+        "type": "ANUBIS"
       }
     ],
     "npc": []
@@ -2428,161 +2428,161 @@
       "col": 7,
       "height": 0.0,
       "direction": 4,
-      "type": 0
+      "type": "SARCOPHAG_1"
     },
     {
       "row": 4,
       "col": 7,
       "height": 0.0,
       "direction": 6,
-      "type": 1
+      "type": "POTTERY_1"
     },
     {
       "row": 2,
       "col": 9,
       "height": 0.0,
       "direction": 6,
-      "type": 2
+      "type": "STATUE_1"
     },
     {
       "row": 4,
       "col": 9,
       "height": 0.0,
       "direction": 6,
-      "type": 2
+      "type": "STATUE_1"
     },
     {
       "row": 7,
       "col": 7,
       "height": 0.0,
       "direction": 4,
-      "type": 0
+      "type": "SARCOPHAG_1"
     },
     {
       "row": 7,
       "col": 5,
       "height": 0.0,
       "direction": 4,
-      "type": 0
+      "type": "SARCOPHAG_1"
     },
     {
       "row": 15,
       "col": 8,
       "height": 0.0,
       "direction": 2,
-      "type": 3
+      "type": "PILLAR_1"
     },
     {
       "row": 15,
       "col": 4,
       "height": 0.0,
       "direction": 2,
-      "type": 3
+      "type": "PILLAR_1"
     },
     {
       "row": 3,
       "col": 5,
       "height": 0.0,
       "direction": 2,
-      "type": 4
+      "type": "TORCH_1"
     },
     {
       "row": 6,
       "col": 9,
       "height": 0.0,
       "direction": 6,
-      "type": 4
+      "type": "TORCH_1"
     },
     {
       "row": 17,
       "col": 5,
       "height": 0.0,
       "direction": 4,
-      "type": 4
+      "type": "TORCH_1"
     },
     {
       "row": 13,
       "col": 8,
       "height": 0.0,
       "direction": 0,
-      "type": 4
+      "type": "TORCH_1"
     },
     {
       "row": 3,
       "col": 14,
       "height": 0.0,
       "direction": 0,
-      "type": 4
+      "type": "TORCH_1"
     },
     {
       "row": 7,
       "col": 19,
       "height": 0.0,
       "direction": 6,
-      "type": 0
+      "type": "SARCOPHAG_1"
     },
     {
       "row": 9,
       "col": 6,
       "height": 0.0,
       "direction": 2,
-      "type": 4
+      "type": "TORCH_1"
     },
     {
       "row": 1,
       "col": 15,
       "height": 0.0,
       "direction": 2,
-      "type": 1
+      "type": "POTTERY_1"
     },
     {
       "row": 13,
       "col": 15,
       "height": 0.0,
       "direction": 2,
-      "type": 1
+      "type": "POTTERY_1"
     },
     {
       "row": 13,
       "col": 18,
       "height": 0.0,
       "direction": 4,
-      "type": 4
+      "type": "TORCH_1"
     },
     {
       "row": 3,
       "col": 10,
       "height": 0.0,
       "direction": 6,
-      "type": 5
+      "type": "CAVE_SUPPORTER_1"
     },
     {
       "row": 3,
       "col": 14,
       "height": 0.0,
       "direction": 2,
-      "type": 6
+      "type": "CAVE_SUPPORTER_2"
     },
     {
       "row": 8,
       "col": 15,
       "height": 0.0,
       "direction": 2,
-      "type": 4
+      "type": "TORCH_1"
     },
     {
       "row": 1,
       "col": 25,
       "height": 0.0,
       "direction": 2,
-      "type": 3
+      "type": "PILLAR_1"
     },
     {
       "row": 13,
       "col": 25,
       "height": 0.0,
       "direction": 2,
-      "type": 3
+      "type": "PILLAR_1"
     }
   ],
   "pickups": [
@@ -2590,7 +2590,7 @@
       "row": 14,
       "col": 5,
       "height": 0.0,
-      "type": 1
+      "type": "COLT"
     }
   ],
   "lights": []
