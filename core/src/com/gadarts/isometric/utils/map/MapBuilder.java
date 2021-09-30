@@ -43,7 +43,6 @@ import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.Utils;
 import com.gadarts.necromine.WallCreator;
 import com.gadarts.necromine.assets.Assets;
-import com.gadarts.necromine.assets.Assets.Atlases;
 import com.gadarts.necromine.assets.Assets.Sounds;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.assets.MapJsonKeys;
@@ -54,6 +53,7 @@ import com.gadarts.necromine.model.MapNodesTypes;
 import com.gadarts.necromine.model.NodeWalls;
 import com.gadarts.necromine.model.RelativeBillboard;
 import com.gadarts.necromine.model.Wall;
+import com.gadarts.necromine.model.characters.CharacterDefinition;
 import com.gadarts.necromine.model.characters.CharacterTypes;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.Enemies;
@@ -150,16 +150,20 @@ public final class MapBuilder implements Disposable {
 	}
 
 	private void addCharBaseComponents(final EntityBuilder entityBuilder,
-									   final Atlases atlas,
 									   final CharacterData characterData,
-									   final int meleeHitFrameIndex,
-									   final int primaryAttackHitFrameIndex) {
+									   final CharacterDefinition def,
+									   final Assets.Atlases atlasDefinition) {
 		CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
 		Direction direction = characterData.getDirection();
-		characterSpriteData.init(direction, SpriteType.IDLE, meleeHitFrameIndex, primaryAttackHitFrameIndex);
+		characterSpriteData.init(direction,
+				SpriteType.IDLE,
+				def.getMeleeHitFrameIndex(),
+				def.getPrimaryAttackHitFrameIndex(),
+				def.isSingleDeathAnimation());
 		Vector3 position = characterData.getPosition();
+		CharacterAnimations animations = assetManager.get(atlasDefinition.name());
 		entityBuilder.addCharacterComponent(characterSpriteData, characterData.getSoundData(), characterData.getSkills())
-				.addCharacterDecalComponent(assetManager.get(atlas.name()), SpriteType.IDLE, direction, position)
+				.addCharacterDecalComponent(animations, SpriteType.IDLE, direction, position)
 				.addCollisionComponent()
 				.addAnimationComponent();
 	}
@@ -730,12 +734,7 @@ public final class MapBuilder implements Disposable {
 				type.getStrength().get(skill - 1),
 				type.getAccuracy() != null ? type.getAccuracy()[skill - 1] : null);
 		CharacterData data = new CharacterData(position, Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()], skills, auxCharacterSoundData);
-		addCharBaseComponents(
-				builder,
-				type.getAtlasDefinition(),
-				data,
-				type.getMeleeHitFrameIndex(),
-				type.getPrimaryAttackHitFrameIndex());
+		addCharBaseComponents(builder, data, type, type.getAtlasDefinition());
 		Texture skillFlowerTexture = assetManager.getTexture(Assets.UiTextures.SKILL_FLOWER_CENTER);
 		position.y = EnemySystemImpl.SKILL_FLOWER_HEIGHT;
 		builder.addSimpleDecalComponent(position, skillFlowerTexture, true, true);
@@ -778,12 +777,8 @@ public final class MapBuilder implements Disposable {
 				Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()],
 				skills,
 				auxCharacterSoundData);
-		addCharBaseComponents(
-				builder,
-				Atlases.findByRelatedWeapon(DefaultGameSettings.STARTING_WEAPON),
-				data,
-				4,
-				4);
+		Assets.Atlases atlas = findByRelatedWeapon(DefaultGameSettings.STARTING_WEAPON);
+		addCharBaseComponents(builder, data, CharacterTypes.PLAYER.getDefinitions()[0], atlas);
 		builder.finishAndAddToEngine();
 	}
 

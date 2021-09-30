@@ -15,7 +15,11 @@ import com.gadarts.isometric.components.AnimationComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterMotivation;
-import com.gadarts.isometric.components.character.data.*;
+import com.gadarts.isometric.components.character.data.CharacterHealthData;
+import com.gadarts.isometric.components.character.data.CharacterMotivationData;
+import com.gadarts.isometric.components.character.data.CharacterRotationData;
+import com.gadarts.isometric.components.character.data.CharacterSoundData;
+import com.gadarts.isometric.components.character.data.CharacterSpriteData;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -37,8 +41,17 @@ import com.gadarts.necromine.model.characters.SpriteType;
 import com.gadarts.necromine.model.characters.attributes.Strength;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
-import static com.gadarts.isometric.components.character.CharacterMotivation.*;
-import static com.gadarts.necromine.model.characters.SpriteType.*;
+import static com.gadarts.isometric.components.character.CharacterMotivation.END_MY_TURN;
+import static com.gadarts.isometric.components.character.CharacterMotivation.TO_PICK_UP;
+import static com.gadarts.isometric.components.character.CharacterMotivation.USE_PRIMARY;
+import static com.gadarts.necromine.model.characters.SpriteType.ATTACK;
+import static com.gadarts.necromine.model.characters.SpriteType.ATTACK_PRIMARY;
+import static com.gadarts.necromine.model.characters.SpriteType.IDLE;
+import static com.gadarts.necromine.model.characters.SpriteType.LIGHT_DEATH_1;
+import static com.gadarts.necromine.model.characters.SpriteType.PAIN;
+import static com.gadarts.necromine.model.characters.SpriteType.PICKUP;
+import static com.gadarts.necromine.model.characters.SpriteType.RUN;
+import static com.gadarts.necromine.model.characters.SpriteType.randomLightDeath;
 
 /**
  * Responsible for all character-related logic (whether player or enemy).
@@ -275,7 +288,8 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterSoundData soundData = characterComponent.getSoundData();
 		SoundPlayer soundPlayer = services.getSoundPlayer();
 		if (healthData.getHp() <= 0) {
-			characterComponent.getCharacterSpriteData().setSpriteType(ComponentsMapper.player.has(character) ? LIGHT_DEATH_1 : randomLightDeath());
+			CharacterSpriteData charSpriteData = characterComponent.getCharacterSpriteData();
+			charSpriteData.setSpriteType(charSpriteData.isSingleDeathAnimation() ? LIGHT_DEATH_1 : randomLightDeath());
 			if (ComponentsMapper.animation.has(character)) {
 				ComponentsMapper.animation.get(character).resetStateTime();
 			}

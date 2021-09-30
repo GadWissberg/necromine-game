@@ -14,19 +14,26 @@ public class CharacterSpriteData implements Pool.Poolable {
 	private SpriteType spriteType;
 	private int meleeHitFrameIndex;
 	private int primaryAttackHitFrameIndex;
+	private boolean singleDeathAnimation;
 
 	@Override
-	public void reset( ) {
+	public void reset() {
 		frameIndexNotAffectedByLight = -1;
+	}
+
+	public boolean isSingleDeathAnimation() {
+		return singleDeathAnimation;
 	}
 
 	public void init(final Direction direction,
 					 final SpriteType spriteType,
 					 final int hitFrameIndex,
-					 final int primaryAttackHitFrameIndex) {
+					 final int primaryAttackHitFrameIndex,
+					 final boolean singleDeathAnimation) {
 		this.facingDirection = direction;
 		this.spriteType = spriteType;
 		this.meleeHitFrameIndex = hitFrameIndex;
 		this.primaryAttackHitFrameIndex = primaryAttackHitFrameIndex;
+		this.singleDeathAnimation = singleDeathAnimation;
 	}
 }
