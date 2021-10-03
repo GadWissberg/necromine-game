@@ -3,224 +3,224 @@ size: 1170, 1950
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-attack_melee_east
+attack_east
   rotate: false
   xy: 1, 1
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-attack_melee_east
+attack_east
   rotate: false
   xy: 1, 131
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-attack_melee_east
+attack_east
   rotate: false
   xy: 1, 261
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
-attack_melee_east
+attack_east
   rotate: false
   xy: 1, 391
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 3
-attack_melee_north
+attack_north
   rotate: false
   xy: 1, 521
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-attack_melee_north
+attack_north
   rotate: false
   xy: 1, 651
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-attack_melee_north
+attack_north
   rotate: false
   xy: 1, 781
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
-attack_melee_north
+attack_north
   rotate: false
   xy: 1, 911
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 3
-attack_melee_north_east
+attack_north_east
   rotate: false
   xy: 1, 1041
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-attack_melee_north_east
+attack_north_east
   rotate: false
   xy: 1, 1171
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-attack_melee_north_east
+attack_north_east
   rotate: false
   xy: 1, 1301
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
-attack_melee_north_east
+attack_north_east
   rotate: false
   xy: 1, 1431
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 3
-attack_melee_north_west
+attack_north_west
   rotate: false
   xy: 1, 1561
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-attack_melee_north_west
+attack_north_west
   rotate: false
   xy: 1, 1691
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-attack_melee_north_west
+attack_north_west
   rotate: false
   xy: 1, 1821
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
-attack_melee_north_west
+attack_north_west
   rotate: false
   xy: 131, 1
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 3
-attack_melee_south
+attack_south
   rotate: false
   xy: 131, 131
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-attack_melee_south
+attack_south
   rotate: false
   xy: 131, 261
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-attack_melee_south
+attack_south
   rotate: false
   xy: 131, 391
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
-attack_melee_south
+attack_south
   rotate: false
   xy: 131, 521
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 3
-attack_melee_south_east
+attack_south_east
   rotate: false
   xy: 131, 651
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-attack_melee_south_east
+attack_south_east
   rotate: false
   xy: 131, 781
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-attack_melee_south_east
+attack_south_east
   rotate: false
   xy: 131, 911
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
-attack_melee_south_east
+attack_south_east
   rotate: false
   xy: 131, 1041
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 3
-attack_melee_south_west
+attack_south_west
   rotate: false
   xy: 131, 1171
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-attack_melee_south_west
+attack_south_west
   rotate: false
   xy: 131, 1301
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-attack_melee_south_west
+attack_south_west
   rotate: false
   xy: 131, 1431
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
-attack_melee_south_west
+attack_south_west
   rotate: false
   xy: 131, 1561
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 3
-attack_melee_west
+attack_west
   rotate: false
   xy: 131, 1691
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
-attack_melee_west
+attack_west
   rotate: false
   xy: 131, 1821
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
-attack_melee_west
+attack_west
   rotate: false
   xy: 261, 1
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
-attack_melee_west
+attack_west
   rotate: false
   xy: 261, 131
   size: 128, 128

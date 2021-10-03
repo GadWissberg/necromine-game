@@ -181,38 +181,38 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../sprites/scorpion/attack_melee_east_0.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_east_1.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_east_2.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_east_3.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_north_0.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_north_1.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_north_2.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_north_3.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_north_east_0.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_north_east_1.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_north_east_2.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_north_east_3.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_north_west_0.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_north_west_1.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_north_west_2.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_north_west_3.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_south_0.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_south_1.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_south_2.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_south_3.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_south_east_0.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_south_east_1.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_south_east_2.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_south_east_3.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_south_west_0.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_south_west_1.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_south_west_2.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_south_west_3.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_west_0.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_west_1.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_west_2.png</key>
-            <key type="filename">../sprites/scorpion/attack_melee_west_3.png</key>
+            <key type="filename">../sprites/scorpion/attack_east_0.png</key>
+            <key type="filename">../sprites/scorpion/attack_east_1.png</key>
+            <key type="filename">../sprites/scorpion/attack_east_2.png</key>
+            <key type="filename">../sprites/scorpion/attack_east_3.png</key>
+            <key type="filename">../sprites/scorpion/attack_north_0.png</key>
+            <key type="filename">../sprites/scorpion/attack_north_1.png</key>
+            <key type="filename">../sprites/scorpion/attack_north_2.png</key>
+            <key type="filename">../sprites/scorpion/attack_north_3.png</key>
+            <key type="filename">../sprites/scorpion/attack_north_east_0.png</key>
+            <key type="filename">../sprites/scorpion/attack_north_east_1.png</key>
+            <key type="filename">../sprites/scorpion/attack_north_east_2.png</key>
+            <key type="filename">../sprites/scorpion/attack_north_east_3.png</key>
+            <key type="filename">../sprites/scorpion/attack_north_west_0.png</key>
+            <key type="filename">../sprites/scorpion/attack_north_west_1.png</key>
+            <key type="filename">../sprites/scorpion/attack_north_west_2.png</key>
+            <key type="filename">../sprites/scorpion/attack_north_west_3.png</key>
+            <key type="filename">../sprites/scorpion/attack_south_0.png</key>
+            <key type="filename">../sprites/scorpion/attack_south_1.png</key>
+            <key type="filename">../sprites/scorpion/attack_south_2.png</key>
+            <key type="filename">../sprites/scorpion/attack_south_3.png</key>
+            <key type="filename">../sprites/scorpion/attack_south_east_0.png</key>
+            <key type="filename">../sprites/scorpion/attack_south_east_1.png</key>
+            <key type="filename">../sprites/scorpion/attack_south_east_2.png</key>
+            <key type="filename">../sprites/scorpion/attack_south_east_3.png</key>
+            <key type="filename">../sprites/scorpion/attack_south_west_0.png</key>
+            <key type="filename">../sprites/scorpion/attack_south_west_1.png</key>
+            <key type="filename">../sprites/scorpion/attack_south_west_2.png</key>
+            <key type="filename">../sprites/scorpion/attack_south_west_3.png</key>
+            <key type="filename">../sprites/scorpion/attack_west_0.png</key>
+            <key type="filename">../sprites/scorpion/attack_west_1.png</key>
+            <key type="filename">../sprites/scorpion/attack_west_2.png</key>
+            <key type="filename">../sprites/scorpion/attack_west_3.png</key>
             <key type="filename">../sprites/scorpion/idle_east_0.png</key>
             <key type="filename">../sprites/scorpion/idle_east_1.png</key>
             <key type="filename">../sprites/scorpion/idle_east_2.png</key>
@@ -332,38 +332,6 @@
         </map>
         <key>fileList</key>
         <array>
-            <filename>../sprites/scorpion/attack_melee_east_0.png</filename>
-            <filename>../sprites/scorpion/attack_melee_east_1.png</filename>
-            <filename>../sprites/scorpion/attack_melee_east_2.png</filename>
-            <filename>../sprites/scorpion/attack_melee_east_3.png</filename>
-            <filename>../sprites/scorpion/attack_melee_north_0.png</filename>
-            <filename>../sprites/scorpion/attack_melee_north_1.png</filename>
-            <filename>../sprites/scorpion/attack_melee_north_2.png</filename>
-            <filename>../sprites/scorpion/attack_melee_north_3.png</filename>
-            <filename>../sprites/scorpion/attack_melee_north_east_0.png</filename>
-            <filename>../sprites/scorpion/attack_melee_north_east_1.png</filename>
-            <filename>../sprites/scorpion/attack_melee_north_east_2.png</filename>
-            <filename>../sprites/scorpion/attack_melee_north_east_3.png</filename>
-            <filename>../sprites/scorpion/attack_melee_north_west_0.png</filename>
-            <filename>../sprites/scorpion/attack_melee_north_west_1.png</filename>
-            <filename>../sprites/scorpion/attack_melee_north_west_2.png</filename>
-            <filename>../sprites/scorpion/attack_melee_north_west_3.png</filename>
-            <filename>../sprites/scorpion/attack_melee_south_0.png</filename>
-            <filename>../sprites/scorpion/attack_melee_south_1.png</filename>
-            <filename>../sprites/scorpion/attack_melee_south_2.png</filename>
-            <filename>../sprites/scorpion/attack_melee_south_3.png</filename>
-            <filename>../sprites/scorpion/attack_melee_south_east_0.png</filename>
-            <filename>../sprites/scorpion/attack_melee_south_east_1.png</filename>
-            <filename>../sprites/scorpion/attack_melee_south_east_2.png</filename>
-            <filename>../sprites/scorpion/attack_melee_south_east_3.png</filename>
-            <filename>../sprites/scorpion/attack_melee_south_west_0.png</filename>
-            <filename>../sprites/scorpion/attack_melee_south_west_1.png</filename>
-            <filename>../sprites/scorpion/attack_melee_south_west_2.png</filename>
-            <filename>../sprites/scorpion/attack_melee_south_west_3.png</filename>
-            <filename>../sprites/scorpion/attack_melee_west_0.png</filename>
-            <filename>../sprites/scorpion/attack_melee_west_1.png</filename>
-            <filename>../sprites/scorpion/attack_melee_west_2.png</filename>
-            <filename>../sprites/scorpion/attack_melee_west_3.png</filename>
             <filename>../sprites/scorpion/idle_east_0.png</filename>
             <filename>../sprites/scorpion/idle_east_1.png</filename>
             <filename>../sprites/scorpion/idle_east_2.png</filename>
@@ -466,6 +434,38 @@
             <filename>../sprites/scorpion/run_west_3.png</filename>
             <filename>../sprites/scorpion/run_west_4.png</filename>
             <filename>../sprites/scorpion/run_west_5.png</filename>
+            <filename>../sprites/scorpion/attack_east_0.png</filename>
+            <filename>../sprites/scorpion/attack_east_1.png</filename>
+            <filename>../sprites/scorpion/attack_east_2.png</filename>
+            <filename>../sprites/scorpion/attack_east_3.png</filename>
+            <filename>../sprites/scorpion/attack_north_0.png</filename>
+            <filename>../sprites/scorpion/attack_north_1.png</filename>
+            <filename>../sprites/scorpion/attack_north_2.png</filename>
+            <filename>../sprites/scorpion/attack_north_3.png</filename>
+            <filename>../sprites/scorpion/attack_north_east_0.png</filename>
+            <filename>../sprites/scorpion/attack_north_east_1.png</filename>
+            <filename>../sprites/scorpion/attack_north_east_2.png</filename>
+            <filename>../sprites/scorpion/attack_north_east_3.png</filename>
+            <filename>../sprites/scorpion/attack_north_west_0.png</filename>
+            <filename>../sprites/scorpion/attack_north_west_1.png</filename>
+            <filename>../sprites/scorpion/attack_north_west_2.png</filename>
+            <filename>../sprites/scorpion/attack_north_west_3.png</filename>
+            <filename>../sprites/scorpion/attack_south_0.png</filename>
+            <filename>../sprites/scorpion/attack_south_1.png</filename>
+            <filename>../sprites/scorpion/attack_south_2.png</filename>
+            <filename>../sprites/scorpion/attack_south_3.png</filename>
+            <filename>../sprites/scorpion/attack_south_east_0.png</filename>
+            <filename>../sprites/scorpion/attack_south_east_1.png</filename>
+            <filename>../sprites/scorpion/attack_south_east_2.png</filename>
+            <filename>../sprites/scorpion/attack_south_east_3.png</filename>
+            <filename>../sprites/scorpion/attack_south_west_0.png</filename>
+            <filename>../sprites/scorpion/attack_south_west_1.png</filename>
+            <filename>../sprites/scorpion/attack_south_west_2.png</filename>
+            <filename>../sprites/scorpion/attack_south_west_3.png</filename>
+            <filename>../sprites/scorpion/attack_west_0.png</filename>
+            <filename>../sprites/scorpion/attack_west_1.png</filename>
+            <filename>../sprites/scorpion/attack_west_2.png</filename>
+            <filename>../sprites/scorpion/attack_west_3.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
