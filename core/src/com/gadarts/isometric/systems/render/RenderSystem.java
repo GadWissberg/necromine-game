@@ -8,4 +8,6 @@ public interface RenderSystem extends GameSystem {
 	int getNumberOfModelInstances();
 
 	DrawFlags getDrawFlags();
+
+	RenderBatches getRenderBatches();
 }

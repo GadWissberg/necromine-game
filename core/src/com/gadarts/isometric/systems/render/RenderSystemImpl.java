@@ -21,7 +21,11 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.AnimationComponent;
+import com.gadarts.isometric.components.CharacterAnimation;
+import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.LightComponent;
+import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.data.CharacterSpriteData;
@@ -55,7 +59,10 @@ import com.gadarts.necromine.model.characters.SpriteType;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.gadarts.isometric.NecronemesGame.*;
+import static com.gadarts.isometric.NecronemesGame.FULL_SCREEN_RESOLUTION_HEIGHT;
+import static com.gadarts.isometric.NecronemesGame.FULL_SCREEN_RESOLUTION_WIDTH;
+import static com.gadarts.isometric.NecronemesGame.WINDOWED_RESOLUTION_HEIGHT;
+import static com.gadarts.isometric.NecronemesGame.WINDOWED_RESOLUTION_WIDTH;
 import static java.lang.Math.max;
 
 /**
@@ -364,6 +371,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 							  final boolean renderWallsAndFloor,
 							  final boolean renderLight) {
 		modelBatch.begin(camera);
+		for (RenderSystemEventsSubscriber subscriber : subscribers) {
+			subscriber.onBeginRenderingModels(modelBatch);
+		}
 		for (Entity entity : renderSystemRelatedEntities.getModelInstanceEntities()) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 			boolean isObstacle = ComponentsMapper.obstacle.has(entity);
@@ -449,17 +459,22 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	@Override
-	public int getNumberOfModelInstances( ) {
+	public int getNumberOfModelInstances() {
 		return renderSystemRelatedEntities.getModelInstanceEntities().size();
 	}
 
 	@Override
-	public DrawFlags getDrawFlags( ) {
+	public DrawFlags getDrawFlags() {
 		return drawFlags;
 	}
 
 	@Override
-	public void onConsoleActivated( ) {
+	public RenderBatches getRenderBatches() {
+		return renderBatches;
+	}
+
+	@Override
+	public void onConsoleActivated() {
 
 	}
 
