@@ -4,6 +4,8 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
+import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
@@ -19,7 +21,7 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 		ParticleEffectsSystem,
 		CameraSystemEventsSubscriber,
 		RenderSystemEventsSubscriber {
-	private ParticleSystem particleSystem;
+	private static final Vector3 auxVector = new Vector3();
 
 	@Override
 	public void onRenderSystemReady(RenderSystem renderSystem) {
@@ -29,12 +31,14 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 
 	@Override
 	public void activate() {
-		particleSystem = new ParticleSystem();
-		particleSystem.add(getSystem(RenderSystem.class).getRenderBatches().getPointSpriteBatch());
+		PointSpriteParticleBatch pointSpriteBatch = Assets.Particles.getPointSpriteParticleBatch();
+		ParticleSystem particleSystem = Assets.Particles.getParticleSystem();
+		particleSystem.add(pointSpriteBatch);
 
 		ParticleEffect originalEffect = services.getAssetManager().getParticleEffect(Assets.Particles.BLOOD_SPLATTER);
+		originalEffect.translate(auxVector.set(6F, 0.5F, 1F));
 		EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
-				.addParticleComponent(originalEffect)
+				.addParticleComponent(originalEffect, particleSystem)
 				.finishAndAddToEngine();
 	}
 
@@ -46,7 +50,8 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 
 	@Override
 	public void update(final float deltaTime) {
-		particleSystem.update(); // technically not necessary for rendering
+		ParticleSystem particleSystem = Assets.Particles.getParticleSystem();
+		particleSystem.update();
 		particleSystem.begin();
 		particleSystem.draw();
 		particleSystem.end();
@@ -55,7 +60,7 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 	@Override
 	public void onBeginRenderingModels(ModelBatch modelBatch) {
 		RenderSystemEventsSubscriber.super.onBeginRenderingModels(modelBatch);
-		modelBatch.render(particleSystem);
+		modelBatch.render(Assets.Particles.getParticleSystem());
 	}
 
 	@Override

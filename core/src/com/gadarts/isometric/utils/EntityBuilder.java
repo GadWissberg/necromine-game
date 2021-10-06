@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
@@ -323,13 +324,14 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addParticleComponent(ParticleEffect originalEffect) {
+	public EntityBuilder addParticleComponent(ParticleEffect originalEffect, ParticleSystem particleSystem) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		ParticleEffect effect = originalEffect.copy();
 		effect.init();
 		effect.start();
 		ParticleComponent particleComponent = engine.createComponent(ParticleComponent.class);
 		particleComponent.init(effect);
+		particleSystem.add(effect);
 		currentEntity.add(particleComponent);
 		return instance;
 	}

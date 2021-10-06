@@ -4,11 +4,11 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
-import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.systems.render.shaders.main.MainShaderProvider;
 import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import lombok.Getter;
 
@@ -21,7 +21,6 @@ public class RenderBatches implements Disposable {
 	private final MainShaderProvider shaderProvider;
 	private final ModelBatch shadowBatch;
 	private final SpriteBatch spriteBatch;
-	private final PointSpriteParticleBatch pointSpriteBatch;
 
 	public RenderBatches(final Camera camera,
 						 final GameAssetsManager assetsManager,
@@ -32,8 +31,7 @@ public class RenderBatches implements Disposable {
 		this.decalBatch = new DecalBatch(DECALS_POOL_SIZE, groupStrategy);
 		this.shadowBatch = new ModelBatch(new DepthShaderProvider());
 		this.spriteBatch = new SpriteBatch();
-		this.pointSpriteBatch = new PointSpriteParticleBatch();
-		pointSpriteBatch.setCamera(camera);
+		Assets.Particles.getPointSpriteParticleBatch().setCamera(camera);
 	}
 
 	@Override
