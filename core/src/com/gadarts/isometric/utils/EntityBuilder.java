@@ -54,14 +54,15 @@ import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_SC
 public final class EntityBuilder {
 	public static final String MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST = "Call beginBuildingEntity() first!";
 	private static final EntityBuilder instance = new EntityBuilder();
-	private final static Vector2 auxVector = new Vector2();
+	private static final Vector2 auxVector2 = new Vector2();
+	private static final Vector3 auxVector3 = new Vector3();
 	private Entity currentEntity;
 
 	@Setter(AccessLevel.PRIVATE)
 	private PooledEngine engine;
 
 
-	private EntityBuilder( ) {
+	private EntityBuilder() {
 	}
 
 	public static EntityBuilder beginBuildingEntity(final PooledEngine engine) {
@@ -281,7 +282,7 @@ public final class EntityBuilder {
 											final Integer damagePoints) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
-		bulletComponent.init(auxVector.set(initialPosition.x, initialPosition.z), direction, owner, damagePoints);
+		bulletComponent.init(auxVector2.set(initialPosition.x, initialPosition.z), direction, owner, damagePoints);
 		currentEntity.add(bulletComponent);
 		return instance;
 	}
@@ -332,6 +333,7 @@ public final class EntityBuilder {
 		ParticleComponent particleComponent = engine.createComponent(ParticleComponent.class);
 		particleComponent.init(effect);
 		particleSystem.add(effect);
+		effect.translate(auxVector3.set(5F, 0.5F, 3F));
 		currentEntity.add(particleComponent);
 		return instance;
 	}

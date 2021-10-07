@@ -36,7 +36,6 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 		particleSystem.add(pointSpriteBatch);
 
 		ParticleEffect originalEffect = services.getAssetManager().getParticleEffect(Assets.Particles.BLOOD_SPLATTER);
-		originalEffect.translate(auxVector.set(6F, 0.5F, 1F));
 		EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
 				.addParticleComponent(originalEffect, particleSystem)
 				.finishAndAddToEngine();
