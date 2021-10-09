@@ -22,4 +22,5 @@ public class ComponentsMapper {
 	public static final ComponentMapper<CharacterComponent> character = ComponentMapper.getFor(CharacterComponent.class);
 	public static final ComponentMapper<BulletComponent> bullet = ComponentMapper.getFor(BulletComponent.class);
 	public static final ComponentMapper<LightComponent> light = ComponentMapper.getFor(LightComponent.class);
+	public static final ComponentMapper<ParticleComponent> particle = ComponentMapper.getFor(ParticleComponent.class);
 }

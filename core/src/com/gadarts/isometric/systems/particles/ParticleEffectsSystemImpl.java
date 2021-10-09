@@ -1,18 +1,21 @@
 package com.gadarts.isometric.systems.particles;
 
-import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
-import com.badlogic.gdx.math.Vector3;
+import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.ParticleComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
-import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.necromine.assets.Assets;
+
+import java.util.ArrayList;
 
 /**
  * Handles the particle effects.
@@ -21,28 +24,26 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 		ParticleEffectsSystem,
 		CameraSystemEventsSubscriber,
 		RenderSystemEventsSubscriber {
-	private static final Vector3 auxVector = new Vector3();
+
+	private final ArrayList<Entity> auxParticleEntitiesList = new ArrayList<>();
+	private ImmutableArray<Entity> particleEntities;
 
 	@Override
-	public void onRenderSystemReady(RenderSystem renderSystem) {
+	public void onRenderSystemReady(final RenderSystem renderSystem) {
 		RenderSystemEventsSubscriber.super.onRenderSystemReady(renderSystem);
 		addSystem(RenderSystem.class, renderSystem);
 	}
 
 	@Override
-	public void activate() {
+	public void activate( ) {
 		PointSpriteParticleBatch pointSpriteBatch = Assets.Particles.getPointSpriteParticleBatch();
 		ParticleSystem particleSystem = Assets.Particles.getParticleSystem();
 		particleSystem.add(pointSpriteBatch);
-
-		ParticleEffect originalEffect = services.getAssetManager().getParticleEffect(Assets.Particles.BLOOD_SPLATTER);
-		EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
-				.addParticleComponent(originalEffect, particleSystem)
-				.finishAndAddToEngine();
+		particleEntities = getEngine().getEntitiesFor(Family.all(ParticleComponent.class).get());
 	}
 
 	@Override
-	public void onCameraSystemReady(CameraSystem cameraSystem) {
+	public void onCameraSystemReady(final CameraSystem cameraSystem) {
 		CameraSystemEventsSubscriber.super.onCameraSystemReady(cameraSystem);
 		addSystem(CameraSystem.class, cameraSystem);
 	}
@@ -50,20 +51,35 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 	@Override
 	public void update(final float deltaTime) {
 		ParticleSystem particleSystem = Assets.Particles.getParticleSystem();
-		particleSystem.update();
+		particleSystem.update(deltaTime);
 		particleSystem.begin();
 		particleSystem.draw();
 		particleSystem.end();
+		handleCompletedParticleEffects(particleSystem);
+	}
+
+	private void handleCompletedParticleEffects(final ParticleSystem particleSystem) {
+		auxParticleEntitiesList.clear();
+		for (Entity entity : particleEntities) {
+			if (ComponentsMapper.particle.get(entity).getParticleEffect().isComplete()) {
+				particleSystem.remove(ComponentsMapper.particle.get(entity).getParticleEffect());
+				auxParticleEntitiesList.add(entity);
+			}
+		}
+		for (Entity entity : auxParticleEntitiesList) {
+			entity.remove(ParticleComponent.class);
+			getEngine().removeEntity(entity);
+		}
 	}
 
 	@Override
-	public void onBeginRenderingModels(ModelBatch modelBatch) {
-		RenderSystemEventsSubscriber.super.onBeginRenderingModels(modelBatch);
+	public void onBeginRenderingParticleEffects(final ModelBatch modelBatch) {
+		RenderSystemEventsSubscriber.super.onBeginRenderingParticleEffects(modelBatch);
 		modelBatch.render(Assets.Particles.getParticleSystem());
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 
 	}
 }

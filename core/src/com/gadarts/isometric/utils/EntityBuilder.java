@@ -9,21 +9,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
-import com.gadarts.isometric.components.AnimationComponent;
-import com.gadarts.isometric.components.BulletComponent;
-import com.gadarts.isometric.components.CollisionComponent;
-import com.gadarts.isometric.components.CursorComponent;
-import com.gadarts.isometric.components.FloorComponent;
-import com.gadarts.isometric.components.LightComponent;
-import com.gadarts.isometric.components.ModelInstanceComponent;
-import com.gadarts.isometric.components.ObstacleComponent;
-import com.gadarts.isometric.components.ParticleComponent;
-import com.gadarts.isometric.components.PickUpComponent;
-import com.gadarts.isometric.components.WallComponent;
+import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterSkillsParameters;
@@ -36,6 +25,7 @@ import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.Item;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
+import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.model.EnvironmentDefinitions;
 import com.gadarts.necromine.model.MapNodeData;
 import com.gadarts.necromine.model.characters.Direction;
@@ -55,7 +45,6 @@ public final class EntityBuilder {
 	public static final String MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST = "Call beginBuildingEntity() first!";
 	private static final EntityBuilder instance = new EntityBuilder();
 	private static final Vector2 auxVector2 = new Vector2();
-	private static final Vector3 auxVector3 = new Vector3();
 	private Entity currentEntity;
 
 	@Setter(AccessLevel.PRIVATE)
@@ -325,15 +314,15 @@ public final class EntityBuilder {
 		return instance;
 	}
 
-	public EntityBuilder addParticleComponent(ParticleEffect originalEffect, ParticleSystem particleSystem) {
+	public EntityBuilder addParticleComponent(final ParticleEffect originalEffect, final Vector3 position) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		ParticleEffect effect = originalEffect.copy();
 		effect.init();
 		effect.start();
 		ParticleComponent particleComponent = engine.createComponent(ParticleComponent.class);
 		particleComponent.init(effect);
-		particleSystem.add(effect);
-		effect.translate(auxVector3.set(5F, 0.5F, 3F));
+		Assets.Particles.getParticleSystem().add(effect);
+		effect.translate(position);
 		currentEntity.add(particleComponent);
 		return instance;
 	}

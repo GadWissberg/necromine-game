@@ -3,10 +3,12 @@ package com.gadarts.isometric.systems.character;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -15,12 +17,9 @@ import com.gadarts.isometric.components.AnimationComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterMotivation;
-import com.gadarts.isometric.components.character.data.CharacterHealthData;
-import com.gadarts.isometric.components.character.data.CharacterMotivationData;
-import com.gadarts.isometric.components.character.data.CharacterRotationData;
-import com.gadarts.isometric.components.character.data.CharacterSoundData;
-import com.gadarts.isometric.components.character.data.CharacterSpriteData;
+import com.gadarts.isometric.components.character.data.*;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
+import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.bullets.BulletsSystemEventsSubscriber;
@@ -29,6 +28,7 @@ import com.gadarts.isometric.systems.character.commands.CommandsHandler;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
+import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.map.MapGraph;
@@ -41,17 +41,8 @@ import com.gadarts.necromine.model.characters.SpriteType;
 import com.gadarts.necromine.model.characters.attributes.Strength;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
-import static com.gadarts.isometric.components.character.CharacterMotivation.END_MY_TURN;
-import static com.gadarts.isometric.components.character.CharacterMotivation.TO_PICK_UP;
-import static com.gadarts.isometric.components.character.CharacterMotivation.USE_PRIMARY;
-import static com.gadarts.necromine.model.characters.SpriteType.ATTACK;
-import static com.gadarts.necromine.model.characters.SpriteType.ATTACK_PRIMARY;
-import static com.gadarts.necromine.model.characters.SpriteType.IDLE;
-import static com.gadarts.necromine.model.characters.SpriteType.LIGHT_DEATH_1;
-import static com.gadarts.necromine.model.characters.SpriteType.PAIN;
-import static com.gadarts.necromine.model.characters.SpriteType.PICKUP;
-import static com.gadarts.necromine.model.characters.SpriteType.RUN;
-import static com.gadarts.necromine.model.characters.SpriteType.randomLightDeath;
+import static com.gadarts.isometric.components.character.CharacterMotivation.*;
+import static com.gadarts.necromine.model.characters.SpriteType.*;
 
 /**
  * Responsible for all character-related logic (whether player or enemy).
@@ -74,6 +65,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private CommandsHandler commandsHandler;
 	private CharacterSystemGraphData graphData;
 	private ImmutableArray<Entity> characters;
+	private ParticleEffect bloodSplatterEffect;
 
 	@Override
 	public void addedToEngine(final Engine engine) {
@@ -84,6 +76,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@Override
 	public void activate( ) {
 		this.graphData = new CharacterSystemGraphData(services.getMapService().getMap());
+		bloodSplatterEffect = services.getAssetManager().getParticleEffect(Assets.Particles.BLOOD_SPLATTER);
 		commandsHandler = new CommandsHandler(graphData, subscribers, services.getSoundPlayer(), services.getMapService().getMap());
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCharacterSystemReady(this);
@@ -280,6 +273,25 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterComponent characterComponent = ComponentsMapper.character.get(attacked);
 		characterComponent.dealDamage(damage);
 		handleDeath(attacked);
+		addSplatterEffect(attacked);
+	}
+
+	private void addSplatterEffect(final Entity attacked) {
+		Vector3 pos = ComponentsMapper.characterDecal.get(attacked).getNodePosition(auxVector3_1);
+		float height = calculateSplatterEffectHeight(attacked, pos);
+		EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
+				.addParticleComponent(bloodSplatterEffect, auxVector3_1.set(pos.x + 0.5F, height, pos.z + 0.5F))
+				.finishAndAddToEngine();
+	}
+
+	private float calculateSplatterEffectHeight(final Entity attacked, final Vector3 pos) {
+		float height = pos.y;
+		if (ComponentsMapper.enemy.has(attacked)) {
+			height += ComponentsMapper.enemy.get(attacked).getEnemyDefinition().getHeight() / 2F;
+		} else if (ComponentsMapper.player.has(attacked)) {
+			height += PlayerComponent.PLAYER_HEIGHT;
+		}
+		return height;
 	}
 
 	private void handleDeath(final Entity character) {

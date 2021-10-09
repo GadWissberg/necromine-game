@@ -7,6 +7,7 @@ import lombok.Setter;
 
 @Getter
 public class PlayerComponent implements GameComponent {
+	public static final float PLAYER_HEIGHT = 1;
 	private final PlayerStorage storage = new PlayerStorage();
 	private CharacterAnimations generalAnimations;
 
