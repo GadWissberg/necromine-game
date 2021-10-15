@@ -37,8 +37,6 @@ import com.gadarts.necromine.model.characters.attributes.Range;
 
 import java.util.List;
 
-import static com.gadarts.necromine.assets.Assets.Sounds.ENEMY_AWAKE;
-import static com.gadarts.necromine.assets.Assets.Sounds.ENEMY_ROAM;
 import static com.gadarts.necromine.model.characters.attributes.Accuracy.NONE;
 
 /**
@@ -73,7 +71,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 				if (TimeUtils.timeSinceMillis(enemyComponent.getNextRoamSound()) >= 0) {
 					if (enemyComponent.getNextRoamSound() != 0) {
 						SoundPlayer soundPlayer = services.getSoundPlayer();
-						soundPlayer.playSound(ENEMY_ROAM);
+						soundPlayer.playSound(enemyComponent.getEnemyDefinition().getRoamSound());
 					}
 					enemyComponent.calculateNextRoamSound();
 				}
@@ -280,7 +278,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		boolean spotted = checkLineOfSightForEnemy(enemy, true);
 		if (spotted) {
 			awakeEnemy(enemy);
-			services.getSoundPlayer().playSound(ENEMY_AWAKE);
+			services.getSoundPlayer().playSound(ComponentsMapper.enemy.get(enemy).getEnemyDefinition().getAwakeSound());
 		}
 	}
 

@@ -46,18 +46,8 @@ import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.Assets.Sounds;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.assets.MapJsonKeys;
-import com.gadarts.necromine.model.Coords;
-import com.gadarts.necromine.model.EnvironmentDefinitions;
-import com.gadarts.necromine.model.MapNodeData;
-import com.gadarts.necromine.model.MapNodesTypes;
-import com.gadarts.necromine.model.NodeWalls;
-import com.gadarts.necromine.model.RelativeBillboard;
-import com.gadarts.necromine.model.Wall;
-import com.gadarts.necromine.model.characters.CharacterDefinition;
-import com.gadarts.necromine.model.characters.CharacterTypes;
-import com.gadarts.necromine.model.characters.Direction;
-import com.gadarts.necromine.model.characters.Enemies;
-import com.gadarts.necromine.model.characters.SpriteType;
+import com.gadarts.necromine.model.*;
+import com.gadarts.necromine.model.characters.*;
 import com.gadarts.necromine.model.characters.attributes.Accuracy;
 import com.gadarts.necromine.model.characters.attributes.Agility;
 import com.gadarts.necromine.model.characters.attributes.Strength;
@@ -68,44 +58,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP;
 import static com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_EAST;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_NORTH;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_NORTH_EAST;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_NORTH_WEST;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_SOUTH;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_SOUTH_EAST;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_SOUTH_WEST;
-import static com.gadarts.isometric.components.FloorComponent.AO_MASK_WEST;
-import static com.gadarts.necromine.assets.Assets.Atlases.ANUBIS;
-import static com.gadarts.necromine.assets.Assets.Atlases.PLAYER_GENERIC;
-import static com.gadarts.necromine.assets.Assets.Atlases.findByRelatedWeapon;
+import static com.gadarts.isometric.components.FloorComponent.*;
+import static com.gadarts.necromine.assets.Assets.Atlases.*;
 import static com.gadarts.necromine.assets.Assets.SurfaceTextures.MISSING;
-import static com.gadarts.necromine.assets.MapJsonKeys.CHARACTERS;
-import static com.gadarts.necromine.assets.MapJsonKeys.COL;
-import static com.gadarts.necromine.assets.MapJsonKeys.DEPTH;
-import static com.gadarts.necromine.assets.MapJsonKeys.DIRECTION;
-import static com.gadarts.necromine.assets.MapJsonKeys.EAST;
-import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHT;
-import static com.gadarts.necromine.assets.MapJsonKeys.HEIGHTS;
-import static com.gadarts.necromine.assets.MapJsonKeys.MATRIX;
-import static com.gadarts.necromine.assets.MapJsonKeys.ROW;
-import static com.gadarts.necromine.assets.MapJsonKeys.TILES;
-import static com.gadarts.necromine.assets.MapJsonKeys.TYPE;
-import static com.gadarts.necromine.assets.MapJsonKeys.WEST;
-import static com.gadarts.necromine.assets.MapJsonKeys.WIDTH;
-import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_SCALE;
-import static com.gadarts.necromine.model.characters.CharacterTypes.BILLBOARD_Y;
-import static com.gadarts.necromine.model.characters.CharacterTypes.ENEMY;
-import static com.gadarts.necromine.model.characters.CharacterTypes.PLAYER;
+import static com.gadarts.necromine.assets.MapJsonKeys.*;
+import static com.gadarts.necromine.model.characters.CharacterTypes.*;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
 import static com.gadarts.necromine.model.characters.Direction.SOUTH;
 import static com.gadarts.necromine.model.characters.EnemyWeaponsDefinitions.ENERGY_BALL;
@@ -168,7 +130,7 @@ public final class MapBuilder implements Disposable {
 				.addAnimationComponent();
 	}
 
-	private void createAndAdd3dCursor() {
+	private void createAndAdd3dCursor( ) {
 		Model model = assetManager.getModel(Assets.Models.CURSOR);
 		model.calculateBoundingBox(auxBoundingBox);
 		EntityBuilder.beginBuildingEntity(engine)
@@ -177,7 +139,7 @@ public final class MapBuilder implements Disposable {
 				.finishAndAddToEngine();
 	}
 
-	private Model createFloorModel() {
+	private Model createFloorModel( ) {
 		modelBuilder.begin();
 		MeshPartBuilder meshPartBuilder = modelBuilder.part("floor",
 				GL20.GL_TRIANGLES,
@@ -198,7 +160,7 @@ public final class MapBuilder implements Disposable {
 				auxVector3_5.set(0, 1, 0));
 	}
 
-	private Material createFloorMaterial() {
+	private Material createFloorMaterial( ) {
 		Material material = new Material();
 		material.id = "floor_test";
 		return material;
@@ -727,7 +689,7 @@ public final class MapBuilder implements Disposable {
 		EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(type, skill, bulletAnimation);
 		Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 		Vector3 position = inflateCharacterPosition(characterJsonObject, mapGraph);
-		auxCharacterSoundData.set(Sounds.ENEMY_PAIN, Sounds.ENEMY_DEATH);
+		auxCharacterSoundData.set(type.getPainSound(), type.getDeathSound(), type.getStepSound());
 		CharacterSkillsParameters skills = new CharacterSkillsParameters(
 				type.getHealth().get(skill - 1),
 				type.getAgility().get(skill - 1),
@@ -766,7 +728,7 @@ public final class MapBuilder implements Disposable {
 		CharacterAnimations general = assetManager.get(PLAYER_GENERIC.name());
 		EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine).addPlayerComponent(weapon, general);
 		Vector3 position = inflateCharacterPosition(characterJsonObject, mapGraph);
-		auxCharacterSoundData.set(Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH);
+		auxCharacterSoundData.set(Sounds.PLAYER_PAIN, Sounds.PLAYER_DEATH, Sounds.STEP);
 		CharacterSkillsParameters skills = new CharacterSkillsParameters(
 				PLAYER_HEALTH,
 				Agility.HIGH,
@@ -790,7 +752,7 @@ public final class MapBuilder implements Disposable {
 		return position.add(0, mapGraph.getNode(col, row).getHeight(), 0);
 	}
 
-	private Weapon initializeStartingWeapon() {
+	private Weapon initializeStartingWeapon( ) {
 		Weapon weapon = Pools.obtain(Weapon.class);
 		Texture image = assetManager.getTexture(DefaultGameSettings.STARTING_WEAPON.getImage());
 		weapon.init(DefaultGameSettings.STARTING_WEAPON, 0, 0, image);
@@ -798,7 +760,7 @@ public final class MapBuilder implements Disposable {
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 		floorModel.dispose();
 		wallCreator.dispose();
 	}

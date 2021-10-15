@@ -388,7 +388,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private void applyRunning(final Entity character,
 							  final TextureAtlas.AtlasRegion newFrame,
 							  final CharacterComponent characterComponent) {
-		playStepSoundWhenNeeded(newFrame);
+		playStepSoundWhenNeeded(newFrame, ComponentsMapper.character.get(character));
 		MapGraphNode oldDest = characterComponent.getDestinationNode();
 		Decal decal = ComponentsMapper.characterDecal.get(character).getDecal();
 		if (auxVector2_1.set(decal.getX(), decal.getZ()).dst2(oldDest.getCenterPosition(auxVector2_2)) < Utils.EPSILON) {
@@ -398,9 +398,10 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		}
 	}
 
-	private void playStepSoundWhenNeeded(final TextureAtlas.AtlasRegion newFrame) {
+	private void playStepSoundWhenNeeded(final TextureAtlas.AtlasRegion newFrame,
+										 final CharacterComponent characterComponent) {
 		if (newFrame.index == 0 || newFrame.index == 5) {
-			services.getSoundPlayer().playRandomSound(Assets.Sounds.STEP_1, Assets.Sounds.STEP_2, Assets.Sounds.STEP_3);
+			services.getSoundPlayer().playSound(characterComponent.getSoundData().getStepSound());
 		}
 	}
 
