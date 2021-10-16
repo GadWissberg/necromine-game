@@ -16,6 +16,7 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.ObstacleComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
+import com.gadarts.isometric.components.character.data.CharacterSpriteData;
 import com.gadarts.isometric.components.decal.CharacterDecalComponent;
 import com.gadarts.isometric.components.player.*;
 import com.gadarts.isometric.services.MapService;
@@ -437,14 +438,23 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	@Override
 	public void onFrameChanged(final Entity entity, final float deltaTime, final TextureAtlas.AtlasRegion newFrame) {
 		if (ComponentsMapper.player.has(entity)) {
-			if (ComponentsMapper.character.get(entity).getCharacterSpriteData().getSpriteType() == SpriteType.ATTACK) {
-				if (newFrame.index == ComponentsMapper.character.get(entity).getCharacterSpriteData().getMeleeHitFrameIndex()) {
-					PlayerStorage storage = ComponentsMapper.player.get(entity).getStorage();
-					WeaponsDefinitions definition = (WeaponsDefinitions) storage.getSelectedWeapon().getDefinition();
-					services.getSoundPlayer().playSound(definition.getAttackSound());
+			CharacterSpriteData characterSpriteData = ComponentsMapper.character.get(entity).getCharacterSpriteData();
+			if (characterSpriteData.getSpriteType() == SpriteType.ATTACK) {
+				if (newFrame.index == characterSpriteData.getMeleeHitFrameIndex()) {
+					playAttackSound(entity);
+				}
+			} else if (characterSpriteData.getSpriteType() == SpriteType.ATTACK_PRIMARY) {
+				if (newFrame.index == characterSpriteData.getPrimaryAttackHitFrameIndex()) {
+					playAttackSound(entity);
 				}
 			}
 		}
+	}
+
+	private void playAttackSound(final Entity entity) {
+		PlayerStorage storage = ComponentsMapper.player.get(entity).getStorage();
+		WeaponsDefinitions definition = (WeaponsDefinitions) storage.getSelectedWeapon().getDefinition();
+		services.getSoundPlayer().playSound(definition.getAttackSound());
 	}
 
 	@Override
