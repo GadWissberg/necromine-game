@@ -1,5 +1,5 @@
 {
-  "ambient": 0.3,
+  "ambient": 0.2,
   "target": 5,
   "tiles": {
     "width": 40,
@@ -2378,24 +2378,10 @@
         "type": "SCORPION"
       },
       {
-        "row": 7,
-        "col": 18,
-        "height": 0.0,
-        "direction": 6,
-        "type": "SCORPION"
-      },
-      {
         "row": 13,
         "col": 20,
         "height": 0.0,
         "direction": 6,
-        "type": "SCORPION"
-      },
-      {
-        "row": 10,
-        "col": 25,
-        "height": 0.0,
-        "direction": 0,
         "type": "SCORPION"
       },
       {
@@ -2406,15 +2392,29 @@
         "type": "SCORPION"
       },
       {
+        "row": 6,
+        "col": 6,
+        "height": 0.0,
+        "direction": 0,
+        "type": "ANUBIS"
+      },
+      {
         "row": 16,
         "col": 5,
         "height": 0.0,
         "direction": 4,
-        "type": "SCORPION"
+        "type": "ANUBIS"
       },
       {
-        "row": 6,
-        "col": 6,
+        "row": 7,
+        "col": 18,
+        "height": 0.0,
+        "direction": 6,
+        "type": "ANUBIS"
+      },
+      {
+        "row": 9,
+        "col": 25,
         "height": 0.0,
         "direction": 0,
         "type": "ANUBIS"

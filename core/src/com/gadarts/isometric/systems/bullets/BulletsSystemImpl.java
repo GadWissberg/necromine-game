@@ -10,7 +10,11 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
-import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.Bresenham2;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.BulletComponent;
 import com.gadarts.isometric.components.CollisionComponent;
@@ -53,7 +57,7 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	private ImmutableArray<Entity> collidables;
 
 	@Override
-	public void activate( ) {
+	public void activate() {
 
 	}
 
@@ -157,10 +161,10 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	}
 
 	private void onProjectileCollisionWithAnotherEntity(final Entity bullet, final Entity collidable) {
-		getEngine().removeEntity(bullet);
 		for (BulletsSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onProjectileCollisionWithAnotherEntity(bullet, collidable);
 		}
+		removeBullet(bullet);
 	}
 
 	private void onHitScanCollisionWithAnotherEntity(final WeaponsDefinitions definition, final Entity collidable) {
@@ -170,10 +174,15 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	}
 
 	private void onCollisionWithWall(final Entity bullet, final MapGraphNode node) {
-		getEngine().removeEntity(bullet);
 		for (BulletsSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onBulletCollisionWithWall(bullet, node);
 		}
+		removeBullet(bullet);
+	}
+
+	private void removeBullet(Entity bullet) {
+		bullet.remove(BulletComponent.class);
+		getEngine().removeEntity(bullet);
 	}
 
 	private boolean checkCollision(final Decal decal, final Entity collidable) {
@@ -203,7 +212,7 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 		Vector3 position = decal.getPosition();
 		float dst = bulletComponent.getInitialPosition(auxVector2_1).dst(position.x, position.z);
 		if (dst >= BULLET_MAX_DISTANCE) {
-			getEngine().removeEntity(bullet);
+			removeBullet(bullet);
 		}
 	}
 
@@ -220,7 +229,7 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	}
 
 	@Override
-	public void dispose( ) {
+	public void dispose() {
 
 	}
 }

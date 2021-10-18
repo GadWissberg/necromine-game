@@ -13,7 +13,7 @@ public class BulletComponent implements GameComponent {
 	private final Vector2 initialPosition = new Vector2();
 
 	@Getter(AccessLevel.NONE)
-	private Vector3 direction;
+	private Vector3 direction = new Vector3();
 
 	private Entity owner;
 	private Integer damage;
@@ -27,7 +27,7 @@ public class BulletComponent implements GameComponent {
 	}
 
 	@Override
-	public void reset( ) {
+	public void reset() {
 
 	}
 
@@ -36,7 +36,7 @@ public class BulletComponent implements GameComponent {
 					 final Entity owner,
 					 final Integer damagePoints) {
 		this.initialPosition.set(initialPosition);
-		this.direction = direction;
+		this.direction.set(direction);
 		this.owner = owner;
 		this.damage = damagePoints;
 	}
