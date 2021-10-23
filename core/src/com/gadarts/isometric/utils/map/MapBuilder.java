@@ -78,7 +78,7 @@ import static java.lang.String.format;
  */
 public final class MapBuilder implements Disposable {
 	public static final String MAP_PATH_TEMP = "core/assets/maps/%s.json";
-	public static final int PLAYER_HEALTH = 32;
+	public static final int PLAYER_HEALTH = 64;
 	public static final float INDEPENDENT_LIGHT_RADIUS = 2f;
 	public static final float INDEPENDENT_LIGHT_INTENSITY = 1f;
 	private static final CharacterSoundData auxCharacterSoundData = new CharacterSoundData();

@@ -309,7 +309,7 @@ public final class EntityBuilder {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		LightComponent lightComponent = engine.createComponent(LightComponent.class);
 		lightComponent.init(position, intensity, radius, flicker, currentEntity);
-		lightComponent.setColor(color);
+		lightComponent.applyColor(color);
 		currentEntity.add(lightComponent);
 		return instance;
 	}

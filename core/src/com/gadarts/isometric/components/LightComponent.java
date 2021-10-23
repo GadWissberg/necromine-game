@@ -3,6 +3,7 @@ package com.gadarts.isometric.components;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.TimeUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,27 +14,24 @@ public class LightComponent implements GameComponent {
 
 	@Getter(AccessLevel.NONE)
 	private final Vector3 position = new Vector3();
-
+	private final Color color = new Color(Color.WHITE);
 	@Setter
 	private float intensity;
-
 	@Setter
 	private float radius;
-
 	@Setter
 	private long nextFlicker;
-
-	@Setter
-	private Color color;
-
 	private boolean flicker;
+
+
+	private float duration;
 	private float originalRadius;
 	private float originalIntensity;
 	private Entity parent;
+	private long beginTime;
 
 	@Override
 	public void reset( ) {
-
 	}
 
 	public void init(final Vector3 position,
@@ -48,6 +46,8 @@ public class LightComponent implements GameComponent {
 		this.radius = radius;
 		this.flicker = flicker;
 		this.parent = parent;
+		color.set(Color.WHITE);
+		duration = -1L;
 	}
 
 	public void setPosition(final Vector3 newPosition) {
@@ -56,5 +56,15 @@ public class LightComponent implements GameComponent {
 
 	public Vector3 getPosition(final Vector3 output) {
 		return output.set(position);
+	}
+
+
+	public void applyColor(final Color color) {
+		color.set(color);
+	}
+
+	public void applyDuration(final float inSeconds) {
+		this.duration = inSeconds;
+		this.beginTime = TimeUtils.millis();
 	}
 }

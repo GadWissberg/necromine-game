@@ -1,6 +1,7 @@
 package com.gadarts.isometric.systems.render;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -15,9 +16,9 @@ import com.gadarts.isometric.components.character.data.CharacterSpriteData;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.gadarts.necromine.model.characters.SpriteType.ATTACK;
 import static com.gadarts.necromine.model.characters.SpriteType.ATTACK_PRIMARY;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -34,7 +35,7 @@ public class LightsHandler {
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector3 auxVector3_2 = new Vector3();
 	private static final int FLICKER_MAX_INTERVAL = 150;
-
+	private final static List<Entity> auxLightsListToRemove = new ArrayList<>();
 	private final ImmutableArray<Entity> lightsEntities;
 
 	public LightsHandler(final ImmutableArray<Entity> lightsEntities) {
@@ -104,10 +105,17 @@ public class LightsHandler {
 		if (ComponentsMapper.enemy.has(entity)) {
 			return spriteData.getSpriteType() != ATTACK_PRIMARY;
 		} else {
-			return spriteData.getSpriteType() != ATTACK
-					|| textureRegion.index != spriteData.getMeleeHitFrameIndex()
-					|| ComponentsMapper.player.get(entity).getStorage().getSelectedWeapon().isMelee();
+			return shouldApplyLightsOnPlayerDecal(entity, spriteData, textureRegion);
 		}
+	}
+
+	private boolean shouldApplyLightsOnPlayerDecal(final Entity entity,
+												   final CharacterSpriteData spriteData,
+												   final TextureAtlas.AtlasRegion textureRegion) {
+		boolean noInHitFrameIndex = textureRegion.index != spriteData.getPrimaryAttackHitFrameIndex();
+		boolean noPrimaryAttack = spriteData.getSpriteType() != ATTACK_PRIMARY || noInHitFrameIndex;
+		boolean meleeWeapon = ComponentsMapper.player.get(entity).getStorage().getSelectedWeapon().isMelee();
+		return noPrimaryAttack || meleeWeapon;
 	}
 
 	/**
@@ -139,22 +147,36 @@ public class LightsHandler {
 		}
 	}
 
-	public void updateLights( ) {
+	public void updateLights(final PooledEngine engine) {
 		for (Entity light : lightsEntities) {
 			updateLight(light);
+		}
+		if (!auxLightsListToRemove.isEmpty()) {
+			for (Entity light : auxLightsListToRemove) {
+				engine.removeEntity(light);
+			}
+			auxLightsListToRemove.clear();
 		}
 	}
 
 	private void updateLight(final Entity light) {
 		LightComponent lc = ComponentsMapper.light.get(light);
 		long now = TimeUtils.millis();
+		updateFlicker(lc, now);
+		if (ComponentsMapper.simpleDecal.has(light)) {
+			lc.setPosition(ComponentsMapper.simpleDecal.get(lc.getParent()).getDecal().getPosition());
+		}
+		float duration = lc.getDuration();
+		if (duration > 0 && TimeUtils.timeSinceMillis(lc.getBeginTime()) >= (duration * 1000F)) {
+			auxLightsListToRemove.add(light);
+		}
+	}
+
+	private void updateFlicker(final LightComponent lc, final long now) {
 		if (lc.isFlicker() && now >= lc.getNextFlicker()) {
 			lc.setIntensity(MathUtils.random(FLICKER_RANDOM_MIN, FLICKER_RANDOM_MAX) * lc.getOriginalIntensity());
 			lc.setRadius(MathUtils.random(FLICKER_RANDOM_MIN, FLICKER_RANDOM_MAX) * lc.getOriginalRadius());
 			lc.setNextFlicker(now + MathUtils.random(FLICKER_MAX_INTERVAL));
-		}
-		if (ComponentsMapper.simpleDecal.has(light)) {
-			lc.setPosition(ComponentsMapper.simpleDecal.get(lc.getParent()).getDecal().getPosition());
 		}
 	}
 }

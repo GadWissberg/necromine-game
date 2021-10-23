@@ -1,9 +1,6 @@
 package com.gadarts.isometric.systems.render;
 
-import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.EntityListener;
-import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -147,7 +144,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			renderModelsShadows(camera, lastRotationPoint);
 		}
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
-		environment.getLightsHandler().updateLights();
+		environment.getLightsHandler().updateLights((PooledEngine) getEngine());
 		renderModels(camera, renderBatches.getModelBatch(), true, true);
 		renderDecals(deltaTime, camera);
 		renderParticleEffects(camera);
