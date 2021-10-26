@@ -73,7 +73,6 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 	public void init(final GameServices services) {
 		super.init(services);
 		Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		interfaceSystemHandlers.getCursorHandler().init(getEngine());
 		interfaceSystemHandlers.getHudHandler().init(services, player);
 	}
 
@@ -88,6 +87,7 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 	public void onRenderSystemReady(final RenderSystem renderSystem) {
 		DrawFlags drawFlags = renderSystem.getDrawFlags();
 		interfaceSystemHandlers.initializeToolTipHandler(interfaceSystemHandlers.getHudHandler().getStage(), drawFlags);
+		interfaceSystemHandlers.initializeCursorHandler(interfaceSystemHandlers.getHudHandler().getStage(), getEngine());
 	}
 
 	@Override

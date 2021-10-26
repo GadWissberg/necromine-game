@@ -15,15 +15,15 @@ import java.util.List;
 public class InterfaceSystemHandlers implements Disposable {
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
 	private final HudHandler hudHandler = new HudHandler();
-	private final CursorHandler cursorHandler = new CursorHandler();
 	private final MenuHandler menuHandler = new MenuHandler();
-
+	private CursorHandler cursorHandler;
 	private ToolTipHandler toolTipHandler;
 
 	@Override
 	public void dispose( ) {
 		attackNodesHandler.dispose();
 		toolTipHandler.dispose();
+		cursorHandler.dispose();
 	}
 
 
@@ -35,10 +35,7 @@ public class InterfaceSystemHandlers implements Disposable {
 	void onMouseEnteredNewNode(final MapGraphNode newNode, final GameServices services) {
 		toolTipHandler.displayToolTip(null);
 		toolTipHandler.setLastHighlightNodeChange(TimeUtils.millis());
-		int col = newNode.getCol();
-		int row = newNode.getRow();
-		cursorHandler.getCursorModelInstance().transform.setTranslation(col + 0.5f, newNode.getHeight(), row + 0.5f);
-		cursorHandler.colorizeCursor(newNode, services);
+		cursorHandler.onMouseEnteredNewNode(newNode, services);
 	}
 
 	void onUserSelectedNodeToApplyTurn(final GameServices services, final List<InterfaceSystemEventsSubscriber> subscribers) {
@@ -60,5 +57,10 @@ public class InterfaceSystemHandlers implements Disposable {
 		MapGraph map = services.getMapService().getMap();
 		toolTipHandler.handleToolTip(map, cursorHandler.getCursorNode(services));
 		cursorHandler.handleCursorFlicker(deltaTime);
+	}
+
+	public void initializeCursorHandler(final GameStage stage, Engine engine) {
+		cursorHandler = new CursorHandler(stage);
+		getCursorHandler().init(engine);
 	}
 }

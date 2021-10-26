@@ -4,28 +4,51 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.CursorComponent;
 import com.gadarts.isometric.services.GameServices;
+import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import lombok.Getter;
 
+import java.util.Optional;
+
 @Getter
-public class CursorHandler {
+public class CursorHandler implements Disposable {
 	public static final Color CURSOR_REGULAR = Color.YELLOW;
 	public static final Color CURSOR_UNAVAILABLE = Color.DARK_GRAY;
 	public static final Color CURSOR_ATTACK = Color.RED;
 	private static final float CURSOR_FLICKER_STEP = 1.5f;
 	private static final Vector3 auxVector3_1 = new Vector3();
+	public static final String POSITION_LABEL_FORMAT = "Row: %s , Col: %s";
+	public static final Color POSITION_LABEL_COLOR = Color.WHITE;
+	public static final float POSITION_LABEL_Y = 10F;
+	private final GameStage stage;
+	private final BitmapFont cursorCellPositionLabelFont;
+	private final Label cursorCellPositionLabel;
 	private Entity cursor;
 	private ModelInstance cursorModelInstance;
 	private float cursorFlickerChange = CURSOR_FLICKER_STEP;
+
+	public CursorHandler(final GameStage stage) {
+		this.stage = stage;
+		if (DefaultGameSettings.DISPLAY_CURSOR_POSITION) {
+			cursorCellPositionLabelFont = new BitmapFont();
+			Label.LabelStyle style = new Label.LabelStyle(cursorCellPositionLabelFont, POSITION_LABEL_COLOR);
+			cursorCellPositionLabel = new Label(null, style);
+			stage.addActor(cursorCellPositionLabel);
+			cursorCellPositionLabel.setPosition(0, POSITION_LABEL_Y);
+		}
+	}
 
 	private void setCursorColor(final Color color) {
 		Material material = cursorModelInstance.materials.get(0);
@@ -77,5 +100,20 @@ public class CursorHandler {
 	public void init(final Engine engine) {
 		cursor = engine.getEntitiesFor(Family.all(CursorComponent.class).get()).first();
 		cursorModelInstance = ComponentsMapper.modelInstance.get(cursor).getModelInstance();
+	}
+
+	@Override
+	public void dispose( ) {
+		Optional.ofNullable(cursorCellPositionLabelFont).ifPresent(BitmapFont::dispose);
+	}
+
+	public void onMouseEnteredNewNode(final MapGraphNode newNode, final GameServices services) {
+		int col = newNode.getCol();
+		int row = newNode.getRow();
+		getCursorModelInstance().transform.setTranslation(col + 0.5f, newNode.getHeight(), row + 0.5f);
+		colorizeCursor(newNode, services);
+		if (cursorCellPositionLabel != null) {
+			cursorCellPositionLabel.setText(String.format(POSITION_LABEL_FORMAT, row, col));
+		}
 	}
 }
