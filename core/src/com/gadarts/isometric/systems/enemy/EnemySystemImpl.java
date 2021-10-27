@@ -47,7 +47,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		RenderSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber {
 
-	public static final float SKILL_FLOWER_HEIGHT = 2.5F;
+	public static final float SKILL_FLOWER_HEIGHT_RELATIVE = 1F;
 	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
@@ -81,7 +81,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 
 	}
 
@@ -188,7 +188,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	private void enemyFinishedTurn() {
+	private void enemyFinishedTurn( ) {
 		for (EnemySystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onEnemyFinishedTurn();
 		}
@@ -244,11 +244,12 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private void onFrameChangedOfRun(final Entity entity) {
 		Vector3 position = ComponentsMapper.characterDecal.get(entity).getDecal().getPosition();
 		SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
-		simpleDecalComponent.getDecal().setPosition(position.x, SKILL_FLOWER_HEIGHT, position.z);
+		float height = ComponentsMapper.enemy.get(entity).getEnemyDefinition().getHeight();
+		simpleDecalComponent.getDecal().setPosition(position.x, height + SKILL_FLOWER_HEIGHT_RELATIVE, position.z);
 		List<RelatedDecal> relatedDecals = simpleDecalComponent.getRelatedDecals();
 		for (RelatedDecal decal : relatedDecals) {
 			if (decal.isVisible()) {
-				decal.setPosition(position.x, SKILL_FLOWER_HEIGHT, position.z);
+				decal.setPosition(position.x, height + SKILL_FLOWER_HEIGHT_RELATIVE, position.z);
 			}
 		}
 	}
@@ -318,7 +319,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	@Override
-	public void activate() {
+	public void activate( ) {
 
 	}
 }

@@ -33,8 +33,8 @@ public class CursorHandler implements Disposable {
 	public static final Color POSITION_LABEL_COLOR = Color.WHITE;
 	public static final float POSITION_LABEL_Y = 10F;
 	private final GameStage stage;
-	private final BitmapFont cursorCellPositionLabelFont;
-	private final Label cursorCellPositionLabel;
+	private BitmapFont cursorCellPositionLabelFont;
+	private Label cursorCellPositionLabel;
 	private Entity cursor;
 	private ModelInstance cursorModelInstance;
 	private float cursorFlickerChange = CURSOR_FLICKER_STEP;
