@@ -26,11 +26,11 @@ import com.gadarts.isometric.components.player.Item;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.necromine.assets.Assets;
-import com.gadarts.necromine.model.EnvironmentDefinitions;
-import com.gadarts.necromine.model.MapNodeData;
 import com.gadarts.necromine.model.characters.Direction;
-import com.gadarts.necromine.model.characters.Enemies;
 import com.gadarts.necromine.model.characters.SpriteType;
+import com.gadarts.necromine.model.characters.enemies.Enemies;
+import com.gadarts.necromine.model.env.EnvironmentDefinitions;
+import com.gadarts.necromine.model.map.MapNodeData;
 import com.gadarts.necromine.model.pickups.ItemDefinition;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import lombok.AccessLevel;
@@ -51,7 +51,7 @@ public final class EntityBuilder {
 	private PooledEngine engine;
 
 
-	private EntityBuilder() {
+	private EntityBuilder( ) {
 	}
 
 	public static EntityBuilder beginBuildingEntity(final PooledEngine engine) {
@@ -291,37 +291,65 @@ public final class EntityBuilder {
 										   final float intensity,
 										   final float radius,
 										   final Color color) {
-		return addLightComponent(position, intensity, radius, false, color);
+		return addLightComponent(position, intensity, radius, false, color, 0);
 	}
 
 	public EntityBuilder addLightComponent(final Vector3 position,
 										   final float intensity,
 										   final float radius,
 										   final boolean flicker) {
-		return addLightComponent(position, intensity, radius, flicker, Color.WHITE);
+		return addLightComponent(position, intensity, radius, flicker, Color.WHITE, 0);
+	}
+
+	public EntityBuilder addLightComponent(final Vector3 position,
+										   final float intensity,
+										   final float radius,
+										   final Color color,
+										   final float durationInSeconds) {
+		return addLightComponent(position, intensity, radius, false, color, durationInSeconds);
 	}
 
 	public EntityBuilder addLightComponent(final Vector3 position,
 										   final float intensity,
 										   final float radius,
 										   final boolean flicker,
-										   final Color color) {
+										   final Color color,
+										   final float durationInSeconds) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		LightComponent lightComponent = engine.createComponent(LightComponent.class);
 		lightComponent.init(position, intensity, radius, flicker, currentEntity);
 		lightComponent.applyColor(color);
+		lightComponent.applyDuration(durationInSeconds);
 		currentEntity.add(lightComponent);
 		return instance;
 	}
 
-	public EntityBuilder addParticleComponent(final ParticleEffect originalEffect, final Vector3 position) {
+	public EntityBuilder addParticleEffectComponent(final PooledEngine engine,
+													final ParticleEffect originalEffect,
+													final Vector3 position) {
+		return addParticleEffectComponent(engine, originalEffect, position, null);
+	}
+
+	public EntityBuilder addParticleEffectComponent(final PooledEngine engine,
+													final ParticleEffect originalEffect,
+													final Vector3 position,
+													final Entity parent) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		ParticleEffect effect = originalEffect.copy();
 		effect.init();
 		effect.start();
 		ParticleComponent particleComponent = engine.createComponent(ParticleComponent.class);
-		particleComponent.init(effect);
-		Assets.Particles.getParticleSystem().add(effect);
+		if (parent != null) {
+			ParticleEffectParentComponent particleComponentParent;
+			if (!ComponentsMapper.particlesParent.has(parent)) {
+				particleComponentParent = engine.createComponent(ParticleEffectParentComponent.class);
+			} else {
+				particleComponentParent = ComponentsMapper.particlesParent.get(parent);
+			}
+			particleComponentParent.getChildren().add(currentEntity);
+		}
+		particleComponent.init(effect, parent);
+		Assets.ParticleEffects.getParticleSystem().add(effect);
 		effect.translate(position);
 		currentEntity.add(particleComponent);
 		return instance;

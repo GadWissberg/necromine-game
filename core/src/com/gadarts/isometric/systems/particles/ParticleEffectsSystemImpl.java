@@ -1,11 +1,17 @@
 package com.gadarts.isometric.systems.particles;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleController;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
+import com.badlogic.gdx.graphics.g3d.particles.emitters.RegularEmitter;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.ParticleComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -25,7 +31,10 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 		CameraSystemEventsSubscriber,
 		RenderSystemEventsSubscriber {
 
-	private final ArrayList<Entity> auxParticleEntitiesList = new ArrayList<>();
+	private final static Matrix4 auxMatrix = new Matrix4();
+	private final ArrayList<ParticleEffect> particleEffectsToFollow = new ArrayList<>();
+	private final ArrayList<ParticleEffect> particleEffectsToRemove = new ArrayList<>();
+	private final ArrayList<Entity> particleEntitiesToRemove = new ArrayList<>();
 	private ImmutableArray<Entity> particleEntities;
 
 	@Override
@@ -36,10 +45,36 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 
 	@Override
 	public void activate( ) {
-		PointSpriteParticleBatch pointSpriteBatch = Assets.Particles.getPointSpriteParticleBatch();
-		ParticleSystem particleSystem = Assets.Particles.getParticleSystem();
+		PointSpriteParticleBatch pointSpriteBatch = Assets.ParticleEffects.getPointSpriteParticleBatch();
+		ParticleSystem particleSystem = Assets.ParticleEffects.getParticleSystem();
 		particleSystem.add(pointSpriteBatch);
 		particleEntities = getEngine().getEntitiesFor(Family.all(ParticleComponent.class).get());
+		getEngine().addEntityListener(new EntityListener() {
+			@Override
+			public void entityAdded(final Entity entity) {
+
+			}
+
+			@Override
+			public void entityRemoved(final Entity entity) {
+				if (ComponentsMapper.particlesParent.has(entity)) {
+					Array<Entity> children = ComponentsMapper.particlesParent.get(entity).getChildren();
+					for (Entity child : children) {
+						finalizeEffect(child);
+					}
+				} else if (ComponentsMapper.particle.has(entity)) {
+					finalizeEffect(entity);
+					particleEffectsToFollow.add(ComponentsMapper.particle.get(entity).getParticleEffect());
+				}
+			}
+		});
+	}
+
+	private void finalizeEffect(final Entity effect) {
+		for (ParticleController con : ComponentsMapper.particle.get(effect).getParticleEffect().getControllers()) {
+			RegularEmitter emitter = (RegularEmitter) con.emitter;
+			emitter.setContinuous(false);
+		}
 	}
 
 	@Override
@@ -50,7 +85,8 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 
 	@Override
 	public void update(final float deltaTime) {
-		ParticleSystem particleSystem = Assets.Particles.getParticleSystem();
+		updatesEffectsWithParentsAccordingly();
+		ParticleSystem particleSystem = Assets.ParticleEffects.getParticleSystem();
 		particleSystem.update(deltaTime);
 		particleSystem.begin();
 		particleSystem.draw();
@@ -58,24 +94,46 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 		handleCompletedParticleEffects(particleSystem);
 	}
 
-	private void handleCompletedParticleEffects(final ParticleSystem particleSystem) {
-		auxParticleEntitiesList.clear();
-		for (Entity entity : particleEntities) {
-			if (ComponentsMapper.particle.get(entity).getParticleEffect().isComplete()) {
-				particleSystem.remove(ComponentsMapper.particle.get(entity).getParticleEffect());
-				auxParticleEntitiesList.add(entity);
+	private void updatesEffectsWithParentsAccordingly( ) {
+		for (Entity particleEntity : particleEntities) {
+			ParticleComponent particleComponent = ComponentsMapper.particle.get(particleEntity);
+			ParticleEffect particleEffect = particleComponent.getParticleEffect();
+			Entity parent = particleComponent.getParent();
+			if (parent != null && ComponentsMapper.simpleDecal.has(parent)) {
+				particleEffect.setTransform(auxMatrix.idt());
+				particleEffect.translate(ComponentsMapper.simpleDecal.get(parent).getDecal().getPosition());
 			}
 		}
-		for (Entity entity : auxParticleEntitiesList) {
+	}
+
+	private void handleCompletedParticleEffects(final ParticleSystem particleSystem) {
+		for (Entity entity : particleEntities) {
+			ParticleEffect particleEffect = ComponentsMapper.particle.get(entity).getParticleEffect();
+			if (particleEffect.isComplete()) {
+				particleEntitiesToRemove.add(entity);
+			}
+		}
+		for (Entity entity : particleEntitiesToRemove) {
+			particleSystem.remove(ComponentsMapper.particle.get(entity).getParticleEffect());
 			entity.remove(ParticleComponent.class);
 			getEngine().removeEntity(entity);
 		}
+		particleEntitiesToRemove.clear();
+		for (ParticleEffect effect : particleEffectsToFollow) {
+			if (effect.isComplete()) {
+				particleEffectsToRemove.add(effect);
+			}
+		}
+		for (ParticleEffect effect : particleEffectsToRemove) {
+			particleSystem.remove(effect);
+		}
+		particleEffectsToRemove.clear();
 	}
 
 	@Override
 	public void onBeginRenderingParticleEffects(final ModelBatch modelBatch) {
 		RenderSystemEventsSubscriber.super.onBeginRenderingParticleEffects(modelBatch);
-		modelBatch.render(Assets.Particles.getParticleSystem());
+		modelBatch.render(Assets.ParticleEffects.getParticleSystem());
 	}
 
 	@Override

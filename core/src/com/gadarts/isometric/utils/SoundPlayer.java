@@ -49,12 +49,6 @@ public class SoundPlayer {
 		music.stop();
 	}
 
-	public void playRandomSound(final Assets.Sounds... sounds) {
-		if (!isSfxEnabled()) return;
-		int randomSound = random(sounds.length - 1);
-		playSound(sounds[randomSound]);
-	}
-
 	public void playSound(final Assets.Sounds soundDef) {
 		if (!isSfxEnabled()) return;
 		String filePath = getRandomSound(soundDef);

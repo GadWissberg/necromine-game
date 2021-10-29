@@ -64,6 +64,7 @@ public class LightComponent implements GameComponent {
 	}
 
 	public void applyDuration(final float inSeconds) {
+		if (inSeconds <= 0) return;
 		this.duration = inSeconds;
 		this.beginTime = TimeUtils.millis();
 	}

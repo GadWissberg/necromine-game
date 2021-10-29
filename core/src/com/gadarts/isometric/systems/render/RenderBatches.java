@@ -31,7 +31,7 @@ public class RenderBatches implements Disposable {
 		this.decalBatch = new DecalBatch(DECALS_POOL_SIZE, groupStrategy);
 		this.shadowBatch = new ModelBatch(new DepthShaderProvider());
 		this.spriteBatch = new SpriteBatch();
-		Assets.Particles.getPointSpriteParticleBatch().setCamera(camera);
+		Assets.ParticleEffects.getPointSpriteParticleBatch().setCamera(camera);
 	}
 
 	@Override

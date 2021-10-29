@@ -46,11 +46,22 @@ import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.Assets.Sounds;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.assets.MapJsonKeys;
-import com.gadarts.necromine.model.*;
-import com.gadarts.necromine.model.characters.*;
+import com.gadarts.necromine.model.Coords;
+import com.gadarts.necromine.model.RelativeBillboard;
+import com.gadarts.necromine.model.characters.CharacterDefinition;
+import com.gadarts.necromine.model.characters.CharacterTypes;
+import com.gadarts.necromine.model.characters.Direction;
+import com.gadarts.necromine.model.characters.SpriteType;
 import com.gadarts.necromine.model.characters.attributes.Accuracy;
 import com.gadarts.necromine.model.characters.attributes.Agility;
 import com.gadarts.necromine.model.characters.attributes.Strength;
+import com.gadarts.necromine.model.characters.enemies.Enemies;
+import com.gadarts.necromine.model.characters.enemies.EnemyWeaponsDefinitions;
+import com.gadarts.necromine.model.env.EnvironmentDefinitions;
+import com.gadarts.necromine.model.map.MapNodeData;
+import com.gadarts.necromine.model.map.MapNodesTypes;
+import com.gadarts.necromine.model.map.NodeWalls;
+import com.gadarts.necromine.model.map.Wall;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -70,7 +81,6 @@ import static com.gadarts.necromine.assets.MapJsonKeys.*;
 import static com.gadarts.necromine.model.characters.CharacterTypes.*;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
 import static com.gadarts.necromine.model.characters.Direction.SOUTH;
-import static com.gadarts.necromine.model.characters.EnemyWeaponsDefinitions.ENERGY_BALL;
 import static java.lang.String.format;
 
 /**
@@ -683,7 +693,9 @@ public final class MapBuilder implements Disposable {
 		int skill = 2;
 		Animation<AtlasRegion> bulletAnimation = enemyBulletsTextureRegions.get(type);
 		if (type.getPrimaryAttack() != null && !enemyBulletsTextureRegions.containsKey(type)) {
-			bulletAnimation = new Animation<>(type.getPrimaryAttack().getFrameDuration(), assetManager.getAtlas(ANUBIS).findRegions(ENERGY_BALL.name().toLowerCase()));
+			String name = EnemyWeaponsDefinitions.ENERGY_BALL.name().toLowerCase();
+			Array<AtlasRegion> regions = assetManager.getAtlas(ANUBIS).findRegions(name);
+			bulletAnimation = new Animation<>(type.getPrimaryAttack().getFrameDuration(), regions);
 			enemyBulletsTextureRegions.put(type, bulletAnimation);
 		}
 		EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine).addEnemyComponent(type, skill, bulletAnimation);

@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.GameComponent;
-import com.gadarts.necromine.model.characters.Enemies;
+import com.gadarts.necromine.model.characters.enemies.Enemies;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,7 +1,7 @@
 package com.gadarts.isometric.components;
 
 import com.badlogic.gdx.math.Vector2;
-import com.gadarts.necromine.model.EnvironmentDefinitions;
+import com.gadarts.necromine.model.env.EnvironmentDefinitions;
 import lombok.Getter;
 
 @Getter

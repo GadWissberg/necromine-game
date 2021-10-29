@@ -76,7 +76,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@Override
 	public void activate( ) {
 		this.graphData = new CharacterSystemGraphData(services.getMapService().getMap());
-		bloodSplatterEffect = services.getAssetManager().getParticleEffect(Assets.Particles.BLOOD_SPLATTER);
+		bloodSplatterEffect = services.getAssetManager().getParticleEffect(Assets.ParticleEffects.BLOOD_SPLATTER);
 		commandsHandler = new CommandsHandler(graphData, subscribers, services.getSoundPlayer(), services.getMapService().getMap());
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCharacterSystemReady(this);
@@ -273,14 +273,14 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		CharacterComponent characterComponent = ComponentsMapper.character.get(attacked);
 		characterComponent.dealDamage(damage);
 		handleDeath(attacked);
-		addSplatterEffect(attacked);
-	}
-
-	private void addSplatterEffect(final Entity attacked) {
 		Vector3 pos = ComponentsMapper.characterDecal.get(attacked).getNodePosition(auxVector3_1);
 		float height = calculateSplatterEffectHeight(attacked, pos);
+		addSplatterEffect(auxVector3_1.set(pos.x + 0.5F, height, pos.z + 0.5F));
+	}
+
+	private void addSplatterEffect(final Vector3 pos) {
 		EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
-				.addParticleComponent(bloodSplatterEffect, auxVector3_1.set(pos.x + 0.5F, height, pos.z + 0.5F))
+				.addParticleEffectComponent((PooledEngine) getEngine(), bloodSplatterEffect, pos)
 				.finishAndAddToEngine();
 	}
 
@@ -464,6 +464,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@Override
 	public void onProjectileCollisionWithAnotherEntity(final Entity bullet, final Entity collidable) {
 		if (ComponentsMapper.character.has(collidable)) {
+			addSplatterEffect(ComponentsMapper.simpleDecal.get(bullet).getDecal().getPosition());
 			applyDamageToCharacter(collidable, ComponentsMapper.bullet.get(bullet).getDamage());
 		}
 	}

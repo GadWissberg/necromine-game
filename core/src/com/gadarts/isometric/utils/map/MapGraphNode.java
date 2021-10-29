@@ -5,7 +5,7 @@ import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.gadarts.necromine.model.MapNodesTypes;
+import com.gadarts.necromine.model.map.MapNodesTypes;
 import lombok.Getter;
 import lombok.Setter;
 

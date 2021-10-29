@@ -1,6 +1,6 @@
 package com.gadarts.isometric.components;
 
-import com.gadarts.necromine.model.MapNodeData;
+import com.gadarts.necromine.model.map.MapNodeData;
 import lombok.Getter;
 
 @Getter
