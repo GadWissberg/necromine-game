@@ -18,10 +18,12 @@ public class PickUpAction implements ToDoAfterDestinationReached {
 					final Object itemToPickup) {
 		Vector2 charPos = ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2);
 		Entity pickup = map.getPickupFromNode(map.getNode(charPos));
+		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		if (pickup != null) {
-			CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 			characterComponent.getRotationData().setRotating(true);
 			characterComponent.setMotivation(CharacterMotivation.TO_PICK_UP, itemToPickup);
+		} else {
+			characterComponent.setMotivation(CharacterMotivation.END_MY_TURN, itemToPickup);
 		}
 	}
 }

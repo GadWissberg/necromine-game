@@ -71,7 +71,7 @@ public class UniformsLocationsHandler {
 		locations.put(UNIFORM_MODEL_DEPTH, program.getUniformLocation(UNIFORM_MODEL_DEPTH));
 	}
 
-	public int getLocation(String uniform) {
+	public int getLocation(final String uniform) {
 		return locations.get(uniform);
 	}
 }

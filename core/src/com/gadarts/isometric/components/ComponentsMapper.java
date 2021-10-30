@@ -7,6 +7,9 @@ import com.gadarts.isometric.components.decal.SimpleDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.PlayerComponent;
 
+/**
+ * Easy to access component mappers.
+ */
 public class ComponentsMapper {
 	public static final ComponentMapper<ModelInstanceComponent> modelInstance = ComponentMapper.getFor(ModelInstanceComponent.class);
 	public static final ComponentMapper<CursorComponent> cursor = ComponentMapper.getFor(CursorComponent.class);

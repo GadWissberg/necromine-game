@@ -17,7 +17,7 @@ public class MapGraphRelatedEntities {
 	private final ImmutableArray<Entity> enemiesEntities;
 	private final ImmutableArray<Entity> obstaclesEntities;
 
-	public MapGraphRelatedEntities(PooledEngine engine) {
+	public MapGraphRelatedEntities(final PooledEngine engine) {
 		this.pickupEntities = engine.getEntitiesFor(Family.all(PickUpComponent.class).get());
 		this.characterEntities = engine.getEntitiesFor(Family.all(CharacterComponent.class).get());
 		this.enemiesEntities = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());

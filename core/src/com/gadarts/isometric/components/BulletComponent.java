@@ -13,7 +13,7 @@ public class BulletComponent implements GameComponent {
 	private final Vector2 initialPosition = new Vector2();
 
 	@Getter(AccessLevel.NONE)
-	private Vector3 direction = new Vector3();
+	private final Vector3 direction = new Vector3();
 
 	private Entity owner;
 	private Integer damage;

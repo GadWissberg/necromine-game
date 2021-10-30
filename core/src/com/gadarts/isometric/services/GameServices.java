@@ -133,7 +133,7 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable, Servic
 
 	public void init( ) {
 		soundPlayer.playMusic(Assets.Melody.TEST);
-		soundPlayer.playSound(Assets.Sounds.AMB_WIND);
+		soundPlayer.playSound(Assets.Sounds.AMB_WIND, 0.5F);
 	}
 
 	@Override

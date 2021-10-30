@@ -4,10 +4,21 @@ import com.gadarts.isometric.systems.hud.console.Console;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandParameter;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandImpl;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
+import com.gadarts.isometric.systems.render.DrawFlags;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class SkipRenderCommand extends ConsoleCommandImpl {
+	private static final Map<String, DrawFlagSet> map = new HashMap<>();
+
+	public static Map<String, DrawFlagSet> getMap( ) {
+		return map;
+	}
+
 	@Override
-	protected ConsoleCommandsList getCommandEnumValue() {
+	protected ConsoleCommandsList getCommandEnumValue( ) {
 		return ConsoleCommandsList.SKIP_RENDER;
 	}
 
@@ -15,8 +26,8 @@ public class SkipRenderCommand extends ConsoleCommandImpl {
 
 		public static final String ALIAS = "ground";
 
-		public GroundParameter() {
-			super(DESCRIPTION, ALIAS);
+		public GroundParameter( ) {
+			super(DESCRIPTION, ALIAS, DrawFlags::setDrawGround);
 		}
 
 	}
@@ -25,8 +36,8 @@ public class SkipRenderCommand extends ConsoleCommandImpl {
 
 		public static final String ALIAS = "enemy";
 
-		public EnemyParameter() {
-			super(DESCRIPTION, ALIAS);
+		public EnemyParameter( ) {
+			super(DESCRIPTION, ALIAS, DrawFlags::setDrawEnemy);
 		}
 
 	}
@@ -35,8 +46,8 @@ public class SkipRenderCommand extends ConsoleCommandImpl {
 
 		public static final String ALIAS = "env";
 
-		public EnvironmentObjectParameter() {
-			super(DESCRIPTION, ALIAS);
+		public EnvironmentObjectParameter( ) {
+			super(DESCRIPTION, ALIAS, DrawFlags::setDrawEnv);
 		}
 
 	}
@@ -45,8 +56,8 @@ public class SkipRenderCommand extends ConsoleCommandImpl {
 
 		public static final String ALIAS = "cursor";
 
-		public CursorParameter() {
-			super(DESCRIPTION, ALIAS);
+		public CursorParameter( ) {
+			super(DESCRIPTION, ALIAS, DrawFlags::setDrawCursor);
 		}
 
 	}
@@ -55,7 +66,7 @@ public class SkipRenderCommand extends ConsoleCommandImpl {
 
 		public static final String ALIAS = "fow";
 
-		public FowParameter() {
+		public FowParameter( ) {
 			super(DESCRIPTION, ALIAS);
 		}
 
@@ -65,7 +76,12 @@ public class SkipRenderCommand extends ConsoleCommandImpl {
 		public static final String DESCRIPTION = "0 - Renders as normal. 1 - Skips.";
 
 		public SkipRenderCommandParameter(final String description, final String alias) {
+			this(description, alias, null);
+		}
+
+		public SkipRenderCommandParameter(final String description, final String alias, final DrawFlagSet drawFlagSet) {
 			super(description, alias);
+			Optional.ofNullable(drawFlagSet).ifPresent(set -> map.put(alias, set));
 		}
 
 		@Override

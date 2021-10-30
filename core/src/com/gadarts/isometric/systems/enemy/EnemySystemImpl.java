@@ -102,7 +102,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		for (Entity enemy : enemies) {
 			int hp = ComponentsMapper.character.get(enemy).getSkills().getHealthData().getHp();
 			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
-			if (enemyComponent.getLastTurn() < currentTurnId) {
+			if (enemyComponent.getTimeStamps().getLastTurn() < currentTurnId) {
 				if (hp > 0 && enemyComponent.isAwaken()) {
 					invokeEnemyTurn(enemy);
 					return true;
@@ -142,7 +142,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	private boolean checkIfPrimaryAttackIsReady(final EnemyComponent enemyComponent, final int turnsDiff) {
-		return turnsSystem.getCurrentTurnId() - enemyComponent.getLastPrimaryAttack() > turnsDiff;
+		return turnsSystem.getCurrentTurnId() - enemyComponent.getTimeStamps().getLastPrimaryAttack() > turnsDiff;
 	}
 
 	private void applyCommand(final Entity enemy, final CharacterCommands attackPrimary) {
@@ -181,9 +181,9 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			long currentTurnId = turnsSystem.getCurrentTurnId();
 			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(character);
 			if (executedCommand != null && executedCommand.getType() == CharacterCommands.ATTACK_PRIMARY) {
-				enemyComponent.setLastPrimaryAttack(currentTurnId);
+				enemyComponent.getTimeStamps().setLastPrimaryAttack(currentTurnId);
 			}
-			enemyComponent.setLastTurn(currentTurnId);
+			enemyComponent.getTimeStamps().setLastTurn(currentTurnId);
 			onEnemyTurn(currentTurnId);
 		}
 	}

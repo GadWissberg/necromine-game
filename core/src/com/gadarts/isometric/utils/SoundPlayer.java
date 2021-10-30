@@ -50,14 +50,18 @@ public class SoundPlayer {
 	}
 
 	public void playSound(final Assets.Sounds soundDef) {
+		playSound(soundDef, 1F);
+	}
+
+	public void playSound(final Assets.Sounds soundDef, final float volume) {
 		if (!isSfxEnabled()) return;
 		String filePath = getRandomSound(soundDef);
 		boolean randomPitch = soundDef.isRandomPitch();
 		float pitch = 1 + (randomPitch ? (randomBoolean() ? 1 : -1) : 0) * random(-PITCH_OFFSET, PITCH_OFFSET);
 		if (!soundDef.isLoop()) {
-			assetManager.getSound(filePath).play(1F, pitch, 0);
+			assetManager.getSound(filePath).play(volume, pitch, 0);
 		} else {
-			assetManager.getSound(filePath).loop(1F, 1, 0);
+			assetManager.getSound(filePath).loop(volume, 1, 0);
 		}
 	}
 

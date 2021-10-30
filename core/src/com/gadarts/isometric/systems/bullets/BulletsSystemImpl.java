@@ -45,15 +45,15 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	private final static float BULLET_MAX_DISTANCE = 10;
 	private final static float CHAR_RAD = 0.3f;
 	private final static float OBST_RAD = 0.5f;
-	private static final float PROJECTILE_LIGHT_INTENSITY = 0.2F;
-	private static final float PROJECTILE_LIGHT_RADIUS = 2F;
-	private static final Color PROJECTILE_LIGHT_COLOR = Color.valueOf("#8396FF");
-	private static final Bresenham2 bresenham = new Bresenham2();
-	private static final float HIT_SCAN_MAX_DISTANCE = 5;
-	private static final float PROJECTILE_RELATIVE_HEIGHT = 0.5F;
-	private static final float BULLET_EXPLOSION_LIGHT_INTENSITY = 0.3F;
-	private static final float BULLET_EXPLOSION_LIGHT_DURATION = 0.2F;
-	private static final float BULLET_EXPLOSION_LIGHT_RADIUS = 1F;
+	private final static float PROJECTILE_LIGHT_INTENSITY = 0.2F;
+	private final static float PROJECTILE_LIGHT_RADIUS = 2F;
+	private final static Color PROJECTILE_LIGHT_COLOR = Color.valueOf("#8396FF");
+	private final static Bresenham2 bresenham = new Bresenham2();
+	private final static float HIT_SCAN_MAX_DISTANCE = 10F;
+	private final static float PROJECTILE_RELATIVE_HEIGHT = 0.5F;
+	private final static float BULLET_EXPLOSION_LIGHT_INTENSITY = 0.3F;
+	private final static float BULLET_EXPLOSION_LIGHT_DURATION = 0.2F;
+	private final static float BULLET_EXPLOSION_LIGHT_RADIUS = 1F;
 	private ImmutableArray<Entity> bullets;
 	private ImmutableArray<Entity> collidables;
 
@@ -69,29 +69,61 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 		if (ComponentsMapper.enemy.has(character)) {
 			enemyEngagesPrimaryAttack(character, direction, charPos);
 		} else {
-			Weapon selectedWeapon = ComponentsMapper.player.get(character).getStorage().getSelectedWeapon();
-			if (selectedWeapon.isHitScan()) {
-				MapGraph map = services.getMapService().getMap();
-				MapGraphNode posNode = map.getNode(ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector3_1));
-				Vector3 posNodeCenterPosition = posNode.getCenterPosition(auxVector3_4);
-				int maxAngle = ComponentsMapper.character.get(character).getSkills().getAccuracy().getMaxAngle();
-				direction.rotate(Vector3.Y, MathUtils.random(-maxAngle, maxAngle));
-				Vector3 step = auxVector3_3.setZero().add(direction.setLength(HIT_SCAN_MAX_DISTANCE));
-				Vector3 maxRangePos = auxVector3_2.set(posNodeCenterPosition).add(step);
-				Array<GridPoint2> nodes = bresenham.line((int) posNodeCenterPosition.x, (int) posNodeCenterPosition.z, (int) maxRangePos.x, (int) maxRangePos.z);
-				for (GridPoint2 n : nodes) {
-					MapGraphNode node = map.getNode(n.x, n.y);
-					if (node.getHeight() > map.getNode((int) posNodeCenterPosition.x, (int) posNodeCenterPosition.z).getHeight() + 1) {
-						break;
-					}
-					Entity enemy = map.getAliveEnemyFromNode(node);
-					if (enemy != null) {
-						onHitScanCollisionWithAnotherEntity((WeaponsDefinitions) selectedWeapon.getDefinition(), enemy);
-						break;
-					}
-				}
+			playerEngagesPrimaryAttack(character, direction);
+		}
+	}
+
+	private void playerEngagesPrimaryAttack(final Entity character, final Vector3 direction) {
+		Weapon selectedWeapon = ComponentsMapper.player.get(character).getStorage().getSelectedWeapon();
+		if (selectedWeapon.isHitScan()) {
+			playerEngagesHitScanAttack(character, direction, selectedWeapon);
+		}
+	}
+
+	private void playerEngagesHitScanAttack(final Entity character, final Vector3 direction, final Weapon selectedWeapon) {
+		MapGraph map = services.getMapService().getMap();
+		MapGraphNode posNode = map.getNode(ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector3_1));
+		Vector3 posNodeCenterPos = posNode.getCenterPosition(auxVector3_4);
+		affectAimByAccuracy(character, direction);
+		Array<GridPoint2> nodes = findAllNodesOnTheWayOfTheHitScan(posNodeCenterPos, direction);
+		for (GridPoint2 node : nodes) {
+			if (applyHitScanThroughNodes(selectedWeapon, map, posNodeCenterPos, node)) {
+				return;
 			}
 		}
+	}
+
+	private boolean applyHitScanThroughNodes(final Weapon selectedWeapon,
+											 final MapGraph map,
+											 final Vector3 posNodeCenterPos,
+											 final GridPoint2 n) {
+		MapGraphNode node = map.getNode(n.x, n.y);
+		if (node.getHeight() > map.getNode((int) posNodeCenterPos.x, (int) posNodeCenterPos.z).getHeight() + 1) {
+			return true;
+		}
+		Entity enemy = map.getAliveEnemyFromNode(node);
+		if (enemy != null) {
+			onHitScanCollisionWithAnotherEntity((WeaponsDefinitions) selectedWeapon.getDefinition(), enemy);
+			return true;
+		}
+		return false;
+	}
+
+	private Array<GridPoint2> findAllNodesOnTheWayOfTheHitScan(final Vector3 posNodeCenterPos, final Vector3 direction) {
+		Vector3 maxRangePos = calculateHitScanMaxPosition(direction, posNodeCenterPos);
+		return bresenham.line(
+				(int) posNodeCenterPos.x, (int) posNodeCenterPos.z,
+				(int) maxRangePos.x, (int) maxRangePos.z);
+	}
+
+	private Vector3 calculateHitScanMaxPosition(final Vector3 direction, final Vector3 posNodeCenterPosition) {
+		Vector3 step = auxVector3_3.setZero().add(direction.setLength(HIT_SCAN_MAX_DISTANCE));
+		return auxVector3_2.set(posNodeCenterPosition).add(step);
+	}
+
+	private void affectAimByAccuracy(final Entity character, final Vector3 direction) {
+		int maxAngle = ComponentsMapper.character.get(character).getSkills().getAccuracy().getMaxAngle();
+		direction.rotate(Vector3.Y, MathUtils.random(-maxAngle, maxAngle));
 	}
 
 	private void enemyEngagesPrimaryAttack(final Entity character, final Vector3 direction, final Vector3 charPos) {

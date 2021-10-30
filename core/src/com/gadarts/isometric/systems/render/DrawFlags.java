@@ -1,10 +1,13 @@
 package com.gadarts.isometric.systems.render;
 
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandParameter;
+import com.gadarts.isometric.systems.hud.console.commands.types.DrawFlagSet;
 import com.gadarts.isometric.systems.hud.console.commands.types.SkipRenderCommand;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Map;
 
 @Getter
 @Setter
@@ -17,11 +20,9 @@ public class DrawFlags {
 	void applySkipRenderCommand(final ConsoleCommandParameter parameter) {
 		String alias = parameter.getAlias();
 		boolean value = !parameter.getParameterValue();
-		switch (alias) {
-			case SkipRenderCommand.GroundParameter.ALIAS -> setDrawGround(value);
-			case SkipRenderCommand.EnemyParameter.ALIAS -> setDrawEnemy(value);
-			case SkipRenderCommand.EnvironmentObjectParameter.ALIAS -> setDrawEnv(value);
-			case SkipRenderCommand.CursorParameter.ALIAS -> setDrawCursor(value);
+		Map<String, DrawFlagSet> map = SkipRenderCommand.getMap();
+		if (map.containsKey(alias)) {
+			map.get(alias).run(this, value);
 		}
 	}
 }

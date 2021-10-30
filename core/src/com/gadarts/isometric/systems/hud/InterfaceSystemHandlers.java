@@ -59,7 +59,7 @@ public class InterfaceSystemHandlers implements Disposable {
 		cursorHandler.handleCursorFlicker(deltaTime);
 	}
 
-	public void initializeCursorHandler(final GameStage stage, Engine engine) {
+	public void initializeCursorHandler(final GameStage stage, final Engine engine) {
 		cursorHandler = new CursorHandler(stage);
 		getCursorHandler().init(engine);
 	}

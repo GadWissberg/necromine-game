@@ -18,7 +18,7 @@ public interface RenderSystemEventsSubscriber extends SystemEventsSubscriber {
 
 	}
 
-	default void onBeginRenderingParticleEffects(ModelBatch modelBatch) {
+	default void onBeginRenderingParticleEffects(final ModelBatch modelBatch) {
 
 	}
 }
