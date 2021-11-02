@@ -19,7 +19,6 @@ import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystem;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
-import com.gadarts.necromine.assets.Assets;
 
 import java.util.ArrayList;
 
@@ -36,6 +35,8 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 	private final ArrayList<ParticleEffect> particleEffectsToRemove = new ArrayList<>();
 	private final ArrayList<Entity> particleEntitiesToRemove = new ArrayList<>();
 	private ImmutableArray<Entity> particleEntities;
+	private ParticleSystem particleSystem;
+	private PointSpriteParticleBatch pointSpriteBatch;
 
 	@Override
 	public void onRenderSystemReady(final RenderSystem renderSystem) {
@@ -45,8 +46,10 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 
 	@Override
 	public void activate( ) {
-		PointSpriteParticleBatch pointSpriteBatch = Assets.ParticleEffects.getPointSpriteParticleBatch();
-		ParticleSystem particleSystem = Assets.ParticleEffects.getParticleSystem();
+		pointSpriteBatch = new PointSpriteParticleBatch();
+		subscribers.forEach(sub -> sub.onParticleEffectsSystemReady(pointSpriteBatch));
+		particleSystem = new ParticleSystem();
+		services.getAssetManager().loadParticleEffects(pointSpriteBatch);
 		particleSystem.add(pointSpriteBatch);
 		particleEntities = getEngine().getEntitiesFor(Family.all(ParticleComponent.class).get());
 		getEngine().addEntityListener(new EntityListener() {
@@ -86,7 +89,6 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 	@Override
 	public void update(final float deltaTime) {
 		updatesEffectsWithParentsAccordingly();
-		ParticleSystem particleSystem = Assets.ParticleEffects.getParticleSystem();
 		particleSystem.update(deltaTime);
 		particleSystem.begin();
 		particleSystem.draw();
@@ -133,7 +135,7 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 	@Override
 	public void onBeginRenderingParticleEffects(final ModelBatch modelBatch) {
 		RenderSystemEventsSubscriber.super.onBeginRenderingParticleEffects(modelBatch);
-		modelBatch.render(Assets.ParticleEffects.getParticleSystem());
+		modelBatch.render(particleSystem);
 	}
 
 	@Override

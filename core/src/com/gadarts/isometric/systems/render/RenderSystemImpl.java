@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
+import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
@@ -39,6 +40,7 @@ import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
 import com.gadarts.isometric.systems.hud.console.ConsoleEventsSubscriber;
 import com.gadarts.isometric.systems.hud.console.commands.ConsoleCommandsList;
+import com.gadarts.isometric.systems.particles.ParticleEffectsSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
@@ -64,6 +66,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		InterfaceSystemEventsSubscriber,
 		PlayerSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
+		ParticleEffectsSystemEventsSubscriber,
 		EventsNotifier<RenderSystemEventsSubscriber>,
 		ConsoleEventsSubscriber {
 
@@ -413,8 +416,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		addSystem(CameraSystem.class, cameraSystem);
 		camera = cameraSystem.getCamera();
 		environment = new WorldEnvironment(services.getMapService().getMap().getAmbient(), camera);
-		GameAssetsManager assetManager = services.getAssetManager();
-		this.renderBatches = new RenderBatches(camera, assetManager, services.getMapService().getMap());
 		environment.initialize(getEngine().getEntitiesFor(Family.all(LightComponent.class).get()));
 		systemReady();
 	}
@@ -455,22 +456,22 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	@Override
-	public int getNumberOfModelInstances() {
+	public int getNumberOfModelInstances( ) {
 		return renderSystemRelatedEntities.getModelInstanceEntities().size();
 	}
 
 	@Override
-	public DrawFlags getDrawFlags() {
+	public DrawFlags getDrawFlags( ) {
 		return drawFlags;
 	}
 
 	@Override
-	public RenderBatches getRenderBatches() {
+	public RenderBatches getRenderBatches( ) {
 		return renderBatches;
 	}
 
 	@Override
-	public void onConsoleActivated() {
+	public void onConsoleActivated( ) {
 
 	}
 
@@ -524,5 +525,15 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	@Override
 	public void onConsoleDeactivated( ) {
 
+	}
+
+	@Override
+	public void onParticleEffectsSystemReady(final PointSpriteParticleBatch pointSpriteBatch) {
+		GameAssetsManager assetManager = services.getAssetManager();
+		this.renderBatches = new RenderBatches(
+				camera,
+				assetManager,
+				services.getMapService().getMap(),
+				pointSpriteBatch);
 	}
 }
