@@ -27,7 +27,7 @@ import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocation
  */
 public class MainShader extends DefaultShader {
 
-	private static final int MAX_LIGHTS = 8;
+	private static final int MAX_LIGHTS = 16;
 	private static final int LIGHT_EXTRA_DATA_SIZE = 3;
 	private static final Vector3 auxVector = new Vector3();
 	private static final int MODEL_MAX_SIZE = 4 * 4;

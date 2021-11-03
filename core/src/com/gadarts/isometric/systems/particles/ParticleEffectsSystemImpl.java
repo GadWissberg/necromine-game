@@ -36,7 +36,7 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 	private final ArrayList<Entity> particleEntitiesToRemove = new ArrayList<>();
 	private ImmutableArray<Entity> particleEntities;
 	private ParticleSystem particleSystem;
-	private PointSpriteParticleBatch pointSpriteBatch;
+	private static PointSpriteParticleBatch pointSpriteBatch;
 
 	@Override
 	public void onRenderSystemReady(final RenderSystem renderSystem) {
@@ -46,16 +46,23 @@ public class ParticleEffectsSystemImpl extends GameEntitySystem<ParticleEffectsS
 
 	@Override
 	public void activate( ) {
-		pointSpriteBatch = new PointSpriteParticleBatch();
-		subscribers.forEach(sub -> sub.onParticleEffectsSystemReady(pointSpriteBatch));
+		if (pointSpriteBatch == null) {
+			pointSpriteBatch = new PointSpriteParticleBatch();
+		}
 		particleSystem = new ParticleSystem();
-		services.getAssetManager().loadParticleEffects(pointSpriteBatch);
 		particleSystem.add(pointSpriteBatch);
+		services.getAssetManager().loadParticleEffects(pointSpriteBatch);
+		subscribers.forEach(sub -> sub.onParticleEffectsSystemReady(pointSpriteBatch));
 		particleEntities = getEngine().getEntitiesFor(Family.all(ParticleComponent.class).get());
 		getEngine().addEntityListener(new EntityListener() {
 			@Override
 			public void entityAdded(final Entity entity) {
-
+				if (ComponentsMapper.particle.has(entity)) {
+					ParticleEffect effect = ComponentsMapper.particle.get(entity).getParticleEffect();
+					effect.init();
+					effect.start();
+					particleSystem.add(effect);
+				}
 			}
 
 			@Override

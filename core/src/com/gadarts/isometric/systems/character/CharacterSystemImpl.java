@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
+import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -25,6 +26,7 @@ import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.bullets.BulletsSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.commands.CharacterCommand;
 import com.gadarts.isometric.systems.character.commands.CommandsHandler;
+import com.gadarts.isometric.systems.particles.ParticleEffectsSystemEventsSubscriber;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
@@ -51,6 +53,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		implements RenderSystemEventsSubscriber,
 		CharacterSystem,
 		PickupSystemEventsSubscriber,
+		ParticleEffectsSystemEventsSubscriber,
 		BulletsSystemEventsSubscriber {
 
 	private static final Vector3 auxVector3_1 = new Vector3();
@@ -76,7 +79,6 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@Override
 	public void activate( ) {
 		this.graphData = new CharacterSystemGraphData(services.getMapService().getMap());
-		bloodSplatterEffect = services.getAssetManager().getParticleEffect(Assets.ParticleEffects.BLOOD_SPLATTER);
 		commandsHandler = new CommandsHandler(graphData, subscribers, services.getSoundPlayer(), services.getMapService().getMap());
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onCharacterSystemReady(this);
@@ -464,4 +466,8 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		}
 	}
 
+	@Override
+	public void onParticleEffectsSystemReady(PointSpriteParticleBatch pointSpriteBatch) {
+		bloodSplatterEffect = services.getAssetManager().getParticleEffect(Assets.ParticleEffects.BLOOD_SPLATTER);
+	}
 }

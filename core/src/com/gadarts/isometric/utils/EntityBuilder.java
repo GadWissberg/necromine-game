@@ -25,7 +25,6 @@ import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.components.player.Item;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
-import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
 import com.gadarts.necromine.model.characters.enemies.Enemies;
@@ -336,8 +335,6 @@ public final class EntityBuilder {
 													final Entity parent) {
 		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
 		ParticleEffect effect = originalEffect.copy();
-		effect.init();
-		effect.start();
 		ParticleComponent particleComponent = engine.createComponent(ParticleComponent.class);
 		if (parent != null) {
 			ParticleEffectParentComponent particleComponentParent;
@@ -349,7 +346,6 @@ public final class EntityBuilder {
 			particleComponentParent.getChildren().add(currentEntity);
 		}
 		particleComponent.init(effect, parent);
-		Assets.ParticleEffects.getParticleSystem().add(effect);
 		effect.translate(position);
 		currentEntity.add(particleComponent);
 		return instance;
