@@ -44,6 +44,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private static final float MENU_CAMERA_ROTATION = 0.1F;
 	private static final float EXTRA_LEVEL_PADDING = 16;
 	private static final float[] MENU_CAMERA_POSITION = {14, CAMERA_HEIGHT, 20};
+	private static final float INITIAL_CAMERA_ANGLE_AROUND_Y = 80;
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
 	private boolean rotateCamera;
@@ -101,7 +102,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 		Vector2 nodePosition = ComponentsMapper.characterDecal.get(player).getNodePosition(auxVector2_1);
 		camera.position.set(nodePosition.x + START_OFFSET, CAMERA_HEIGHT, nodePosition.y + START_OFFSET);
 		camera.direction.rotate(Vector3.X, -45);
-		camera.direction.rotate(Vector3.Y, 45);
+		camera.direction.rotate(Vector3.Y, INITIAL_CAMERA_ANGLE_AROUND_Y);
 		camera.update();
 	}
 

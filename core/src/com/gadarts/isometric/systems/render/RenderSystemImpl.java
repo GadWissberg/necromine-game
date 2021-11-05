@@ -315,30 +315,32 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			}
 		} else {
 			if (ComponentsMapper.animation.has(entity)) {
-				TextureAtlas.AtlasRegion currentFrame = (TextureAtlas.AtlasRegion) decal.getTextureRegion();
-				TextureAtlas.AtlasRegion newFrame = animationComponent.calculateFrame();
-				if (currentFrame.index != newFrame.index) {
-					for (RenderSystemEventsSubscriber subscriber : subscribers) {
-						subscriber.onFrameChanged(entity, deltaTime, newFrame);
-					}
-				}
-				if (characterDecalComponent.getSpriteType() == spriteType && currentFrame != newFrame) {
-					decal.setTextureRegion(newFrame);
-					CharacterAnimation southAnimation = null;
-					Direction facingDirection = characterSpriteData.getFacingDirection();
-					if (spriteType.isSingleAnimation()) {
-						facingDirection = Direction.SOUTH;
-					}
-					if (animations.contains(spriteType)) {
-						southAnimation = animations.get(spriteType, facingDirection);
-					} else {
-						if (ComponentsMapper.player.has(entity)) {
-							CharacterAnimations generalAnim = ComponentsMapper.player.get(entity).getGeneralAnimations();
-							southAnimation = generalAnim.get(spriteType, facingDirection);
+				if (animationComponent.getAnimation() != null) {
+					TextureAtlas.AtlasRegion currentFrame = (TextureAtlas.AtlasRegion) decal.getTextureRegion();
+					TextureAtlas.AtlasRegion newFrame = animationComponent.calculateFrame();
+					if (currentFrame.index != newFrame.index) {
+						for (RenderSystemEventsSubscriber subscriber : subscribers) {
+							subscriber.onFrameChanged(entity, deltaTime, newFrame);
 						}
 					}
-					if (southAnimation != null && !characterSpriteData.getSpriteType().isDeath()) {
-						shadowDecal.setTextureRegion(southAnimation.getKeyFrames()[max(newFrame.index, 0)]);
+					if (characterDecalComponent.getSpriteType() == spriteType && currentFrame != newFrame) {
+						decal.setTextureRegion(newFrame);
+						CharacterAnimation southAnimation = null;
+						Direction facingDirection = characterSpriteData.getFacingDirection();
+						if (spriteType.isSingleAnimation()) {
+							facingDirection = Direction.SOUTH;
+						}
+						if (animations.contains(spriteType)) {
+							southAnimation = animations.get(spriteType, facingDirection);
+						} else {
+							if (ComponentsMapper.player.has(entity)) {
+								CharacterAnimations generalAnim = ComponentsMapper.player.get(entity).getGeneralAnimations();
+								southAnimation = generalAnim.get(spriteType, facingDirection);
+							}
+						}
+						if (southAnimation != null && !characterSpriteData.getSpriteType().isDeath()) {
+							shadowDecal.setTextureRegion(southAnimation.getKeyFrames()[max(newFrame.index, 0)]);
+						}
 					}
 				}
 			}

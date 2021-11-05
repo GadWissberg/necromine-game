@@ -53,7 +53,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final MapGraphPath auxPath = new MapGraphPath();
 	private static final CharacterCommand auxCommand = new CharacterCommand();
-	private static final float MAX_SIGHT = 7;
+	private static final float MAX_SIGHT = 11;
 	private static final float ENEMY_HALF_FOV_ANGLE = 75F;
 	private static final int NUMBER_OF_SKILL_FLOWER_LEAF = 8;
 	private static final Bresenham2 bresenham = new Bresenham2();
