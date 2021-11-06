@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
+import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.BulletComponent;
@@ -20,6 +21,7 @@ import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
+import com.gadarts.isometric.systems.particles.ParticleEffectsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
@@ -34,20 +36,29 @@ import static com.badlogic.gdx.math.Vector3.Zero;
 /**
  * Handles weapons bullets behaviour.
  */
-public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubscriber> implements BulletSystem, CharacterSystemEventsSubscriber {
+public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubscriber> implements
+		BulletSystem,
+		CharacterSystemEventsSubscriber, ParticleEffectsSystemEventsSubscriber {
 
 	private final static Vector2 auxVector2_1 = new Vector2();
+	private final static Vector2 auxVector2_2 = new Vector2();
+	private final static Vector2 auxVector2_3 = new Vector2();
+	private final static Vector2 auxVector2_4 = new Vector2();
+	private final static Vector2 auxVector2_5 = new Vector2();
 	private final static Vector3 auxVector3_1 = new Vector3();
 	private final static Vector3 auxVector3_2 = new Vector3();
 	private final static Vector3 auxVector3_3 = new Vector3();
 	private final static Vector3 auxVector3_4 = new Vector3();
 	private final static float BULLET_SPEED = 0.2f;
-	private final static float BULLET_MAX_DISTANCE = 10;
+	private final static float BULLET_MAX_DISTANCE = 14;
 	private final static float CHAR_RAD = 0.3f;
 	private final static float OBST_RAD = 0.5f;
 	private final static float PROJECTILE_LIGHT_INTENSITY = 0.2F;
 	private final static float PROJECTILE_LIGHT_RADIUS = 2F;
 	private final static Color PROJECTILE_LIGHT_COLOR = Color.valueOf("#8396FF");
+	private final static float HITSCAN_COLLISION_LIGHT_INTENSITY = 0.1F;
+	private final static float HITSCAN_COLLISION_LIGHT_RADIUS = 1F;
+	private final static Color HITSCAN_COLLISION_LIGHT_COLOR = Color.YELLOW;
 	private final static Bresenham2 bresenham = new Bresenham2();
 	private final static float HIT_SCAN_MAX_DISTANCE = 10F;
 	private final static float PROJECTILE_RELATIVE_HEIGHT = 0.5F;
@@ -56,10 +67,10 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	private final static float BULLET_EXPLOSION_LIGHT_RADIUS = 1F;
 	private ImmutableArray<Entity> bullets;
 	private ImmutableArray<Entity> collidables;
+	private ParticleEffect bulletRicochetEffect;
 
 	@Override
 	public void activate( ) {
-
 	}
 
 	@Override
@@ -85,9 +96,10 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 		MapGraphNode posNode = map.getNode(ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector3_1));
 		Vector3 posNodeCenterPos = posNode.getCenterPosition(auxVector3_4);
 		affectAimByAccuracy(character, direction);
-		Array<GridPoint2> nodes = findAllNodesOnTheWayOfTheHitScan(posNodeCenterPos, direction);
+		Vector3 maxRangePos = calculateHitScanMaxPosition(direction, posNodeCenterPos);
+		Array<GridPoint2> nodes = findAllNodesOnTheWayOfTheHitScan(posNodeCenterPos, maxRangePos);
 		for (GridPoint2 node : nodes) {
-			if (applyHitScanThroughNodes(selectedWeapon, map, posNodeCenterPos, node)) {
+			if (applyHitScanThroughNodes(selectedWeapon, map, posNodeCenterPos, node, maxRangePos)) {
 				return;
 			}
 		}
@@ -96,21 +108,53 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	private boolean applyHitScanThroughNodes(final Weapon selectedWeapon,
 											 final MapGraph map,
 											 final Vector3 posNodeCenterPos,
-											 final GridPoint2 n) {
+											 final GridPoint2 n,
+											 final Vector3 maxRangePos) {
 		MapGraphNode node = map.getNode(n.x, n.y);
 		if (node.getHeight() > map.getNode((int) posNodeCenterPos.x, (int) posNodeCenterPos.z).getHeight() + 1) {
+			Vector2 intersectionPosition = findNodeSegmentIntersection(posNodeCenterPos, maxRangePos, n);
+			Vector3 position = auxVector3_1.set(intersectionPosition.x, posNodeCenterPos.y + 1F, intersectionPosition.y);
+			EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
+					.addParticleEffectComponent((PooledEngine) getEngine(), bulletRicochetEffect, position)
+					.addLightComponent(position, HITSCAN_COLLISION_LIGHT_INTENSITY, HITSCAN_COLLISION_LIGHT_RADIUS, HITSCAN_COLLISION_LIGHT_COLOR)
+					.finishAndAddToEngine();
 			return true;
 		}
 		Entity enemy = map.getAliveEnemyFromNode(node);
 		if (enemy != null) {
 			onHitScanCollisionWithAnotherEntity((WeaponsDefinitions) selectedWeapon.getDefinition(), enemy);
+			Vector3 position = auxVector3_1.set(ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition());
+			EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
+					.addParticleEffectComponent((PooledEngine) getEngine(), bulletRicochetEffect, position)
+					.addLightComponent(position, HITSCAN_COLLISION_LIGHT_INTENSITY, HITSCAN_COLLISION_LIGHT_RADIUS, HITSCAN_COLLISION_LIGHT_COLOR)
+					.finishAndAddToEngine();
 			return true;
 		}
 		return false;
 	}
 
-	private Array<GridPoint2> findAllNodesOnTheWayOfTheHitScan(final Vector3 posNodeCenterPos, final Vector3 direction) {
-		Vector3 maxRangePos = calculateHitScanMaxPosition(direction, posNodeCenterPos);
+	private Vector2 findNodeSegmentIntersection(final Vector3 posNodeCenterPos,
+												final Vector3 maxRangePos,
+												final GridPoint2 node) {
+		Vector2 src = auxVector2_1.set(posNodeCenterPos.x, posNodeCenterPos.z);
+		Vector2 dst = auxVector2_2.set(maxRangePos.x, maxRangePos.z);
+		Intersector.intersectSegments(src, dst,
+				auxVector2_3.set(node.x, node.y), auxVector2_4.set(node.x + 1F, node.y),
+				auxVector2_5);
+		Intersector.intersectSegments(src, dst,
+				auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x + 1F, node.y + 1F),
+				auxVector2_5);
+		Intersector.intersectSegments(src, dst,
+				auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y + 1F),
+				auxVector2_5);
+		Intersector.intersectSegments(src, dst,
+				auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y),
+				auxVector2_5);
+		return auxVector2_5;
+	}
+
+	private Array<GridPoint2> findAllNodesOnTheWayOfTheHitScan(final Vector3 posNodeCenterPos,
+															   final Vector3 maxRangePos) {
 		return bresenham.line(
 				(int) posNodeCenterPos.x, (int) posNodeCenterPos.z,
 				(int) maxRangePos.x, (int) maxRangePos.z);
@@ -283,5 +327,10 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	@Override
 	public void dispose( ) {
 
+	}
+
+	@Override
+	public void onParticleEffectsSystemReady(PointSpriteParticleBatch pointSpriteBatch) {
+		bulletRicochetEffect = services.getAssetManager().getParticleEffect(ParticleEffects.BULLET_RICOCHET);
 	}
 }
