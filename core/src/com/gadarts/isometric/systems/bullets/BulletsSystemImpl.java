@@ -56,9 +56,10 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	private final static float PROJECTILE_LIGHT_INTENSITY = 0.2F;
 	private final static float PROJECTILE_LIGHT_RADIUS = 2F;
 	private final static Color PROJECTILE_LIGHT_COLOR = Color.valueOf("#8396FF");
-	private final static float HITSCAN_COLLISION_LIGHT_INTENSITY = 0.1F;
-	private final static float HITSCAN_COLLISION_LIGHT_RADIUS = 1F;
-	private final static Color HITSCAN_COLLISION_LIGHT_COLOR = Color.YELLOW;
+	private final static float HITSCAN_COL_LIGHT_INTENSITY = 0.1F;
+	private final static float HITSCAN_COL_LIGHT_RADIUS = 1.2F;
+	private final static Color HITSCAN_COL_LIGHT_COLOR = Color.YELLOW;
+	private final static float HITSCAN_COL_LIGHT_DURATION = 0.1F;
 	private final static Bresenham2 bresenham = new Bresenham2();
 	private final static float HIT_SCAN_MAX_DISTANCE = 10F;
 	private final static float PROJECTILE_RELATIVE_HEIGHT = 0.5F;
@@ -116,7 +117,11 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 			Vector3 position = auxVector3_1.set(intersectionPosition.x, posNodeCenterPos.y + 1F, intersectionPosition.y);
 			EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
 					.addParticleEffectComponent((PooledEngine) getEngine(), bulletRicochetEffect, position)
-					.addLightComponent(position, HITSCAN_COLLISION_LIGHT_INTENSITY, HITSCAN_COLLISION_LIGHT_RADIUS, HITSCAN_COLLISION_LIGHT_COLOR)
+					.addLightComponent(position,
+							HITSCAN_COL_LIGHT_INTENSITY,
+							HITSCAN_COL_LIGHT_RADIUS,
+							HITSCAN_COL_LIGHT_COLOR,
+							HITSCAN_COL_LIGHT_DURATION)
 					.finishAndAddToEngine();
 			return true;
 		}
@@ -126,7 +131,11 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 			Vector3 position = auxVector3_1.set(ComponentsMapper.characterDecal.get(enemy).getDecal().getPosition());
 			EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
 					.addParticleEffectComponent((PooledEngine) getEngine(), bulletRicochetEffect, position)
-					.addLightComponent(position, HITSCAN_COLLISION_LIGHT_INTENSITY, HITSCAN_COLLISION_LIGHT_RADIUS, HITSCAN_COLLISION_LIGHT_COLOR)
+					.addLightComponent(position,
+							HITSCAN_COL_LIGHT_INTENSITY,
+							HITSCAN_COL_LIGHT_RADIUS,
+							HITSCAN_COL_LIGHT_COLOR,
+							HITSCAN_COL_LIGHT_DURATION)
 					.finishAndAddToEngine();
 			return true;
 		}
