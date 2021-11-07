@@ -18,6 +18,7 @@ import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.commands.CharacterCommand;
 import com.gadarts.isometric.utils.Utils;
+import com.gadarts.necromine.model.Coords;
 import com.gadarts.necromine.model.map.MapNodesTypes;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -309,7 +310,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 
-	public MapGraphNode getNode(final MapCoord coord) {
+	public MapGraphNode getNode(final Coords coord) {
 		return getNode(coord.getCol(), coord.getRow());
 	}
 

@@ -329,7 +329,7 @@ public final class MapBuilder implements Disposable {
 		envs.forEach(element -> {
 			EntityBuilder builder = EntityBuilder.beginBuildingEntity(engine);
 			JsonObject envJsonObject = element.getAsJsonObject();
-			MapCoord coord = new MapCoord(envJsonObject.get(ROW).getAsInt(), envJsonObject.get(COL).getAsInt());
+			Coords coord = new Coords(envJsonObject.get(ROW).getAsInt(), envJsonObject.get(COL).getAsInt());
 			inflateEnvComponents(mapGraph, builder, envJsonObject, coord);
 			Entity entity = builder.finishAndAddToEngine();
 			GameModelInstance modelInstance = ComponentsMapper.modelInstance.get(entity).getModelInstance();
@@ -361,7 +361,7 @@ public final class MapBuilder implements Disposable {
 	private void inflateEnvComponents(final MapGraph mapGraph,
 									  final EntityBuilder builder,
 									  final JsonObject envJsonObject,
-									  final MapCoord coord) {
+									  final Coords coord) {
 		int dirIndex = envJsonObject.get(DIRECTION).getAsInt();
 		EnvironmentDefinitions type = EnvironmentDefinitions.valueOf(envJsonObject.get(TYPE).getAsString());
 		inflateEnvSpecifiedComponent(coord, type, builder, Direction.values()[dirIndex]);
@@ -409,7 +409,7 @@ public final class MapBuilder implements Disposable {
 	private void inflatePickupModel(final EntityBuilder builder,
 									final JsonObject pickJsonObject,
 									final WeaponsDefinitions type, final MapGraph mapGraph) {
-		MapCoord coord = new MapCoord(pickJsonObject.get(ROW).getAsInt(), pickJsonObject.get(COL).getAsInt());
+		Coords coord = new Coords(pickJsonObject.get(ROW).getAsInt(), pickJsonObject.get(COL).getAsInt());
 		Assets.Models modelDefinition = type.getModelDefinition();
 		String fileName = GameServices.BOUNDING_BOX_PREFIX + modelDefinition.getFilePath();
 		ModelBoundingBox boundingBox = assetManager.get(fileName, ModelBoundingBox.class);
@@ -431,7 +431,7 @@ public final class MapBuilder implements Disposable {
 		return mi;
 	}
 
-	private void inflateEnvSpecifiedComponent(final MapCoord coord,
+	private void inflateEnvSpecifiedComponent(final Coords coord,
 											  final EnvironmentDefinitions type,
 											  final EntityBuilder builder,
 											  final Direction facingDirection) {
@@ -535,10 +535,7 @@ public final class MapBuilder implements Disposable {
 				walls.setEastWall(WallCreator.createEastWall(nodeData, wallCreator.getWallModel(), assetManager, definition));
 				MapNodeData eastNode = new MapNodeData(row, eastCol, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 				nodeData.lift(height);
-				Coords coords = eastNode.getCoords();
-				Entity entity = mapGraph.getNode(coords.getCol(), coords.getRow()).getEntity();
-				Optional.ofNullable(entity)
-						.ifPresent(e -> eastNode.lift(ComponentsMapper.modelInstance.get(e).getModelInstance().transform.getTranslation(auxVector3_1).y));
+				eastNode.setHeight(mapGraph.getNode(eastNode.getCoords()).getHeight());
 				float vScale = asJsonObject.has(MapJsonKeys.V_SCALE) ? asJsonObject.get(MapJsonKeys.V_SCALE).getAsFloat() : 0;
 				WallCreator.adjustWallBetweenEastAndWest(eastNode, nodeData, true, vScale);
 				boolean westHigherThanEast = node.getHeight() > eastNode.getHeight();
@@ -565,10 +562,7 @@ public final class MapBuilder implements Disposable {
 				walls.setSouthWall(WallCreator.createSouthWall(nodeData, wallCreator.getWallModel(), assetManager, definition));
 				MapNodeData southNode = new MapNodeData(southNodeRow, nodeData.getCoords().getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 				nodeData.lift(height);
-				Coords coords = southNode.getCoords();
-				Entity entity = mapGraph.getNode(coords.getCol(), coords.getRow()).getEntity();
-				Optional.ofNullable(entity)
-						.ifPresent(e -> southNode.lift(ComponentsMapper.modelInstance.get(e).getModelInstance().transform.getTranslation(auxVector3_1).y));
+				southNode.setHeight(mapGraph.getNode(southNode.getCoords()).getHeight());
 				float vScale = asJsonObject.has(MapJsonKeys.V_SCALE) ? asJsonObject.get(MapJsonKeys.V_SCALE).getAsFloat() : 0;
 				WallCreator.adjustWallBetweenNorthAndSouth(southNode, nodeData, vScale);
 				boolean northHigherThanSouth = node.getHeight() > southNode.getHeight();
@@ -595,9 +589,7 @@ public final class MapBuilder implements Disposable {
 				walls.setWestWall(WallCreator.createWestWall(nodeData, wallCreator.getWallModel(), assetManager, definition));
 				MapNodeData westNodeData = new MapNodeData(nodeData.getCoords().getRow(), westNodeCol, MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 				nodeData.lift(height);
-				Coords coords = westNodeData.getCoords();
-				Optional.ofNullable(mapGraph.getNode(coords.getCol(), coords.getRow()).getEntity())
-						.ifPresent(entity -> westNodeData.lift(ComponentsMapper.modelInstance.get(entity).getModelInstance().transform.getTranslation(auxVector3_1).y));
+				westNodeData.setHeight(mapGraph.getNode(westNodeData.getCoords()).getHeight());
 				float vScale = asJsonObject.has(MapJsonKeys.V_SCALE) ? asJsonObject.get(MapJsonKeys.V_SCALE).getAsFloat() : 0;
 				WallCreator.adjustWallBetweenEastAndWest(nodeData, westNodeData, true, vScale);
 				boolean eastHigherThanWest = node.getHeight() > westNodeData.getHeight();
@@ -623,10 +615,7 @@ public final class MapBuilder implements Disposable {
 				n.getWalls().setNorthWall(WallCreator.createNorthWall(n, wallCreator.getWallModel(), assetManager, definition));
 				MapNodeData northNode = new MapNodeData(northNodeRow, n.getCoords().getCol(), MapNodesTypes.OBSTACLE_KEY_DIAGONAL_FORBIDDEN);
 				n.lift(height);
-				Coords coords = northNode.getCoords();
-				Entity entity = mapGraph.getNode(coords.getCol(), coords.getRow()).getEntity();
-				Optional.ofNullable(entity)
-						.ifPresent(e -> northNode.lift(ComponentsMapper.modelInstance.get(e).getModelInstance().transform.getTranslation(auxVector3_1).y));
+				northNode.setHeight(mapGraph.getNode(northNode.getCoords()).getHeight());
 				float vScale = asJsonObject.has(MapJsonKeys.V_SCALE) ? asJsonObject.get(MapJsonKeys.V_SCALE).getAsFloat() : 0;
 				WallCreator.adjustWallBetweenNorthAndSouth(n, northNode, vScale);
 				boolean northHigherThanSouth = node.getHeight() > northNode.getHeight();
