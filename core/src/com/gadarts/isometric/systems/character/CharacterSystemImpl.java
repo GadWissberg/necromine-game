@@ -113,15 +113,16 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@Override
 	public boolean calculatePathToCharacter(final MapGraphNode sourceNode,
 											final Entity character,
-											final MapGraphPath outputPath) {
+											final MapGraphPath outputPath,
+											final boolean enemyBlocks) {
 		outputPath.clear();
 		Vector2 cellPosition = ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2_1);
 		return graphData.getPathFinder().searchNodePathBeforeCommand(
 				sourceNode,
 				services.getMapService().getMap().getNode((int) cellPosition.x, (int) cellPosition.y),
 				graphData.getHeuristic(),
-				outputPath
-		);
+				outputPath,
+				enemyBlocks);
 	}
 
 
@@ -401,7 +402,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 								   final MapGraphNode oldDest) {
 		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		MapGraphNode newDest = graphData.getCurrentPath().getNextOf(oldDest);
-		if (newDest != null) {
+		if (newDest != null && services.getMapService().getMap().checkIfNodeIsAvailable(newDest)) {
 			commandsHandler.initDestinationNode(characterComponent, newDest);
 			takeStep(character);
 		} else {
@@ -467,7 +468,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	@Override
-	public void onParticleEffectsSystemReady(PointSpriteParticleBatch pointSpriteBatch) {
+	public void onParticleEffectsSystemReady(final PointSpriteParticleBatch pointSpriteBatch) {
 		bloodSplatterEffect = services.getAssetManager().getParticleEffect(Assets.ParticleEffects.BLOOD_SPLATTER);
 	}
 }

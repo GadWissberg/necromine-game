@@ -37,6 +37,8 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private static final List<MapGraphNode> auxNodesList_2 = new ArrayList<>();
 	private static final float PASSABLE_MAX_HEIGHT_DIFF = 0.3f;
 
+	@Setter
+	private boolean includeEnemiesInGetConnections;
 	@Getter
 	private final Array<MapGraphNode> nodes;
 
@@ -73,7 +75,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		});
 	}
 
-	void applyConnections() {
+	void applyConnections( ) {
 		for (int row = 0; row < mapSize.height; row++) {
 			int rows = row * mapSize.width;
 			for (int col = 0; col < mapSize.width; col++) {
@@ -179,7 +181,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	}
 
 	@Override
-	public int getNodeCount() {
+	public int getNodeCount( ) {
 		return nodes.size;
 	}
 
@@ -188,13 +190,19 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		auxConnectionsList.clear();
 		Array<Connection<MapGraphNode>> connections = fromNode.getConnections();
 		for (Connection<MapGraphNode> connection : connections) {
-			boolean available;
-			available = checkIfNodeIsAvailable(connection);
-			if (available && checkIfConnectionPassable(connection)) {
-				auxConnectionsList.add(connection);
-			}
+			checkIfConnectionIsAvailable(connection);
 		}
 		return auxConnectionsList;
+	}
+
+	private void checkIfConnectionIsAvailable(final Connection<MapGraphNode> connection) {
+		boolean available = true;
+		if (includeEnemiesInGetConnections) {
+			available = checkIfNodeIsAvailable(connection.getToNode());
+		}
+		if (available && checkIfConnectionPassable(connection)) {
+			auxConnectionsList.add(connection);
+		}
 	}
 
 	private boolean checkIfConnectionPassable(final Connection<MapGraphNode> con) {
@@ -209,14 +217,13 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		return result;
 	}
 
-	private boolean checkIfNodeIsAvailable(final Connection<MapGraphNode> connection) {
-		for (Entity character : relatedEntities.getCharacterEntities()) {
-			MapGraphNode node = getNode(ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2));
-			int hp = ComponentsMapper.character.get(character).getSkills().getHealthData().getHp();
-			if (currentDestination == node || hp <= 0) {
+	public boolean checkIfNodeIsAvailable(final MapGraphNode destinationNode) {
+		for (Entity c : relatedEntities.getCharacterEntities()) {
+			MapGraphNode node = getNode(ComponentsMapper.characterDecal.get(c).getNodePosition(auxVector2));
+			if (currentDestination == node || ComponentsMapper.character.get(c).getSkills().getHealthData().getHp() <= 0) {
 				continue;
 			}
-			if (node.equals(connection.getToNode())) {
+			if (node.equals(destinationNode)) {
 				return false;
 			}
 		}
@@ -314,7 +321,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		return getNode(coord.getCol(), coord.getRow());
 	}
 
-	public void init() {
+	public void init( ) {
 		relatedEntities.getObstaclesEntities().forEach(wall -> {
 			ObstacleComponent obstacleWallComponent = ComponentsMapper.obstacle.get(wall);
 			int topLeftX = obstacleWallComponent.getTopLeftX();
@@ -333,11 +340,11 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 		applyConnections();
 	}
 
-	public int getWidth() {
+	public int getWidth( ) {
 		return mapSize.width;
 	}
 
-	public int getDepth() {
+	public int getDepth( ) {
 		return mapSize.height;
 	}
 }

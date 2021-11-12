@@ -13,7 +13,7 @@ public interface CharacterSystem extends GameSystem {
 	/**
 	 * @return Whether a command is being processed.
 	 */
-	boolean isProcessingCommand();
+	boolean isProcessingCommand( );
 
 	/**
 	 * Applies the given command.
@@ -36,10 +36,14 @@ public interface CharacterSystem extends GameSystem {
 	/**
 	 * Calculates a path to a given character.
 	 *
-	 * @param sourceNode The node the path starts from.
-	 * @param character  The character the path ends at.
-	 * @param outputPath The object that contains the result path.
+	 * @param sourceNode  The node the path starts from.
+	 * @param character   The character the path ends at.
+	 * @param outputPath  The object that contains the result path.
+	 * @param enemyBlocks Whether other enemies can be considered as obstacles.
 	 * @return Whether it had successfully calculated a path.
 	 */
-	boolean calculatePathToCharacter(MapGraphNode sourceNode, Entity character, MapGraphPath outputPath);
+	boolean calculatePathToCharacter(MapGraphNode sourceNode,
+									 Entity character,
+									 MapGraphPath outputPath,
+									 boolean enemyBlocks);
 }

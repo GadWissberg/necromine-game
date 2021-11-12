@@ -160,7 +160,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private void applyGoToMelee(final Entity enemy,
 								final MapGraphNode enemyNode,
 								final Entity target) {
-		if (characterSystem.calculatePathToCharacter(enemyNode, target, auxPath)) {
+		if (characterSystem.calculatePathToCharacter(enemyNode, target, auxPath, false)) {
 			auxPath.nodes.removeIndex(auxPath.getCount() - 1);
 			applyCommand(enemy, CharacterCommands.GO_TO_MELEE);
 		} else {

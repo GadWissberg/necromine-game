@@ -76,10 +76,10 @@ public class MapGraphNode {
 		return this;
 	}
 
-	public boolean isConnectedNeighbour(final MapGraphNode selectedAttackNode) {
+	public boolean isConnectedNeighbour(final MapGraphNode node) {
 		boolean result = false;
 		for (Connection<MapGraphNode> connection : connections) {
-			if (connection.getToNode().equals(selectedAttackNode)) {
+			if (connection.getToNode().equals(node)) {
 				result = true;
 				break;
 			}
