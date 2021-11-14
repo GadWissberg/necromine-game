@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Bresenham2;
 import com.badlogic.gdx.math.GridPoint2;
@@ -30,6 +31,7 @@ import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
+import com.gadarts.necromine.assets.Assets.UiTextures;
 import com.gadarts.necromine.model.characters.SpriteType;
 import com.gadarts.necromine.model.characters.attributes.Accuracy;
 import com.gadarts.necromine.model.characters.attributes.Range;
@@ -58,9 +60,11 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private static final int NUMBER_OF_SKILL_FLOWER_LEAF = 8;
 	private static final Bresenham2 bresenham = new Bresenham2();
 	private static final float RANGE_ATTACK_MIN_RADIUS = 1.7F;
+
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
 	private TurnsSystem turnsSystem;
+	private TextureRegion skillFlowerTexture;
 
 	@Override
 	public void update(final float deltaTime) {
@@ -304,6 +308,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	private void awakeEnemy(final Entity enemy) {
 		ComponentsMapper.enemy.get(enemy).setAwaken(true);
+		ComponentsMapper.simpleDecal.get(enemy).getDecal().setTextureRegion(skillFlowerTexture);
 		for (EnemySystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onEnemyAwaken(enemy);
 		}
@@ -320,6 +325,6 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	@Override
 	public void activate( ) {
-
+		skillFlowerTexture = new TextureRegion(services.getAssetManager().getTexture(UiTextures.SKILL_FLOWER_CENTER));
 	}
 }

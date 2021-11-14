@@ -698,7 +698,7 @@ public final class MapBuilder implements Disposable {
 				type.getAccuracy() != null ? type.getAccuracy()[skill - 1] : null);
 		CharacterData data = new CharacterData(position, Direction.values()[characterJsonObject.get(DIRECTION).getAsInt()], skills, auxCharacterSoundData);
 		addCharBaseComponents(builder, data, type, type.getAtlasDefinition());
-		Texture skillFlowerTexture = assetManager.getTexture(Assets.UiTextures.SKILL_FLOWER_CENTER);
+		Texture skillFlowerTexture = assetManager.getTexture(Assets.UiTextures.SKILL_FLOWER_CENTER_IDLE);
 		position.y = type.getHeight() + EnemySystemImpl.SKILL_FLOWER_HEIGHT_RELATIVE;
 		builder.addSimpleDecalComponent(position, skillFlowerTexture, true, true);
 		Entity entity = builder.finishAndAddToEngine();
