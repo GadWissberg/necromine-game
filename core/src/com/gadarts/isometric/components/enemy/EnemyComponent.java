@@ -5,7 +5,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.GameComponent;
+import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.necromine.model.characters.enemies.Enemies;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,12 +17,19 @@ public class EnemyComponent implements GameComponent {
 	public static final int ROAM_SOUND_INTERVAL_MINIMUM = 5000;
 	public static final int ROAM_SOUND_INTERVAL_MAXIMUM = 10000;
 
+	@Setter(AccessLevel.NONE)
+	private MapGraphNode targetLastVisibleNode;
 	private long nextRoamSound;
 	private Enemies enemyDefinition;
-	private boolean awaken;
+
+	private EnemyStatus status;
 	private EnemyTimeStamps timeStamps = new EnemyTimeStamps();
 	private int skill = 1;
 	private Animation<TextureAtlas.AtlasRegion> bulletAnimation;
+
+	public void setTargetLastVisibleNode(final MapGraphNode coords) {
+		targetLastVisibleNode = coords;
+	}
 
 	public void init(final Enemies enemyDefinition,
 					 final int skill,
@@ -30,6 +39,7 @@ public class EnemyComponent implements GameComponent {
 		this.skill = skill;
 		this.bulletAnimation = bulletAnimation;
 		timeStamps.reset();
+		targetLastVisibleNode = null;
 	}
 
 	@Override
