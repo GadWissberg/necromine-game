@@ -40,6 +40,7 @@ public class EnemyComponent implements GameComponent {
 		this.bulletAnimation = bulletAnimation;
 		timeStamps.reset();
 		targetLastVisibleNode = null;
+		status = EnemyStatus.IDLE;
 	}
 
 	@Override
