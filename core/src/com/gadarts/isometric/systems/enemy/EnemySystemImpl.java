@@ -3,13 +3,17 @@ package com.gadarts.isometric.systems.enemy;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.FlowerSkillIconComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.data.CharacterHealthData;
 import com.gadarts.isometric.components.decal.RelatedDecal;
@@ -24,6 +28,7 @@ import com.gadarts.isometric.systems.character.commands.CharacterCommands;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
+import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
@@ -60,10 +65,15 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private static final Bresenham2 bresenham = new Bresenham2();
 	private static final float RANGE_ATTACK_MIN_RADIUS = 1.7F;
 	private static final List<MapGraphNode> auxNodesList = new ArrayList<>();
+	private static final float ICON_SPEED = 0.5F;
+	private static final int ICON_DURATION = 2;
+	private final List<Entity> iconsToRemove = new ArrayList<>();
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
 	private TurnsSystem turnsSystem;
 	private TextureRegion skillFlowerTexture;
+	private Texture iconSpottedTexture;
+	private ImmutableArray<Entity> icons;
 
 	@Override
 	public void update(final float deltaTime) {
@@ -80,6 +90,19 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 				}
 			}
 		}
+		iconsToRemove.clear();
+		for (Entity flowerIcon : icons) {
+			long timeOfCreation = ComponentsMapper.flowerSkillIcon.get(flowerIcon).getTimeOfCreation();
+			if (TimeUtils.timeSinceMillis(timeOfCreation) >= ICON_DURATION * 1000F) {
+				iconsToRemove.add(flowerIcon);
+			} else {
+				Vector3 position = ComponentsMapper.simpleDecal.get(flowerIcon).getDecal().getPosition();
+				position.add(0, deltaTime * ICON_SPEED, 0);
+			}
+		}
+		for (Entity icon : iconsToRemove) {
+			getEngine().removeEntity(icon);
+		}
 	}
 
 
@@ -92,6 +115,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
+		icons = engine.getEntitiesFor(Family.all(FlowerSkillIconComponent.class).get());
 	}
 
 
@@ -180,7 +204,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			float disToTarget = calculateDistanceToTarget(enemy);
 			if (disToTarget <= def.getRange().get(skillIndex).getMaxDistance() && disToTarget > RANGE_ATTACK_MIN_RADIUS) {
 				int turnsDiff = def.getReloadTime().get(skillIndex).getNumberOfTurns();
-				if (checkIfPrimaryAttackIsReady(enemyCom, turnsDiff) && checkLineOfSightForEnemy(enemy, false)) {
+				if (checkIfPrimaryAttackIsReady(enemyCom, turnsDiff) && !checkIfFloorNodesBlockSightToTarget(enemy)) {
 					applyCommand(enemy, CharacterCommands.ATTACK_PRIMARY);
 					return true;
 				}
@@ -310,11 +334,6 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	private boolean checkLineOfSightForEnemy(final Entity enemy, final boolean checkFov) {
-		if (checkFov && !isTargetInFov(enemy)) return false;
-		return !checkIfFloorNodesBlockSightToTarget(enemy);
-	}
-
 	private boolean checkIfFloorNodesBlockSightToTarget(final Entity enemy) {
 		Vector2 pos = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 		Entity target = ComponentsMapper.character.get(enemy).getTarget();
@@ -332,10 +351,19 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private void awakeEnemy(final Entity enemy) {
 		if (ComponentsMapper.character.get(enemy).getSkills().getHealthData().getHp() <= 0) return;
 		ComponentsMapper.enemy.get(enemy).setStatus(ATTACKING);
-		ComponentsMapper.simpleDecal.get(enemy).getDecal().setTextureRegion(skillFlowerTexture);
+		Decal flowerDecal = ComponentsMapper.simpleDecal.get(enemy).getDecal();
+		flowerDecal.setTextureRegion(skillFlowerTexture);
+		createSkillFlowerIcon(flowerDecal);
 		for (EnemySystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onEnemyAwaken(enemy);
 		}
+	}
+
+	private void createSkillFlowerIcon(final Decal flowerDecal) {
+		EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
+				.addSimpleDecalComponent(flowerDecal.getPosition(), iconSpottedTexture, true, true)
+				.addFlowerSkillIconComponent()
+				.finishAndAddToEngine();
 	}
 
 	private boolean isTargetInFov(final Entity enemy) {
@@ -387,5 +415,6 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	@Override
 	public void activate( ) {
 		skillFlowerTexture = new TextureRegion(services.getAssetManager().getTexture(UiTextures.SKILL_FLOWER_CENTER));
+		iconSpottedTexture = services.getAssetManager().getTexture(UiTextures.ICON_SPOTTED);
 	}
 }

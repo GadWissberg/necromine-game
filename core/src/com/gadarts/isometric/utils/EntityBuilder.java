@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
@@ -348,6 +349,14 @@ public final class EntityBuilder {
 		particleComponent.init(effect, parent);
 		effect.translate(position);
 		currentEntity.add(particleComponent);
+		return instance;
+	}
+
+	public EntityBuilder addFlowerSkillIconComponent( ) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
+		FlowerSkillIconComponent component = engine.createComponent(FlowerSkillIconComponent.class);
+		component.init(TimeUtils.millis());
+		currentEntity.add(component);
 		return instance;
 	}
 }
