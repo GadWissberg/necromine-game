@@ -40,7 +40,7 @@ import java.util.List;
 
 import static com.gadarts.isometric.NecronemesGame.*;
 
-public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsSubscriber> implements InterfaceSystem,
+public class UserUserInterfaceSystemImpl extends GameEntitySystem<UserInterfaceSystemEventsSubscriber> implements UserInterfaceSystem,
 		InputSystemEventsSubscriber,
 		PlayerSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
@@ -52,60 +52,60 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 
 	private static final Vector3 auxVector3_2 = new Vector3();
 
-	private final InterfaceSystemHandlers interfaceSystemHandlers = new InterfaceSystemHandlers();
+	private final UserInterfaceSystemHandlers userInterfaceSystemHandlers = new UserInterfaceSystemHandlers();
 
 	@Override
 	public void toggleMenu(final boolean active) {
-		interfaceSystemHandlers.getMenuHandler().toggleMenu(active, interfaceSystemHandlers.getHudHandler().getStage());
+		userInterfaceSystemHandlers.getMenuHandler().toggleMenu(active, userInterfaceSystemHandlers.getHudHandler().getStage());
 	}
 
 	@Override
 	public void applyMenuOptions(final MenuOptionDefinition[] options) {
-		interfaceSystemHandlers.getMenuHandler().applyMenuOptions(options, services, getSystem(PlayerSystem.class).getPlayer(), this);
+		userInterfaceSystemHandlers.getMenuHandler().applyMenuOptions(options, services, getSystem(PlayerSystem.class).getPlayer(), this);
 	}
 
 	@Override
 	public void dispose( ) {
-		interfaceSystemHandlers.dispose();
+		userInterfaceSystemHandlers.dispose();
 	}
 
 	@Override
 	public void init(final GameServices services) {
 		super.init(services);
 		Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-		interfaceSystemHandlers.getHudHandler().init(services, player);
+		userInterfaceSystemHandlers.getHudHandler().init(services, player);
 	}
 
 
 	@Override
 	public void onPlayerStatusChanged(final boolean disabled) {
-		ComponentsMapper.cursor.get(interfaceSystemHandlers.getCursorHandler().getCursor()).setDisabled(disabled);
+		ComponentsMapper.cursor.get(userInterfaceSystemHandlers.getCursorHandler().getCursor()).setDisabled(disabled);
 	}
 
 
 	@Override
 	public void onRenderSystemReady(final RenderSystem renderSystem) {
 		DrawFlags drawFlags = renderSystem.getDrawFlags();
-		interfaceSystemHandlers.initializeToolTipHandler(interfaceSystemHandlers.getHudHandler().getStage(), drawFlags);
-		interfaceSystemHandlers.initializeCursorHandler(interfaceSystemHandlers.getHudHandler().getStage(), getEngine());
+		userInterfaceSystemHandlers.initializeToolTipHandler(userInterfaceSystemHandlers.getHudHandler().getStage(), drawFlags);
+		userInterfaceSystemHandlers.initializeCursorHandler(userInterfaceSystemHandlers.getHudHandler().getStage(), getEngine());
 	}
 
 	@Override
 	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
-		interfaceSystemHandlers.initializeAttackNodesHandler(getEngine());
+		userInterfaceSystemHandlers.initializeAttackNodesHandler(getEngine());
 	}
 
 
 	@Override
 	public void mouseMoved(final int screenX, final int screenY) {
-		if (interfaceSystemHandlers.getMenuHandler().getMenuTable().isVisible()) return;
+		if (userInterfaceSystemHandlers.getMenuHandler().getMenuTable().isVisible()) return;
 		MapGraph map = services.getMapService().getMap();
 		MapGraphNode newNode = map.getRayNode(screenX, screenY, getSystem(CameraSystem.class).getCamera());
-		ModelInstance cursorModelInstance = interfaceSystemHandlers.getCursorHandler().getCursorModelInstance();
+		ModelInstance cursorModelInstance = userInterfaceSystemHandlers.getCursorHandler().getCursorModelInstance();
 		MapGraphNode oldNode = map.getNode(cursorModelInstance.transform.getTranslation(auxVector3_2));
 		if (newNode != null && !newNode.equals(oldNode)) {
-			interfaceSystemHandlers.onMouseEnteredNewNode(newNode, services);
+			userInterfaceSystemHandlers.onMouseEnteredNewNode(newNode, services);
 		}
 	}
 
@@ -118,7 +118,7 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 		int hp = ComponentsMapper.character.get(player).getSkills().getHealthData().getHp();
 		if (currentTurn == Turns.PLAYER && hp > 0) {
 			if (button == Input.Buttons.LEFT && !getSystem(CharacterSystem.class).isProcessingCommand()) {
-				interfaceSystemHandlers.onUserSelectedNodeToApplyTurn(services, subscribers);
+				userInterfaceSystemHandlers.onUserSelectedNodeToApplyTurn(services, subscribers);
 			}
 		}
 	}
@@ -127,13 +127,13 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
-		interfaceSystemHandlers.update(deltaTime, services);
+		userInterfaceSystemHandlers.update(deltaTime, services);
 	}
 
 
 	@Override
 	public void inputSystemReady(final InputSystem inputSystem) {
-		inputSystem.addInputProcessor(interfaceSystemHandlers.getHudHandler().getStage());
+		inputSystem.addInputProcessor(userInterfaceSystemHandlers.getHudHandler().getStage());
 	}
 
 	@Override
@@ -148,20 +148,20 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 	@Override
 	public void onPlayerSystemReady(final PlayerSystem playerSystem, final Entity player) {
 		addSystem(PlayerSystem.class, playerSystem);
-		GameStage stage = interfaceSystemHandlers.getHudHandler().getStage();
-		Table table = interfaceSystemHandlers.getHudHandler().addTable();
-		interfaceSystemHandlers.getMenuHandler().addMenuTable(stage, player, table, services, this);
+		GameStage stage = userInterfaceSystemHandlers.getHudHandler().getStage();
+		Table table = userInterfaceSystemHandlers.getHudHandler().addTable();
+		userInterfaceSystemHandlers.getMenuHandler().addMenuTable(stage, player, table, services, this);
 	}
 
 	@Override
 	public void onAttackModeActivated(final List<MapGraphNode> availableNodes) {
-		interfaceSystemHandlers.getAttackNodesHandler().onAttackModeActivated(availableNodes);
+		userInterfaceSystemHandlers.getAttackNodesHandler().onAttackModeActivated(availableNodes);
 	}
 
 
 	@Override
 	public void onAttackModeDeactivated( ) {
-		interfaceSystemHandlers.getAttackNodesHandler().onAttackModeDeactivated();
+		userInterfaceSystemHandlers.getAttackNodesHandler().onAttackModeDeactivated();
 	}
 
 
@@ -172,28 +172,28 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 
 	@Override
 	public Stage getStage( ) {
-		return interfaceSystemHandlers.getHudHandler().getStage();
+		return userInterfaceSystemHandlers.getHudHandler().getStage();
 	}
 
 	@Override
 	public boolean hasOpenWindows( ) {
-		return interfaceSystemHandlers.getHudHandler().getStage().hasOpenWindows();
+		return userInterfaceSystemHandlers.getHudHandler().getStage().hasOpenWindows();
 	}
 
 	@Override
 	public boolean isMenuClosed( ) {
-		return !interfaceSystemHandlers.getMenuHandler().getMenuTable().isVisible();
+		return !userInterfaceSystemHandlers.getMenuHandler().getMenuTable().isVisible();
 	}
 
 
 	@Override
 	public void onEnemyTurn(final long currentTurnId) {
-		interfaceSystemHandlers.getHudHandler().onEnemyTurn();
+		userInterfaceSystemHandlers.getHudHandler().onEnemyTurn();
 	}
 
 	@Override
 	public void onPlayerTurn(final long currentTurnId) {
-		interfaceSystemHandlers.getHudHandler().onPlayerTurn();
+		userInterfaceSystemHandlers.getHudHandler().onPlayerTurn();
 	}
 
 	@Override
@@ -210,7 +210,7 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 
 	@Override
 	public void activate( ) {
-		for (InterfaceSystemEventsSubscriber subscriber : subscribers) {
+		for (UserInterfaceSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onHudSystemReady(this);
 		}
 	}
@@ -228,7 +228,7 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 	@Override
 	public boolean onCommandRun(final ConsoleCommands command, final ConsoleCommandResult consoleCommandResult) {
 		boolean result;
-		result = interfaceSystemHandlers.getHudHandler().onCommandRun(command, consoleCommandResult);
+		result = userInterfaceSystemHandlers.getHudHandler().onCommandRun(command, consoleCommandResult);
 		return result;
 	}
 
@@ -246,7 +246,7 @@ public class InterfaceSystemImpl extends GameEntitySystem<InterfaceSystemEventsS
 
 	@Override
 	public void onFullScreenToggle(final boolean fullScreen) {
-		Viewport viewport = interfaceSystemHandlers.getHudHandler().getStage().getViewport();
+		Viewport viewport = userInterfaceSystemHandlers.getHudHandler().getStage().getViewport();
 		viewport.setScreenWidth((fullScreen ? FULL_SCREEN_RESOLUTION_WIDTH : WINDOWED_RESOLUTION_WIDTH));
 		viewport.setScreenHeight((fullScreen ? FULL_SCREEN_RESOLUTION_HEIGHT : WINDOWED_RESOLUTION_HEIGHT));
 	}

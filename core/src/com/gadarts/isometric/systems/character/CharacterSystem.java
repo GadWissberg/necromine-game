@@ -26,12 +26,16 @@ public interface CharacterSystem extends GameSystem {
 	/**
 	 * Calculates a path.
 	 *
-	 * @param sourceNode      The node the path starts from.
-	 * @param destinationNode The node the path ends at.
-	 * @param outputPath      The object that contains the result path.
+	 * @param sourceNode                    The node the path starts from.
+	 * @param destinationNode               The node the path ends at.
+	 * @param outputPath                    The object that contains the result path.
+	 * @param avoidCharactersInCalculations Whether to take into account characters in the way.
 	 * @return Whether it had successfully calculated a path.
 	 */
-	boolean calculatePath(MapGraphNode sourceNode, MapGraphNode destinationNode, MapGraphPath outputPath);
+	boolean calculatePath(MapGraphNode sourceNode,
+						  MapGraphNode destinationNode,
+						  MapGraphPath outputPath,
+						  boolean avoidCharactersInCalculations);
 
 	/**
 	 * Calculates a path to a given character.

@@ -12,7 +12,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class InterfaceSystemHandlers implements Disposable {
+public class UserInterfaceSystemHandlers implements Disposable {
 	private final AttackNodesHandler attackNodesHandler = new AttackNodesHandler();
 	private final HudHandler hudHandler = new HudHandler();
 	private final MenuHandler menuHandler = new MenuHandler();
@@ -38,10 +38,10 @@ public class InterfaceSystemHandlers implements Disposable {
 		cursorHandler.onMouseEnteredNewNode(newNode, services);
 	}
 
-	void onUserSelectedNodeToApplyTurn(final GameServices services, final List<InterfaceSystemEventsSubscriber> subscribers) {
+	void onUserSelectedNodeToApplyTurn(final GameServices services, final List<UserInterfaceSystemEventsSubscriber> subscribers) {
 		MapGraphNode cursorNode = cursorHandler.getCursorNode(services);
 		if (services.getMapService().getMap().getFowMap()[cursorNode.getRow()][cursorNode.getCol()] == 1) {
-			for (InterfaceSystemEventsSubscriber sub : subscribers) {
+			for (UserInterfaceSystemEventsSubscriber sub : subscribers) {
 				sub.onUserSelectedNodeToApplyTurn(cursorNode, attackNodesHandler);
 			}
 		}

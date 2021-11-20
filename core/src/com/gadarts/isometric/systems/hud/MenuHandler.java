@@ -24,14 +24,14 @@ public class MenuHandler {
 	public void applyMenuOptions(final MenuOptionDefinition[] options,
 								 final GameServices services,
 								 final Entity player,
-								 final InterfaceSystem interfaceSystem) {
+								 final UserInterfaceSystem userInterfaceSystem) {
 		menuTable.clear();
 		BitmapFont smallFont = services.getAssetManager().get("chubgothic_40.ttf", BitmapFont.class);
 		Label.LabelStyle style = new Label.LabelStyle(smallFont, MenuOption.FONT_COLOR_REGULAR);
 		GlobalGameService global = services.getGlobalGameService();
 		Arrays.stream(options).forEach(o -> {
 			if (o.getValidation().validate(player)) {
-				menuTable.add(new MenuOption(o, style, global, interfaceSystem, services.getSoundPlayer())).row();
+				menuTable.add(new MenuOption(o, style, global, userInterfaceSystem, services.getSoundPlayer())).row();
 			}
 		});
 	}
@@ -47,11 +47,11 @@ public class MenuHandler {
 					  final Entity player,
 					  final Table table,
 					  final GameServices services,
-					  final InterfaceSystem interfaceSystem) {
+					  final UserInterfaceSystem userInterfaceSystem) {
 		menuTable = table;
 		menuTable.setName(TABLE_NAME_MENU);
 		menuTable.add(createLogo(services)).row();
-		applyMenuOptions(MainMenuOptions.values(), services, player, interfaceSystem);
+		applyMenuOptions(MainMenuOptions.values(), services, player, userInterfaceSystem);
 		menuTable.toFront();
 		toggleMenu(DefaultGameSettings.MENU_ON_STARTUP, stage);
 	}

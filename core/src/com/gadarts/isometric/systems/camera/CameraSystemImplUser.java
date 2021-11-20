@@ -12,8 +12,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.systems.GameEntitySystem;
-import com.gadarts.isometric.systems.hud.InterfaceSystem;
-import com.gadarts.isometric.systems.hud.InterfaceSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.UserInterfaceSystem;
+import com.gadarts.isometric.systems.hud.UserInterfaceSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
@@ -26,11 +26,11 @@ import static com.gadarts.isometric.utils.DefaultGameSettings.DEBUG_INPUT;
 import static com.gadarts.isometric.utils.DefaultGameSettings.FULL_SCREEN;
 
 
-public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscriber>
+public class CameraSystemImplUser extends GameEntitySystem<CameraSystemEventsSubscriber>
 		implements CameraSystem,
 		PlayerSystemEventsSubscriber,
 		InputSystemEventsSubscriber,
-		InterfaceSystemEventsSubscriber,
+		UserInterfaceSystemEventsSubscriber,
 		RenderSystemEventsSubscriber {
 
 	public static final int CAMERA_HEIGHT = 15;
@@ -51,15 +51,15 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	@Getter
 	private OrthographicCamera camera;
 
-	public CameraSystemImpl( ) {
+	public CameraSystemImplUser( ) {
 	}
 
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
-		InterfaceSystem interfaceSystem = getSystem(InterfaceSystem.class);
+		UserInterfaceSystem userInterfaceSystem = getSystem(UserInterfaceSystem.class);
 		Entity player = getSystem(PlayerSystem.class).getPlayer();
-		if (!DEBUG_INPUT && !rotateCamera && !interfaceSystem.hasOpenWindows() && interfaceSystem.isMenuClosed()) {
+		if (!DEBUG_INPUT && !rotateCamera && !userInterfaceSystem.hasOpenWindows() && userInterfaceSystem.isMenuClosed()) {
 			handleCameraFollow(player);
 		}
 		handleMenuRotation(player);
@@ -132,7 +132,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 
 	@Override
 	public void touchDragged(final int screenX, final int screenY) {
-		if (rotateCamera && getSystem(InterfaceSystem.class).isMenuClosed()) {
+		if (rotateCamera && getSystem(UserInterfaceSystem.class).isMenuClosed()) {
 			Entity player = getSystem(PlayerSystem.class).getPlayer();
 			Vector3 rotationPoint = ComponentsMapper.characterDecal.get(player).getDecal().getPosition();
 			camera.rotateAround(rotationPoint, Vector3.Y, (lastRightPressMousePosition.x - screenX) / 2f);
@@ -162,8 +162,8 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	}
 
 	@Override
-	public void onHudSystemReady(final InterfaceSystem interfaceSystem) {
-		addSystem(InterfaceSystem.class, interfaceSystem);
+	public void onHudSystemReady(final UserInterfaceSystem userInterfaceSystem) {
+		addSystem(UserInterfaceSystem.class, userInterfaceSystem);
 	}
 
 	@Override

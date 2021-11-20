@@ -3,7 +3,7 @@ package com.gadarts.isometric.systems.hud;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.gadarts.isometric.systems.GameSystem;
 
-public interface InterfaceSystem extends GameSystem {
+public interface UserInterfaceSystem extends GameSystem {
 	Stage getStage( );
 
 	boolean hasOpenWindows( );

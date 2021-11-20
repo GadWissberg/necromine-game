@@ -13,8 +13,8 @@ import com.badlogic.gdx.utils.StringBuilder;
 import com.gadarts.isometric.NecronemesGame;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
-import com.gadarts.isometric.systems.hud.InterfaceSystem;
-import com.gadarts.isometric.systems.hud.InterfaceSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.UserInterfaceSystem;
+import com.gadarts.isometric.systems.hud.UserInterfaceSystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandParameter;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
@@ -29,9 +29,9 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 /**
  * Aggregates rendering data.
  */
-public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
+public class ProfilerSystemUser extends GameEntitySystem<SystemEventsSubscriber>
 		implements RenderSystemEventsSubscriber,
-		InterfaceSystemEventsSubscriber,
+		UserInterfaceSystemEventsSubscriber,
 		ConsoleEventsSubscriber {
 	public static final String WARNING_COLOR = "[RED]";
 	private static final char SEPARATOR = '/';
@@ -183,9 +183,9 @@ public class ProfilerSystem extends GameEntitySystem<SystemEventsSubscriber>
 	}
 
 	@Override
-	public void onHudSystemReady(final InterfaceSystem interfaceSystem) {
-		this.stage = interfaceSystem.getStage();
-		addSystem(InterfaceSystem.class, interfaceSystem);
+	public void onHudSystemReady(final UserInterfaceSystem userInterfaceSystem) {
+		this.stage = userInterfaceSystem.getStage();
+		addSystem(UserInterfaceSystem.class, userInterfaceSystem);
 		BitmapFont font = new BitmapFont();
 		font.getData().markupEnabled = true;
 		label = new Label(stringBuilder, new Label.LabelStyle(font, Color.WHITE));

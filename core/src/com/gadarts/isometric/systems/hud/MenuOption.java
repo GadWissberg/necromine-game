@@ -16,7 +16,7 @@ public class MenuOption extends Label {
 	public MenuOption(final MenuOptionDefinition option,
 					  final LabelStyle optionStyle,
 					  final GlobalGameService globalGameService,
-					  final InterfaceSystem interfaceSystem,
+					  final UserInterfaceSystem userInterfaceSystem,
 					  final SoundPlayer soundPlayer) {
 		super(option.getLabel(), new LabelStyle(optionStyle));
 		addListener(new ClickListener() {
@@ -34,11 +34,11 @@ public class MenuOption extends Label {
 			public void clicked(final InputEvent event, final float x, final float y) {
 				super.clicked(event, x, y);
 				if (option.getAction() != null) {
-					option.getAction().run(globalGameService, interfaceSystem);
+					option.getAction().run(globalGameService, userInterfaceSystem);
 				} else {
 					MenuOptionDefinition[] subOptions = option.getSubOptions();
 					if (subOptions != null) {
-						interfaceSystem.applyMenuOptions(subOptions);
+						userInterfaceSystem.applyMenuOptions(subOptions);
 					}
 				}
 				soundPlayer.playSound(Assets.Sounds.UI_CLICK);

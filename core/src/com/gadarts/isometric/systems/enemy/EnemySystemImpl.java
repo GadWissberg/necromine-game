@@ -6,7 +6,6 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -51,11 +50,8 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		CharacterSystemEventsSubscriber {
 
 	public static final float SKILL_FLOWER_HEIGHT_RELATIVE = 1F;
-	private static final Vector3 auxVector3_1 = new Vector3();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
-	private static final Vector2 auxVector2_3 = new Vector2();
-	private static final Vector2 auxVector2_4 = new Vector2();
 	private static final MapGraphPath auxPath = new MapGraphPath();
 	private static final CharacterCommand auxCommand = new CharacterCommand();
 	private static final float MAX_SIGHT = 11;
@@ -149,7 +145,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 						enemyComponent.setTargetLastVisibleNode(auxNodesList.get(MathUtils.random(auxNodesList.size() - 1)));
 					}
 				}
-				if (characterSystem.calculatePath(enemyNode, enemyComponent.getTargetLastVisibleNode(), auxPath)) {
+				if (characterSystem.calculatePath(enemyNode, enemyComponent.getTargetLastVisibleNode(), auxPath, true)) {
 					applyCommand(enemy, CharacterCommands.GO_TO_MELEE);
 				}
 			}
@@ -157,8 +153,8 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	private void addAsPossibleNodeToLookIn(MapGraphNode enemyNode, MapGraphNode node) {
-		if (characterSystem.calculatePath(enemyNode, node, auxPath)) {
+	private void addAsPossibleNodeToLookIn(final MapGraphNode enemyNode, final MapGraphNode node) {
+		if (characterSystem.calculatePath(enemyNode, node, auxPath, true)) {
 			if (!auxNodesList.contains(node)) {
 				auxNodesList.add(node);
 			}
@@ -311,32 +307,6 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		if (newFrame.index == ComponentsMapper.character.get(entity).getCharacterSpriteData().getMeleeHitFrameIndex()) {
 			SoundPlayer soundPlayer = services.getSoundPlayer();
 			soundPlayer.playSound(ComponentsMapper.enemy.get(entity).getEnemyDefinition().getAttackSound());
-		}
-	}
-
-	private void checkLineOfSightForEnemies(final Entity entity) {
-		for (Entity enemy : enemies) {
-			int hp = ComponentsMapper.character.get(enemy).getSkills().getHealthData().getHp();
-			if (hp > 0 && ComponentsMapper.enemy.get(enemy).getStatus() != IDLE) {
-				Decal enemyDecal = ComponentsMapper.characterDecal.get(enemy).getDecal();
-				Vector3 enemyPosition = auxVector3_1.set(enemyDecal.getPosition());
-				Vector3 playerPosition = ComponentsMapper.characterDecal.get(entity).getDecal().getPosition();
-				if (enemyPosition.dst2(playerPosition) <= Math.pow(MAX_SIGHT, 2)) {
-					awakeEnemyIfSpotsTarget(enemy);
-				}
-			}
-		}
-	}
-
-	private void awakeEnemyIfSpotsTarget(final Entity enemy) {
-		boolean spotted = checkLineOfSightForEnemy(enemy, true);
-		if (spotted) {
-			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
-			Entity target = ComponentsMapper.character.get(enemy).getTarget();
-			Vector2 nodePosition = ComponentsMapper.characterDecal.get(target).getNodePosition(auxVector2_1);
-			enemyComponent.setTargetLastVisibleNode(services.getMapService().getMap().getNode(nodePosition));
-			awakeEnemy(enemy);
-			services.getSoundPlayer().playSound(enemyComponent.getEnemyDefinition().getAwakeSound());
 		}
 	}
 

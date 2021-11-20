@@ -18,16 +18,16 @@ import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
-import com.gadarts.isometric.systems.hud.InterfaceSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.UserInterfaceSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 
-public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscriber>
+public class PickUpSystemImplUser extends GameEntitySystem<PickupSystemEventsSubscriber>
 		implements PickUpSystem,
 		PlayerSystemEventsSubscriber,
 		InputSystemEventsSubscriber,
-		InterfaceSystemEventsSubscriber,
+		UserInterfaceSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber {
 
@@ -107,7 +107,7 @@ public class PickUpSystemImpl extends GameEntitySystem<PickupSystemEventsSubscri
 
 	@Override
 	public void activate() {
-		subscribers.forEach(sub -> sub.onPickUpSystemReady(PickUpSystemImpl.this));
+		subscribers.forEach(sub -> sub.onPickUpSystemReady(PickUpSystemImplUser.this));
 	}
 
 	private boolean handlePickupHighlight(final Ray ray, final Entity pickup, final MapGraphNode currentNode) {

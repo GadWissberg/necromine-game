@@ -3,5 +3,5 @@ package com.gadarts.isometric.systems.hud;
 import com.gadarts.isometric.GlobalGameService;
 
 public interface MenuOptionAction {
-	void run(GlobalGameService globalGameService, InterfaceSystem interfaceSystem);
+	void run(GlobalGameService globalGameService, UserInterfaceSystem userInterfaceSystem);
 }

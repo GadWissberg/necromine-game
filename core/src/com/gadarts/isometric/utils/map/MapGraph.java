@@ -38,7 +38,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	private static final float PASSABLE_MAX_HEIGHT_DIFF = 0.3f;
 
 	@Setter
-	private boolean includeEnemiesInGetConnections;
+	private boolean includeEnemiesInGetConnections = true;
 	@Getter
 	private final Array<MapGraphNode> nodes;
 

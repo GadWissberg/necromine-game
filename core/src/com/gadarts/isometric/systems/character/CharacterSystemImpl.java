@@ -96,19 +96,6 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		return result;
 	}
 
-	@Override
-	public boolean calculatePath(final MapGraphNode sourceNode,
-								 final MapGraphNode destinationNode,
-								 final MapGraphPath outputPath) {
-		outputPath.clear();
-		boolean success = graphData.getPathFinder().searchNodePath(
-				sourceNode,
-				destinationNode,
-				graphData.getHeuristic(),
-				outputPath
-		);
-		return success && !isPathHasUnrevealedNodes(outputPath);
-	}
 
 	@Override
 	public boolean calculatePathToCharacter(final MapGraphNode sourceNode,
@@ -339,6 +326,22 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	@Override
 	public void applyCommand(final CharacterCommand command, final Entity character) {
 		commandsHandler.applyCommand(command, character);
+	}
+
+	@Override
+	public boolean calculatePath(final MapGraphNode sourceNode,
+								 final MapGraphNode destinationNode,
+								 final MapGraphPath outputPath,
+								 final boolean avoidCharactersInCalculations) {
+		outputPath.clear();
+		boolean success = graphData.getPathFinder().searchNodePathBeforeCommand(
+				sourceNode,
+				destinationNode,
+				graphData.getHeuristic(),
+				outputPath,
+				avoidCharactersInCalculations
+		);
+		return success && !isPathHasUnrevealedNodes(outputPath);
 	}
 
 	@Override

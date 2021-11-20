@@ -28,8 +28,8 @@ import com.gadarts.isometric.systems.character.commands.CharacterCommand;
 import com.gadarts.isometric.systems.character.commands.CharacterCommands;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.AttackNodesHandler;
-import com.gadarts.isometric.systems.hud.InterfaceSystem;
-import com.gadarts.isometric.systems.hud.InterfaceSystemEventsSubscriber;
+import com.gadarts.isometric.systems.hud.UserInterfaceSystem;
+import com.gadarts.isometric.systems.hud.UserInterfaceSystemEventsSubscriber;
 import com.gadarts.isometric.systems.input.InputSystem;
 import com.gadarts.isometric.systems.input.InputSystemEventsSubscriber;
 import com.gadarts.isometric.systems.pickup.PickUpSystem;
@@ -46,12 +46,12 @@ import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
 import java.util.List;
 
-public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscriber> implements
+public class PlayerSystemImplUser extends GameEntitySystem<PlayerSystemEventsSubscriber> implements
 		PlayerSystem,
 		PickupSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
 		TurnsSystemEventsSubscriber,
-		InterfaceSystemEventsSubscriber,
+		UserInterfaceSystemEventsSubscriber,
 		InputSystemEventsSubscriber,
 		CharacterSystemEventsSubscriber,
 		RenderSystemEventsSubscriber,
@@ -108,8 +108,8 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		CharacterSystem characterSystem = getSystem(CharacterSystem.class);
 		MapGraphPath plannedPath = pathPlanHandler.getPath();
 		return ((enemyAtNode != null && ComponentsMapper.character.get(enemyAtNode).getSkills().getHealthData().getHp() > 0 && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath, true))
-				|| getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath)
-				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath));
+				|| getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath, true)
+				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath, true));
 	}
 
 
@@ -277,7 +277,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 	}
 
 	@Override
-	public void onHudSystemReady(final InterfaceSystem interfaceSystem) {
+	public void onHudSystemReady(final UserInterfaceSystem userInterfaceSystem) {
 
 	}
 
