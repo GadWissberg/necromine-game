@@ -1,4 +1,4 @@
-package com.gadarts.isometric.components.decal;
+package com.gadarts.isometric.components.decal.character;
 
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.MathUtils;

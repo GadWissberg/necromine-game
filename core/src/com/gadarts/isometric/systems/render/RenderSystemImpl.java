@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -19,13 +20,20 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.gadarts.isometric.components.*;
+import com.badlogic.gdx.utils.TimeUtils;
+import com.gadarts.isometric.components.AnimationComponent;
+import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.LightComponent;
+import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.data.CharacterSpriteData;
-import com.gadarts.isometric.components.decal.CharacterDecalComponent;
-import com.gadarts.isometric.components.decal.RelatedDecal;
-import com.gadarts.isometric.components.decal.SimpleDecalComponent;
+import com.gadarts.isometric.components.decal.character.CharacterAnimation;
+import com.gadarts.isometric.components.decal.character.CharacterDecalComponent;
+import com.gadarts.isometric.components.decal.simple.RelatedDecal;
+import com.gadarts.isometric.components.decal.simple.SimpleDecalComponent;
+import com.gadarts.isometric.components.enemy.EnemyComponent;
+import com.gadarts.isometric.components.enemy.EnemyStatus;
 import com.gadarts.isometric.components.model.AdditionalRenderData;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.services.GameServices;
@@ -46,6 +54,7 @@ import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
+import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import com.gadarts.necromine.model.characters.CharacterUtils;
 import com.gadarts.necromine.model.characters.Direction;
@@ -60,7 +69,7 @@ import static java.lang.Math.max;
 /**
  * Handles rendering.
  */
-public class RenderSystemImplUser extends GameEntitySystem<RenderSystemEventsSubscriber> implements
+public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscriber> implements
 		RenderSystem,
 		EntityListener,
 		UserInterfaceSystemEventsSubscriber,
@@ -81,6 +90,7 @@ public class RenderSystemImplUser extends GameEntitySystem<RenderSystemEventsSub
 	public static final String MSG_ACTIVATED = "activated";
 	public static final String MSG_DISABLED = "disabled";
 	private static final String MSG_FS = "Full-screen has been %s.";
+	private static final int ICON_FLOWER_APPEARANCE_DURATION = 1000;
 	private final DrawFlags drawFlags = new DrawFlags();
 	private final StringBuilder stringBuilder = new StringBuilder();
 	private WorldEnvironment environment;
@@ -92,12 +102,14 @@ public class RenderSystemImplUser extends GameEntitySystem<RenderSystemEventsSub
 	private BitmapFont skillFlowerFont;
 	private GlyphLayout skillFlowerGlyph;
 	private boolean frustumCull = !DefaultGameSettings.DISABLE_FRUSTUM_CULLING;
+	private Texture iconFlowerLookingFor;
 
 	@Override
 	public void init(final GameServices services) {
 		super.init(services);
 		skillFlowerFont = new BitmapFont();
 		skillFlowerGlyph = new GlyphLayout();
+		iconFlowerLookingFor = services.getAssetManager().getTexture(Assets.UiTextures.ICON_LOOKING_FOR);
 	}
 
 	@Override
@@ -169,7 +181,7 @@ public class RenderSystemImplUser extends GameEntitySystem<RenderSystemEventsSub
 				Vector2 nodePosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 				if (isOutsideFow(services.getMapService().getMap().getNode((int) nodePosition.x, (int) nodePosition.y))) {
 					if (ComponentsMapper.simpleDecal.has(enemy)) {
-						renderSkillFlowerText(enemy, renderBatches.getSpriteBatch());
+						renderSkillFlowerInsideContent(enemy, renderBatches.getSpriteBatch());
 					}
 				}
 			}
@@ -244,15 +256,43 @@ public class RenderSystemImplUser extends GameEntitySystem<RenderSystemEventsSub
 		}
 	}
 
-	private void renderSkillFlowerText(final Entity entity, final SpriteBatch spriteBatch) {
-		SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(entity);
+	private void renderSkillFlowerInsideContent(final Entity enemy, final SpriteBatch spriteBatch) {
+		EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
+		flipIconDisplayInFlower(enemyComponent);
+		SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(enemy);
 		Vector3 screenPos = camera.project(auxVector3_1.set(simpleDecalComponent.getDecal().getPosition()));
+		if (enemyComponent.getStatus() == EnemyStatus.SEARCHING && enemyComponent.isDisplayIconInFlower()) {
+			renderSkillFlowerIcon(spriteBatch, screenPos);
+		} else {
+			renderSkillFlowerText(spriteBatch, enemyComponent, screenPos);
+		}
+	}
+
+	private void renderSkillFlowerIcon(final SpriteBatch spriteBatch, final Vector3 screenPos) {
+		float x = screenPos.x - iconFlowerLookingFor.getWidth() / 2F;
+		float y = screenPos.y - iconFlowerLookingFor.getHeight() / 2F;
+		spriteBatch.draw(iconFlowerLookingFor, x, y);
+	}
+
+	private void renderSkillFlowerText(final SpriteBatch spriteBatch,
+									   final EnemyComponent enemyComponent,
+									   final Vector3 screenPos) {
 		stringBuilder.setLength(0);
-		String text = stringBuilder.append(ComponentsMapper.enemy.get(entity).getSkill()).toString();
+		String text = stringBuilder.append(enemyComponent.getSkill()).toString();
 		skillFlowerGlyph.setText(skillFlowerFont, text);
 		float x = screenPos.x - skillFlowerGlyph.width / 2F;
 		float y = screenPos.y + skillFlowerGlyph.height / 2F;
 		skillFlowerFont.draw(spriteBatch, text, x, y);
+	}
+
+	private void flipIconDisplayInFlower(final EnemyComponent enemyComponent) {
+		if (enemyComponent.getStatus() == EnemyStatus.SEARCHING) {
+			long lastIconDisplayInFlower = enemyComponent.getIconDisplayInFlowerTimeStamp();
+			if (TimeUtils.timeSinceMillis(lastIconDisplayInFlower) >= ICON_FLOWER_APPEARANCE_DURATION) {
+				enemyComponent.setDisplayIconInFlower(!enemyComponent.isDisplayIconInFlower());
+				enemyComponent.setIconDisplayInFlowerTimeStamp(TimeUtils.millis());
+			}
+		}
 	}
 
 	private void renderLiveCharacters(final float deltaTime, final Camera camera) {

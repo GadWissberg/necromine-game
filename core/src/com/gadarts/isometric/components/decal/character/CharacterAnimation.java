@@ -1,4 +1,4 @@
-package com.gadarts.isometric.components;
+package com.gadarts.isometric.components.decal.character;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;

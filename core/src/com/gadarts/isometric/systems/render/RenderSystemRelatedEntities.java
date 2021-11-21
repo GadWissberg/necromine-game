@@ -5,8 +5,8 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.gadarts.isometric.components.ModelInstanceComponent;
-import com.gadarts.isometric.components.decal.CharacterDecalComponent;
-import com.gadarts.isometric.components.decal.SimpleDecalComponent;
+import com.gadarts.isometric.components.decal.character.CharacterDecalComponent;
+import com.gadarts.isometric.components.decal.simple.SimpleDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import lombok.Getter;
 

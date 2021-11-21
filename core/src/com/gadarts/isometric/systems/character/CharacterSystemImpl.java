@@ -19,7 +19,7 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterMotivation;
 import com.gadarts.isometric.components.character.data.*;
-import com.gadarts.isometric.components.decal.CharacterDecalComponent;
+import com.gadarts.isometric.components.decal.character.CharacterDecalComponent;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.systems.GameEntitySystem;

@@ -19,7 +19,7 @@ import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystemImplUser;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
-import com.gadarts.isometric.systems.render.RenderSystemImplUser;
+import com.gadarts.isometric.systems.render.RenderSystemImpl;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystemImpl;
 import lombok.Getter;
@@ -33,7 +33,7 @@ public enum Systems {
 	INPUT(new InputSystemImpl(), InputSystemEventsSubscriber.class),
 	PICKUP(new PickUpSystemImplUser(), PickupSystemEventsSubscriber.class),
 	PLAYER(new PlayerSystemImplUser(), PlayerSystemEventsSubscriber.class),
-	RENDER(new RenderSystemImplUser(), RenderSystemEventsSubscriber.class),
+	RENDER(new RenderSystemImpl(), RenderSystemEventsSubscriber.class),
 	TURNS(new TurnsSystemImpl(), TurnsSystemEventsSubscriber.class),
 	PICKUPS(new PickUpSystemImplUser(), PickupSystemEventsSubscriber.class),
 	BULLETS(new BulletsSystemImpl(), BulletsSystemEventsSubscriber.class),

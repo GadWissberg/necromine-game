@@ -16,8 +16,8 @@ import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.FlowerSkillIconComponent;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.data.CharacterHealthData;
-import com.gadarts.isometric.components.decal.RelatedDecal;
-import com.gadarts.isometric.components.decal.SimpleDecalComponent;
+import com.gadarts.isometric.components.decal.simple.RelatedDecal;
+import com.gadarts.isometric.components.decal.simple.SimpleDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.enemy.EnemyStatus;
 import com.gadarts.isometric.systems.GameEntitySystem;
@@ -42,8 +42,7 @@ import com.gadarts.necromine.model.characters.enemies.Enemies;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gadarts.isometric.components.enemy.EnemyStatus.ATTACKING;
-import static com.gadarts.isometric.components.enemy.EnemyStatus.IDLE;
+import static com.gadarts.isometric.components.enemy.EnemyStatus.*;
 import static com.gadarts.necromine.model.characters.attributes.Accuracy.NONE;
 
 /**
@@ -74,6 +73,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private TextureRegion skillFlowerTexture;
 	private Texture iconSpottedTexture;
 	private ImmutableArray<Entity> icons;
+	private Texture iconLookingForTexture;
 
 	@Override
 	public void update(final float deltaTime) {
@@ -150,6 +150,10 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			MapGraphNode targetLastVisibleNode = enemyComponent.getTargetLastVisibleNode();
 			if (targetLastVisibleNode != null) {
 				if (enemyNode.equals(targetLastVisibleNode)) {
+					if (enemyComponent.getStatus() == RUNNING_TO_LAST_SEEN_POSITION) {
+						createSkillFlowerIcon(ComponentsMapper.simpleDecal.get(enemy).getDecal(), iconLookingForTexture);
+					}
+					enemyComponent.setStatus(SEARCHING);
 					auxNodesList.clear();
 					int col = enemyNode.getCol();
 					int row = enemyNode.getRow();
@@ -353,15 +357,15 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		ComponentsMapper.enemy.get(enemy).setStatus(ATTACKING);
 		Decal flowerDecal = ComponentsMapper.simpleDecal.get(enemy).getDecal();
 		flowerDecal.setTextureRegion(skillFlowerTexture);
-		createSkillFlowerIcon(flowerDecal);
+		createSkillFlowerIcon(flowerDecal, iconSpottedTexture);
 		for (EnemySystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onEnemyAwaken(enemy);
 		}
 	}
 
-	private void createSkillFlowerIcon(final Decal flowerDecal) {
+	private void createSkillFlowerIcon(final Decal flowerDecal, Texture iconTexture) {
 		EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
-				.addSimpleDecalComponent(flowerDecal.getPosition(), iconSpottedTexture, true, true)
+				.addSimpleDecalComponent(flowerDecal.getPosition(), iconTexture, true, true)
 				.addFlowerSkillIconComponent()
 				.finishAndAddToEngine();
 	}
@@ -397,7 +401,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 					}
 				} else {
 					if (!isTargetInFov(enemy) || checkIfFloorNodesBlockSightToTarget(enemy)) {
-						enemyComponent.setStatus(EnemyStatus.SEARCHING);
+						enemyComponent.setStatus(EnemyStatus.RUNNING_TO_LAST_SEEN_POSITION);
 						updateEnemyTargetLastVisibleNode(enemy, enemyComponent);
 					}
 				}
@@ -416,5 +420,6 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	public void activate( ) {
 		skillFlowerTexture = new TextureRegion(services.getAssetManager().getTexture(UiTextures.SKILL_FLOWER_CENTER));
 		iconSpottedTexture = services.getAssetManager().getTexture(UiTextures.ICON_SPOTTED);
+		iconLookingForTexture = services.getAssetManager().getTexture(UiTextures.ICON_LOOKING_FOR);
 	}
 }

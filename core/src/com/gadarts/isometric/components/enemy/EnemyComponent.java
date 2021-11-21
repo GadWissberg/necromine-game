@@ -26,6 +26,8 @@ public class EnemyComponent implements GameComponent {
 	private EnemyTimeStamps timeStamps = new EnemyTimeStamps();
 	private int skill = 1;
 	private Animation<TextureAtlas.AtlasRegion> bulletAnimation;
+	private long iconDisplayInFlowerTimeStamp;
+	private boolean displayIconInFlower;
 
 	public void setTargetLastVisibleNode(final MapGraphNode coords) {
 		targetLastVisibleNode = coords;
@@ -41,6 +43,7 @@ public class EnemyComponent implements GameComponent {
 		timeStamps.reset();
 		targetLastVisibleNode = null;
 		status = EnemyStatus.IDLE;
+		iconDisplayInFlowerTimeStamp = 0;
 	}
 
 	@Override

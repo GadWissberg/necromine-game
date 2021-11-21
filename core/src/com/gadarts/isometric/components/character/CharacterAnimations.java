@@ -1,6 +1,6 @@
 package com.gadarts.isometric.components.character;
 
-import com.gadarts.isometric.components.CharacterAnimation;
+import com.gadarts.isometric.components.decal.character.CharacterAnimation;
 import com.gadarts.necromine.model.characters.Direction;
 import com.gadarts.necromine.model.characters.SpriteType;
 
