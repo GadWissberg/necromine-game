@@ -679,7 +679,7 @@ public final class MapBuilder implements Disposable {
 			int index = characterJsonObject.get(TYPE).getAsInt();
 			type = Enemies.values()[index];
 		}
-		int skill = 2;
+		int skill = 1;
 		Animation<AtlasRegion> bulletAnimation = enemyBulletsTextureRegions.get(type);
 		if (type.getPrimaryAttack() != null && !enemyBulletsTextureRegions.containsKey(type)) {
 			String name = EnemyWeaponsDefinitions.ENERGY_BALL.name().toLowerCase();

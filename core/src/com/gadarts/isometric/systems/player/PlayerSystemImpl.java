@@ -46,7 +46,7 @@ import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
 import java.util.List;
 
-public class PlayerSystemImplUser extends GameEntitySystem<PlayerSystemEventsSubscriber> implements
+public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscriber> implements
 		PlayerSystem,
 		PickupSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,

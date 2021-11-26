@@ -122,7 +122,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	@Override
 	public void onEnemyTurn(final long currentTurnId) {
 		if (invokeTurnForUnplayedEnemy(currentTurnId)) return;
-		enemyFinishedTurn();
+		enemiesFinishedTurn();
 	}
 
 	private boolean invokeTurnForUnplayedEnemy(final long currentTurnId) {
@@ -139,10 +139,23 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		return false;
 	}
 
+	@Override
+	public void onCharacterRotated(final Entity character) {
+		if (ComponentsMapper.enemy.has(character)) {
+			EnemyStatus status = ComponentsMapper.enemy.get(character).getStatus();
+			if ((status == RUNNING_TO_LAST_SEEN_POSITION || status == SEARCHING)) {
+				if (isTargetInFov(character) && !checkIfFloorNodesBlockSightToTarget(character)) {
+					awakeEnemy(character);
+					invokeEnemyAttackBehaviour(character);
+				}
+			}
+		}
+	}
+
 	private void invokeEnemyTurn(final Entity enemy) {
 		EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
 		if (enemyComponent.getStatus() == ATTACKING) {
-			invokeEnemyAttackBehaviour(enemy, enemyComponent);
+			invokeEnemyAttackBehaviour(enemy);
 		} else {
 			Vector2 nodePosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 			MapGraph map = services.getMapService().getMap();
@@ -177,7 +190,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 					applyCommand(enemy, CharacterCommands.GO_TO_MELEE);
 				}
 			}
-			enemyFinishedTurn();
+//			onCharacterCommandDone(enemy, null);
 		}
 	}
 
@@ -189,13 +202,14 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	private void invokeEnemyAttackBehaviour(final Entity enemy, final EnemyComponent enemyComponent) {
+	private void invokeEnemyAttackBehaviour(final Entity enemy) {
 		Vector2 enemyPosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 		Entity target = ComponentsMapper.character.get(enemy).getTarget();
 		MapGraphNode enemyNode = services.getMapService().getMap().getNode(enemyPosition);
+		EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
 		Enemies enemyDefinition = enemyComponent.getEnemyDefinition();
 		if (!considerPrimaryAttack(enemy, enemyComponent, enemyDefinition, enemyComponent.getSkill() - 1)) {
-			applyGoToMelee(enemy, enemyNode, target);
+			calculatePathAndApplyGoToMelee(enemy, enemyNode, target);
 		}
 	}
 
@@ -233,15 +247,23 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		return position.dst(targetPosition);
 	}
 
-	private void applyGoToMelee(final Entity enemy,
-								final MapGraphNode enemyNode,
-								final Entity target) {
-		if (characterSystem.calculatePathToCharacter(enemyNode, target, auxPath, false)) {
-			auxPath.nodes.removeIndex(auxPath.getCount() - 1);
-			applyCommand(enemy, CharacterCommands.GO_TO_MELEE);
+	private void calculatePathAndApplyGoToMelee(final Entity enemy,
+												final MapGraphNode enemyNode,
+												final Entity target) {
+		if (characterSystem.calculatePathToCharacter(enemyNode, target, auxPath, true)) {
+			applyGoToMelee(enemy);
 		} else {
-			onCharacterCommandDone(enemy, null);
+			if (characterSystem.calculatePathToCharacter(enemyNode, target, auxPath, false)) {
+				applyGoToMelee(enemy);
+			} else {
+				onCharacterCommandDone(enemy, null);
+			}
 		}
+	}
+
+	private void applyGoToMelee(final Entity enemy) {
+		auxPath.nodes.removeIndex(auxPath.getCount() - 1);
+		applyCommand(enemy, CharacterCommands.GO_TO_MELEE);
 	}
 
 
@@ -264,7 +286,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	private void enemyFinishedTurn( ) {
+	private void enemiesFinishedTurn( ) {
 		for (EnemySystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onEnemyFinishedTurn();
 		}

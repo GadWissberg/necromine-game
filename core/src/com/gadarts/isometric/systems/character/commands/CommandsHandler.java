@@ -108,7 +108,8 @@ public class CommandsHandler {
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onNewCharacterCommandSet(command);
 		}
-		initDestinationNode(ComponentsMapper.character.get(character), graphData.getCurrentPath().get(1));
+		MapGraphNode destNode = graphData.getCurrentPath().get(1);
+		initDestinationNode(ComponentsMapper.character.get(character), destNode);
 	}
 
 	public void initDestinationNode(final CharacterComponent characterComponent,

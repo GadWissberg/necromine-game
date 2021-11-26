@@ -166,6 +166,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		if (charComponent.getCharacterSpriteData().getSpriteType() == PAIN) return;
 		CharacterRotationData rotationData = charComponent.getRotationData();
 		if (rotationData.isRotating() && TimeUtils.timeSinceMillis(rotationData.getLastRotation()) > ROT_INTERVAL) {
+			for (CharacterSystemEventsSubscriber subscriber : subscribers) {
+				subscriber.onCharacterRotated(character);
+			}
 			rotationData.setLastRotation(TimeUtils.millis());
 			Direction directionToDest;
 			CharacterSpriteData characterSpriteData = charComponent.getCharacterSpriteData();
@@ -392,10 +395,12 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		if (newFrame.index == 0 || newFrame.index == 5) {
 			services.getSoundPlayer().playSound(characterComponent.getSoundData().getStepSound());
 		}
-		MapGraphNode oldDest = characterComponent.getDestinationNode();
+		MapGraphNode dest = characterComponent.getDestinationNode();
 		Decal decal = ComponentsMapper.characterDecal.get(character).getDecal();
-		if (auxVector2_1.set(decal.getX(), decal.getZ()).dst2(oldDest.getCenterPosition(auxVector2_2)) < Utils.EPSILON) {
-			reachedNodeOfPath(character, oldDest);
+		Vector2 position = auxVector2_1.set(decal.getX(), decal.getZ());
+		boolean reachedDestNode = position.dst2(dest.getCenterPosition(auxVector2_2)) < Utils.EPSILON;
+		if (reachedDestNode) {
+			reachedNodeOfPath(character, dest);
 		} else {
 			takeStep(character);
 		}

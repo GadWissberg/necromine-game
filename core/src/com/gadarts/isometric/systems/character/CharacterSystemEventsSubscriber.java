@@ -44,4 +44,8 @@ public interface CharacterSystemEventsSubscriber extends SystemEventsSubscriber 
 												 final Vector3 characterPosition) {
 
 	}
+
+	default void onCharacterRotated(Entity character) {
+
+	}
 }

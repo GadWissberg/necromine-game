@@ -347,4 +347,18 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	public int getDepth( ) {
 		return mapSize.height;
 	}
+
+	public Entity getAliveCharacterFromNode(final MapGraphNode dest) {
+		ImmutableArray<Entity> characterEntities = relatedEntities.getCharacterEntities();
+		Entity result = null;
+		for (Entity entity : characterEntities) {
+			if (getNode(ComponentsMapper.characterDecal.get(entity).getNodePosition(auxVector2)).equals(dest)) {
+				if (ComponentsMapper.character.get(entity).getSkills().getHealthData().getHp() > 0) {
+					result = entity;
+					break;
+				}
+			}
+		}
+		return result;
+	}
 }

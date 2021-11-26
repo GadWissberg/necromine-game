@@ -17,7 +17,7 @@ import com.gadarts.isometric.systems.particles.ParticleEffectsSystemImpl;
 import com.gadarts.isometric.systems.pickup.PickUpSystemImplUser;
 import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
-import com.gadarts.isometric.systems.player.PlayerSystemImplUser;
+import com.gadarts.isometric.systems.player.PlayerSystemImpl;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystemImpl;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
@@ -32,7 +32,7 @@ public enum Systems {
 	HUD(new UserUserInterfaceSystemImpl(), UserInterfaceSystemEventsSubscriber.class),
 	INPUT(new InputSystemImpl(), InputSystemEventsSubscriber.class),
 	PICKUP(new PickUpSystemImplUser(), PickupSystemEventsSubscriber.class),
-	PLAYER(new PlayerSystemImplUser(), PlayerSystemEventsSubscriber.class),
+	PLAYER(new PlayerSystemImpl(), PlayerSystemEventsSubscriber.class),
 	RENDER(new RenderSystemImpl(), RenderSystemEventsSubscriber.class),
 	TURNS(new TurnsSystemImpl(), TurnsSystemEventsSubscriber.class),
 	PICKUPS(new PickUpSystemImplUser(), PickupSystemEventsSubscriber.class),
