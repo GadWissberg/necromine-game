@@ -20,6 +20,7 @@ import com.gadarts.isometric.components.decal.simple.RelatedDecal;
 import com.gadarts.isometric.components.decal.simple.SimpleDecalComponent;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
 import com.gadarts.isometric.components.enemy.EnemyStatus;
+import com.gadarts.isometric.components.player.PlayerStorage;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterSystem;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
@@ -38,6 +39,7 @@ import com.gadarts.necromine.model.characters.SpriteType;
 import com.gadarts.necromine.model.characters.attributes.Accuracy;
 import com.gadarts.necromine.model.characters.attributes.Range;
 import com.gadarts.necromine.model.characters.enemies.Enemies;
+import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +65,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private static final int NUMBER_OF_SKILL_FLOWER_LEAF = 8;
 	private static final Bresenham2 bresenham = new Bresenham2();
 	private static final float RANGE_ATTACK_MIN_RADIUS = 1.7F;
+	private static final float MIN_SOUND_DISTANCE = 6F;
 	private static final List<MapGraphNode> auxNodesList = new ArrayList<>();
 	private static final float ICON_SPEED = 0.5F;
 	private static final int ICON_DURATION = 2;
@@ -125,6 +128,25 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		enemiesFinishedTurn();
 	}
 
+	@Override
+	public void onCharacterEngagesPrimaryAttack(final Entity character,
+												final Vector3 direction,
+												final Vector3 characterPosition) {
+		if (ComponentsMapper.player.has(character)) {
+			PlayerStorage storage = ComponentsMapper.player.get(character).getStorage();
+			WeaponsDefinitions definition = (WeaponsDefinitions) storage.getSelectedWeapon().getDefinition();
+			if (definition.isNoisy()) {
+				for (Entity enemy : enemies) {
+					if (ComponentsMapper.character.get(enemy).getSkills().getHealthData().getHp() > 0) {
+						if (calculateDistanceToTarget(enemy) < MIN_SOUND_DISTANCE) {
+							applySearchingModeOnEnemy(enemy);
+						}
+					}
+				}
+			}
+		}
+	}
+
 	private boolean invokeTurnForUnplayedEnemy(final long currentTurnId) {
 		for (Entity enemy : enemies) {
 			int hp = ComponentsMapper.character.get(enemy).getSkills().getHealthData().getHp();
@@ -157,40 +179,47 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		if (enemyComponent.getStatus() == ATTACKING) {
 			invokeEnemyAttackBehaviour(enemy);
 		} else {
-			Vector2 nodePosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 			MapGraph map = services.getMapService().getMap();
+			Vector2 nodePosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 			MapGraphNode enemyNode = map.getNode(nodePosition);
 			MapGraphNode targetLastVisibleNode = enemyComponent.getTargetLastVisibleNode();
 			if (targetLastVisibleNode != null) {
 				if (enemyNode.equals(targetLastVisibleNode)) {
-					if (enemyComponent.getStatus() == RUNNING_TO_LAST_SEEN_POSITION) {
-						createSkillFlowerIcon(ComponentsMapper.simpleDecal.get(enemy).getDecal(), iconLookingForTexture);
-					}
-					enemyComponent.setStatus(SEARCHING);
-					auxNodesList.clear();
-					int col = enemyNode.getCol();
-					int row = enemyNode.getRow();
-					int left = Math.max(col - 1, 0);
-					int top = Math.max(row - 1, 0);
-					int bottom = Math.min(row + 1, map.getDepth());
-					int right = Math.min(col + 1, map.getWidth() - 1);
-					addAsPossibleNodeToLookIn(enemyNode, map.getNode(left, top));
-					addAsPossibleNodeToLookIn(enemyNode, map.getNode(col, top));
-					addAsPossibleNodeToLookIn(enemyNode, map.getNode(right, top));
-					addAsPossibleNodeToLookIn(enemyNode, map.getNode(left, row));
-					addAsPossibleNodeToLookIn(enemyNode, map.getNode(right, row));
-					addAsPossibleNodeToLookIn(enemyNode, map.getNode(left, bottom));
-					addAsPossibleNodeToLookIn(enemyNode, map.getNode(col, bottom));
-					addAsPossibleNodeToLookIn(enemyNode, map.getNode(right, bottom));
-					if (!auxNodesList.isEmpty()) {
-						enemyComponent.setTargetLastVisibleNode(auxNodesList.get(MathUtils.random(auxNodesList.size() - 1)));
-					}
+					applySearchingModeOnEnemy(enemy);
 				}
-				if (characterSystem.calculatePath(enemyNode, enemyComponent.getTargetLastVisibleNode(), auxPath, true)) {
+				if (characterSystem.calculatePath(enemyNode, enemyComponent.getTargetLastVisibleNode(), auxPath, false)) {
 					applyCommand(enemy, CharacterCommands.GO_TO_MELEE);
 				}
 			}
-//			onCharacterCommandDone(enemy, null);
+		}
+	}
+
+	private void applySearchingModeOnEnemy(final Entity enemy) {
+		MapGraph map = services.getMapService().getMap();
+		Vector2 nodePosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
+		MapGraphNode enemyNode = map.getNode(nodePosition);
+		EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
+		if (enemyComponent.getStatus() == RUNNING_TO_LAST_SEEN_POSITION) {
+			createSkillFlowerIcon(ComponentsMapper.simpleDecal.get(enemy).getDecal(), iconLookingForTexture);
+		}
+		enemyComponent.setStatus(SEARCHING);
+		auxNodesList.clear();
+		int col = enemyNode.getCol();
+		int row = enemyNode.getRow();
+		int left = Math.max(col - 1, 0);
+		int top = Math.max(row - 1, 0);
+		int bottom = Math.min(row + 1, map.getDepth());
+		int right = Math.min(col + 1, map.getWidth() - 1);
+		addAsPossibleNodeToLookIn(enemyNode, map.getNode(left, top));
+		addAsPossibleNodeToLookIn(enemyNode, map.getNode(col, top));
+		addAsPossibleNodeToLookIn(enemyNode, map.getNode(right, top));
+		addAsPossibleNodeToLookIn(enemyNode, map.getNode(left, row));
+		addAsPossibleNodeToLookIn(enemyNode, map.getNode(right, row));
+		addAsPossibleNodeToLookIn(enemyNode, map.getNode(left, bottom));
+		addAsPossibleNodeToLookIn(enemyNode, map.getNode(col, bottom));
+		addAsPossibleNodeToLookIn(enemyNode, map.getNode(right, bottom));
+		if (!auxNodesList.isEmpty()) {
+			enemyComponent.setTargetLastVisibleNode(auxNodesList.get(MathUtils.random(auxNodesList.size() - 1)));
 		}
 	}
 
@@ -385,7 +414,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	private void createSkillFlowerIcon(final Decal flowerDecal, Texture iconTexture) {
+	private void createSkillFlowerIcon(final Decal flowerDecal, final Texture iconTexture) {
 		EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
 				.addSimpleDecalComponent(flowerDecal.getPosition(), iconTexture, true, true)
 				.addFlowerSkillIconComponent()
@@ -413,14 +442,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 				EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
 				EnemyStatus status = enemyComponent.getStatus();
 				if (status != ATTACKING) {
-					if (isTargetInFov(enemy) && !checkIfFloorNodesBlockSightToTarget(enemy)) {
-						Vector2 enemyPos = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
-						Entity target = ComponentsMapper.character.get(enemy).getTarget();
-						Vector2 targetPos = ComponentsMapper.characterDecal.get(target).getNodePosition(auxVector2_2);
-						if (enemyPos.dst2(targetPos) <= Math.pow(MAX_SIGHT, 2)) {
-							awakeEnemy(enemy);
-						}
-					}
+					awakeEnemyIfTargetSpotted(enemy);
 				} else {
 					if (!isTargetInFov(enemy) || checkIfFloorNodesBlockSightToTarget(enemy)) {
 						enemyComponent.setStatus(EnemyStatus.RUNNING_TO_LAST_SEEN_POSITION);
@@ -429,6 +451,19 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 				}
 			}
 		}
+	}
+
+	private boolean awakeEnemyIfTargetSpotted(final Entity enemy) {
+		if (isTargetInFov(enemy) && !checkIfFloorNodesBlockSightToTarget(enemy)) {
+			Vector2 enemyPos = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
+			Entity target = ComponentsMapper.character.get(enemy).getTarget();
+			Vector2 targetPos = ComponentsMapper.characterDecal.get(target).getNodePosition(auxVector2_2);
+			if (enemyPos.dst2(targetPos) <= Math.pow(MAX_SIGHT, 2)) {
+				awakeEnemy(enemy);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void updateEnemyTargetLastVisibleNode(final Entity enemy, final EnemyComponent enemyComponent) {
