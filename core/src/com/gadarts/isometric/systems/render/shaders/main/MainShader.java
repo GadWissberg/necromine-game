@@ -13,6 +13,7 @@ import com.gadarts.isometric.components.ModelInstanceComponent;
 import com.gadarts.isometric.components.WallComponent;
 import com.gadarts.isometric.components.model.AdditionalRenderData;
 import com.gadarts.isometric.components.model.GameModelInstance;
+import com.gadarts.isometric.systems.render.RenderSystemImpl;
 import com.gadarts.isometric.systems.render.WorldEnvironment;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.necromine.assets.Assets;
@@ -20,7 +21,23 @@ import com.gadarts.necromine.model.Coords;
 
 import java.util.List;
 
-import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.*;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_AMBIENT_LIGHT;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_APPLY_FLOOR_AMBIENT_OCCLUSION;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_APPLY_WALL_AMBIENT_OCCLUSION;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_COLOR_WHEN_OUTSIDE;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_COMPLETE_BLACK;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_FOW_MAP;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_LIGHTS_COLORS;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_LIGHTS_EXTRA_DATA;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_LIGHTS_POSITIONS;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_MODEL_DEPTH;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_MODEL_HEIGHT;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_MODEL_WIDTH;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_MODEL_X;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_MODEL_Y;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_MODEL_Z;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_NUMBER_OF_LIGHTS;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_SKIP_COLOR;
 
 /**
  * Handles all main shader's uniforms.
@@ -58,6 +75,11 @@ public class MainShader extends DefaultShader {
 	public void init( ) {
 		super.init();
 		uniformsLocationsHandler.fetchUniformsLocations(program);
+		RenderSystemImpl.depthMap.bind(2);
+		program.setUniformi("u_shadow_depthMap", 2);
+		program.setUniformMatrix("u_lightTrans", RenderSystemImpl.cameraLight.combined);
+		program.setUniformf("u_cameraFar", RenderSystemImpl.cameraLight.far);
+		program.setUniformf("u_lightPosition", RenderSystemImpl.test_light_position);
 		if (program.getLog().length() != 0) {
 			System.out.println(program.getLog());
 		}

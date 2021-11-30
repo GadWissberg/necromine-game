@@ -4797,13 +4797,6 @@
         "type": "SCORPION"
       },
       {
-        "row": 10,
-        "col": 4,
-        "height": 0.0,
-        "direction": 2,
-        "type": "ANUBIS"
-      },
-      {
         "row": 5,
         "col": 20,
         "height": 0.0,
@@ -4976,13 +4969,6 @@
       "type": "STATUE_1"
     },
     {
-      "row": 9,
-      "col": 3,
-      "height": 0.0,
-      "direction": 0,
-      "type": "TORCH_1"
-    },
-    {
       "row": 8,
       "col": 12,
       "height": 0.0,
@@ -5015,13 +5001,6 @@
       "col": 2,
       "height": 0.0,
       "direction": 6,
-      "type": "TORCH_1"
-    },
-    {
-      "row": 12,
-      "col": 6,
-      "height": 0.0,
-      "direction": 4,
       "type": "TORCH_1"
     },
     {
@@ -5130,20 +5109,6 @@
       "type": "TORCH_1"
     },
     {
-      "row": 7,
-      "col": 6,
-      "height": 0.0,
-      "direction": 2,
-      "type": "TORCH_1"
-    },
-    {
-      "row": 14,
-      "col": 6,
-      "height": 0.0,
-      "direction": 2,
-      "type": "TORCH_1"
-    },
-    {
       "row": 6,
       "col": 7,
       "height": 0.0,
@@ -5219,6 +5184,13 @@
       "height": 0.0,
       "direction": 2,
       "type": "TORCH_1"
+    },
+    {
+      "row": 9,
+      "col": 5,
+      "height": 0.0,
+      "direction": 0,
+      "type": "STATUE_1"
     }
   ],
   "pickups": [
@@ -5234,6 +5206,12 @@
       "row": 4,
       "col": 35,
       "height": 0.0
+    },
+    {
+      "row": 9,
+      "col": 6,
+      "height": 0.0,
+      "type": "STATUE_1"
     }
   ]
 }

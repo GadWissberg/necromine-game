@@ -129,7 +129,9 @@ uniform vec4 u_color_when_outside;
 uniform int u_apply_wall_ambient_occlusion;
 uniform int u_apply_floor_ambient_occlusion;
 uniform vec3 u_skip_color;
-
+varying vec4 v_positionLightTrans;
+uniform float u_cameraFar;
+uniform vec3 u_lightPosition;
 float map(float value, float min1, float max1, float min2, float max2) {
     return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
 }
@@ -319,6 +321,8 @@ void main() {
         if (u_number_of_lights == -1) {
             gl_FragColor.rgb = diffuse.rgb + emissive.rgb;
         }
+        float len = length(v_frag_pos.xyz-u_lightPosition)/u_cameraFar;
+        gl_FragColor.rgb *= vec3(1.0-len)*0.9;
     } else {
         gl_FragColor.rgb = vec3(0.0);
     }

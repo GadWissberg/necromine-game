@@ -1,20 +1,30 @@
 package com.gadarts.isometric.systems.render;
 
-import com.badlogic.ashley.core.*;
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntityListener;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.Renderable;
+import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
@@ -63,7 +73,10 @@ import com.gadarts.necromine.model.characters.SpriteType;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.gadarts.isometric.NecronemesGame.*;
+import static com.gadarts.isometric.NecronemesGame.FULL_SCREEN_RESOLUTION_HEIGHT;
+import static com.gadarts.isometric.NecronemesGame.FULL_SCREEN_RESOLUTION_WIDTH;
+import static com.gadarts.isometric.NecronemesGame.WINDOWED_RESOLUTION_HEIGHT;
+import static com.gadarts.isometric.NecronemesGame.WINDOWED_RESOLUTION_WIDTH;
 import static java.lang.Math.max;
 
 /**
@@ -91,6 +104,8 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	public static final String MSG_DISABLED = "disabled";
 	private static final String MSG_FS = "Full-screen has been %s.";
 	private static final int ICON_FLOWER_APPEARANCE_DURATION = 1000;
+	private static final int DEPTHMAPIZE = 1024;
+	public static Vector3 test_light_position = new Vector3();
 	private final DrawFlags drawFlags = new DrawFlags();
 	private final StringBuilder stringBuilder = new StringBuilder();
 	private WorldEnvironment environment;
@@ -103,6 +118,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private GlyphLayout skillFlowerGlyph;
 	private boolean frustumCull = !DefaultGameSettings.DISABLE_FRUSTUM_CULLING;
 	private Texture iconFlowerLookingFor;
+	public static PerspectiveCamera cameraLight;
+	public static Texture depthMap;
+	private FrameBuffer shadowFrameBuffer;
+	private ShaderProgram shaderProgram;
+	private ModelBatch depthModelBatch;
 
 	@Override
 	public void init(final GameServices services) {
@@ -110,6 +130,24 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		skillFlowerFont = new BitmapFont();
 		skillFlowerGlyph = new GlyphLayout();
 		iconFlowerLookingFor = services.getAssetManager().getTexture(Assets.UiTextures.ICON_LOOKING_FOR);
+		createShadowRelated();
+	}
+
+	private void createShadowRelated() {
+		shaderProgram = setupShader("depthmap");
+		depthModelBatch = new ModelBatch(new DefaultShaderProvider() {
+			@Override
+			protected Shader createShader(final Renderable renderable) {
+				return new DepthMapShader(renderable, shaderProgram);
+			}
+		});
+		shadowFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, DEPTHMAPIZE, DEPTHMAPIZE, true);
+		cameraLight = new PerspectiveCamera(120f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		cameraLight.near = 1f;
+		cameraLight.far = 100;
+		cameraLight.position.set(33, 10, 3);
+		cameraLight.lookAt(-1, 0, 0);
+		cameraLight.update();
 	}
 
 	@Override
@@ -149,21 +187,45 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			numberOfVisible = 0;
 			resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
 			CameraSystem system = getSystem(CameraSystem.class);
-			renderWorld(deltaTime, system.getCamera(), system.getRotationPoint(auxVector3_1));
+			renderWorld(deltaTime, system.getCamera());
 			getSystem(UserInterfaceSystem.class).getStage().draw();
 		}
 	}
 
-	private void renderWorld(final float deltaTime, final Camera camera, final Vector3 lastRotationPoint) {
-		if (!DefaultGameSettings.DISABLE_SHADOWS) {
-			renderModelsShadows(camera, lastRotationPoint);
-		}
+	private void renderWorld(final float deltaTime, final Camera camera) {
+		renderShadows();
 		resetDisplay(DefaultGameSettings.BACKGROUND_COLOR);
 		environment.getLightsHandler().updateLights((PooledEngine) getEngine());
 		renderModels(camera, renderBatches.getModelBatch(), true, true);
 		renderDecals(deltaTime, camera);
 		renderParticleEffects(camera);
 		renderSkillFlowersText();
+	}
+
+	private void renderShadows() {
+		shadowFrameBuffer.begin();
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		shaderProgram.begin();
+		shaderProgram.setUniformf("u_cameraFar", cameraLight.far);
+		shaderProgram.setUniformf("u_lightPosition", cameraLight.position);
+		shaderProgram.end();
+		renderModels(cameraLight, depthModelBatch, true, false);
+		shadowFrameBuffer.end();
+		depthMap = shadowFrameBuffer.getColorBufferTexture();
+
+	}
+
+	public ShaderProgram setupShader(final String prefix) {
+		ShaderProgram.pedantic = false;
+		final ShaderProgram shaderProgram = new ShaderProgram(Gdx.files.internal("shaders/" + prefix + "_v.glsl"), Gdx.files.internal("shaders/" + prefix + "_f.glsl"));
+		if (!shaderProgram.isCompiled()) {
+			System.err.println("Error with shader " + prefix + ": " + shaderProgram.getLog());
+			System.exit(1);
+		} else {
+			Gdx.app.log("init", "Shader " + prefix + " compilled " + shaderProgram.getLog());
+		}
+		return shaderProgram;
 	}
 
 	private void renderParticleEffects(final Camera camera) {
@@ -174,7 +236,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		renderBatches.getModelBatch().end();
 	}
 
-	private void renderSkillFlowersText( ) {
+	private void renderSkillFlowersText() {
 		if (renderSystemRelatedEntities.getEnemyEntities().size() > 0) {
 			renderBatches.getSpriteBatch().begin();
 			for (Entity enemy : renderSystemRelatedEntities.getEnemyEntities()) {
@@ -189,14 +251,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		}
 	}
 
-	private void renderModelsShadows(final Camera camera, final Vector3 lastRotationPoint) {
-		DirectionalShadowLight shadowLight = environment.getShadowLight();
-		Camera shadowLightCamera = shadowLight.getCamera();
-		shadowLight.begin(lastRotationPoint.set(lastRotationPoint.x, camera.position.y, lastRotationPoint.z + 10f), shadowLightCamera.direction);
-		renderModels(shadowLightCamera, renderBatches.getShadowBatch(), false, false);
-		shadowLight.end();
-	}
-
 	private void renderDecals(final float deltaTime, final Camera camera) {
 		Gdx.gl.glDepthMask(false);
 		renderCorpses(deltaTime, camera);
@@ -205,7 +259,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		Gdx.gl.glDepthMask(true);
 	}
 
-	private void renderSimpleDecals( ) {
+	private void renderSimpleDecals() {
 		DecalBatch decalBatch = renderBatches.getDecalBatch();
 		for (Entity entity : renderSystemRelatedEntities.getSimpleDecalsEntities()) {
 			renderSimpleDecal(decalBatch, entity);
@@ -448,7 +502,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	@Override
-	public void dispose( ) {
+	public void dispose() {
 		renderBatches.dispose();
 		environment.dispose();
 	}
@@ -462,7 +516,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		systemReady();
 	}
 
-	private void systemReady( ) {
+	private void systemReady() {
 		if (getSystem(CameraSystem.class) == null) return;
 		ready = true;
 		for (RenderSystemEventsSubscriber subscriber : subscribers) {
@@ -478,7 +532,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 
 	@Override
-	public void activate( ) {
+	public void activate() {
 
 	}
 
@@ -493,27 +547,27 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	@Override
-	public int getNumberOfVisible( ) {
+	public int getNumberOfVisible() {
 		return numberOfVisible;
 	}
 
 	@Override
-	public int getNumberOfModelInstances( ) {
+	public int getNumberOfModelInstances() {
 		return renderSystemRelatedEntities.getModelInstanceEntities().size();
 	}
 
 	@Override
-	public DrawFlags getDrawFlags( ) {
+	public DrawFlags getDrawFlags() {
 		return drawFlags;
 	}
 
 	@Override
-	public RenderBatches getRenderBatches( ) {
+	public RenderBatches getRenderBatches() {
 		return renderBatches;
 	}
 
 	@Override
-	public void onConsoleActivated( ) {
+	public void onConsoleActivated() {
 
 	}
 
@@ -546,7 +600,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		subscribers.forEach(sub -> sub.onFullScreenToggle(Gdx.graphics.isFullscreen()));
 	}
 
-	private void enableFullScreen( ) {
+	private void enableFullScreen() {
 		Gdx.graphics.setWindowedMode(FULL_SCREEN_RESOLUTION_WIDTH, FULL_SCREEN_RESOLUTION_HEIGHT);
 		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 	}
@@ -565,7 +619,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 
 	@Override
-	public void onConsoleDeactivated( ) {
+	public void onConsoleDeactivated() {
 
 	}
 
