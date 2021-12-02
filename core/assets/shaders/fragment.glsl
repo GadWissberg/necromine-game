@@ -322,7 +322,11 @@ void main() {
             gl_FragColor.rgb = diffuse.rgb + emissive.rgb;
         }
         float len = length(v_frag_pos.xyz-u_lightPosition)/u_cameraFar;
-        gl_FragColor.rgb *= vec3(1.0-len)*0.9;
+        if (len > 1.0){
+            gl_FragColor.rgb = vec3(1.0);
+        } else {
+            gl_FragColor.rgb *= vec3(1.0-len)*0.9;
+        }
     } else {
         gl_FragColor.rgb = vec3(0.0);
     }

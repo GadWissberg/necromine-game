@@ -208,7 +208,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		shaderProgram.begin();
 		shaderProgram.setUniformf("u_cameraFar", cameraLight.far);
-		shaderProgram.setUniformf("u_lightPosition", cameraLight.position);
 		shaderProgram.end();
 		renderModels(cameraLight, depthModelBatch, true, false);
 		shadowFrameBuffer.end();
