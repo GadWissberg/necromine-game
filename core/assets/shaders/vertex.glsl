@@ -159,6 +159,8 @@ varying vec4 v_positionLightTrans;
 uniform mat4 u_lightTrans;
 
 void main() {
+
+
     #ifdef diffuseTextureFlag
     v_diffuseUV = u_diffuseUVTransform.xy + a_texCoord0 * u_diffuseUVTransform.zw;
     #endif//diffuseTextureFlag

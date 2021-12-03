@@ -1,12 +1,14 @@
 package com.gadarts.isometric.systems.input;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
+import com.gadarts.isometric.systems.render.RenderSystemImpl;
 import com.gadarts.isometric.utils.DefaultGameSettings;
 
 public class InputSystemImpl extends GameEntitySystem<InputSystemEventsSubscriber> implements
@@ -61,6 +63,9 @@ public class InputSystemImpl extends GameEntitySystem<InputSystemEventsSubscribe
 	public boolean keyDown(final int keycode) {
 		for (InputSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.keyDown(keycode);
+		}
+		if (keycode == Input.Keys.T) {
+			RenderSystemImpl.take = true;
 		}
 		return false;
 	}

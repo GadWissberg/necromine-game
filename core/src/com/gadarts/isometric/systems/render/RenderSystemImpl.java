@@ -1,17 +1,8 @@
 package com.gadarts.isometric.systems.render;
 
-import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.EntityListener;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.ashley.core.*;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -23,7 +14,6 @@ import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
@@ -73,10 +63,7 @@ import com.gadarts.necromine.model.characters.SpriteType;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.gadarts.isometric.NecronemesGame.FULL_SCREEN_RESOLUTION_HEIGHT;
-import static com.gadarts.isometric.NecronemesGame.FULL_SCREEN_RESOLUTION_WIDTH;
-import static com.gadarts.isometric.NecronemesGame.WINDOWED_RESOLUTION_HEIGHT;
-import static com.gadarts.isometric.NecronemesGame.WINDOWED_RESOLUTION_WIDTH;
+import static com.gadarts.isometric.NecronemesGame.*;
 import static java.lang.Math.max;
 
 /**
@@ -119,10 +106,11 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private boolean frustumCull = !DefaultGameSettings.DISABLE_FRUSTUM_CULLING;
 	private Texture iconFlowerLookingFor;
 	public static PerspectiveCamera cameraLight;
-	public static Texture depthMap;
-	private FrameBuffer shadowFrameBuffer;
+	public static Cubemap depthMap;
+	static public boolean take;
 	private ShaderProgram shaderProgram;
 	private ModelBatch depthModelBatch;
+	private GameFrameBufferCubemap shadowFrameBuffer;
 
 	@Override
 	public void init(final GameServices services) {
@@ -133,7 +121,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		createShadowRelated();
 	}
 
-	private void createShadowRelated() {
+	private void createShadowRelated( ) {
 		shaderProgram = setupShader("depthmap");
 		depthModelBatch = new ModelBatch(new DefaultShaderProvider() {
 			@Override
@@ -141,12 +129,12 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 				return new DepthMapShader(renderable, shaderProgram);
 			}
 		});
-		shadowFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, DEPTHMAPIZE, DEPTHMAPIZE, true);
-		cameraLight = new PerspectiveCamera(120f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cameraLight.near = 1f;
+		shadowFrameBuffer = new GameFrameBufferCubemap(Pixmap.Format.RGBA8888, DEPTHMAPIZE, DEPTHMAPIZE, true);
+		cameraLight = new PerspectiveCamera(90f, DEPTHMAPIZE, DEPTHMAPIZE);
+		cameraLight.near = 0.1F;
 		cameraLight.far = 100;
-		cameraLight.position.set(33, 10, 3);
-		cameraLight.lookAt(-1, 0, 0);
+		cameraLight.position.set(test_light_position);
+		cameraLight.rotate(Vector3.Y, 0);
 		cameraLight.update();
 	}
 
@@ -202,14 +190,25 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		renderSkillFlowersText();
 	}
 
-	private void renderShadows() {
+	private void renderShadows( ) {
 		shadowFrameBuffer.begin();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		shaderProgram.begin();
+		shaderProgram.bind();
 		shaderProgram.setUniformf("u_cameraFar", cameraLight.far);
-		shaderProgram.end();
-		renderModels(cameraLight, depthModelBatch, true, false);
+		shaderProgram.setUniformf("u_lightPosition", RenderSystemImpl.test_light_position);
+		for (int s = 0; s <= 5; s++) {
+			Cubemap.CubemapSide side = Cubemap.CubemapSide.values()[s];
+			shadowFrameBuffer.begin();
+			shadowFrameBuffer.bindSide(side, cameraLight);
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+			renderModels(cameraLight, depthModelBatch, true, false);
+			if (take) {
+				ScreenshotFactory.saveScreenshot(shadowFrameBuffer.getWidth(), shadowFrameBuffer.getHeight(), "depthmap");
+			}
+		}
+		take = false;
 		shadowFrameBuffer.end();
 		depthMap = shadowFrameBuffer.getColorBufferTexture();
 
@@ -235,7 +234,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		renderBatches.getModelBatch().end();
 	}
 
-	private void renderSkillFlowersText() {
+	private void renderSkillFlowersText( ) {
 		if (renderSystemRelatedEntities.getEnemyEntities().size() > 0) {
 			renderBatches.getSpriteBatch().begin();
 			for (Entity enemy : renderSystemRelatedEntities.getEnemyEntities()) {
@@ -258,7 +257,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		Gdx.gl.glDepthMask(true);
 	}
 
-	private void renderSimpleDecals() {
+	private void renderSimpleDecals( ) {
 		DecalBatch decalBatch = renderBatches.getDecalBatch();
 		for (Entity entity : renderSystemRelatedEntities.getSimpleDecalsEntities()) {
 			renderSimpleDecal(decalBatch, entity);
@@ -477,7 +476,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())
 					|| (!renderWallsAndFloor && (isWall || ComponentsMapper.floor.has(entity)))
 					|| (ComponentsMapper.cursor.has(entity) && (ComponentsMapper.cursor.get(entity).isDisabled() || !drawFlags.isDrawCursor()))
-					|| !isVisible(getSystem(CameraSystem.class).getCamera(), entity)) {
+					|| !isVisible(camera, entity)) {
 				continue;
 			}
 			GameModelInstance modelInstance = modelInstanceComponent.getModelInstance();
@@ -501,7 +500,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 		renderBatches.dispose();
 		environment.dispose();
 	}
@@ -515,7 +514,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		systemReady();
 	}
 
-	private void systemReady() {
+	private void systemReady( ) {
 		if (getSystem(CameraSystem.class) == null) return;
 		ready = true;
 		for (RenderSystemEventsSubscriber subscriber : subscribers) {
@@ -531,7 +530,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 
 	@Override
-	public void activate() {
+	public void activate( ) {
 
 	}
 
@@ -546,27 +545,27 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	@Override
-	public int getNumberOfVisible() {
+	public int getNumberOfVisible( ) {
 		return numberOfVisible;
 	}
 
 	@Override
-	public int getNumberOfModelInstances() {
+	public int getNumberOfModelInstances( ) {
 		return renderSystemRelatedEntities.getModelInstanceEntities().size();
 	}
 
 	@Override
-	public DrawFlags getDrawFlags() {
+	public DrawFlags getDrawFlags( ) {
 		return drawFlags;
 	}
 
 	@Override
-	public RenderBatches getRenderBatches() {
+	public RenderBatches getRenderBatches( ) {
 		return renderBatches;
 	}
 
 	@Override
-	public void onConsoleActivated() {
+	public void onConsoleActivated( ) {
 
 	}
 
@@ -599,7 +598,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		subscribers.forEach(sub -> sub.onFullScreenToggle(Gdx.graphics.isFullscreen()));
 	}
 
-	private void enableFullScreen() {
+	private void enableFullScreen( ) {
 		Gdx.graphics.setWindowedMode(FULL_SCREEN_RESOLUTION_WIDTH, FULL_SCREEN_RESOLUTION_HEIGHT);
 		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 	}
@@ -618,7 +617,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 
 	@Override
-	public void onConsoleDeactivated() {
+	public void onConsoleDeactivated( ) {
 
 	}
 
