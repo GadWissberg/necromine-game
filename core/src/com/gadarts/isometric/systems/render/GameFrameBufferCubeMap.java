@@ -5,12 +5,12 @@ import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.FrameBufferCubemap;
 
-public class GameFrameBufferCubemap extends FrameBufferCubemap {
-	public GameFrameBufferCubemap(final Pixmap.Format format, final int width, final int height, final boolean hasDepth) {
+public class GameFrameBufferCubeMap extends FrameBufferCubemap {
+	public GameFrameBufferCubeMap(final Pixmap.Format format, final int width, final int height, final boolean hasDepth) {
 		super(format, width, height, hasDepth);
 	}
 
-	public GameFrameBufferCubemap(final Pixmap.Format format, final int width, final int height, final boolean hasDepth, final boolean hasStencil) {
+	public GameFrameBufferCubeMap(final Pixmap.Format format, final int width, final int height, final boolean hasDepth, final boolean hasStencil) {
 		super(format, width, height, hasDepth, hasStencil);
 	}
 

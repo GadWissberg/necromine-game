@@ -21,6 +21,7 @@ import com.gadarts.necromine.model.Coords;
 
 import java.util.List;
 
+import static com.gadarts.isometric.systems.render.RenderSystemImpl.DEPTHMAPIZE;
 import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.*;
 
 /**
@@ -60,11 +61,11 @@ public class MainShader extends DefaultShader {
 		super.init();
 		uniformsLocationsHandler.fetchUniformsLocations(program);
 		program.bind();
-		RenderSystemImpl.depthMap.bind(6);
-		program.setUniformi("u_depthMap", 6);
-		program.setUniformMatrix("u_lightTrans", RenderSystemImpl.cameraLight.combined);
-		program.setUniformf("u_cameraFar", RenderSystemImpl.cameraLight.far);
-		program.setUniformf("u_lightPosition", RenderSystemImpl.test_light_position);
+		final int textureNum = 9;
+		RenderSystemImpl.shadowFrameBuffer.getColorBufferTexture().bind(textureNum);
+		program.setUniformi("u_shadows", textureNum);
+		program.setUniformf("u_screenWidth", DEPTHMAPIZE);
+		program.setUniformf("u_screenHeight", DEPTHMAPIZE);
 		if (program.getLog().length() != 0) {
 			System.out.println(program.getLog());
 		}

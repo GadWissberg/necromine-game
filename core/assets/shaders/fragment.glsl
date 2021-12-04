@@ -129,10 +129,9 @@ uniform vec4 u_color_when_outside;
 uniform int u_apply_wall_ambient_occlusion;
 uniform int u_apply_floor_ambient_occlusion;
 uniform vec3 u_skip_color;
-varying vec4 v_positionLightTrans;
-uniform float u_cameraFar;
-uniform vec3 u_lightPosition;
-uniform samplerCube u_depthMap;
+uniform float u_screenWidth;
+uniform sampler2D u_shadows;
+uniform float u_screenHeight;
 float map(float value, float min1, float max1, float min2, float max2) {
     return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
 }
@@ -322,14 +321,12 @@ void main() {
         if (u_number_of_lights == -1) {
             gl_FragColor.rgb = diffuse.rgb + emissive.rgb;
         }
-        vec3 lightDirection=v_frag_pos.xyz-u_lightPosition;
-        float lenToLight=length(lightDirection)/u_cameraFar;
-        float lenDepthMap=  textureCube(u_depthMap, lightDirection).a;
-        if (lenDepthMap<lenToLight+0.35){
-            gl_FragColor.rgb*=0.5;
-        } else {
-            gl_FragColor.rgb*=0.4+0.6*(1.0-lenToLight);
-        }
+        vec2 c= gl_FragCoord.xy;
+        c.x/=u_screenWidth;
+        c.y/=u_screenHeight;
+        vec4 color=texture2D(u_shadows, c);
+        gl_FragColor.rgb*=(0.4+0.6*color.a);
+
     } else {
         gl_FragColor.rgb = vec3(0.0);
     }

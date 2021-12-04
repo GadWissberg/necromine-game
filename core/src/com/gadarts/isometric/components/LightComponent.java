@@ -2,8 +2,11 @@ package com.gadarts.isometric.components;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cubemap;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.gadarts.isometric.systems.render.GameFrameBufferCubeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +14,7 @@ import lombok.Setter;
 @Getter
 public class LightComponent implements GameComponent {
 	public static final float LIGHT_MAX_RADIUS = 7f;
+	private static final int DEPTHMAPSIZE = 1024;
 
 	@Getter(AccessLevel.NONE)
 	private final Vector3 position = new Vector3();
@@ -29,6 +33,10 @@ public class LightComponent implements GameComponent {
 	private float originalIntensity;
 	private Entity parent;
 	private long beginTime;
+	private GameFrameBufferCubeMap frameBuffer;
+
+	@Setter
+	private Cubemap depthMap;
 
 	@Override
 	public void reset( ) {
@@ -48,6 +56,7 @@ public class LightComponent implements GameComponent {
 		this.parent = parent;
 		color.set(Color.WHITE);
 		duration = -1L;
+		frameBuffer = new GameFrameBufferCubeMap(Pixmap.Format.RGBA8888, DEPTHMAPSIZE, DEPTHMAPSIZE, true);
 	}
 
 	public void setPosition(final Vector3 newPosition) {
