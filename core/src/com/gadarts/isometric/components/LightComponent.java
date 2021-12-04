@@ -3,6 +3,7 @@ package com.gadarts.isometric.components;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cubemap;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -10,6 +11,8 @@ import com.gadarts.isometric.systems.render.GameFrameBufferCubeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+
+import static com.gadarts.isometric.systems.render.RenderSystemImpl.DEPTHMAPIZE;
 
 @Getter
 public class LightComponent implements GameComponent {
@@ -34,6 +37,7 @@ public class LightComponent implements GameComponent {
 	private Entity parent;
 	private long beginTime;
 	private GameFrameBufferCubeMap frameBuffer;
+	private PerspectiveCamera cameraLight;
 
 	@Setter
 	private Cubemap depthMap;
@@ -57,6 +61,12 @@ public class LightComponent implements GameComponent {
 		color.set(Color.WHITE);
 		duration = -1L;
 		frameBuffer = new GameFrameBufferCubeMap(Pixmap.Format.RGBA8888, DEPTHMAPSIZE, DEPTHMAPSIZE, true);
+		cameraLight = new PerspectiveCamera(90f, DEPTHMAPIZE, DEPTHMAPIZE);
+		cameraLight.near = 0.1F;
+		cameraLight.far = 100;
+		cameraLight.position.set(position);
+		cameraLight.rotate(Vector3.Y, 0);
+		cameraLight.update();
 	}
 
 	public void setPosition(final Vector3 newPosition) {

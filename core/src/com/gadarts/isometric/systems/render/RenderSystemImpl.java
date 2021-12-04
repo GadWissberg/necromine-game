@@ -94,7 +94,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final String MSG_FS = "Full-screen has been %s.";
 	private static final int ICON_FLOWER_APPEARANCE_DURATION = 1000;
 	public static final int DEPTHMAPIZE = 1024;
-	public static Vector3 test_light_position = new Vector3();
 	private final DrawFlags drawFlags = new DrawFlags();
 	private final StringBuilder stringBuilder = new StringBuilder();
 	private WorldEnvironment environment;
@@ -107,7 +106,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private GlyphLayout skillFlowerGlyph;
 	private boolean frustumCull = !DefaultGameSettings.DISABLE_FRUSTUM_CULLING;
 	private Texture iconFlowerLookingFor;
-	public static PerspectiveCamera cameraLight;
 	static public boolean take;
 	public static FrameBuffer shadowFrameBuffer;
 	private ModelBatch depthModelBatch;
@@ -133,13 +131,14 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		});
 	}
 
-	private void createShadowMapForLight(Entity light) {
+	private void createShadowMapForLight(final Entity light) {
 		LightComponent lightComponent = ComponentsMapper.light.get(light);
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		depthShaderProgram.bind();
+		Camera cameraLight = lightComponent.getCameraLight();
 		depthShaderProgram.setUniformf("u_cameraFar", cameraLight.far);
-		depthShaderProgram.setUniformf("u_lightPosition", RenderSystemImpl.test_light_position);
+		depthShaderProgram.setUniformf("u_lightPosition", lightComponent.getCameraLight().position);
 		GameFrameBufferCubeMap frameBuffer = lightComponent.getFrameBuffer();
 		for (int s = 0; s <= 5; s++) {
 			Cubemap.CubemapSide side = Cubemap.CubemapSide.values()[s];
@@ -163,12 +162,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			}
 		});
 		shadowFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-		cameraLight = new PerspectiveCamera(90f, DEPTHMAPIZE, DEPTHMAPIZE);
-		cameraLight.near = 0.1F;
-		cameraLight.far = 100;
-		cameraLight.position.set(test_light_position);
-		cameraLight.rotate(Vector3.Y, 0);
-		cameraLight.update();
 	}
 
 	@Override
@@ -226,9 +219,9 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		renderSkillFlowersText();
 	}
 
-	private void renderShadows(Camera camera) {
+	private void renderShadows(final Camera camera) {
 		shadowFrameBuffer.begin();
-		Gdx.gl.glClearColor(0.4f, 0.4f, 0.4f, 0.4f);
+		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		renderModels(camera, modelBatchShadows, true, false);
 

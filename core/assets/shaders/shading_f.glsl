@@ -42,10 +42,11 @@ void main()
 	}
 
 	// If not in shadow, add some light
-	if (lenDepthMap<lenToLight+0.4){
+	if (lenDepthMap<lenToLight+0.4 && lenToLight >= 0.015){
 	} else {
 		intensity=0.5*(1.0-lenToLight);
 	}
+
 
 	gl_FragColor     = vec4(intensity);
 

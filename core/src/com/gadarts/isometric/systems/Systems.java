@@ -3,7 +3,7 @@ package com.gadarts.isometric.systems;
 import com.gadarts.isometric.systems.bullets.BulletsSystemEventsSubscriber;
 import com.gadarts.isometric.systems.bullets.BulletsSystemImpl;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
-import com.gadarts.isometric.systems.camera.CameraSystemImplUser;
+import com.gadarts.isometric.systems.camera.CameraSystemImpl;
 import com.gadarts.isometric.systems.character.CharacterSystemEventsSubscriber;
 import com.gadarts.isometric.systems.character.CharacterSystemImpl;
 import com.gadarts.isometric.systems.enemy.EnemySystemEventsSubscriber;
@@ -26,7 +26,7 @@ import lombok.Getter;
 
 @Getter
 public enum Systems {
-	CAMERA(new CameraSystemImplUser(), CameraSystemEventsSubscriber.class),
+	CAMERA(new CameraSystemImpl(), CameraSystemEventsSubscriber.class),
 	CHARACTER(new CharacterSystemImpl(), CharacterSystemEventsSubscriber.class),
 	ENEMY(new EnemySystemImpl(), EnemySystemEventsSubscriber.class),
 	HUD(new UserUserInterfaceSystemImpl(), UserInterfaceSystemEventsSubscriber.class),

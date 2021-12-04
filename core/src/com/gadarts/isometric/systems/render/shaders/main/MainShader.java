@@ -1,6 +1,7 @@
 package com.gadarts.isometric.systems.render.shaders.main;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
@@ -21,7 +22,6 @@ import com.gadarts.necromine.model.Coords;
 
 import java.util.List;
 
-import static com.gadarts.isometric.systems.render.RenderSystemImpl.DEPTHMAPIZE;
 import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.*;
 
 /**
@@ -64,8 +64,8 @@ public class MainShader extends DefaultShader {
 		final int textureNum = 9;
 		RenderSystemImpl.shadowFrameBuffer.getColorBufferTexture().bind(textureNum);
 		program.setUniformi("u_shadows", textureNum);
-		program.setUniformf("u_screenWidth", DEPTHMAPIZE);
-		program.setUniformf("u_screenHeight", DEPTHMAPIZE);
+		program.setUniformf("u_screenWidth", Gdx.graphics.getWidth());
+		program.setUniformf("u_screenHeight", Gdx.graphics.getHeight());
 		if (program.getLog().length() != 0) {
 			System.out.println(program.getLog());
 		}

@@ -3,6 +3,7 @@ package com.gadarts.isometric.systems.camera;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Interpolation;
@@ -19,14 +20,13 @@ import com.gadarts.isometric.systems.player.PlayerSystem;
 import com.gadarts.isometric.systems.player.PlayerSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.necromine.model.GeneralUtils;
-import lombok.Getter;
 
 import static com.gadarts.isometric.NecronemesGame.*;
 import static com.gadarts.isometric.utils.DefaultGameSettings.DEBUG_INPUT;
 import static com.gadarts.isometric.utils.DefaultGameSettings.FULL_SCREEN;
 
 
-public class CameraSystemImplUser extends GameEntitySystem<CameraSystemEventsSubscriber>
+public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscriber>
 		implements CameraSystem,
 		PlayerSystemEventsSubscriber,
 		InputSystemEventsSubscriber,
@@ -48,10 +48,9 @@ public class CameraSystemImplUser extends GameEntitySystem<CameraSystemEventsSub
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
 	private boolean rotateCamera;
-	@Getter
-	private OrthographicCamera camera;
+	public static OrthographicCamera camera;
 
-	public CameraSystemImplUser( ) {
+	public CameraSystemImpl( ) {
 	}
 
 	@Override
@@ -141,6 +140,11 @@ public class CameraSystemImplUser extends GameEntitySystem<CameraSystemEventsSub
 		}
 	}
 
+
+	@Override
+	public Camera getCamera( ) {
+		return camera;
+	}
 
 	@Override
 	public boolean isCameraRotating( ) {

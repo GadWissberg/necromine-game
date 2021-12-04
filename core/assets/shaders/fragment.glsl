@@ -132,6 +132,7 @@ uniform vec3 u_skip_color;
 uniform float u_screenWidth;
 uniform sampler2D u_shadows;
 uniform float u_screenHeight;
+uniform vec3 u_light_position;
 float map(float value, float min1, float max1, float min2, float max2) {
     return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
 }
@@ -326,7 +327,6 @@ void main() {
         c.y/=u_screenHeight;
         vec4 color=texture2D(u_shadows, c);
         gl_FragColor.rgb*=(0.4+0.6*color.a);
-
     } else {
         gl_FragColor.rgb = vec3(0.0);
     }
