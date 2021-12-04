@@ -62,7 +62,7 @@ public class LightComponent implements GameComponent {
 		duration = -1L;
 		frameBuffer = new GameFrameBufferCubeMap(Pixmap.Format.RGBA8888, DEPTHMAPSIZE, DEPTHMAPSIZE, true);
 		cameraLight = new PerspectiveCamera(90f, DEPTHMAPIZE, DEPTHMAPIZE);
-		cameraLight.near = 0.1F;
+		cameraLight.near = 0.01F;
 		cameraLight.far = 100;
 		cameraLight.position.set(position);
 		cameraLight.rotate(Vector3.Y, 0);

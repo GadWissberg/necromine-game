@@ -89,7 +89,7 @@ import static java.lang.String.format;
 public final class MapBuilder implements Disposable {
 	public static final String MAP_PATH_TEMP = "core/assets/maps/%s.json";
 	public static final int PLAYER_HEALTH = 64;
-	public static final float INDEPENDENT_LIGHT_RADIUS = 2f;
+	public static final float INDEPENDENT_LIGHT_RADIUS = 4f;
 	public static final float INDEPENDENT_LIGHT_INTENSITY = 1f;
 	private static final CharacterSoundData auxCharacterSoundData = new CharacterSoundData();
 	private static final Vector2 auxVector2_1 = new Vector2();
@@ -315,14 +315,6 @@ public final class MapBuilder implements Disposable {
 		JsonArray lights = mapJsonObject.getAsJsonArray(KEY_LIGHTS);
 		lights.forEach(element -> {
 			inflateLight(mapGraph, element);
-			JsonObject lightJsonObject = element.getAsJsonObject();
-			int row = 2;
-			int col = 1;
-			Vector3 position = auxVector3_1.set(col + 0.5f, INDEPENDENT_LIGHT_HEIGHT, row + 0.5f);
-			position.add(0, mapGraph.getNode(col, row).getHeight(), 0);
-			EntityBuilder.beginBuildingEntity(engine)
-					.addLightComponent(position, INDEPENDENT_LIGHT_INTENSITY, INDEPENDENT_LIGHT_RADIUS)
-					.finishAndAddToEngine();
 		});
 	}
 
