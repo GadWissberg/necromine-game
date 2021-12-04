@@ -2,6 +2,7 @@ package com.gadarts.isometric.components;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import lombok.AccessLevel;
@@ -29,6 +30,9 @@ public class LightComponent implements GameComponent {
 	private float originalIntensity;
 	private Entity parent;
 	private long beginTime;
+
+	@Setter
+	private Cubemap depthMap;
 
 	@Override
 	public void reset( ) {
