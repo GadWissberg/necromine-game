@@ -12,14 +12,18 @@ import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.LightComponent;
 
 public class ShadowMapShader extends BaseShader {
+	private static final Vector3 auxVector = new Vector3();
 	private final ImmutableArray<Entity> lights;
 	public Renderable renderable;
 
-	public ShadowMapShader(final Renderable renderable, final ShaderProgram shaderProgramModelBorder, ImmutableArray<Entity> lights) {
+	public ShadowMapShader(final Renderable renderable,
+						   final ShaderProgram shaderProgramModelBorder,
+						   final ImmutableArray<Entity> lights) {
 		this.lights = lights;
 		this.renderable = renderable;
 		this.program = shaderProgramModelBorder;
@@ -72,33 +76,16 @@ public class ShadowMapShader extends BaseShader {
 
 	@Override
 	public void render(final Renderable renderable, final Attributes combinedAttributes) {
-		boolean firstCall = true;
 		for (int i = 0; i < lights.size(); i++) {
-//			if ( i == 0) continue;
 			final int textureNum = 8;
 			LightComponent lightComponent = ComponentsMapper.light.get(lights.get(i));
-			lightComponent.getDepthMap().bind(textureNum);
+			lightComponent.getShadowFrameBuffer().getColorBufferTexture().bind(textureNum);
 			program.setUniformf("u_type", 2);
 			program.setUniformi("u_depthMapCube", textureNum);
-			program.setUniformf("u_cameraFar", lightComponent.getCameraLight().far);
-			program.setUniformf("u_lightPosition", lightComponent.getCameraLight().position);
-//			if (firstCall) {
-//				 Classic depth test
-//				context.setDepthTest(GL20.GL_LEQUAL);
-//				 Deactivate blending on first pass
-//				context.setBlending(false, GL20.GL_ONE, GL20.GL_ONE);
-//				super.render(renderable, combinedAttributes);
-//				firstCall = false;
-//			} else {
-			// We could use the classic depth test (less or equal), but strict equality works fine on next passes as depth buffer already contains our scene
-//				context.setDepthTest(GL20.GL_EQUAL);
-			// Activate additive blending
+			program.setUniformf("u_cameraFar", RenderSystemImpl.CAMERA_LIGHT_FAR);
+			program.setUniformf("u_lightPosition", lightComponent.getPosition(auxVector));
 			context.setBlending(true, GL20.GL_ONE, GL20.GL_ONE);
 			super.render(renderable, combinedAttributes);
-			// Render the mesh again
-//				renderable.meshPart.render(program);
-			//renderable.mesh.render(program, renderable.primitiveType, renderable.meshPartOffset, renderable.meshPartSize, false);
-//			}
 		}
 	}
 

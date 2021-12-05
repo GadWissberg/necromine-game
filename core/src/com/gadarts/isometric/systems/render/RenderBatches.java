@@ -5,10 +5,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.utils.Disposable;
+import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.render.shaders.main.MainShaderProvider;
-import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import lombok.Getter;
 
@@ -21,17 +22,23 @@ public class RenderBatches implements Disposable {
 	private final MainShaderProvider shaderProvider;
 	private final ModelBatch shadowBatch;
 	private final SpriteBatch spriteBatch;
+	private final ModelBatch depthModelBatch;
+	private final ModelBatch modelBatchShadows;
 
 	public RenderBatches(final Camera camera,
-						 final GameAssetsManager assetsManager,
-						 final MapGraph mapGraph,
-						 final PointSpriteParticleBatch pointSpriteParticleBatch) {
-		shaderProvider = new MainShaderProvider(assetsManager, mapGraph);
+						 final PointSpriteParticleBatch pointSpriteParticleBatch,
+						 final GameServices services,
+						 final DefaultShaderProvider depthModelBatchShaderProvider,
+						 final DefaultShaderProvider shadowsModelBatchShaderProvider) {
+		GameAssetsManager am = services.getAssetManager();
+		shaderProvider = new MainShaderProvider(am, services.getMapService().getMap());
 		this.modelBatch = new ModelBatch(shaderProvider);
-		GameCameraGroupStrategy groupStrategy = new GameCameraGroupStrategy(camera, assetsManager);
+		GameCameraGroupStrategy groupStrategy = new GameCameraGroupStrategy(camera, am);
 		this.decalBatch = new DecalBatch(DECALS_POOL_SIZE, groupStrategy);
 		this.shadowBatch = new ModelBatch(new DepthShaderProvider());
 		this.spriteBatch = new SpriteBatch();
+		depthModelBatch = new ModelBatch(depthModelBatchShaderProvider);
+		modelBatchShadows = new ModelBatch(shadowsModelBatchShaderProvider);
 		pointSpriteParticleBatch.setCamera(camera);
 	}
 
@@ -39,6 +46,11 @@ public class RenderBatches implements Disposable {
 	public void dispose( ) {
 		modelBatch.dispose();
 		decalBatch.dispose();
+		shaderProvider.dispose();
+		shadowBatch.dispose();
+		spriteBatch.dispose();
+		depthModelBatch.dispose();
+		modelBatchShadows.dispose();
 	}
 
 }

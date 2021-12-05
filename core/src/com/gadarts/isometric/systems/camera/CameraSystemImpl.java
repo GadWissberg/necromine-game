@@ -48,7 +48,7 @@ public class CameraSystemImpl extends GameEntitySystem<CameraSystemEventsSubscri
 	private final Vector2 lastRightPressMousePosition = new Vector2();
 	private final Vector2 lastMousePosition = new Vector2();
 	private boolean rotateCamera;
-	public static OrthographicCamera camera;
+	private OrthographicCamera camera;
 
 	public CameraSystemImpl( ) {
 	}
