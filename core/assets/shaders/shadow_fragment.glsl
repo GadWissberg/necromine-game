@@ -42,10 +42,11 @@ void main()
     }
 
     // If not in shadow, add some light
-    if (lenDepthMap<lenToLight+0.4){
+    if (lenDepthMap<lenToLight-0.0022){
         intensity=0.001*(1.0-lenToLight) + 0.0001*(1.0-lenToLight)*(1.0-lenToLight);
     } else {
-        intensity=0.2*(1.0-lenToLight) + 0.001*(1.0-lenToLight)*(1.0-lenToLight);
+        //        intensity=0.8*(1.0-lenToLight) + 0.001*(1.0-lenToLight)*(1.0-lenToLight);
+        intensity=1.0;
     }
 
 

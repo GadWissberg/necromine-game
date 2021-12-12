@@ -24,10 +24,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.gadarts.isometric.components.AnimationComponent;
-import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.LightComponent;
-import com.gadarts.isometric.components.ModelInstanceComponent;
+import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.data.CharacterSpriteData;
@@ -96,7 +93,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final String MSG_FC = "Frustum culling has been %s.";
 	private static final String MSG_FS = "Full-screen has been %s.";
 	private static final int ICON_FLOWER_APPEARANCE_DURATION = 1000;
-	public static final int CAMERA_LIGHT_FAR = 100;
+	public static final int CAMERA_LIGHT_FAR = 10;
 	static public boolean take;
 	public static FrameBuffer shadowFrameBuffer;
 	private final DrawFlags drawFlags = new DrawFlags();
@@ -123,7 +120,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		skillFlowerGlyph = new GlyphLayout();
 		iconFlowerLookingFor = am.getTexture(Assets.UiTextures.ICON_LOOKING_FOR);
 		createShadowRelated();
-		lights = getEngine().getEntitiesFor(Family.all(LightComponent.class).get());
+		lights = getEngine().getEntitiesFor(Family.all(ShadowLightComponent.class).get());
 	}
 
 	private void createShadowMapForLight(final Entity light,
@@ -136,10 +133,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 		cameraLight.direction.set(0, 0, -1);
 		cameraLight.up.set(0, 1, 0);
-		cameraLight.position.set(ComponentsMapper.light.get(light).getPosition(auxVector3_1));
+		cameraLight.position.set(ComponentsMapper.shadowLight.get(light).getPosition(auxVector3_1));
 		cameraLight.rotate(Vector3.Y, 0);
 		cameraLight.update();
-		LightComponent lightComponent = ComponentsMapper.light.get(light);
+		ShadowLightComponent lightComponent = ComponentsMapper.shadowLight.get(light);
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		depthShaderProgram.bind();
@@ -152,10 +149,15 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-			renderModels(cameraLight, renderBatches.getDepthModelBatch(), true, false);
-			if (take) {
-				ScreenshotFactory.saveScreenshot(shadowFrameBuffer.getWidth(), shadowFrameBuffer.getHeight(), "depthmap");
-			}
+			renderModels(
+					cameraLight,
+					renderBatches.getDepthModelBatch(),
+					true,
+					false,
+					lightComponent.getParent());
+//			if (User) {
+//				ScreenshotFactory.saveScreenshot(shadowFrameBuffer.getWidth(), shadowFrameBuffer.getHeight(), "depthmap");
+//			}
 		}
 		frameBuffer.end();
 		lightComponent.setShadowFrameBuffer(frameBuffer);
@@ -222,10 +224,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		renderModels(camera, renderBatches.getModelBatchShadows(), true, false);
-		if (take) {
-			ScreenshotFactory.saveScreenshot(shadowFrameBuffer.getWidth(), shadowFrameBuffer.getHeight(), "depthmap");
-			take = false;
-		}
+//		if (take) {
+//			ScreenshotFactory.saveScreenshot(shadowFrameBuffer.getWidth(), shadowFrameBuffer.getHeight(), "depthmap");
+//			take = false;
+//		}
 		shadowFrameBuffer.end();
 	}
 
@@ -470,12 +472,21 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 							  final ModelBatch modelBatch,
 							  final boolean renderWallsAndFloor,
 							  final boolean renderLight) {
+		renderModels(camera, modelBatch, renderWallsAndFloor, renderLight, null);
+	}
+
+	private void renderModels(final Camera camera,
+							  final ModelBatch modelBatch,
+							  final boolean renderWallsAndFloor,
+							  final boolean renderLight,
+							  final Entity exclude) {
 		modelBatch.begin(camera);
 		for (Entity entity : renderSystemRelatedEntities.getModelInstanceEntities()) {
 			ModelInstanceComponent modelInstanceComponent = ComponentsMapper.modelInstance.get(entity);
 			boolean isObstacle = ComponentsMapper.obstacle.has(entity);
 			boolean isWall = isObstacle && ComponentsMapper.obstacle.get(entity).getType().isWall();
-			if ((!modelInstanceComponent.isVisible())
+			if (entity == exclude
+					|| (!modelInstanceComponent.isVisible())
 					|| (!drawFlags.isDrawEnv() && isObstacle)
 					|| (camera == environment.getShadowLight().getCamera() && !modelInstanceComponent.isCastShadow())
 					|| (!renderWallsAndFloor && (isWall || ComponentsMapper.floor.has(entity)))
@@ -652,7 +663,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	private void createShadowMaps( ) {
 		PerspectiveCamera cameraLight = new PerspectiveCamera(90f, DEPTH_MAP_SIZE, DEPTH_MAP_SIZE);
-		cameraLight.near = 0.01F;
+		cameraLight.near = 0.001F;
 		cameraLight.far = CAMERA_LIGHT_FAR;
 		for (Entity light : lights) {
 			createShadowMapForLight(light, cameraLight);

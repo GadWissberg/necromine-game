@@ -25,6 +25,7 @@ public class ComponentsMapper {
 	public static final ComponentMapper<CharacterComponent> character = ComponentMapper.getFor(CharacterComponent.class);
 	public static final ComponentMapper<BulletComponent> bullet = ComponentMapper.getFor(BulletComponent.class);
 	public static final ComponentMapper<LightComponent> light = ComponentMapper.getFor(LightComponent.class);
+	public static final ComponentMapper<ShadowLightComponent> shadowLight = ComponentMapper.getFor(ShadowLightComponent.class);
 	public static final ComponentMapper<ParticleComponent> particle = ComponentMapper.getFor(ParticleComponent.class);
 	public static final ComponentMapper<ParticleEffectParentComponent> particlesParent = ComponentMapper.getFor(ParticleEffectParentComponent.class);
 	public static final ComponentMapper<FlowerSkillIconComponent> flowerSkillIcon = ComponentMapper.getFor(FlowerSkillIconComponent.class);

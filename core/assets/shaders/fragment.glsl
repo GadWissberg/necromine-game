@@ -326,7 +326,7 @@ void main() {
         c.x/=u_screenWidth;
         c.y/=u_screenHeight;
         vec4 color=texture2D(u_shadows, c);
-        gl_FragColor.rgb*=(0.4+0.6*color.a);
+        gl_FragColor.rgb*=(0.4+0.8*color.a);
     } else {
         gl_FragColor.rgb = vec3(0.0);
     }

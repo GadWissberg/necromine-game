@@ -7,14 +7,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.Attributes;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
-import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.LightComponent;
+import com.gadarts.isometric.components.ShadowLightComponent;
 
 public class ShadowMapShader extends BaseShader {
 	private static final Vector3 auxVector = new Vector3();
@@ -48,11 +47,11 @@ public class ShadowMapShader extends BaseShader {
 
 	@Override
 	public void render(final Renderable renderable) {
-		if (!renderable.material.has(BlendingAttribute.Type)) {
-			context.setBlending(false, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		} else {
-			context.setBlending(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		}
+//		if (!renderable.material.has(BlendingAttribute.Type)) {
+//			context.setBlending(false, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+//		} else {
+//			context.setBlending(true, GL20.GL_ONE, GL20.GL_ONE);
+//		}
 		super.render(renderable);
 	}
 
@@ -78,7 +77,7 @@ public class ShadowMapShader extends BaseShader {
 	public void render(final Renderable renderable, final Attributes combinedAttributes) {
 		for (int i = 0; i < lights.size(); i++) {
 			final int textureNum = 8;
-			LightComponent lightComponent = ComponentsMapper.light.get(lights.get(i));
+			ShadowLightComponent lightComponent = ComponentsMapper.shadowLight.get(lights.get(i));
 			lightComponent.getShadowFrameBuffer().getColorBufferTexture().bind(textureNum);
 			program.setUniformf("u_type", 2);
 			program.setUniformi("u_depthMapCube", textureNum);

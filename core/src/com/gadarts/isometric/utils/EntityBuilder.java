@@ -324,6 +324,18 @@ public final class EntityBuilder {
 		return instance;
 	}
 
+	public EntityBuilder addShadowLightComponent(final Vector3 position,
+												 final float intensity,
+												 final float radius,
+												 final Color color) {
+		if (engine == null) throw new RuntimeException(MSG_FAIL_CALL_BEGIN_BUILDING_ENTITY_FIRST);
+		ShadowLightComponent lightComponent = engine.createComponent(ShadowLightComponent.class);
+		lightComponent.init(position, intensity, radius, currentEntity);
+		lightComponent.applyColor(color);
+		currentEntity.add(lightComponent);
+		return instance;
+	}
+
 	public EntityBuilder addParticleEffectComponent(final PooledEngine engine,
 													final ParticleEffect originalEffect,
 													final Vector3 position) {
