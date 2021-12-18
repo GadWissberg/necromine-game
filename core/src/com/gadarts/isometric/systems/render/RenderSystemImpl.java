@@ -663,7 +663,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 
 	private void createShadowMaps( ) {
 		PerspectiveCamera cameraLight = new PerspectiveCamera(90f, DEPTH_MAP_SIZE, DEPTH_MAP_SIZE);
-		cameraLight.near = 0.001F;
+		cameraLight.near = 0.0001F;
 		cameraLight.far = CAMERA_LIGHT_FAR;
 		for (Entity light : lights) {
 			createShadowMapForLight(light, cameraLight);

@@ -41,7 +41,7 @@ void main()
         lenDepthMap = textureCube(u_depthMapCube, lightDirection).a;
     }
 
-    if (lenDepthMap>lenToLight-0.0022 && lenToLight < 0.7){
+    if (lenDepthMap>lenToLight-0.0022 && lenToLight < 0.4){
         vec3 light_color = vec3(1.0);
         float attenuation = 4.0 / (1.0 + (0.01*lenToLight) + (128.0*lenToLight*lenToLight));
         float value_to_add = (attenuation);

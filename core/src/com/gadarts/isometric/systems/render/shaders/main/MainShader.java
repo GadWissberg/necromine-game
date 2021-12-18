@@ -61,7 +61,7 @@ public class MainShader extends DefaultShader {
 		super.init();
 		uniformsLocationsHandler.fetchUniformsLocations(program);
 		program.bind();
-		final int textureNum = 20;
+		final int textureNum = 30;
 		RenderSystemImpl.shadowFrameBuffer.getColorBufferTexture().bind(textureNum);
 		program.setUniformi("u_shadows", textureNum);
 		program.setUniformf("u_screenWidth", Gdx.graphics.getWidth());
