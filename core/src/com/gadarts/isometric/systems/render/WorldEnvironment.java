@@ -5,7 +5,6 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.utils.Disposable;
 import lombok.Getter;
@@ -42,11 +41,11 @@ public class WorldEnvironment extends Environment implements Disposable {
 
 	public void initialize(final ImmutableArray<Entity> lightsEntities) {
 		lightsHandler = new LightsHandler(lightsEntities);
-		DirectionalLight directionalLight = new DirectionalLight();
-		directionalLight.direction.set(-0.3f, -0.5f, -1);
+//		DirectionalLight directionalLight = new DirectionalLight();
+//		directionalLight.direction.set(-0.3f, -0.5f, -1);
 		float r = 0.3f;
-		directionalLight.color.set(r, r, r, 1f);
-		add(directionalLight);
+//		directionalLight.color.set(r, r, r, 1f);
+//		add(directionalLight);
 		initializeModelShadowLight();
 	}
 

@@ -224,10 +224,10 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		renderModels(camera, renderBatches.getModelBatchShadows(), true, false);
-//		if (take) {
-//			ScreenshotFactory.saveScreenshot(shadowFrameBuffer.getWidth(), shadowFrameBuffer.getHeight(), "depthmap");
-//			take = false;
-//		}
+		if (take) {
+			ScreenshotFactory.saveScreenshot(shadowFrameBuffer.getWidth(), shadowFrameBuffer.getHeight(), "depthmap");
+			take = false;
+		}
 		shadowFrameBuffer.end();
 	}
 
