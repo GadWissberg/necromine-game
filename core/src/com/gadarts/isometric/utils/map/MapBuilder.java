@@ -313,12 +313,10 @@ public final class MapBuilder implements Disposable {
 
 	private void inflateLights(final JsonObject mapJsonObject, final MapGraph mapGraph) {
 		JsonArray lights = mapJsonObject.getAsJsonArray(KEY_LIGHTS);
-		lights.forEach(element -> {
-			inflateLight(mapGraph, element);
-		});
+		lights.forEach(element -> inflateLight(mapGraph, element));
 	}
 
-	private void inflateLight(MapGraph mapGraph, JsonElement element) {
+	private void inflateLight(final MapGraph mapGraph, final JsonElement element) {
 		JsonObject lightJsonObject = element.getAsJsonObject();
 		int row = lightJsonObject.get(ROW).getAsInt();
 		int col = lightJsonObject.get(COL).getAsInt();
@@ -542,7 +540,9 @@ public final class MapBuilder implements Disposable {
 				nodeData.lift(height);
 				eastNode.setHeight(mapGraph.getNode(eastNode.getCoords()).getHeight());
 				float vScale = asJsonObject.has(MapJsonKeys.V_SCALE) ? asJsonObject.get(MapJsonKeys.V_SCALE).getAsFloat() : 0;
-				WallCreator.adjustWallBetweenEastAndWest(eastNode, nodeData, true, vScale);
+				float hOffset = asJsonObject.has(H_OFFSET) ? asJsonObject.get(H_OFFSET).getAsFloat() : 0;
+				float vOffset = asJsonObject.has(V_OFFSET) ? asJsonObject.get(V_OFFSET).getAsFloat() : 0;
+				WallCreator.adjustWallBetweenEastAndWest(eastNode, nodeData, vScale, hOffset, vOffset);
 				boolean westHigherThanEast = node.getHeight() > eastNode.getHeight();
 				inflateWall(walls.getEastWall(), westHigherThanEast ? eastNode : nodeData);
 			}
@@ -569,7 +569,9 @@ public final class MapBuilder implements Disposable {
 				nodeData.lift(height);
 				southNode.setHeight(mapGraph.getNode(southNode.getCoords()).getHeight());
 				float vScale = asJsonObject.has(MapJsonKeys.V_SCALE) ? asJsonObject.get(MapJsonKeys.V_SCALE).getAsFloat() : 0;
-				WallCreator.adjustWallBetweenNorthAndSouth(southNode, nodeData, vScale);
+				float hOffset = asJsonObject.has(H_OFFSET) ? asJsonObject.get(H_OFFSET).getAsFloat() : 0;
+				float vOffset = asJsonObject.has(V_OFFSET) ? asJsonObject.get(V_OFFSET).getAsFloat() : 0;
+				WallCreator.adjustWallBetweenNorthAndSouth(southNode, nodeData, vScale, hOffset, vOffset);
 				boolean northHigherThanSouth = node.getHeight() > southNode.getHeight();
 				inflateWall(walls.getSouthWall(), northHigherThanSouth ? southNode : nodeData);
 			}
@@ -596,7 +598,9 @@ public final class MapBuilder implements Disposable {
 				nodeData.lift(height);
 				westNodeData.setHeight(mapGraph.getNode(westNodeData.getCoords()).getHeight());
 				float vScale = asJsonObject.has(MapJsonKeys.V_SCALE) ? asJsonObject.get(MapJsonKeys.V_SCALE).getAsFloat() : 0;
-				WallCreator.adjustWallBetweenEastAndWest(nodeData, westNodeData, true, vScale);
+				float hOffset = asJsonObject.has(H_OFFSET) ? asJsonObject.get(H_OFFSET).getAsFloat() : 0;
+				float vOffset = asJsonObject.has(V_OFFSET) ? asJsonObject.get(V_OFFSET).getAsFloat() : 0;
+				WallCreator.adjustWallBetweenEastAndWest(nodeData, westNodeData, vScale, hOffset, vOffset);
 				boolean eastHigherThanWest = node.getHeight() > westNodeData.getHeight();
 				inflateWall(walls.getWestWall(), eastHigherThanWest ? westNodeData : nodeData);
 			}
@@ -622,7 +626,9 @@ public final class MapBuilder implements Disposable {
 				n.lift(height);
 				northNode.setHeight(mapGraph.getNode(northNode.getCoords()).getHeight());
 				float vScale = asJsonObject.has(MapJsonKeys.V_SCALE) ? asJsonObject.get(MapJsonKeys.V_SCALE).getAsFloat() : 0;
-				WallCreator.adjustWallBetweenNorthAndSouth(n, northNode, vScale);
+				float hOffset = asJsonObject.has(H_OFFSET) ? asJsonObject.get(H_OFFSET).getAsFloat() : 0;
+				float vOffset = asJsonObject.has(V_OFFSET) ? asJsonObject.get(V_OFFSET).getAsFloat() : 0;
+				WallCreator.adjustWallBetweenNorthAndSouth(n, northNode, vScale, hOffset, vOffset);
 				boolean northHigherThanSouth = node.getHeight() > northNode.getHeight();
 				inflateWall(n.getWalls().getNorthWall(), northHigherThanSouth ? northNode : n);
 			}
