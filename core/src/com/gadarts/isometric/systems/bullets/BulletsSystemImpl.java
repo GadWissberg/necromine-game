@@ -12,7 +12,12 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
-import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.Bresenham2;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.BulletComponent;
 import com.gadarts.isometric.components.CollisionComponent;
@@ -71,7 +76,7 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	private ParticleEffect bulletRicochetEffect;
 
 	@Override
-	public void activate( ) {
+	public void activate() {
 	}
 
 	@Override
@@ -114,16 +119,20 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 		MapGraphNode node = map.getNode(n.x, n.y);
 		if (node.getHeight() > map.getNode((int) posNodeCenterPos.x, (int) posNodeCenterPos.z).getHeight() + 1) {
 			Vector2 intersectionPosition = findNodeSegmentIntersection(posNodeCenterPos, maxRangePos, n);
-			Vector3 position = auxVector3_1.set(intersectionPosition.x, posNodeCenterPos.y + 1F, intersectionPosition.y);
-			EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
-					.addParticleEffectComponent((PooledEngine) getEngine(), bulletRicochetEffect, position)
-					.addLightComponent(position,
-							HITSCAN_COL_LIGHT_INTENSITY,
-							HITSCAN_COL_LIGHT_RADIUS,
-							HITSCAN_COL_LIGHT_COLOR,
-							HITSCAN_COL_LIGHT_DURATION)
-					.finishAndAddToEngine();
-			return true;
+			if (!intersectionPosition.equals(Vector2.Zero)) {
+				Vector3 position = auxVector3_1.set(intersectionPosition.x, posNodeCenterPos.y + 1F, intersectionPosition.y);
+				EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
+						.addParticleEffectComponent((PooledEngine) getEngine(), bulletRicochetEffect, position)
+						.addLightComponent(position,
+								HITSCAN_COL_LIGHT_INTENSITY,
+								HITSCAN_COL_LIGHT_RADIUS,
+								HITSCAN_COL_LIGHT_COLOR,
+								HITSCAN_COL_LIGHT_DURATION)
+						.finishAndAddToEngine();
+				return true;
+			} else {
+				return false;
+			}
 		}
 		Entity enemy = map.getAliveEnemyFromNode(node);
 		if (enemy != null) {
@@ -147,18 +156,27 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 												final GridPoint2 node) {
 		Vector2 src = auxVector2_1.set(posNodeCenterPos.x, posNodeCenterPos.z);
 		Vector2 dst = auxVector2_2.set(maxRangePos.x, maxRangePos.z);
-		Intersector.intersectSegments(src, dst,
-				auxVector2_3.set(node.x, node.y), auxVector2_4.set(node.x + 1F, node.y),
-				auxVector2_5);
-		Intersector.intersectSegments(src, dst,
-				auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x + 1F, node.y + 1F),
-				auxVector2_5);
-		Intersector.intersectSegments(src, dst,
-				auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y + 1F),
-				auxVector2_5);
-		Intersector.intersectSegments(src, dst,
-				auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y),
-				auxVector2_5);
+		auxVector2_5.setZero();
+		if (auxVector2_5.equals(Vector2.Zero)) {
+			Intersector.intersectSegments(src, dst,
+					auxVector2_3.set(node.x, node.y), auxVector2_4.set(node.x + 1F, node.y),
+					auxVector2_5);
+		}
+		if (auxVector2_5.equals(Vector2.Zero)) {
+			Intersector.intersectSegments(src, dst,
+					auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x + 1F, node.y + 1F),
+					auxVector2_5);
+		}
+		if (auxVector2_5.equals(Vector2.Zero)) {
+			Intersector.intersectSegments(src, dst,
+					auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y + 1F),
+					auxVector2_5);
+		}
+		if (auxVector2_5.equals(Vector2.Zero)) {
+			Intersector.intersectSegments(src, dst,
+					auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y),
+					auxVector2_5);
+		}
 		return auxVector2_5;
 	}
 
@@ -334,7 +352,7 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	}
 
 	@Override
-	public void dispose( ) {
+	public void dispose() {
 
 	}
 
