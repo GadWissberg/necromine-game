@@ -22,7 +22,23 @@ import com.gadarts.necromine.model.Coords;
 
 import java.util.List;
 
-import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.*;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_AMBIENT_LIGHT;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_APPLY_FLOOR_AMBIENT_OCCLUSION;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_APPLY_WALL_AMBIENT_OCCLUSION;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_COLOR_WHEN_OUTSIDE;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_COMPLETE_BLACK;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_FOW_MAP;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_LIGHTS_COLORS;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_LIGHTS_EXTRA_DATA;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_LIGHTS_POSITIONS;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_MODEL_DEPTH;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_MODEL_HEIGHT;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_MODEL_WIDTH;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_MODEL_X;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_MODEL_Y;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_MODEL_Z;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_NUMBER_OF_LIGHTS;
+import static com.gadarts.isometric.systems.render.shaders.main.UniformsLocationsHandler.UNIFORM_SKIP_COLOR;
 
 /**
  * Handles all main shader's uniforms.
@@ -57,7 +73,7 @@ public class MainShader extends DefaultShader {
 	}
 
 	@Override
-	public void init( ) {
+	public void init() {
 		super.init();
 		uniformsLocationsHandler.fetchUniformsLocations(program);
 		program.bind();
@@ -142,9 +158,9 @@ public class MainShader extends DefaultShader {
 	private void applyLights(final AdditionalRenderData renderData) {
 		int location = uniformsLocationsHandler.getLocation(UNIFORM_NUMBER_OF_LIGHTS);
 		program.setUniformi(location, renderData.getNearbyLights().size());
-		if (renderData.getNearbyLights().size() > 0) {
+		if (!renderData.getNearbyLights().isEmpty()) {
 			int differentColorIndex = 0;
-			for (int i = 0; i < renderData.getNearbyLights().size(); i++) {
+			for (int i = 0; i < Math.min(renderData.getNearbyLights().size(), MAX_LIGHTS); i++) {
 				differentColorIndex = insertToLightsArray(renderData.getNearbyLights(), i, differentColorIndex);
 			}
 			applyLightsDataUniforms(renderData);
