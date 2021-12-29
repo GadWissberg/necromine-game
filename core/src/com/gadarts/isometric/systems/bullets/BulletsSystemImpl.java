@@ -162,7 +162,7 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 		min = intersectSegments(posNodeCenterPos, src, dst, closest, min, auxVector2_3.set(node.x, node.y), auxVector2_4.set(node.x + 1F, node.y));
 		min = intersectSegments(posNodeCenterPos, src, dst, closest, min, auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x + 1F, node.y + 1F));
 		min = intersectSegments(posNodeCenterPos, src, dst, closest, min, auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y + 1F));
-		min = intersectSegments(posNodeCenterPos, src, dst, closest, min, auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y));
+		intersectSegments(posNodeCenterPos, src, dst, closest, min, auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y));
 		return closest;
 	}
 
