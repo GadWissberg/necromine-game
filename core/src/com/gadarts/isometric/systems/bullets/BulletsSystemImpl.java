@@ -50,6 +50,7 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	private final static Vector2 auxVector2_3 = new Vector2();
 	private final static Vector2 auxVector2_4 = new Vector2();
 	private final static Vector2 auxVector2_5 = new Vector2();
+	private final static Vector2 auxVector2_6 = new Vector2();
 	private final static Vector3 auxVector3_1 = new Vector3();
 	private final static Vector3 auxVector3_2 = new Vector3();
 	private final static Vector3 auxVector3_3 = new Vector3();
@@ -156,28 +157,31 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 												final GridPoint2 node) {
 		Vector2 src = auxVector2_1.set(posNodeCenterPos.x, posNodeCenterPos.z);
 		Vector2 dst = auxVector2_2.set(maxRangePos.x, maxRangePos.z);
-		auxVector2_5.setZero();
-		if (auxVector2_5.equals(Vector2.Zero)) {
-			Intersector.intersectSegments(src, dst,
-					auxVector2_3.set(node.x, node.y), auxVector2_4.set(node.x + 1F, node.y),
-					auxVector2_5);
+		Vector2 closest = auxVector2_5.setZero();
+		float min = Integer.MAX_VALUE;
+		min = intersectSegments(posNodeCenterPos, src, dst, closest, min, auxVector2_3.set(node.x, node.y), auxVector2_4.set(node.x + 1F, node.y));
+		min = intersectSegments(posNodeCenterPos, src, dst, closest, min, auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x + 1F, node.y + 1F));
+		min = intersectSegments(posNodeCenterPos, src, dst, closest, min, auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y + 1F));
+		min = intersectSegments(posNodeCenterPos, src, dst, closest, min, auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y));
+		return closest;
+	}
+
+	private float intersectSegments(Vector3 posNodeCenterPos,
+									Vector2 src,
+									Vector2 dst,
+									Vector2 closest,
+									float min,
+									Vector2 lineVertex1, Vector2 lineVertex2) {
+		Vector2 candidate = BulletsSystemImpl.auxVector2_6;
+		Intersector.intersectSegments(src, dst, lineVertex1, lineVertex2, candidate.set(closest));
+		if (!candidate.isZero()) {
+			float distance = posNodeCenterPos.dst(candidate.x, posNodeCenterPos.y, candidate.y);
+			if (distance < min) {
+				closest.set(candidate);
+				return distance;
+			}
 		}
-		if (auxVector2_5.equals(Vector2.Zero)) {
-			Intersector.intersectSegments(src, dst,
-					auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x + 1F, node.y + 1F),
-					auxVector2_5);
-		}
-		if (auxVector2_5.equals(Vector2.Zero)) {
-			Intersector.intersectSegments(src, dst,
-					auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y + 1F),
-					auxVector2_5);
-		}
-		if (auxVector2_5.equals(Vector2.Zero)) {
-			Intersector.intersectSegments(src, dst,
-					auxVector2_3.set(auxVector2_4), auxVector2_4.set(node.x, node.y),
-					auxVector2_5);
-		}
-		return auxVector2_5;
+		return min;
 	}
 
 	private Array<GridPoint2> findAllNodesOnTheWayOfTheHitScan(final Vector3 posNodeCenterPos,
