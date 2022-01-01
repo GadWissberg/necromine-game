@@ -133,6 +133,10 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable, Servic
 
 	public void init( ) {
 		soundPlayer.playMusic(Assets.Melody.TEST);
+		playAmbSound();
+	}
+
+	private void playAmbSound( ) {
 		soundPlayer.playSound(Assets.Sounds.AMB_WIND, 0.5F);
 	}
 
@@ -159,7 +163,13 @@ public class GameServices implements ConsoleEventsSubscriber, Disposable, Servic
 	}
 
 	private void applySfxCommand(final ConsoleCommandResult consoleCommandResult) {
+		boolean originalValue = soundPlayer.isSfxEnabled();
 		soundPlayer.setSfxEnabled(!soundPlayer.isSfxEnabled());
+		if (!soundPlayer.isSfxEnabled()) {
+			soundPlayer.stopLoopingSounds();
+		} else if (!originalValue) {
+			playAmbSound();
+		}
 		logAudioMessage(consoleCommandResult, "Sound effects", soundPlayer.isSfxEnabled());
 	}
 

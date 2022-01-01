@@ -1,10 +1,14 @@
 package com.gadarts.isometric.utils;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 import static com.badlogic.gdx.math.MathUtils.randomBoolean;
@@ -13,11 +17,10 @@ public class SoundPlayer {
 	private static final float MELODY_VOLUME = 0.4f;
 	private static final float PITCH_OFFSET = 0.1f;
 	private final GameAssetsManager assetManager;
-
+	private final List<Sound> loopingSounds = new ArrayList<>();
 	@Getter
 	@Setter
 	private boolean sfxEnabled;
-
 	@Getter
 	private boolean musicEnabled;
 
@@ -53,15 +56,15 @@ public class SoundPlayer {
 		playSound(soundDef, 1F);
 	}
 
-	public void playSound(final Assets.Sounds soundDef, final float volume) {
+	public void playSound(final Assets.Sounds def, final float volume) {
 		if (!isSfxEnabled()) return;
-		String filePath = getRandomSound(soundDef);
-		boolean randomPitch = soundDef.isRandomPitch();
-		float pitch = 1 + (randomPitch ? (randomBoolean() ? 1 : -1) : 0) * random(-PITCH_OFFSET, PITCH_OFFSET);
-		if (!soundDef.isLoop()) {
-			assetManager.getSound(filePath).play(volume, pitch, 0);
+		float pitch = 1 + (def.isRandomPitch() ? (randomBoolean() ? 1 : -1) : 0) * random(-PITCH_OFFSET, PITCH_OFFSET);
+		if (!def.isLoop()) {
+			assetManager.getSound(getRandomSound(def)).play(volume, pitch, 0);
 		} else {
-			assetManager.getSound(filePath).loop(volume, 1, 0);
+			Sound sound = assetManager.getSound(getRandomSound(def));
+			sound.loop(volume, 1, 0);
+			loopingSounds.add(sound);
 		}
 	}
 
@@ -73,4 +76,7 @@ public class SoundPlayer {
 		return filePath;
 	}
 
+	public void stopLoopingSounds( ) {
+		loopingSounds.forEach(Sound::stop);
+	}
 }
