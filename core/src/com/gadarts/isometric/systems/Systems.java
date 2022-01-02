@@ -29,7 +29,7 @@ public enum Systems {
 	CAMERA(new CameraSystemImpl(), CameraSystemEventsSubscriber.class),
 	CHARACTER(new CharacterSystemImpl(), CharacterSystemEventsSubscriber.class),
 	ENEMY(new EnemySystemImpl(), EnemySystemEventsSubscriber.class),
-	HUD(new UserUserInterfaceSystemImpl(), UserInterfaceSystemEventsSubscriber.class),
+	USER_INTERFACE(new UserUserInterfaceSystemImpl(), UserInterfaceSystemEventsSubscriber.class),
 	INPUT(new InputSystemImpl(), InputSystemEventsSubscriber.class),
 	PICKUP(new PickUpSystemImplUser(), PickupSystemEventsSubscriber.class),
 	PLAYER(new PlayerSystemImpl(), PlayerSystemEventsSubscriber.class),

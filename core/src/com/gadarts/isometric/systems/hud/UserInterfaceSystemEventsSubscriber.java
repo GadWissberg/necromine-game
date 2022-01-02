@@ -12,4 +12,8 @@ public interface UserInterfaceSystemEventsSubscriber extends SystemEventsSubscri
 	default void onUserSelectedNodeToApplyTurn(final MapGraphNode cursorNode, final AttackNodesHandler attackNodesHandler) {
 
 	}
+
+	default void onMenuToggled(boolean active) {
+
+	}
 }

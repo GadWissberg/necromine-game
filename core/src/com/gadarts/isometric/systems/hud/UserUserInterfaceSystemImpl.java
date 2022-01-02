@@ -38,7 +38,10 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 
 import java.util.List;
 
-import static com.gadarts.isometric.NecronemesGame.*;
+import static com.gadarts.isometric.NecronemesGame.FULL_SCREEN_RESOLUTION_HEIGHT;
+import static com.gadarts.isometric.NecronemesGame.FULL_SCREEN_RESOLUTION_WIDTH;
+import static com.gadarts.isometric.NecronemesGame.WINDOWED_RESOLUTION_HEIGHT;
+import static com.gadarts.isometric.NecronemesGame.WINDOWED_RESOLUTION_WIDTH;
 
 public class UserUserInterfaceSystemImpl extends GameEntitySystem<UserInterfaceSystemEventsSubscriber> implements UserInterfaceSystem,
 		InputSystemEventsSubscriber,
@@ -57,6 +60,7 @@ public class UserUserInterfaceSystemImpl extends GameEntitySystem<UserInterfaceS
 	@Override
 	public void toggleMenu(final boolean active) {
 		userInterfaceSystemHandlers.getMenuHandler().toggleMenu(active, userInterfaceSystemHandlers.getHudHandler().getStage());
+		subscribers.forEach(subscriber -> subscriber.onMenuToggled(active));
 	}
 
 	@Override
@@ -112,7 +116,7 @@ public class UserUserInterfaceSystemImpl extends GameEntitySystem<UserInterfaceS
 
 	@Override
 	public void touchDown(final int screenX, final int screenY, final int button) {
-		if (getSystem(CameraSystem.class).isCameraRotating()) return;
+		if (getSystem(CameraSystem.class).isCameraRotating() || !isMenuClosed()) return;
 		Entity player = getSystem(PlayerSystem.class).getPlayer();
 		Turns currentTurn = getSystem(TurnsSystem.class).getCurrentTurn();
 		int hp = ComponentsMapper.character.get(player).getSkills().getHealthData().getHp();

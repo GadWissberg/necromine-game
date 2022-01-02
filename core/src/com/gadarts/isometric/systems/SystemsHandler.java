@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.utils.Disposable;
 import com.gadarts.isometric.services.GameServices;
+import com.gadarts.isometric.systems.hud.UserInterfaceSystemEventsSubscriber;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandParameter;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommandResult;
 import com.gadarts.isometric.systems.hud.console.ConsoleCommands;
@@ -13,7 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SystemsHandler implements Disposable, ConsoleEventsSubscriber {
+public class SystemsHandler implements Disposable, ConsoleEventsSubscriber, UserInterfaceSystemEventsSubscriber {
 
 	@SuppressWarnings("rawtypes")
 	private final Map<Class<? extends SystemEventsSubscriber>, Class<? extends GameEntitySystem>> subscribersInterfaces = new HashMap<>();
