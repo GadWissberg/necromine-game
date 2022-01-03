@@ -68,7 +68,6 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	private final static float HITSCAN_COL_LIGHT_DURATION = 0.1F;
 	private final static Bresenham2 bresenham = new Bresenham2();
 	private final static float HIT_SCAN_MAX_DISTANCE = 10F;
-	private final static float PROJECTILE_RELATIVE_HEIGHT = 0.5F;
 	private final static float BULLET_EXPLOSION_LIGHT_INTENSITY = 0.3F;
 	private final static float BULLET_EXPLOSION_LIGHT_DURATION = 0.2F;
 	private final static float BULLET_EXPLOSION_LIGHT_RADIUS = 1F;
@@ -204,20 +203,20 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	private void enemyEngagesPrimaryAttack(final Entity character, final Vector3 direction, final Vector3 charPos) {
 		EnemyComponent enemyComponent = ComponentsMapper.enemy.get(character);
 		Accuracy accuracy = enemyComponent.getEnemyDefinition().getAccuracy()[enemyComponent.getSkill() - 1];
-		int maxAngle = accuracy.getMaxAngle();
-		direction.rotate(Vector3.Y, MathUtils.random(-maxAngle, maxAngle));
+		direction.rotate(Vector3.Y, MathUtils.random(-accuracy.getMaxAngle(), accuracy.getMaxAngle()));
+		direction.rotate(Vector3.X, MathUtils.random(-accuracy.getMaxAngle(), accuracy.getMaxAngle()));
 		EnemyComponent enemyComp = ComponentsMapper.enemy.get(character);
 		Animation<TextureAtlas.AtlasRegion> bulletAnim = enemyComp.getBulletAnimation();
 		services.getSoundPlayer().playSound(Assets.Sounds.ATTACK_ENERGY_BALL);
-		createBullet(character, direction, charPos, enemyComp, bulletAnim);
+		createEnemyBullet(character, direction, charPos, enemyComp, bulletAnim);
 	}
 
-	private void createBullet(final Entity character,
-							  final Vector3 direction,
-							  final Vector3 charPos,
-							  final EnemyComponent enemyComp,
-							  final Animation<TextureAtlas.AtlasRegion> bulletAnim) {
-		charPos.y += PROJECTILE_RELATIVE_HEIGHT;
+	private void createEnemyBullet(final Entity character,
+								   final Vector3 direction,
+								   final Vector3 charPos,
+								   final EnemyComponent enemyComp,
+								   final Animation<TextureAtlas.AtlasRegion> bulletAnim) {
+		charPos.y += ComponentsMapper.enemy.get(character).getEnemyDefinition().getHeight() / 2F;
 		Integer[] damagePoints = enemyComp.getEnemyDefinition().getPrimaryAttack().getDamagePoints();
 		ParticleEffect effect = services.getAssetManager().getParticleEffect(ParticleEffects.ENERGY_BALL_TRAIL);
 		Entity bullet = EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())

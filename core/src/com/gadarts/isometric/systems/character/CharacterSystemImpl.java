@@ -18,7 +18,11 @@ import com.gadarts.isometric.components.AnimationComponent;
 import com.gadarts.isometric.components.ComponentsMapper;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.CharacterMotivation;
-import com.gadarts.isometric.components.character.data.*;
+import com.gadarts.isometric.components.character.data.CharacterHealthData;
+import com.gadarts.isometric.components.character.data.CharacterMotivationData;
+import com.gadarts.isometric.components.character.data.CharacterRotationData;
+import com.gadarts.isometric.components.character.data.CharacterSoundData;
+import com.gadarts.isometric.components.character.data.CharacterSpriteData;
 import com.gadarts.isometric.components.decal.character.CharacterDecalComponent;
 import com.gadarts.isometric.components.player.PlayerComponent;
 import com.gadarts.isometric.components.player.Weapon;
@@ -43,8 +47,17 @@ import com.gadarts.necromine.model.characters.SpriteType;
 import com.gadarts.necromine.model.characters.attributes.Strength;
 import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
-import static com.gadarts.isometric.components.character.CharacterMotivation.*;
-import static com.gadarts.necromine.model.characters.SpriteType.*;
+import static com.gadarts.isometric.components.character.CharacterMotivation.END_MY_TURN;
+import static com.gadarts.isometric.components.character.CharacterMotivation.TO_PICK_UP;
+import static com.gadarts.isometric.components.character.CharacterMotivation.USE_PRIMARY;
+import static com.gadarts.necromine.model.characters.SpriteType.ATTACK;
+import static com.gadarts.necromine.model.characters.SpriteType.ATTACK_PRIMARY;
+import static com.gadarts.necromine.model.characters.SpriteType.IDLE;
+import static com.gadarts.necromine.model.characters.SpriteType.LIGHT_DEATH_1;
+import static com.gadarts.necromine.model.characters.SpriteType.PAIN;
+import static com.gadarts.necromine.model.characters.SpriteType.PICKUP;
+import static com.gadarts.necromine.model.characters.SpriteType.RUN;
+import static com.gadarts.necromine.model.characters.SpriteType.randomLightDeath;
 
 /**
  * Responsible for all character-related logic (whether player or enemy).
@@ -57,7 +70,8 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 		BulletsSystemEventsSubscriber {
 
 	private static final Vector3 auxVector3_1 = new Vector3();
-	private static final Vector3 auxVector3_2 = new Vector3();
+	private static final Vector3 auxVector3_3 = new Vector3();
+	private static final Vector3 auxVector3_4 = new Vector3();
 	private static final Vector2 auxVector2_1 = new Vector2();
 	private static final Vector2 auxVector2_2 = new Vector2();
 	private static final Vector2 auxVector2_3 = new Vector2();
@@ -77,7 +91,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	@Override
-	public void activate( ) {
+	public void activate() {
 		this.graphData = new CharacterSystemGraphData(services.getMapService().getMap());
 		commandsHandler = new CommandsHandler(graphData, subscribers, services.getSoundPlayer(), services.getMapService().getMap());
 		for (CharacterSystemEventsSubscriber subscriber : subscribers) {
@@ -316,13 +330,13 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	}
 
 	@Override
-	public void dispose( ) {
+	public void dispose() {
 
 	}
 
 
 	@Override
-	public boolean isProcessingCommand( ) {
+	public boolean isProcessingCommand() {
 		return commandsHandler.getCurrentCommand() != null;
 	}
 
@@ -375,11 +389,12 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				MapGraph map = services.getMapService().getMap();
 				MapGraphNode targetNode = map.getNode(targetDecalComponent.getDecal().getPosition());
 				MapGraphNode positionNode = map.getNode(decal.getPosition());
-				Vector2 targetNodeCenterPosition = targetNode.getCenterPosition(auxVector2_1);
-				Vector2 positionNodeCenterPosition = positionNode.getCenterPosition(auxVector2_2);
-				Vector3 direction = auxVector3_1.set(targetNodeCenterPosition.x, 0, targetNodeCenterPosition.y).sub(positionNodeCenterPosition.x, 0, positionNodeCenterPosition.y);
+				Vector3 targetNodeCenterPosition = targetNode.getCenterPosition(auxVector3_3);
+				targetNodeCenterPosition.y += 0.5f;
+				Vector3 positionNodeCenterPosition = positionNode.getCenterPosition(auxVector3_4);
+				Vector3 direction = targetNodeCenterPosition.sub(positionNodeCenterPosition);
 				for (CharacterSystemEventsSubscriber subscriber : subscribers) {
-					subscriber.onCharacterEngagesPrimaryAttack(character, direction, auxVector3_2.set(positionNodeCenterPosition.x, 0, positionNodeCenterPosition.y));
+					subscriber.onCharacterEngagesPrimaryAttack(character, direction, positionNodeCenterPosition);
 				}
 			}
 		} else if (characterSpriteData.getSpriteType() == PICKUP) {

@@ -47,7 +47,7 @@ public class MapGraphNode {
 	}
 
 	public Vector3 getCenterPosition(final Vector3 output) {
-		return output.set(col + 0.5f, 0, row + 0.5f);
+		return output.set(col + 0.5f, height, row + 0.5f);
 	}
 
 	@Override
