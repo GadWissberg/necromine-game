@@ -12,6 +12,7 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
+import com.gadarts.necromine.model.characters.attributes.Agility;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -43,13 +44,13 @@ public class PathPlanHandler {
 		});
 	}
 
-	public void hideAllArrows() {
+	public void hideAllArrows( ) {
 		arrowsEntities.forEach(arrow -> ComponentsMapper.simpleDecal.get(arrow).setVisible(false));
 	}
 
-	void displayPathPlan() {
+	void displayPathPlan(final Agility agility) {
 		hideAllArrows();
-		IntStream.range(0, getPath().getCount()).forEach(i -> {
+		IntStream.range(0, Math.min(getPath().getCount(), agility.getValue())).forEach(i -> {
 			if (i < arrowsEntities.size() && i < path.getCount() - 1) {
 				MapGraphNode n = path.get(i);
 				MapGraphNode next = path.get(i + 1);
@@ -72,7 +73,7 @@ public class PathPlanHandler {
 		createArrowsEntities(engine);
 	}
 
-	public void resetPlan() {
+	public void resetPlan( ) {
 		hideAllArrows();
 		path.clear();
 	}

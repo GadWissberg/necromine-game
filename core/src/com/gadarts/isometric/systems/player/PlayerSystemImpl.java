@@ -98,7 +98,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		for (PlayerSystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onPathCreated(enemyAtNode != null);
 		}
-		pathPlanHandler.displayPathPlan();
+		pathPlanHandler.displayPathPlan(ComponentsMapper.character.get(player).getSkills().getAgility());
 	}
 
 	private boolean calculatePathAccordingToSelection(final MapGraphNode cursorNode, final Entity enemyAtNode) {
