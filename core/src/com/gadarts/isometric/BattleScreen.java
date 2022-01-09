@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Screen;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.systems.SystemsHandler;
-import com.gadarts.isometric.systems.hud.UserUserInterfaceSystemImpl;
+import com.gadarts.isometric.systems.hud.UserInterfaceSystemImpl;
 import com.gadarts.isometric.systems.player.PlayerSystemImpl;
 import lombok.Setter;
 
@@ -72,6 +72,6 @@ public class BattleScreen implements Screen, GlobalGameService {
 		systemsHandler.reset(services);
 		PooledEngine engine = services.getEngine();
 		engine.getSystem(PlayerSystemImpl.class).enablePlayer();
-		engine.getSystem(UserUserInterfaceSystemImpl.class).toggleMenu(false);
+		engine.getSystem(UserInterfaceSystemImpl.class).toggleMenu(false);
 	}
 }

@@ -1,19 +1,10 @@
 package com.gadarts.isometric.systems.render;
 
-import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.EntityListener;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cubemap;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -33,11 +24,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.gadarts.isometric.components.AnimationComponent;
-import com.gadarts.isometric.components.ComponentsMapper;
-import com.gadarts.isometric.components.LightComponent;
-import com.gadarts.isometric.components.ModelInstanceComponent;
-import com.gadarts.isometric.components.ShadowLightComponent;
+import com.gadarts.isometric.components.*;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.data.CharacterSpriteData;
@@ -76,14 +63,7 @@ import com.gadarts.necromine.model.characters.SpriteType;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.gadarts.isometric.NecronemesGame.FULL_SCREEN_RESOLUTION_HEIGHT;
-import static com.gadarts.isometric.NecronemesGame.FULL_SCREEN_RESOLUTION_WIDTH;
-import static com.gadarts.isometric.NecronemesGame.WINDOWED_RESOLUTION_HEIGHT;
-import static com.gadarts.isometric.NecronemesGame.WINDOWED_RESOLUTION_WIDTH;
-import static com.gadarts.necromine.assets.Assets.Shaders.DEPTHMAP_FRAGMENT;
-import static com.gadarts.necromine.assets.Assets.Shaders.DEPTHMAP_VERTEX;
-import static com.gadarts.necromine.assets.Assets.Shaders.SHADOW_FRAGMENT;
-import static com.gadarts.necromine.assets.Assets.Shaders.SHADOW_VERTEX;
+import static com.gadarts.necromine.assets.Assets.Shaders.*;
 import static java.lang.Math.max;
 
 /**
@@ -110,7 +90,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	private static final Quaternion auxQuat = new Quaternion();
 	private static final BoundingBox auxBoundingBox = new BoundingBox();
 	private static final String MSG_FC = "Frustum culling has been %s.";
-	private static final String MSG_FS = "Full-screen has been %s.";
 	private static final int ICON_FLOWER_APPEARANCE_DURATION = 1000;
 	public static final int CAMERA_LIGHT_FAR = 10;
 	static public boolean take;
@@ -614,9 +593,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		if (command == ConsoleCommandsList.FRUSTUM_CULLING) {
 			handleFrustumCullingCommand(consoleCommandResult);
 			return true;
-		} else if (command == ConsoleCommandsList.FULL_SCREEN) {
-			handleFullScreenCommand(consoleCommandResult);
-			return true;
 		}
 		return false;
 	}
@@ -625,22 +601,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		frustumCull = !frustumCull;
 		String msg = frustumCull ? String.format(MSG_FC, MSG_ACTIVATED) : String.format(MSG_FC, MSG_DISABLED);
 		consoleCommandResult.setMessage(msg);
-	}
-
-	private void handleFullScreenCommand(final ConsoleCommandResult result) {
-		boolean fullScreen = Gdx.graphics.isFullscreen();
-		if (!fullScreen) {
-			enableFullScreen();
-		} else {
-			Gdx.graphics.setWindowedMode(WINDOWED_RESOLUTION_WIDTH, WINDOWED_RESOLUTION_HEIGHT);
-		}
-		result.setMessage(fullScreen ? String.format(MSG_FS, MSG_ACTIVATED) : String.format(MSG_FS, MSG_DISABLED));
-		subscribers.forEach(sub -> sub.onFullScreenToggle(Gdx.graphics.isFullscreen()));
-	}
-
-	private void enableFullScreen() {
-		Gdx.graphics.setWindowedMode(FULL_SCREEN_RESOLUTION_WIDTH, FULL_SCREEN_RESOLUTION_HEIGHT);
-		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 	}
 
 	@Override

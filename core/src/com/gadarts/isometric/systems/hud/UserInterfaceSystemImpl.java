@@ -38,12 +38,9 @@ import com.gadarts.isometric.utils.map.MapGraphNode;
 
 import java.util.List;
 
-import static com.gadarts.isometric.NecronemesGame.FULL_SCREEN_RESOLUTION_HEIGHT;
-import static com.gadarts.isometric.NecronemesGame.FULL_SCREEN_RESOLUTION_WIDTH;
-import static com.gadarts.isometric.NecronemesGame.WINDOWED_RESOLUTION_HEIGHT;
-import static com.gadarts.isometric.NecronemesGame.WINDOWED_RESOLUTION_WIDTH;
+import static com.gadarts.isometric.NecronemesGame.*;
 
-public class UserUserInterfaceSystemImpl extends GameEntitySystem<UserInterfaceSystemEventsSubscriber> implements UserInterfaceSystem,
+public class UserInterfaceSystemImpl extends GameEntitySystem<UserInterfaceSystemEventsSubscriber> implements UserInterfaceSystem,
 		InputSystemEventsSubscriber,
 		PlayerSystemEventsSubscriber,
 		CameraSystemEventsSubscriber,
@@ -251,7 +248,9 @@ public class UserUserInterfaceSystemImpl extends GameEntitySystem<UserInterfaceS
 	@Override
 	public void onFullScreenToggle(final boolean fullScreen) {
 		Viewport viewport = userInterfaceSystemHandlers.getHudHandler().getStage().getViewport();
-		viewport.setScreenWidth((fullScreen ? FULL_SCREEN_RESOLUTION_WIDTH : WINDOWED_RESOLUTION_WIDTH));
-		viewport.setScreenHeight((fullScreen ? FULL_SCREEN_RESOLUTION_HEIGHT : WINDOWED_RESOLUTION_HEIGHT));
+		int screenWidth = fullScreen ? FULL_SCREEN_RESOLUTION_WIDTH : WINDOWED_RESOLUTION_WIDTH;
+		int screenHeight = fullScreen ? FULL_SCREEN_RESOLUTION_HEIGHT : WINDOWED_RESOLUTION_HEIGHT;
+		viewport.setWorldSize(screenWidth, screenHeight);
+		viewport.update(screenWidth, screenHeight);
 	}
 }
