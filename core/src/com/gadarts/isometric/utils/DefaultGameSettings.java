@@ -25,6 +25,7 @@ public final class DefaultGameSettings {
 	public static final boolean MENU_ON_STARTUP = true;
 	public static final boolean FULL_SCREEN = false;
 	public static final boolean DISPLAY_CURSOR_POSITION = true;
+	public static final Integer ENEMIES_SKILL = 5;
 
 	private DefaultGameSettings( ) {
 	}

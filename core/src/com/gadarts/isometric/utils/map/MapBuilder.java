@@ -141,7 +141,7 @@ public final class MapBuilder implements Disposable {
 				.addAnimationComponent();
 	}
 
-	private void createAndAdd3dCursor() {
+	private void createAndAdd3dCursor( ) {
 		Model model = assetManager.getModel(Assets.Models.CURSOR);
 		model.calculateBoundingBox(auxBoundingBox);
 		EntityBuilder.beginBuildingEntity(engine)
@@ -150,7 +150,7 @@ public final class MapBuilder implements Disposable {
 				.finishAndAddToEngine();
 	}
 
-	private Model createFloorModel() {
+	private Model createFloorModel( ) {
 		modelBuilder.begin();
 		MeshPartBuilder meshPartBuilder = modelBuilder.part("floor",
 				GL20.GL_TRIANGLES,
@@ -171,7 +171,7 @@ public final class MapBuilder implements Disposable {
 				auxVector3_5.set(0, 1, 0));
 	}
 
-	private Material createFloorMaterial() {
+	private Material createFloorMaterial( ) {
 		Material material = new Material();
 		material.id = "floor_test";
 		return material;
@@ -677,6 +677,7 @@ public final class MapBuilder implements Disposable {
 		mi.getAdditionalRenderData().setColorWhenOutside(Color.WHITE);
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	private void inflateEnemy(final JsonObject characterJsonObject, final MapGraph mapGraph) {
 		Enemies type;
 		try {
@@ -690,7 +691,7 @@ public final class MapBuilder implements Disposable {
 			int index = characterJsonObject.get(TYPE).getAsInt();
 			type = Enemies.values()[index];
 		}
-		int skill = 1;
+		int skill = Optional.ofNullable(DefaultGameSettings.ENEMIES_SKILL).orElse(1);
 		Animation<AtlasRegion> bulletAnimation = enemyBulletsTextureRegions.get(type);
 		if (type.getPrimaryAttack() != null && !enemyBulletsTextureRegions.containsKey(type)) {
 			String name = EnemyWeaponsDefinitions.ENERGY_BALL.name().toLowerCase();
@@ -764,7 +765,7 @@ public final class MapBuilder implements Disposable {
 		return auxVector3_1.set(col + 0.5f, floorHeight + BILLBOARD_Y, row + 0.5f);
 	}
 
-	private Weapon initializeStartingWeapon() {
+	private Weapon initializeStartingWeapon( ) {
 		Weapon weapon = Pools.obtain(Weapon.class);
 		Texture image = assetManager.getTexture(DefaultGameSettings.STARTING_WEAPON.getImage());
 		weapon.init(DefaultGameSettings.STARTING_WEAPON, 0, 0, image);
@@ -772,7 +773,7 @@ public final class MapBuilder implements Disposable {
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 		floorModel.dispose();
 		wallCreator.dispose();
 	}
