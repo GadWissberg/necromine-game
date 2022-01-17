@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
 
 import java.text.SimpleDateFormat;
@@ -25,7 +26,7 @@ public class ConsoleTextData implements Disposable {
 	private Stage stage;
 
 	public ConsoleTextData(final GameAssetsManager assetManager) {
-		font = assetManager.get("consola_15.ttf", BitmapFont.class);
+		font = assetManager.getFont(Assets.Fonts.CONSOLA);
 		font.getData().markupEnabled = true;
 		textStyle = new Label.LabelStyle(font, Color.WHITE);
 		GlyphLayout layout = new GlyphLayout();

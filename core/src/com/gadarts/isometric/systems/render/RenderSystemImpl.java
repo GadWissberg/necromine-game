@@ -153,9 +153,6 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 					true,
 					false,
 					lightComponent.getParent());
-//			if (User) {
-//				ScreenshotFactory.saveScreenshot(shadowFrameBuffer.getWidth(), shadowFrameBuffer.getHeight(), "depthmap");
-//			}
 		}
 		frameBuffer.end();
 		lightComponent.setShadowFrameBuffer(frameBuffer);

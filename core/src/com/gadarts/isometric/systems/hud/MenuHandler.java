@@ -9,6 +9,7 @@ import com.gadarts.isometric.GlobalGameService;
 import com.gadarts.isometric.NecronemesGame;
 import com.gadarts.isometric.services.GameServices;
 import com.gadarts.isometric.utils.DefaultGameSettings;
+import com.gadarts.necromine.assets.Assets;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -26,7 +27,7 @@ public class MenuHandler {
 								 final Entity player,
 								 final UserInterfaceSystem userInterfaceSystem) {
 		menuTable.clear();
-		BitmapFont smallFont = services.getAssetManager().get("chubgothic_40.ttf", BitmapFont.class);
+		BitmapFont smallFont = services.getAssetManager().getFont(Assets.Fonts.CHUBGOTHIC_SMALL);
 		Label.LabelStyle style = new Label.LabelStyle(smallFont, MenuOption.FONT_COLOR_REGULAR);
 		GlobalGameService global = services.getGlobalGameService();
 		Arrays.stream(options).forEach(o -> {
@@ -37,7 +38,7 @@ public class MenuHandler {
 	}
 
 	private Label createLogo(final GameServices services) {
-		BitmapFont largeFont = services.getAssetManager().get("chubgothic_72.ttf", BitmapFont.class);
+		BitmapFont largeFont = services.getAssetManager().getFont(Assets.Fonts.CHUBGOTHIC_LARGE);
 		Label.LabelStyle logoStyle = new Label.LabelStyle(largeFont, MenuOption.FONT_COLOR_REGULAR);
 		return new Label(NecronemesGame.TITLE, logoStyle);
 	}

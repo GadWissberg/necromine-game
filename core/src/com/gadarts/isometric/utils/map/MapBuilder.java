@@ -51,7 +51,6 @@ import com.gadarts.necromine.model.RelativeBillboard;
 import com.gadarts.necromine.model.characters.CharacterDefinition;
 import com.gadarts.necromine.model.characters.CharacterTypes;
 import com.gadarts.necromine.model.characters.Direction;
-import com.gadarts.necromine.model.characters.SpriteType;
 import com.gadarts.necromine.model.characters.attributes.Accuracy;
 import com.gadarts.necromine.model.characters.attributes.Agility;
 import com.gadarts.necromine.model.characters.attributes.Strength;
@@ -81,6 +80,7 @@ import static com.gadarts.necromine.assets.MapJsonKeys.*;
 import static com.gadarts.necromine.model.characters.CharacterTypes.*;
 import static com.gadarts.necromine.model.characters.Direction.NORTH;
 import static com.gadarts.necromine.model.characters.Direction.SOUTH;
+import static com.gadarts.necromine.model.characters.SpriteType.IDLE;
 import static java.lang.String.format;
 
 /**
@@ -123,22 +123,25 @@ public final class MapBuilder implements Disposable {
 	}
 
 	private void addCharBaseComponents(final EntityBuilder entityBuilder,
-									   final CharacterData characterData,
+									   final CharacterData data,
 									   final CharacterDefinition def,
 									   final Assets.Atlases atlasDefinition) {
+		CharacterSpriteData characterSpriteData = createCharacterSpriteData(data, def);
+		Direction direction = data.getDirection();
+		entityBuilder.addCharacterComponent(characterSpriteData, data.getSoundData(), data.getSkills())
+				.addCharacterDecalComponent(assetManager.get(atlasDefinition.name()), IDLE, direction, data.getPosition())
+				.addCollisionComponent()
+				.addAnimationComponent();
+	}
+
+	private CharacterSpriteData createCharacterSpriteData(final CharacterData data, final CharacterDefinition def) {
 		CharacterSpriteData characterSpriteData = Pools.obtain(CharacterSpriteData.class);
-		Direction direction = characterData.getDirection();
-		characterSpriteData.init(direction,
-				SpriteType.IDLE,
+		characterSpriteData.init(data.getDirection(),
+				IDLE,
 				def.getMeleeHitFrameIndex(),
 				def.getPrimaryAttackHitFrameIndex(),
 				def.isSingleDeathAnimation());
-		Vector3 position = characterData.getPosition();
-		CharacterAnimations animations = assetManager.get(atlasDefinition.name());
-		entityBuilder.addCharacterComponent(characterSpriteData, characterData.getSoundData(), characterData.getSkills())
-				.addCharacterDecalComponent(animations, SpriteType.IDLE, direction, position)
-				.addCollisionComponent()
-				.addAnimationComponent();
+		return characterSpriteData;
 	}
 
 	private void createAndAdd3dCursor( ) {
@@ -778,6 +781,9 @@ public final class MapBuilder implements Disposable {
 		wallCreator.dispose();
 	}
 
+	/**
+	 * @param engine Destroys the current engine and replaces with the given one
+	 */
 	public void reset(final PooledEngine engine) {
 		this.engine = engine;
 	}

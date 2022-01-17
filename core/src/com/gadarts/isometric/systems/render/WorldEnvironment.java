@@ -41,11 +41,7 @@ public class WorldEnvironment extends Environment implements Disposable {
 
 	public void initialize(final ImmutableArray<Entity> lightsEntities) {
 		lightsHandler = new LightsHandler(lightsEntities);
-//		DirectionalLight directionalLight = new DirectionalLight();
-//		directionalLight.direction.set(-0.3f, -0.5f, -1);
 		float r = 0.3f;
-//		directionalLight.color.set(r, r, r, 1f);
-//		add(directionalLight);
 		initializeModelShadowLight();
 	}
 
