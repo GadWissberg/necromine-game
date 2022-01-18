@@ -106,9 +106,6 @@ varying float v_alphaTest;
 #ifdef lightingFlag
 varying vec3 v_lightDiffuse;
 
-#ifdef ambientLightFlag
-uniform vec3 u_ambientLight;
-#endif// ambientLightFlag
 
 #ifdef specularFlag
 varying vec3 v_lightSpecular;
@@ -138,18 +135,10 @@ struct PointLight
 uniform PointLight u_pointLights[numPointLights];
 #endif// numPointLights
 
-#if    defined(ambientLightFlag)
-#define ambientFlag
-#endif//ambientFlag
-
 #ifdef shadowMapFlag
 uniform mat4 u_shadowMapProjViewTrans;
 varying vec3 v_shadowMapUv;
 #endif//shadowMapFlag
-
-#if defined(ambientFlag)
-varying vec3 v_ambientLight;
-#endif
 
 #endif// lightingFlag
 
@@ -193,33 +182,7 @@ void main() {
     vec3 normal = normalize(u_normalMatrix * a_normal);
     v_normal = normal;
     #endif// normalFlag
-
-    #ifdef lightingFlag
-    #if    defined(ambientLightFlag)
-    vec3 ambientLight = u_ambientLight;
-    #elif defined(ambientFlag)
-    vec3 ambientLight = vec3(0.0);
-    #endif
-
-    #ifdef sphericalHarmonicsFlag
-    ambientLight += u_sphericalHarmonics[0];
-    ambientLight += u_sphericalHarmonics[1] * normal.x;
-    ambientLight += u_sphericalHarmonics[2] * normal.y;
-    ambientLight += u_sphericalHarmonics[3] * normal.z;
-    ambientLight += u_sphericalHarmonics[4] * (normal.x * normal.z);
-    ambientLight += u_sphericalHarmonics[5] * (normal.z * normal.y);
-    ambientLight += u_sphericalHarmonics[6] * (normal.y * normal.x);
-    ambientLight += u_sphericalHarmonics[7] * (3.0 * normal.z * normal.z - 1.0);
-    ambientLight += u_sphericalHarmonics[8] * (normal.x * normal.x - normal.y * normal.y);
-    #endif// sphericalHarmonicsFlag
-
-    #ifdef ambientFlag
-    v_lightDiffuse = ambientLight;
-    #else
     v_lightDiffuse = vec3(0.0);
-    #endif//ambientFlag
-
-
     #ifdef specularFlag
     v_lightSpecular = vec3(0.0);
     vec3 viewVec = normalize(u_cameraPosition.xyz - pos.xyz);
@@ -237,5 +200,4 @@ void main() {
         #endif// specularFlag
     }
         #endif// numDirectionalLights
-        #endif
 }

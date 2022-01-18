@@ -12,16 +12,15 @@ import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.GameAssetsManager;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Optional;
 
 public class ConsoleTextData implements Disposable {
 	private static final String TIME_COLOR = "SKY";
+
 	private final BitmapFont font;
 	private final float fontHeight;
 	private final StringBuilder stringBuilder = new StringBuilder();
-	private final SimpleDateFormat date = new SimpleDateFormat("HH:mm:ss");
-	private final Date timeStamp = new Date(TimeUtils.millis());
+	private final ConsoleTextTimeData consoleTextTimeData = new ConsoleTextTimeData();
 	private final Label.LabelStyle textStyle;
 	private Stage stage;
 
@@ -34,24 +33,24 @@ public class ConsoleTextData implements Disposable {
 		fontHeight = layout.height;
 	}
 
-	public float getFontHeight() {
+	public float getFontHeight( ) {
 		return fontHeight;
 	}
 
-	public StringBuilder getStringBuilder() {
+	public StringBuilder getStringBuilder( ) {
 		return stringBuilder;
 	}
 
-	public Label.LabelStyle getTextStyle() {
+	public Label.LabelStyle getTextStyle( ) {
 		return textStyle;
 	}
 
-	public BitmapFont getFont() {
+	public BitmapFont getFont( ) {
 		return font;
 	}
 
 	public void insertNewLog(final String text, final boolean logTime, final String color) {
-		timeStamp.setTime(TimeUtils.millis());
+		consoleTextTimeData.getTimeStamp().setTime(TimeUtils.millis());
 		String colorText = Optional.ofNullable(color).isPresent() ? color : ConsoleImpl.OUTPUT_COLOR;
 		if (logTime) {
 			appendTextWithTime(text, colorText);
@@ -61,14 +60,15 @@ public class ConsoleTextData implements Disposable {
 	}
 
 	private void appendTextWithTime(final String text, final String colorText) {
+		SimpleDateFormat date = consoleTextTimeData.getDate();
 		stringBuilder.append("[").append(TIME_COLOR).append("]")
-				.append(" [").append(date.format(timeStamp)).append("]: ")
+				.append(" [").append(date.format(consoleTextTimeData.getTimeStamp())).append("]: ")
 				.append(colorText)
 				.append(text).append('\n');
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 		font.dispose();
 	}
 
