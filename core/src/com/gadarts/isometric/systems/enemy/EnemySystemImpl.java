@@ -34,6 +34,7 @@ import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
+import com.gadarts.necromine.assets.Assets;
 import com.gadarts.necromine.assets.Assets.UiTextures;
 import com.gadarts.necromine.model.characters.SpriteType;
 import com.gadarts.necromine.model.characters.attributes.Accuracy;
@@ -69,7 +70,10 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private static final List<MapGraphNode> auxNodesList = new ArrayList<>();
 	private static final float ICON_SPEED = 0.5F;
 	private static final int ICON_DURATION = 2;
+	private static final long AMB_SOUND_INTERVAL_MIN = 10L;
+	private static final long AMB_SOUND_INTERVAL_MAX = 50L;
 	private final List<Entity> iconsToRemove = new ArrayList<>();
+	private final List<Assets.Sounds> ambSounds = List.of(Assets.Sounds.AMB_CHAINS, Assets.Sounds.AMB_SIGH, Assets.Sounds.AMB_LAUGH);
 	private ImmutableArray<Entity> enemies;
 	private CharacterSystem characterSystem;
 	private TurnsSystem turnsSystem;
@@ -77,6 +81,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private Texture iconSpottedTexture;
 	private ImmutableArray<Entity> icons;
 	private Texture iconLookingForTexture;
+	private long nextAmbSoundTime;
 
 	@Override
 	public void update(final float deltaTime) {
@@ -106,6 +111,10 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		for (Entity icon : iconsToRemove) {
 			getEngine().removeEntity(icon);
 		}
+		if (TimeUtils.millis() > nextAmbSoundTime) {
+			services.getSoundPlayer().playSound(ambSounds.get(MathUtils.random(0, ambSounds.size() - 1)));
+			resetNextAmbSound();
+		}
 	}
 
 
@@ -119,6 +128,11 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		super.addedToEngine(engine);
 		enemies = engine.getEntitiesFor(Family.all(EnemyComponent.class).get());
 		icons = engine.getEntitiesFor(Family.all(FlowerSkillIconComponent.class).get());
+		resetNextAmbSound();
+	}
+
+	private void resetNextAmbSound( ) {
+		nextAmbSoundTime = TimeUtils.millis() + MathUtils.random(AMB_SOUND_INTERVAL_MIN, AMB_SOUND_INTERVAL_MAX) * 1000L;
 	}
 
 
