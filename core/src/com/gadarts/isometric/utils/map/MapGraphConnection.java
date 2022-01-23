@@ -1,28 +1,26 @@
 package com.gadarts.isometric.utils.map;
 
 import com.badlogic.gdx.ai.pfa.Connection;
+import lombok.AllArgsConstructor;
 
-public class MapGraphConnection<T> implements Connection<T> {
-	private final T source;
-	private final T dest;
-
-	public MapGraphConnection(final T source, final T target) {
-		this.source = source;
-		this.dest = target;
-	}
+@AllArgsConstructor
+public class MapGraphConnection implements Connection<MapGraphNode> {
+	private final MapGraphNode source;
+	private final MapGraphNode dest;
+	private final MapGraphConnectionCosts cost;
 
 	@Override
 	public float getCost() {
-		return 1;
+		return cost.getCostValue();
 	}
 
 	@Override
-	public T getFromNode() {
+	public MapGraphNode getFromNode() {
 		return source;
 	}
 
 	@Override
-	public T getToNode() {
+	public MapGraphNode getToNode() {
 		return dest;
 	}
 

@@ -38,6 +38,7 @@ import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.isometric.utils.map.MapGraphConnectionCosts;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.assets.Assets;
@@ -78,7 +79,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	private static final float CHARACTER_STEP_SIZE = 0.22f;
 	private static final int ROT_INTERVAL = 125;
 	private static final long CHARACTER_PAIN_DURATION = 1000;
-
+	private static final CalculatePathOptions calculatePathOptions = new CalculatePathOptions();
 	private CommandsHandler commandsHandler;
 	private CharacterSystemGraphData graphData;
 	private ImmutableArray<Entity> characters;
@@ -123,7 +124,7 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				services.getMapService().getMap().getNode((int) cellPosition.x, (int) cellPosition.y),
 				graphData.getHeuristic(),
 				outputPath,
-				enemyBlocks);
+				calculatePathOptions.init(enemyBlocks));
 	}
 
 
@@ -349,14 +350,15 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 	public boolean calculatePath(final MapGraphNode sourceNode,
 								 final MapGraphNode destinationNode,
 								 final MapGraphPath outputPath,
-								 final boolean avoidCharactersInCalculations) {
+								 final boolean avoidCharactersInCalculations,
+								 final MapGraphConnectionCosts maxCostInclusive) {
 		outputPath.clear();
+		calculatePathOptions.init(avoidCharactersInCalculations, maxCostInclusive);
 		boolean success = graphData.getPathFinder().searchNodePathBeforeCommand(
-				sourceNode,
-				destinationNode,
+				sourceNode, destinationNode,
 				graphData.getHeuristic(),
 				outputPath,
-				avoidCharactersInCalculations
+				calculatePathOptions
 		);
 		return success && !isPathHasUnrevealedNodes(outputPath);
 	}

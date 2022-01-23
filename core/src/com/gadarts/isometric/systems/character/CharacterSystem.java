@@ -3,6 +3,7 @@ package com.gadarts.isometric.systems.character;
 import com.badlogic.ashley.core.Entity;
 import com.gadarts.isometric.systems.GameSystem;
 import com.gadarts.isometric.systems.character.commands.CharacterCommand;
+import com.gadarts.isometric.utils.map.MapGraphConnectionCosts;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 
@@ -30,12 +31,13 @@ public interface CharacterSystem extends GameSystem {
 	 * @param destinationNode               The node the path ends at.
 	 * @param outputPath                    The object that contains the result path.
 	 * @param avoidCharactersInCalculations Whether to take into account characters in the way.
+	 * @param clean
 	 * @return Whether it had successfully calculated a path.
 	 */
 	boolean calculatePath(MapGraphNode sourceNode,
 						  MapGraphNode destinationNode,
 						  MapGraphPath outputPath,
-						  boolean avoidCharactersInCalculations);
+						  boolean avoidCharactersInCalculations, MapGraphConnectionCosts clean);
 
 	/**
 	 * Calculates a path to a given character.

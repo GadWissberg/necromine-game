@@ -18,7 +18,11 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.data.CharacterSpriteData;
 import com.gadarts.isometric.components.decal.character.CharacterAnimation;
 import com.gadarts.isometric.components.decal.character.CharacterDecalComponent;
-import com.gadarts.isometric.components.player.*;
+import com.gadarts.isometric.components.player.Item;
+import com.gadarts.isometric.components.player.PlayerComponent;
+import com.gadarts.isometric.components.player.PlayerStorage;
+import com.gadarts.isometric.components.player.PlayerStorageEventsSubscriber;
+import com.gadarts.isometric.components.player.Weapon;
 import com.gadarts.isometric.services.MapService;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.camera.CameraSystemEventsSubscriber;
@@ -37,6 +41,7 @@ import com.gadarts.isometric.systems.pickup.PickupSystemEventsSubscriber;
 import com.gadarts.isometric.systems.render.RenderSystemEventsSubscriber;
 import com.gadarts.isometric.systems.turns.TurnsSystem;
 import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
+import com.gadarts.isometric.utils.map.MapGraphConnectionCosts;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.assets.Assets;
@@ -108,8 +113,8 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		CharacterSystem characterSystem = getSystem(CharacterSystem.class);
 		MapGraphPath plannedPath = pathPlanHandler.getPath();
 		return ((enemyAtNode != null && ComponentsMapper.character.get(enemyAtNode).getSkills().getHealthData().getHp() > 0 && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath, true))
-				|| getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath, true)
-				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath, true));
+				|| getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath, true, MapGraphConnectionCosts.CLEAN)
+				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath, true, MapGraphConnectionCosts.CLEAN));
 	}
 
 

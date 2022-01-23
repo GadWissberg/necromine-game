@@ -9,7 +9,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
-import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.Bresenham2;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
@@ -32,6 +36,7 @@ import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.isometric.utils.map.MapGraphConnectionCosts;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.assets.Assets;
@@ -45,7 +50,10 @@ import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gadarts.isometric.components.enemy.EnemyStatus.*;
+import static com.gadarts.isometric.components.enemy.EnemyStatus.ATTACKING;
+import static com.gadarts.isometric.components.enemy.EnemyStatus.IDLE;
+import static com.gadarts.isometric.components.enemy.EnemyStatus.RUNNING_TO_LAST_SEEN_POSITION;
+import static com.gadarts.isometric.components.enemy.EnemyStatus.SEARCHING;
 import static com.gadarts.necromine.model.characters.attributes.Accuracy.NONE;
 
 /**
@@ -119,7 +127,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 
 	@Override
-	public void dispose( ) {
+	public void dispose() {
 
 	}
 
@@ -131,7 +139,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		resetNextAmbSound();
 	}
 
-	private void resetNextAmbSound( ) {
+	private void resetNextAmbSound() {
 		nextAmbSoundTime = TimeUtils.millis() + MathUtils.random(AMB_SOUND_INTERVAL_MIN, AMB_SOUND_INTERVAL_MAX) * 1000L;
 	}
 
@@ -201,8 +209,24 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 				if (enemyNode.equals(targetLastVisibleNode)) {
 					applySearchingModeOnEnemy(enemy);
 				}
-				if (characterSystem.calculatePath(enemyNode, enemyComponent.getTargetLastVisibleNode(), auxPath, false)) {
+				boolean foundPath = characterSystem.calculatePath(
+						enemyNode,
+						targetLastVisibleNode,
+						auxPath,
+						false,
+						MapGraphConnectionCosts.CLEAN);
+				if (foundPath) {
 					applyCommand(enemy, CharacterCommands.GO_TO_MELEE);
+				} else {
+					foundPath = characterSystem.calculatePath(
+							enemyNode,
+							targetLastVisibleNode,
+							auxPath,
+							false,
+							MapGraphConnectionCosts.HEIGHT_DIFF);
+					if (foundPath) {
+						applyCommand(enemy, CharacterCommands.ATTACK_PRIMARY);
+					}
 				}
 			}
 		}
@@ -238,7 +262,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	private void addAsPossibleNodeToLookIn(final MapGraphNode enemyNode, final MapGraphNode node) {
-		if (characterSystem.calculatePath(enemyNode, node, auxPath, true)) {
+		if (characterSystem.calculatePath(enemyNode, node, auxPath, true, MapGraphConnectionCosts.CLEAN)) {
 			if (!auxNodesList.contains(node)) {
 				auxNodesList.add(node);
 			}
@@ -329,7 +353,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	private void enemiesFinishedTurn( ) {
+	private void enemiesFinishedTurn() {
 		for (EnemySystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onEnemyFinishedTurn();
 		}
@@ -488,7 +512,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	@Override
-	public void activate( ) {
+	public void activate() {
 		skillFlowerTexture = new TextureRegion(services.getAssetManager().getTexture(UiTextures.SKILL_FLOWER_CENTER));
 		iconSpottedTexture = services.getAssetManager().getTexture(UiTextures.ICON_SPOTTED);
 		iconLookingForTexture = services.getAssetManager().getTexture(UiTextures.ICON_LOOKING_FOR);

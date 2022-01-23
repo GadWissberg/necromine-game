@@ -125,3 +125,4 @@ Thumbs.db
 /ios-moe/xcode/native/
 /materials/models/player/axe.glb
 *.ini
+/desktop/out/
