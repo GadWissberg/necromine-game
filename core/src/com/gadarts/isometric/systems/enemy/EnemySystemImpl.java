@@ -22,8 +22,8 @@ import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.data.CharacterHealthData;
 import com.gadarts.isometric.components.decal.simple.RelatedDecal;
 import com.gadarts.isometric.components.decal.simple.SimpleDecalComponent;
+import com.gadarts.isometric.components.enemy.EnemyAiStatus;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
-import com.gadarts.isometric.components.enemy.EnemyStatus;
 import com.gadarts.isometric.components.player.PlayerStorage;
 import com.gadarts.isometric.systems.GameEntitySystem;
 import com.gadarts.isometric.systems.character.CharacterSystem;
@@ -36,7 +36,6 @@ import com.gadarts.isometric.systems.turns.TurnsSystemEventsSubscriber;
 import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.map.MapGraph;
-import com.gadarts.isometric.utils.map.MapGraphConnectionCosts;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
 import com.gadarts.necromine.assets.Assets;
@@ -50,10 +49,12 @@ import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gadarts.isometric.components.enemy.EnemyStatus.ATTACKING;
-import static com.gadarts.isometric.components.enemy.EnemyStatus.IDLE;
-import static com.gadarts.isometric.components.enemy.EnemyStatus.RUNNING_TO_LAST_SEEN_POSITION;
-import static com.gadarts.isometric.components.enemy.EnemyStatus.SEARCHING;
+import static com.gadarts.isometric.components.enemy.EnemyAiStatus.ATTACKING;
+import static com.gadarts.isometric.components.enemy.EnemyAiStatus.IDLE;
+import static com.gadarts.isometric.components.enemy.EnemyAiStatus.RUNNING_TO_LAST_SEEN_POSITION;
+import static com.gadarts.isometric.components.enemy.EnemyAiStatus.SEARCHING;
+import static com.gadarts.isometric.utils.map.MapGraphConnectionCosts.CLEAN;
+import static com.gadarts.isometric.utils.map.MapGraphConnectionCosts.HEIGHT_DIFF;
 import static com.gadarts.necromine.model.characters.attributes.Accuracy.NONE;
 
 /**
@@ -96,7 +97,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		super.update(deltaTime);
 		for (Entity enemy : enemies) {
 			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
-			if (enemyComponent.getStatus() != IDLE) {
+			if (enemyComponent.getAiStatus() != IDLE) {
 				if (TimeUtils.timeSinceMillis(enemyComponent.getNextRoamSound()) >= 0) {
 					if (enemyComponent.getNextRoamSound() != 0) {
 						SoundPlayer soundPlayer = services.getSoundPlayer();
@@ -174,7 +175,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			int hp = ComponentsMapper.character.get(enemy).getSkills().getHealthData().getHp();
 			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
 			if (enemyComponent.getTimeStamps().getLastTurn() < currentTurnId) {
-				if (hp > 0 && enemyComponent.getStatus() != IDLE) {
+				if (hp > 0 && enemyComponent.getAiStatus() != IDLE) {
 					invokeEnemyTurn(enemy);
 					return true;
 				}
@@ -186,7 +187,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	@Override
 	public void onCharacterRotated(final Entity character) {
 		if (ComponentsMapper.enemy.has(character)) {
-			EnemyStatus status = ComponentsMapper.enemy.get(character).getStatus();
+			EnemyAiStatus status = ComponentsMapper.enemy.get(character).getAiStatus();
 			if ((status == RUNNING_TO_LAST_SEEN_POSITION || status == SEARCHING)) {
 				if (isTargetInFov(character) && !checkIfFloorNodesBlockSightToTarget(character)) {
 					awakeEnemy(character);
@@ -198,7 +199,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	private void invokeEnemyTurn(final Entity enemy) {
 		EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
-		if (enemyComponent.getStatus() == ATTACKING) {
+		if (enemyComponent.getAiStatus() == ATTACKING) {
 			invokeEnemyAttackBehaviour(enemy);
 		} else {
 			MapGraph map = services.getMapService().getMap();
@@ -214,7 +215,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 						targetLastVisibleNode,
 						auxPath,
 						false,
-						MapGraphConnectionCosts.CLEAN);
+						CLEAN);
 				if (foundPath) {
 					applyCommand(enemy, CharacterCommands.GO_TO_MELEE);
 				} else {
@@ -223,9 +224,9 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 							targetLastVisibleNode,
 							auxPath,
 							false,
-							MapGraphConnectionCosts.HEIGHT_DIFF);
+							HEIGHT_DIFF);
 					if (foundPath) {
-						applyCommand(enemy, CharacterCommands.ATTACK_PRIMARY);
+						applyCommand(enemy, CharacterCommands.GO_TO_MELEE);
 					}
 				}
 			}
@@ -237,10 +238,10 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		Vector2 nodePosition = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 		MapGraphNode enemyNode = map.getNode(nodePosition);
 		EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
-		if (enemyComponent.getStatus() == RUNNING_TO_LAST_SEEN_POSITION) {
+		if (enemyComponent.getAiStatus() == RUNNING_TO_LAST_SEEN_POSITION) {
 			createSkillFlowerIcon(ComponentsMapper.simpleDecal.get(enemy).getDecal(), iconLookingForTexture);
 		}
-		enemyComponent.setStatus(SEARCHING);
+		enemyComponent.setAiStatus(SEARCHING);
 		auxNodesList.clear();
 		int col = enemyNode.getCol();
 		int row = enemyNode.getRow();
@@ -262,7 +263,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	private void addAsPossibleNodeToLookIn(final MapGraphNode enemyNode, final MapGraphNode node) {
-		if (characterSystem.calculatePath(enemyNode, node, auxPath, true, MapGraphConnectionCosts.CLEAN)) {
+		if (characterSystem.calculatePath(enemyNode, node, auxPath, true, CLEAN)) {
 			if (!auxNodesList.contains(node)) {
 				auxNodesList.add(node);
 			}
@@ -317,14 +318,13 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private void calculatePathAndApplyGoToMelee(final Entity enemy,
 												final MapGraphNode enemyNode,
 												final Entity target) {
-		if (characterSystem.calculatePathToCharacter(enemyNode, target, auxPath, true)) {
+		boolean pathCalculated = characterSystem.calculatePathToCharacter(enemyNode, target, auxPath, true, CLEAN)
+				|| characterSystem.calculatePathToCharacter(enemyNode, target, auxPath, false, CLEAN)
+				|| characterSystem.calculatePathToCharacter(enemyNode, target, auxPath, false, HEIGHT_DIFF);
+		if (pathCalculated) {
 			applyGoToMelee(enemy);
 		} else {
-			if (characterSystem.calculatePathToCharacter(enemyNode, target, auxPath, false)) {
-				applyGoToMelee(enemy);
-			} else {
-				onCharacterCommandDone(enemy, null);
-			}
+			onCharacterCommandDone(enemy, null);
 		}
 	}
 
@@ -388,8 +388,8 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	public void onCharacterDies(final Entity character) {
 		if (ComponentsMapper.enemy.has(character)) {
 			EnemyComponent enemyComponent = ComponentsMapper.enemy.get(character);
-			if (enemyComponent.getStatus() != IDLE) {
-				enemyComponent.setStatus(IDLE);
+			if (enemyComponent.getAiStatus() != IDLE) {
+				enemyComponent.setAiStatus(IDLE);
 			}
 			character.remove(SimpleDecalComponent.class);
 		}
@@ -443,7 +443,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 	private void awakeEnemy(final Entity enemy) {
 		if (ComponentsMapper.character.get(enemy).getSkills().getHealthData().getHp() <= 0) return;
-		ComponentsMapper.enemy.get(enemy).setStatus(ATTACKING);
+		ComponentsMapper.enemy.get(enemy).setAiStatus(ATTACKING);
 		Decal flowerDecal = ComponentsMapper.simpleDecal.get(enemy).getDecal();
 		flowerDecal.setTextureRegion(skillFlowerTexture);
 		createSkillFlowerIcon(flowerDecal, iconSpottedTexture);
@@ -478,12 +478,12 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		if (ComponentsMapper.player.has(entity)) {
 			for (Entity enemy : enemies) {
 				EnemyComponent enemyComponent = ComponentsMapper.enemy.get(enemy);
-				EnemyStatus status = enemyComponent.getStatus();
+				EnemyAiStatus status = enemyComponent.getAiStatus();
 				if (status != ATTACKING) {
 					awakeEnemyIfTargetSpotted(enemy);
 				} else {
 					if (!isTargetInFov(enemy) || checkIfFloorNodesBlockSightToTarget(enemy)) {
-						enemyComponent.setStatus(EnemyStatus.RUNNING_TO_LAST_SEEN_POSITION);
+						enemyComponent.setAiStatus(EnemyAiStatus.RUNNING_TO_LAST_SEEN_POSITION);
 						updateEnemyTargetLastVisibleNode(enemy, enemyComponent);
 					}
 				}

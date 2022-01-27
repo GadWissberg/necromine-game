@@ -31,25 +31,28 @@ public interface CharacterSystem extends GameSystem {
 	 * @param destinationNode               The node the path ends at.
 	 * @param outputPath                    The object that contains the result path.
 	 * @param avoidCharactersInCalculations Whether to take into account characters in the way.
-	 * @param clean
+	 * @param maxCostPerNodeConnection      Include in path only connections with cost less or equal to the given cost.
 	 * @return Whether it had successfully calculated a path.
 	 */
 	boolean calculatePath(MapGraphNode sourceNode,
 						  MapGraphNode destinationNode,
 						  MapGraphPath outputPath,
-						  boolean avoidCharactersInCalculations, MapGraphConnectionCosts clean);
+						  boolean avoidCharactersInCalculations,
+						  MapGraphConnectionCosts maxCostPerNodeConnection);
 
 	/**
 	 * Calculates a path to a given character.
 	 *
-	 * @param sourceNode  The node the path starts from.
-	 * @param character   The character the path ends at.
-	 * @param outputPath  The object that contains the result path.
-	 * @param enemyBlocks Whether other enemies can be considered as obstacles.
+	 * @param sourceNode                  The node the path starts from.
+	 * @param character                   The character the path ends at.
+	 * @param outputPath                  The object that contains the result path.
+	 * @param avoidCharacterInCalculation Whether other enemies can be considered as obstacles.
+	 * @param maxCostPerNodeConnection    Include in path only connections with cost less or equal to the given cost.
 	 * @return Whether it had successfully calculated a path.
 	 */
 	boolean calculatePathToCharacter(MapGraphNode sourceNode,
 									 Entity character,
 									 MapGraphPath outputPath,
-									 boolean enemyBlocks);
+									 boolean avoidCharacterInCalculation,
+									 MapGraphConnectionCosts maxCostPerNodeConnection);
 }

@@ -198,7 +198,7 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 	@Override
 	public Array<Connection<MapGraphNode>> getConnections(final MapGraphNode fromNode) {
 		auxConnectionsList.clear();
-		Array<Connection<MapGraphNode>> connections = fromNode.getConnections();
+		Array<MapGraphConnection> connections = fromNode.getConnections();
 		for (Connection<MapGraphNode> connection : connections) {
 			checkIfConnectionIsAvailable(connection);
 		}
@@ -371,5 +371,24 @@ public class MapGraph implements IndexedGraph<MapGraphNode>, CharacterSystemEven
 			}
 		}
 		return result;
+	}
+
+	public MapGraphConnection findConnection(MapGraphNode node1, MapGraphNode node2) {
+		if (node1 == null || node2 == null) return null;
+		MapGraphConnection result = findConnectionBetweenTwoNodes(node1, node2);
+		if (result == null) {
+			result = findConnectionBetweenTwoNodes(node2, node1);
+		}
+		return result;
+	}
+
+	private MapGraphConnection findConnectionBetweenTwoNodes(MapGraphNode src, MapGraphNode dst) {
+		Array<MapGraphConnection> connections = src.getConnections();
+		for (MapGraphConnection connection : connections) {
+			if (connection.getToNode() == dst) {
+				return connection;
+			}
+		}
+		return null;
 	}
 }

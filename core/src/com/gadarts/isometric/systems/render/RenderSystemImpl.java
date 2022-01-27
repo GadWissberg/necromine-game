@@ -1,10 +1,19 @@
 package com.gadarts.isometric.systems.render;
 
-import com.badlogic.ashley.core.*;
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntityListener;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cubemap;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,7 +33,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.gadarts.isometric.components.*;
+import com.gadarts.isometric.components.AnimationComponent;
+import com.gadarts.isometric.components.ComponentsMapper;
+import com.gadarts.isometric.components.LightComponent;
+import com.gadarts.isometric.components.ModelInstanceComponent;
+import com.gadarts.isometric.components.ShadowLightComponent;
 import com.gadarts.isometric.components.character.CharacterAnimations;
 import com.gadarts.isometric.components.character.CharacterComponent;
 import com.gadarts.isometric.components.character.data.CharacterSpriteData;
@@ -32,8 +45,8 @@ import com.gadarts.isometric.components.decal.character.CharacterAnimation;
 import com.gadarts.isometric.components.decal.character.CharacterDecalComponent;
 import com.gadarts.isometric.components.decal.simple.RelatedDecal;
 import com.gadarts.isometric.components.decal.simple.SimpleDecalComponent;
+import com.gadarts.isometric.components.enemy.EnemyAiStatus;
 import com.gadarts.isometric.components.enemy.EnemyComponent;
-import com.gadarts.isometric.components.enemy.EnemyStatus;
 import com.gadarts.isometric.components.model.AdditionalRenderData;
 import com.gadarts.isometric.components.model.GameModelInstance;
 import com.gadarts.isometric.services.GameServices;
@@ -63,7 +76,10 @@ import com.gadarts.necromine.model.characters.SpriteType;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.gadarts.necromine.assets.Assets.Shaders.*;
+import static com.gadarts.necromine.assets.Assets.Shaders.DEPTHMAP_FRAGMENT;
+import static com.gadarts.necromine.assets.Assets.Shaders.DEPTHMAP_VERTEX;
+import static com.gadarts.necromine.assets.Assets.Shaders.SHADOW_FRAGMENT;
+import static com.gadarts.necromine.assets.Assets.Shaders.SHADOW_VERTEX;
 import static java.lang.Math.max;
 
 /**
@@ -314,7 +330,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 		flipIconDisplayInFlower(enemyComponent);
 		SimpleDecalComponent simpleDecalComponent = ComponentsMapper.simpleDecal.get(enemy);
 		Vector3 screenPos = camera.project(auxVector3_1.set(simpleDecalComponent.getDecal().getPosition()));
-		if (enemyComponent.getStatus() == EnemyStatus.SEARCHING && enemyComponent.isDisplayIconInFlower()) {
+		if (enemyComponent.getAiStatus() == EnemyAiStatus.SEARCHING && enemyComponent.isDisplayIconInFlower()) {
 			renderSkillFlowerIcon(spriteBatch, screenPos);
 		} else {
 			renderSkillFlowerText(spriteBatch, enemyComponent, screenPos);
@@ -339,7 +355,7 @@ public class RenderSystemImpl extends GameEntitySystem<RenderSystemEventsSubscri
 	}
 
 	private void flipIconDisplayInFlower(final EnemyComponent enemyComponent) {
-		if (enemyComponent.getStatus() == EnemyStatus.SEARCHING) {
+		if (enemyComponent.getAiStatus() == EnemyAiStatus.SEARCHING) {
 			long lastIconDisplayInFlower = enemyComponent.getIconDisplayInFlowerTimeStamp();
 			if (TimeUtils.timeSinceMillis(lastIconDisplayInFlower) >= ICON_FLOWER_APPEARANCE_DURATION) {
 				enemyComponent.setDisplayIconInFlower(!enemyComponent.isDisplayIconInFlower());

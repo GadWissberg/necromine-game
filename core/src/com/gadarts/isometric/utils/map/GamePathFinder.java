@@ -15,18 +15,6 @@ public class GamePathFinder extends IndexedAStarPathFinder<MapGraphNode> {
 	public boolean searchNodePathBeforeCommand(final MapGraphNode source,
 											   final MapGraphNode destination,
 											   final GameHeuristic heuristic,
-											   final MapGraphPath output) {
-		return searchNodePathBeforeCommand(
-				source,
-				destination,
-				heuristic,
-				output,
-				calculatePathOptions.init(true, MapGraphConnectionCosts.CLEAN));
-	}
-
-	public boolean searchNodePathBeforeCommand(final MapGraphNode source,
-											   final MapGraphNode destination,
-											   final GameHeuristic heuristic,
 											   final MapGraphPath output,
 											   final CalculatePathOptions options) {
 		MapGraphNode oldDest = map.getCurrentDestination();

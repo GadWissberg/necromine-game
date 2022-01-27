@@ -51,6 +51,8 @@ import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 
 import java.util.List;
 
+import static com.gadarts.isometric.utils.map.MapGraphConnectionCosts.CLEAN;
+
 public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscriber> implements
 		PlayerSystem,
 		PickupSystemEventsSubscriber,
@@ -112,7 +114,7 @@ public class PlayerSystemImpl extends GameEntitySystem<PlayerSystemEventsSubscri
 		MapGraphNode playerNode = services.getMapService().getMap().getNode(cellPosition);
 		CharacterSystem characterSystem = getSystem(CharacterSystem.class);
 		MapGraphPath plannedPath = pathPlanHandler.getPath();
-		return ((enemyAtNode != null && ComponentsMapper.character.get(enemyAtNode).getSkills().getHealthData().getHp() > 0 && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath, true))
+		return ((enemyAtNode != null && ComponentsMapper.character.get(enemyAtNode).getSkills().getHealthData().getHp() > 0 && characterSystem.calculatePathToCharacter(playerNode, enemyAtNode, plannedPath, true, CLEAN))
 				|| getSystem(PickUpSystem.class).getCurrentHighLightedPickup() != null && characterSystem.calculatePath(playerNode, cursorNode, plannedPath, true, MapGraphConnectionCosts.CLEAN)
 				|| characterSystem.calculatePath(playerNode, cursorNode, plannedPath, true, MapGraphConnectionCosts.CLEAN));
 	}

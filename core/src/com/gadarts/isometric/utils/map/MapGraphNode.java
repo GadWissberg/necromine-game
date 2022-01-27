@@ -13,7 +13,7 @@ import java.awt.*;
 
 @Getter
 public class MapGraphNode {
-	private final Array<Connection<MapGraphNode>> connections;
+	private final Array<MapGraphConnection> connections;
 	private int col;
 	private int row;
 

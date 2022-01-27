@@ -22,7 +22,7 @@ public class EnemyComponent implements GameComponent {
 	private long nextRoamSound;
 	private Enemies enemyDefinition;
 
-	private EnemyStatus status;
+	private EnemyAiStatus aiStatus;
 	private EnemyTimeStamps timeStamps = new EnemyTimeStamps();
 	private int skill = 1;
 	private Animation<TextureAtlas.AtlasRegion> bulletAnimation;
@@ -42,7 +42,7 @@ public class EnemyComponent implements GameComponent {
 		this.bulletAnimation = bulletAnimation;
 		timeStamps.reset();
 		targetLastVisibleNode = null;
-		status = EnemyStatus.IDLE;
+		aiStatus = EnemyAiStatus.IDLE;
 		iconDisplayInFlowerTimeStamp = 0;
 	}
 

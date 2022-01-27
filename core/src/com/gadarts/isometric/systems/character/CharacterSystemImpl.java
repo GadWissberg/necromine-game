@@ -38,6 +38,7 @@ import com.gadarts.isometric.utils.EntityBuilder;
 import com.gadarts.isometric.utils.SoundPlayer;
 import com.gadarts.isometric.utils.Utils;
 import com.gadarts.isometric.utils.map.MapGraph;
+import com.gadarts.isometric.utils.map.MapGraphConnection;
 import com.gadarts.isometric.utils.map.MapGraphConnectionCosts;
 import com.gadarts.isometric.utils.map.MapGraphNode;
 import com.gadarts.isometric.utils.map.MapGraphPath;
@@ -51,6 +52,7 @@ import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import static com.gadarts.isometric.components.character.CharacterMotivation.END_MY_TURN;
 import static com.gadarts.isometric.components.character.CharacterMotivation.TO_PICK_UP;
 import static com.gadarts.isometric.components.character.CharacterMotivation.USE_PRIMARY;
+import static com.gadarts.isometric.utils.map.MapGraphConnectionCosts.CLEAN;
 import static com.gadarts.necromine.model.characters.SpriteType.ATTACK;
 import static com.gadarts.necromine.model.characters.SpriteType.ATTACK_PRIMARY;
 import static com.gadarts.necromine.model.characters.SpriteType.IDLE;
@@ -109,22 +111,6 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 			}
 		}
 		return result;
-	}
-
-
-	@Override
-	public boolean calculatePathToCharacter(final MapGraphNode sourceNode,
-											final Entity character,
-											final MapGraphPath outputPath,
-											final boolean enemyBlocks) {
-		outputPath.clear();
-		Vector2 cellPosition = ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2_1);
-		return graphData.getPathFinder().searchNodePathBeforeCommand(
-				sourceNode,
-				services.getMapService().getMap().getNode((int) cellPosition.x, (int) cellPosition.y),
-				graphData.getHeuristic(),
-				outputPath,
-				calculatePathOptions.init(enemyBlocks));
 	}
 
 
@@ -351,9 +337,9 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 								 final MapGraphNode destinationNode,
 								 final MapGraphPath outputPath,
 								 final boolean avoidCharactersInCalculations,
-								 final MapGraphConnectionCosts maxCostInclusive) {
+								 final MapGraphConnectionCosts maxCostPerNodeConnection) {
 		outputPath.clear();
-		calculatePathOptions.init(avoidCharactersInCalculations, maxCostInclusive);
+		calculatePathOptions.init(avoidCharactersInCalculations, maxCostPerNodeConnection);
 		boolean success = graphData.getPathFinder().searchNodePathBeforeCommand(
 				sourceNode, destinationNode,
 				graphData.getHeuristic(),
@@ -361,6 +347,23 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 				calculatePathOptions
 		);
 		return success && !isPathHasUnrevealedNodes(outputPath);
+	}
+
+	@Override
+	public boolean calculatePathToCharacter(MapGraphNode sourceNode,
+											Entity character,
+											MapGraphPath outputPath,
+											boolean avoidCharactersInCalculation,
+											MapGraphConnectionCosts maxCostPerNodeConnection) {
+		outputPath.clear();
+		Vector2 cellPosition = ComponentsMapper.characterDecal.get(character).getNodePosition(auxVector2_1);
+		calculatePathOptions.init(avoidCharactersInCalculation, maxCostPerNodeConnection);
+		return graphData.getPathFinder().searchNodePathBeforeCommand(
+				sourceNode,
+				services.getMapService().getMap().getNode((int) cellPosition.x, (int) cellPosition.y),
+				graphData.getHeuristic(),
+				outputPath,
+				calculatePathOptions);
 	}
 
 	@Override
@@ -425,10 +428,11 @@ public class CharacterSystemImpl extends GameEntitySystem<CharacterSystemEventsS
 
 	private void reachedNodeOfPath(final Entity character,
 								   final MapGraphNode oldDest) {
-		CharacterComponent characterComponent = ComponentsMapper.character.get(character);
 		MapGraphNode newDest = graphData.getCurrentPath().getNextOf(oldDest);
-		if (newDest != null && services.getMapService().getMap().checkIfNodeIsAvailable(newDest)) {
-			commandsHandler.initDestinationNode(characterComponent, newDest);
+		boolean isAvailable = services.getMapService().getMap().checkIfNodeIsAvailable(newDest);
+		MapGraphConnection connection = services.getMapService().getMap().findConnection(oldDest, newDest);
+		if (newDest != null && isAvailable && connection != null && connection.getCost() == CLEAN.getCostValue()) {
+			commandsHandler.initDestinationNode(ComponentsMapper.character.get(character), newDest);
 			takeStep(character);
 		} else {
 			commandsHandler.destinationReached(character);
