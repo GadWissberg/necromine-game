@@ -9,11 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
-import com.badlogic.gdx.math.Bresenham2;
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.gadarts.isometric.components.ComponentsMapper;
@@ -49,10 +45,7 @@ import com.gadarts.necromine.model.pickups.WeaponsDefinitions;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gadarts.isometric.components.enemy.EnemyAiStatus.ATTACKING;
-import static com.gadarts.isometric.components.enemy.EnemyAiStatus.IDLE;
-import static com.gadarts.isometric.components.enemy.EnemyAiStatus.RUNNING_TO_LAST_SEEN_POSITION;
-import static com.gadarts.isometric.components.enemy.EnemyAiStatus.SEARCHING;
+import static com.gadarts.isometric.components.enemy.EnemyAiStatus.*;
 import static com.gadarts.isometric.utils.map.MapGraphConnectionCosts.CLEAN;
 import static com.gadarts.isometric.utils.map.MapGraphConnectionCosts.HEIGHT_DIFF;
 import static com.gadarts.necromine.model.characters.attributes.Accuracy.NONE;
@@ -128,7 +121,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 
 
 	@Override
-	public void dispose() {
+	public void dispose( ) {
 
 	}
 
@@ -140,7 +133,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		resetNextAmbSound();
 	}
 
-	private void resetNextAmbSound() {
+	private void resetNextAmbSound( ) {
 		nextAmbSoundTime = TimeUtils.millis() + MathUtils.random(AMB_SOUND_INTERVAL_MIN, AMB_SOUND_INTERVAL_MAX) * 1000L;
 	}
 
@@ -290,13 +283,35 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			float disToTarget = calculateDistanceToTarget(enemy);
 			if (disToTarget <= def.getRange().get(skillIndex).getMaxDistance() && disToTarget > RANGE_ATTACK_MIN_RADIUS) {
 				int turnsDiff = def.getReloadTime().get(skillIndex).getNumberOfTurns();
-				if (checkIfPrimaryAttackIsReady(enemyCom, turnsDiff) && !checkIfFloorNodesBlockSightToTarget(enemy)) {
+				if (checkIfPrimaryAttackIsReady(enemyCom, turnsDiff) && !checkIfWayIsClearToTarget(enemy)) {
 					applyCommand(enemy, CharacterCommands.ATTACK_PRIMARY);
 					return true;
 				}
 			}
 		}
 		return false;
+	}
+
+	private boolean checkIfWayIsClearToTarget(final Entity enemy) {
+		Array<GridPoint2> nodes = findAllNodesToTarget(enemy);
+		boolean blocked = checkIfFloorNodesBlockSightToTarget(enemy, nodes);
+		if (!blocked) {
+			blocked = checkIfFloorNodesContainsEnemy(nodes);
+		}
+		return blocked;
+	}
+
+	private boolean checkIfFloorNodesContainsEnemy(final Array<GridPoint2> nodes) {
+		boolean result = false;
+		for (GridPoint2 point : nodes) {
+			MapGraph map = services.getMapService().getMap();
+			Entity enemy = map.getAliveEnemyFromNode(map.getNode(point.x, point.y));
+			if (enemy != null) {
+				result = true;
+				break;
+			}
+		}
+		return result;
 	}
 
 	private boolean checkIfPrimaryAttackIsReady(final EnemyComponent enemyComponent, final int turnsDiff) {
@@ -353,7 +368,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	private void enemiesFinishedTurn() {
+	private void enemiesFinishedTurn( ) {
 		for (EnemySystemEventsSubscriber subscriber : subscribers) {
 			subscriber.onEnemyFinishedTurn();
 		}
@@ -428,10 +443,11 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	private boolean checkIfFloorNodesBlockSightToTarget(final Entity enemy) {
+		return checkIfFloorNodesBlockSightToTarget(enemy, findAllNodesToTarget(enemy));
+	}
+
+	private boolean checkIfFloorNodesBlockSightToTarget(final Entity enemy, final Array<GridPoint2> nodes) {
 		Vector2 pos = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
-		Entity target = ComponentsMapper.character.get(enemy).getTarget();
-		Vector2 targetPos = ComponentsMapper.characterDecal.get(target).getNodePosition(auxVector2_2);
-		Array<GridPoint2> nodes = bresenham.line((int) pos.x, (int) pos.y, (int) targetPos.x, (int) targetPos.y);
 		MapGraph map = services.getMapService().getMap();
 		for (GridPoint2 n : nodes) {
 			if (map.getNode(n.x, n.y).getHeight() > map.getNode((int) pos.x, (int) pos.y).getHeight() + 1) {
@@ -439,6 +455,13 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 			}
 		}
 		return false;
+	}
+
+	private Array<GridPoint2> findAllNodesToTarget(final Entity enemy) {
+		Vector2 pos = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
+		Entity target = ComponentsMapper.character.get(enemy).getTarget();
+		Vector2 targetPos = ComponentsMapper.characterDecal.get(target).getNodePosition(auxVector2_2);
+		return bresenham.line((int) pos.x, (int) pos.y, (int) targetPos.x, (int) targetPos.y);
 	}
 
 	private void awakeEnemy(final Entity enemy) {
@@ -491,17 +514,15 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 		}
 	}
 
-	private boolean awakeEnemyIfTargetSpotted(final Entity enemy) {
+	private void awakeEnemyIfTargetSpotted(final Entity enemy) {
 		if (isTargetInFov(enemy) && !checkIfFloorNodesBlockSightToTarget(enemy)) {
 			Vector2 enemyPos = ComponentsMapper.characterDecal.get(enemy).getNodePosition(auxVector2_1);
 			Entity target = ComponentsMapper.character.get(enemy).getTarget();
 			Vector2 targetPos = ComponentsMapper.characterDecal.get(target).getNodePosition(auxVector2_2);
 			if (enemyPos.dst2(targetPos) <= Math.pow(MAX_SIGHT, 2)) {
 				awakeEnemy(enemy);
-				return true;
 			}
 		}
-		return false;
 	}
 
 	private void updateEnemyTargetLastVisibleNode(final Entity enemy, final EnemyComponent enemyComponent) {
@@ -512,7 +533,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	}
 
 	@Override
-	public void activate() {
+	public void activate( ) {
 		skillFlowerTexture = new TextureRegion(services.getAssetManager().getTexture(UiTextures.SKILL_FLOWER_CENTER));
 		iconSpottedTexture = services.getAssetManager().getTexture(UiTextures.ICON_SPOTTED);
 		iconLookingForTexture = services.getAssetManager().getTexture(UiTextures.ICON_LOOKING_FOR);
