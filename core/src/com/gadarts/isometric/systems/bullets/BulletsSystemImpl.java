@@ -12,12 +12,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
-import com.badlogic.gdx.math.Bresenham2;
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
 import com.gadarts.isometric.components.BulletComponent;
 import com.gadarts.isometric.components.CollisionComponent;
@@ -83,11 +78,24 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	public void onCharacterEngagesPrimaryAttack(final Entity character,
 												final Vector3 direction,
 												final Vector3 charPos) {
+
+		createBulletCreationLight(charPos);
 		if (ComponentsMapper.enemy.has(character)) {
 			enemyEngagesPrimaryAttack(character, direction, charPos);
 		} else {
 			playerEngagesPrimaryAttack(character, direction);
 		}
+	}
+
+	private void createBulletCreationLight(final Vector3 charPos) {
+		Vector3 position = auxVector3_1.set(charPos.x, charPos.y + 1F, charPos.z);
+		EntityBuilder.beginBuildingEntity((PooledEngine) getEngine())
+				.addLightComponent(position,
+						HITSCAN_COL_LIGHT_INTENSITY,
+						HITSCAN_COL_LIGHT_RADIUS,
+						HITSCAN_COL_LIGHT_COLOR,
+						HITSCAN_COL_LIGHT_DURATION)
+				.finishAndAddToEngine();
 	}
 
 	private void playerEngagesPrimaryAttack(final Entity character, final Vector3 direction) {
@@ -165,12 +173,12 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 		return closest;
 	}
 
-	private float intersectSegments(Vector3 posNodeCenterPos,
-									Vector2 src,
-									Vector2 dst,
-									Vector2 closest,
-									float min,
-									Vector2 lineVertex1, Vector2 lineVertex2) {
+	private float intersectSegments(final Vector3 posNodeCenterPos,
+									final Vector2 src,
+									final Vector2 dst,
+									final Vector2 closest,
+									final float min,
+									final Vector2 lineVertex1, final Vector2 lineVertex2) {
 		Vector2 candidate = BulletsSystemImpl.auxVector2_6;
 		Intersector.intersectSegments(src, dst, lineVertex1, lineVertex2, candidate.set(closest));
 		if (!candidate.isZero()) {
@@ -360,7 +368,7 @@ public class BulletsSystemImpl extends GameEntitySystem<BulletsSystemEventsSubsc
 	}
 
 	@Override
-	public void onParticleEffectsSystemReady(PointSpriteParticleBatch pointSpriteBatch) {
+	public void onParticleEffectsSystemReady(final PointSpriteParticleBatch pointSpriteBatch) {
 		bulletRicochetEffect = services.getAssetManager().getParticleEffect(ParticleEffects.BULLET_RICOCHET);
 	}
 }

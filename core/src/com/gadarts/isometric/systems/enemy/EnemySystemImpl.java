@@ -467,6 +467,7 @@ public class EnemySystemImpl extends GameEntitySystem<EnemySystemEventsSubscribe
 	private void awakeEnemy(final Entity enemy) {
 		if (ComponentsMapper.character.get(enemy).getSkills().getHealthData().getHp() <= 0) return;
 		ComponentsMapper.enemy.get(enemy).setAiStatus(ATTACKING);
+		services.getSoundPlayer().playSound(ComponentsMapper.enemy.get(enemy).getEnemyDefinition().getAwakeSound());
 		Decal flowerDecal = ComponentsMapper.simpleDecal.get(enemy).getDecal();
 		flowerDecal.setTextureRegion(skillFlowerTexture);
 		createSkillFlowerIcon(flowerDecal, iconSpottedTexture);
